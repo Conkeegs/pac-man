@@ -1,4 +1,5 @@
 let pacMan;
+let pacManDirection = "left";
 
 function createPacMan() {
 
@@ -24,11 +25,18 @@ function movePacMan(event) {
 
         case "ArrowLeft":
 
+            pacMan.style.transform = "rotate(0deg)";
+            pacManDirection = "left";
+
             pacManPosition.x -= 10;
             pacMan.style.left = pacManPosition.x + "px";
+
             break;
 
         case "ArrowRight":
+
+            pacMan.style.transform = "rotate(180deg)";
+            pacManDirection = "right";
 
             pacManPosition.x += 10;
             pacMan.style.left = pacManPosition.x + "px";
@@ -36,11 +44,17 @@ function movePacMan(event) {
 
         case "ArrowUp":
 
+            pacMan.style.transform = "rotate(90deg)";
+            pacManDirection = "up";
+
             pacManPosition.y -= 10;
             pacMan.style.top = pacManPosition.y + "px";
             break;
 
         case "ArrowDown":
+
+            pacMan.style.transform = "rotate(-90deg)";
+            pacManDirection = "down";
 
             pacManPosition.y += 10;
             pacMan.style.top = pacManPosition.y + "px";
