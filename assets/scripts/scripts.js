@@ -1,33 +1,53 @@
-let pacManBody = document.createElement("div");
-pacManBody.textContent = " ";
-pacManBody.id = "pacManBody";
-document.body.appendChild(pacManBody);
+let pacMan;
 
-let position = {
+function createPacMan() {
 
-    "x": pacManBody.getBoundingClientRect().x,
-    "y": pacManBody.getBoundingClientRect().y
+    pacMan = document.createElement("img");
+    pacMan.src = "assets/images/pacMan1.png";
+    pacMan.id = "pacMan";
+    document.body.appendChild(pacMan);
+
+}
+
+createPacMan();
+
+let pacManPosition = {
+
+    "x": pacMan.getBoundingClientRect().x,
+    "y": pacMan.getBoundingClientRect().y
 
 };
 
-function movePlayer(event) {
+function movePacMan(event) {
 
     switch (event.key) {
 
         case "ArrowLeft":
 
-            position.x -= 10;
-            pacManBody.style.left = position.x + "px";
+            pacManPosition.x -= 10;
+            pacMan.style.left = pacManPosition.x + "px";
             break;
 
         case "ArrowRight":
 
-            position.x += 10;
-            pacManBody.style.left = position.x + "px";
+            pacManPosition.x += 10;
+            pacMan.style.left = pacManPosition.x + "px";
+            break;
+
+        case "ArrowUp":
+
+            pacManPosition.y -= 10;
+            pacMan.style.top = pacManPosition.y + "px";
+            break;
+
+        case "ArrowDown":
+
+            pacManPosition.y += 10;
+            pacMan.style.top = pacManPosition.y + "px";
             break;
 
     }
 
 }
 
-window.addEventListener("keydown", movePlayer);
+window.addEventListener("keydown", movePacMan);
