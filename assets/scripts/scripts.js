@@ -1,5 +1,5 @@
 let pacMan;
-let pacManDirection = "left";
+let key;
 
 function createPacMan() {
 
@@ -19,49 +19,61 @@ let pacManPosition = {
 
 };
 
-function movePacMan(event) {
+function movePacMan() {
 
-    switch (event.key) {
+    switch (key) {
 
         case "ArrowLeft":
 
-            pacMan.style.transform = "rotate(0deg)";
-            pacManDirection = "left";
-
-            pacManPosition.x -= 10;
+            pacManPosition.x -= 1;
             pacMan.style.left = pacManPosition.x + "px";
+
+            pacMan.style.transform = "rotate(0deg)";
 
             break;
 
         case "ArrowRight":
 
-            pacMan.style.transform = "rotate(180deg)";
-            pacManDirection = "right";
-
-            pacManPosition.x += 10;
+            pacManPosition.x += 1;
             pacMan.style.left = pacManPosition.x + "px";
+
+            pacMan.style.transform = "rotate(180deg)";
+
             break;
 
         case "ArrowUp":
 
-            pacMan.style.transform = "rotate(90deg)";
-            pacManDirection = "up";
-
-            pacManPosition.y -= 10;
+            pacManPosition.y -= 1;
             pacMan.style.top = pacManPosition.y + "px";
+
+            pacMan.style.transform = "rotate(90deg)";
+
             break;
 
         case "ArrowDown":
 
-            pacMan.style.transform = "rotate(-90deg)";
-            pacManDirection = "down";
-
-            pacManPosition.y += 10;
+            pacManPosition.y += 1;
             pacMan.style.top = pacManPosition.y + "px";
+
+            pacMan.style.transform = "rotate(-90deg)";
+
             break;
 
     }
 
+    setTimeout(movePacMan, 15);
+
 }
 
-window.addEventListener("keydown", movePacMan);
+movePacMan();
+
+window.addEventListener("keydown", function(event) {
+
+    if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
+
+        key = "";
+        key = event.key;
+
+    }
+
+});
