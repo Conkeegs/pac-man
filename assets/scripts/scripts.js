@@ -1,16 +1,19 @@
 let pacMan;
-let key;
+let key = [];
 
-function createPacMan() {
+function createPacMan(src, positionX, positionY, transform) {
 
     pacMan = document.createElement("img");
-    pacMan.src = "assets/images/pacMan1.png";
+    pacMan.src = src;
     pacMan.id = "pacMan";
+    pacMan.style.transform = transform;
+    pacMan.style.left = positionX + "px";
+    pacMan.style.top = positionY + "px";
     document.body.appendChild(pacMan);
 
 }
 
-createPacMan();
+createPacMan("assets/images/pacMan1.png", 0, 0);
 
 let pacManPosition = {
 
@@ -21,43 +24,32 @@ let pacManPosition = {
 
 function movePacMan() {
 
-    switch (key) {
+    if (key["ArrowUp"]) {
 
-        case "ArrowLeft":
+        pacManPosition.y -= 1;
+        pacMan.style.top = pacManPosition.y + "px";
+        pacMan.style.transform = "rotate(90deg)";
 
-            pacManPosition.x -= 1;
-            pacMan.style.left = pacManPosition.x + "px";
+    }
+    else if (key["ArrowDown"]) {
 
-            pacMan.style.transform = "rotate(0deg)";
+        pacManPosition.y += 1;
+        pacMan.style.top = pacManPosition.y + "px";
+        pacMan.style.transform = "rotate(-90deg)";
 
-            break;
+    }
+    else if (key["ArrowRight"]) {
 
-        case "ArrowRight":
+        pacManPosition.x += 1;
+        pacMan.style.left = pacManPosition.x + "px";
+        pacMan.style.transform = "rotate(180deg)";
 
-            pacManPosition.x += 1;
-            pacMan.style.left = pacManPosition.x + "px";
+    }
+    else if (key["ArrowLeft"]) {
 
-            pacMan.style.transform = "rotate(180deg)";
-
-            break;
-
-        case "ArrowUp":
-
-            pacManPosition.y -= 1;
-            pacMan.style.top = pacManPosition.y + "px";
-
-            pacMan.style.transform = "rotate(90deg)";
-
-            break;
-
-        case "ArrowDown":
-
-            pacManPosition.y += 1;
-            pacMan.style.top = pacManPosition.y + "px";
-
-            pacMan.style.transform = "rotate(-90deg)";
-
-            break;
+        pacManPosition.x -= 1;
+        pacMan.style.left = pacManPosition.x + "px";
+        pacMan.style.transform = "rotate(0deg)";
 
     }
 
@@ -67,12 +59,62 @@ function movePacMan() {
 
 movePacMan();
 
+function animatePacMan() {
+
+    let counter = 0;
+
+    if (key["ArrowUp"] || key["ArrowDown"] || key["ArrowRight"] || key["ArrowLeft"]) {
+
+        setTimeout(function() {
+
+            document.body.removeChild(pacMan);
+            createPacMan("assets/images/pacMan2.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
+            counter++;
+            console.log(counter);
+
+            setTimeout(function() {
+
+                document.body.removeChild(pacMan);
+                createPacMan("assets/images/pacMan3.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
+                counter++;
+                console.log(counter);
+
+                setTimeout(function() {
+
+                    document.body.removeChild(pacMan);
+                    createPacMan("assets/images/pacMan1.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
+                    counter++;
+                    console.log(counter);
+        
+                }, 50);
+    
+            }, 50);
+
+        }, 50);
+
+    }
+
+    setTimeout(animatePacMan, 150);
+
+}
+
+animatePacMan();
+
 window.addEventListener("keydown", function(event) {
 
     if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
 
-        key = "";
-        key = event.key;
+        key[event.key] = true;
+
+    }
+
+});
+
+window.addEventListener("keyup", function(event) {
+
+    if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
+
+        key[event.key] = false;
 
     }
 
