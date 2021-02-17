@@ -1,7 +1,19 @@
+/**
+ * Pac-Man Game
+ * @author Conor Keegan
+ */
+
 let pacMan;
 let keyPressed;
 let keys = [];
 
+/**
+ * Creates a new Pac-Man <img> element and appends it to the document's body.
+ * @param {string} src The path to Pac-Man's png image file.
+ * @param {number} positionX Pac-Man's x position in the document's body.
+ * @param {number} positionY Pac-Man's y position in the document's body.
+ * @param {string} transform Pac-Man's rotation in degrees.
+ */
 function createPacMan(src, positionX, positionY, transform) {
 
     pacMan = document.createElement("img");
@@ -69,8 +81,6 @@ movePacMan();
 
 function animatePacMan() {
 
-    let counter = 0;
-
     if (keys["ArrowUp"] || keys["ArrowDown"] || keys["ArrowRight"] || keys["ArrowLeft"]) {
 
         setTimeout(function() {
@@ -113,13 +123,3 @@ window.addEventListener("keydown", function(event) {
     }
 
 });
-
-// window.addEventListener("keyup", function(event) {
-
-//     if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
-
-//         key[event.key] = false;
-
-//     }
-
-// });
