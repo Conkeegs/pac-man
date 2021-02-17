@@ -1,5 +1,6 @@
 let pacMan;
-let key = [];
+let keyPressed;
+let keys = [];
 
 function createPacMan(src, positionX, positionY, transform) {
 
@@ -24,32 +25,39 @@ let pacManPosition = {
 
 function movePacMan() {
 
-    if (key["ArrowUp"]) {
+    switch (keyPressed) {
 
-        pacManPosition.y -= 1;
-        pacMan.style.top = pacManPosition.y + "px";
-        pacMan.style.transform = "rotate(90deg)";
+        case "ArrowUp":
 
-    }
-    else if (key["ArrowDown"]) {
+            pacManPosition.y -= 1;
+            pacMan.style.top = pacManPosition.y + "px";
+            pacMan.style.transform = "rotate(90deg)";
 
-        pacManPosition.y += 1;
-        pacMan.style.top = pacManPosition.y + "px";
-        pacMan.style.transform = "rotate(-90deg)";
+            break;
 
-    }
-    else if (key["ArrowRight"]) {
+        case "ArrowDown":
 
-        pacManPosition.x += 1;
-        pacMan.style.left = pacManPosition.x + "px";
-        pacMan.style.transform = "rotate(180deg)";
+            pacManPosition.y += 1;
+            pacMan.style.top = pacManPosition.y + "px";
+            pacMan.style.transform = "rotate(-90deg)";
 
-    }
-    else if (key["ArrowLeft"]) {
+            break;
 
-        pacManPosition.x -= 1;
-        pacMan.style.left = pacManPosition.x + "px";
-        pacMan.style.transform = "rotate(0deg)";
+        case "ArrowRight":
+
+            pacManPosition.x += 1;
+            pacMan.style.left = pacManPosition.x + "px";
+            pacMan.style.transform = "rotate(180deg)";
+
+            break;
+
+        case "ArrowLeft":
+
+            pacManPosition.x -= 1;
+            pacMan.style.left = pacManPosition.x + "px";
+            pacMan.style.transform = "rotate(0deg)";
+
+            break;
 
     }
 
@@ -63,28 +71,22 @@ function animatePacMan() {
 
     let counter = 0;
 
-    if (key["ArrowUp"] || key["ArrowDown"] || key["ArrowRight"] || key["ArrowLeft"]) {
+    if (keys["ArrowUp"] || keys["ArrowDown"] || keys["ArrowRight"] || keys["ArrowLeft"]) {
 
         setTimeout(function() {
 
             document.body.removeChild(pacMan);
             createPacMan("assets/images/pacMan2.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
-            counter++;
-            console.log(counter);
 
             setTimeout(function() {
 
                 document.body.removeChild(pacMan);
                 createPacMan("assets/images/pacMan3.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
-                counter++;
-                console.log(counter);
 
                 setTimeout(function() {
 
                     document.body.removeChild(pacMan);
                     createPacMan("assets/images/pacMan1.png", pacManPosition.x, pacManPosition.y, pacMan.style.transform);
-                    counter++;
-                    console.log(counter);
         
                 }, 50);
     
@@ -104,18 +106,20 @@ window.addEventListener("keydown", function(event) {
 
     if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
 
-        key[event.key] = true;
+        keyPressed = "";
+        keyPressed = event.key;
+        keys[event.key] = true;
 
     }
 
 });
 
-window.addEventListener("keyup", function(event) {
+// window.addEventListener("keyup", function(event) {
 
-    if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
+//     if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
 
-        key[event.key] = false;
+//         key[event.key] = false;
 
-    }
+//     }
 
-});
+// });
