@@ -1,6 +1,7 @@
 let pacMan;
 let keyPressed;
 let keys = [];
+let dots = [];
 
 /**
  * Creates a new Pac-Man <img> element and appends it to the document's body.
@@ -68,7 +69,39 @@ function movePacMan() {
 
 }
 
-setInterval(movePacMan, 15);
+let movePacManCheck = setInterval(movePacMan, 15);
+
+function createDots() {
+
+    let dot = document.createElement("img");
+    dot.src = "assets/images/dot.png";
+    dot.className = "dot";
+    dot.style.left = "50px";
+    dot.style.top = "0";
+    document.body.appendChild(dot);
+    dots.push(dot);
+
+}
+
+createDots();
+
+function eat() {
+
+    dots.forEach(function(dot) {
+
+        if (pacMan.style.left == dot.style.left && pacMan.style.top == dot.style.top) {
+
+            console.log("removed");
+            document.body.removeChild(dot);
+            clearInterval(eatCheck);
+
+        }
+
+    });
+
+}
+
+let eatCheck = setInterval(eat, 20);
 
 /**
  * Adds an event listener that tests for keydown event and resets the keyPressed
@@ -78,7 +111,7 @@ window.addEventListener("keydown", function(event) {
 
     if (event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowRight" || event.key == "ArrowLeft") {
 
-        pacMan.src = "assets/images/pacMan.gif";
+        pacMan.src = "assets/images/pacman.gif";
         keyPressed = "";
         keyPressed = event.key;
         keys[event.key] = true;
