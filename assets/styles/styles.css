@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+}
+
+#game {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+
+#game-board {
+    width: 624px;
+    height: 688px;
+}
+
+
+
+
+
+/* #pacMan {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    height: 15px;
+    width: 15px;
+    position: absolute;
+}
+
+.dot {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    height: 15px;
+    width: 15px;
+    position: absolute;
+    display: inline-block;
+} */
