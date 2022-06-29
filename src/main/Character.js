@@ -7,11 +7,9 @@
 
 class Character {
     constructor(source, name) {
-        let characterDiv = document.createElement('div');
+        let characterDiv = create('div', 'game-character-' + name);
 
-        characterDiv.src = source;
-        characterDiv.id = 'game-character-' + name;
-        // place character on board at x and y
+        characterDiv.style.backgroundImage = source;
 
         this.source = source;
         this.name = name;

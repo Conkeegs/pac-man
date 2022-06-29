@@ -11,13 +11,206 @@ body {
 }
 
 #game-board {
-    width: 624px;
-    height: 688px;
+    width: 474px;
+    height: 409px;
+    position: relative;
+}
+
+.main-square {
+    background-color: #070200;
+    width: 474px;
+    height: 128px;
+    position: absolute;
+    border: 2px solid #2e27be;
+    /* border-radius: 6px; */
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.main-square::before {
+    content: '';
+    background-color: #070200;
+    display: block;
+    border: 2px solid #2e27be;
+    /* border-radius: 6px; */
+    width: 464px;
+    height: 118px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#main-square-top {
+    top: 0;
+}
+
+#main-square-bottom {
+    bottom: 0;
+}
+
+#main-square-cover {
+    background-color: #070200;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    height: 160px;
+    width: 328px;
+}
+
+.teleport-wall {
+    background-color: #070200;
+    height: 58px;
+    width: 71px;
+    position: absolute;
+    border: 2px solid #2e27be;
+    /* border-radius: 6px; */
+}
+
+.teleport-wall::before {
+    content: '';
+    display: block;
+    background-color: #070200;
+    height: 50px;
+    width: 61px;
+    border: 2px solid #2e27be;
+    /* border-radius: 6px; */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#teleport-wall-1 {
+    left: 0;
+    top: 130px;
+    border-left: none;
+}
+
+#teleport-wall-1::before {
+    border-left: none;
+    border-top: none;
+}
+
+#teleport-wall-2 {
+    right: 0;
+    top: 130px;
+    border-right: none;
+}
+
+#teleport-wall-2::before {
+    border-right: none;
+    border-top: none;
+}
+
+#teleport-wall-3 {
+    left: 0;
+    top: calc(100% - 192px);
+    border-left: none;
+}
+
+#teleport-wall-3::before {
+    border-left: none;
+    border-bottom: none;
+}
+
+#teleport-wall-4 {
+    right: 0;
+    top: calc(100% - 192px);
+    border-right: none;
+}
+
+#teleport-wall-4::before {
+    border-right: none;
+    border-bottom: none;
+}
+
+.inner-wall {
+    background-color: #070200;
+    position: absolute;
+    border: 2px solid #2e27be;
+    /* border-radius: 6px; */
+}
+
+.inner-wall-square {
+    height: 25px;
+    width: 71px;
+}
+
+.inner-wall-tube {
+    height: 10px;
+}
+
+#inner-wall-1 {
+    top: 32px;
+    left: 30px;
+}
+
+#inner-wall-2 {
+    top: 32px;
+    left: 130px;
+}
+
+#inner-wall-3 {
+    width: 52px;
+    top: 26px;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(90deg);
+    /* border-radius: 0 6px 6px 0; */
+}
+
+#inner-wall-4 {
+    top: 32px;
+    left: 269px;
+}
+
+#inner-wall-5 {
+    top: 32px;
+    left: 369px;
+}
+
+#inner-wall-6 {
+    top: 86px;
+    left: 30px;
+    width: 71px;
+}
+
+#inner-wall-7 {
+    top: 133px;
+    left: 84px;
+    width: 102px;
+    transform: rotate(90deg);
 }
 
 
 
+#middle {
+    position: absolute;
+    height: 1px;
+    width: 100%;
+    background-color: red;
+    top: 50%;
+    transform: translate(0, -50%);
+}
 
+#measure-up {
+    position: absolute;
+    height: 60px;
+    width: 1px;
+    background-color: red;
+    top: 30px;
+    left: 128px;
+}
+
+#measure-down {
+    position: absolute;
+    height: 1px;
+    width: 25px;
+    background-color: red;
+    top: 90px;
+    left: 5px;
+}
 
 /* #pacMan {
     border: 0;
