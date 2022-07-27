@@ -20,12 +20,12 @@ class Board {
     }
 
     #createBoard() {
-        this.boardDiv.appendChild(create('div', 'main-square-top', 'main-square'));
-        this.boardDiv.appendChild(create('div', 'main-square-bottom', 'main-square'));
         this.boardDiv.appendChild(create('div', 'teleport-wall-1', 'teleport-wall'));
         this.boardDiv.appendChild(create('div', 'teleport-wall-2', 'teleport-wall'));
         this.boardDiv.appendChild(create('div', 'teleport-wall-3', 'teleport-wall'));
         this.boardDiv.appendChild(create('div', 'teleport-wall-4', 'teleport-wall'));
+        this.boardDiv.appendChild(create('div', 'main-square-top', 'main-square'));
+        this.boardDiv.appendChild(create('div', 'main-square-bottom', 'main-square'));
         this.boardDiv.appendChild(create('div', 'main-square-cover'));
         this.boardDiv.appendChild(create('div', 'inner-wall-1', 'inner-wall inner-wall-square'));
         this.boardDiv.appendChild(create('div', 'inner-wall-2', 'inner-wall inner-wall-square'));
@@ -34,6 +34,9 @@ class Board {
         this.boardDiv.appendChild(create('div', 'inner-wall-5', 'inner-wall inner-wall-square'));
         this.boardDiv.appendChild(create('div', 'inner-wall-6', 'inner-wall inner-wall-tube'));
         this.boardDiv.appendChild(create('div', 'inner-wall-7', 'inner-wall inner-wall-tube'));
+        this.boardDiv.appendChild(create('div', 'inner-wall-8', 'inner-wall inner-wall-tube'));
+        this.boardDiv.appendChild(create('div', 'inner-wall-9', 'inner-wall inner-wall-tube'));
+        this.boardDiv.appendChild(create('div', 'inner-wall-10', 'inner-wall inner-wall-tube'));
 
         this.boardDiv.appendChild(create('div', 'middle')); // <------------------------------- GET RID OF THIS
         this.boardDiv.appendChild(create('div', 'measure-up')); // <------------------------------- GET RID OF THIS
