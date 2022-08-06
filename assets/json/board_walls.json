@@ -2,47 +2,49 @@
     {
         "id": "main-square-top",
         "classes": "main-square",
-        "tileOffsets": {
+        "styles": {
             "width": 28,
             "height": 10,
-            "top": 3,
-            "left": null
+            "top": 3
         }
     },
     {
         "id": "main-square-top-inner",
         "classes": "main-square",
-        "tileOffsets": {
+        "styles": {
             "width": 27,
             "height": 9,
             "top": 3.5,
-            "left": 0.5
+            "left": 0.5,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "main-square-bottom",
         "classes": "main-square",
-        "tileOffsets": {
+        "styles": {
             "width": 28,
             "height": 12,
-            "top": 22,
-            "left": null
+            "top": 22
         }
     },
     {
         "id": "main-square-bottom-inner",
         "classes": "main-square",
-        "tileOffsets": {
+        "styles": {
             "width": 27,
             "height": 11,
             "top": 22.5,
-            "left": 0.5
+            "left": 0.5,
+            "borderTopRightRadius": 0,
+            "borderTopLeftRadius": 0
         }
     },
     {
         "id": "middle-cover",
         "classes": "",
-        "tileOffsets": {
+        "styles": {
             "width": 17,
             "height": 11,
             "top": 12,
@@ -52,87 +54,107 @@
     {
         "id": "wall-teleport-1",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5.5,
             "height": 4,
             "top": 12.5,
-            "left": null
+            "borderTopRightRadius": 0,
+            "borderBottomLeftRadius": 0,
+            "borderTopLeftRadius": 0
         }
     },
     {
         "id": "wall-teleport-1-inner",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5,
             "height": 3,
             "top": 13,
-            "left": null
+            "borderTopRightRadius": 0,
+            "borderBottomLeftRadius": 0,
+            "borderTopLeftRadius": 0
         }
     },
     {
         "id": "wall-teleport-2",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5.5,
             "height": 4,
             "top": 12.5,
-            "left": 22.5
+            "left": 22.5,
+            "borderTopLeftRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-teleport-2-inner",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5,
             "height": 3,
             "top": 13,
-            "left": 23
+            "left": 23,
+            "borderTopLeftRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-teleport-3",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5.5,
             "height": 4,
             "top": 18.5,
-            "left": null
+            "borderBottomRightRadius": 0,
+            "borderTopLeftRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-teleport-3-inner",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5,
             "height": 3,
             "top": 19,
-            "left": null
+            "borderBottomRightRadius": 0,
+            "borderTopLeftRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-teleport-4",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5.5,
             "height": 4,
             "top": 18.5,
-            "left": 22.5
+            "left": 22.5,
+            "borderBottomLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0
         }
     },
     {
         "id": "wall-teleport-4-inner",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 5,
             "height": 3,
             "top": 19,
-            "left": 23
+            "left": 23,
+            "borderBottomLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0
         }
     },
     {
         "id": "wall-1",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 2,
             "top": 5.5,
@@ -142,7 +164,7 @@
     {
         "id": "wall-2",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 4,
             "height": 2,
             "top": 5.5,
@@ -152,17 +174,19 @@
     {
         "id": "wall-3",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 4,
             "top": 3.5,
-            "left": 13.5
+            "left": 13.5,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-4",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 4,
             "height": 2,
             "top": 5.5,
@@ -172,7 +196,7 @@
     {
         "id": "wall-5",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 2,
             "top": 5.5,
@@ -182,7 +206,7 @@
     {
         "id": "wall-6",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 9.5,
@@ -192,7 +216,7 @@
     {
         "id": "wall-7",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 7,
             "top": 9.5,
@@ -202,17 +226,19 @@
     {
         "id": "wall-8",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 12.5,
-            "left": 8.5
+            "left": 8.5,
+            "borderTopLeftRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-9",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 7,
             "height": 1,
             "top": 9.5,
@@ -222,27 +248,33 @@
     {
         "id": "wall-10",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 10.5,
-            "left": 13.5
+            "left": 13.5,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderTop": "none"
         }
     },
     {
         "id": "wall-11",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 12.5,
-            "left": 16.5
+            "left": 16.5,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderRight": "none"
         }
     },
     {
         "id": "wall-12",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 7,
             "top": 9.5,
@@ -252,7 +284,7 @@
     {
         "id": "wall-13",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 9.5,
@@ -262,37 +294,49 @@
     {
         "id": "ghost-spawn",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 7,
             "height": 4,
             "top": 15.5,
-            "left": 10.5
+            "left": 10.5,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "ghost-spawn-inner",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 6,
             "height": 3,
             "top": 16,
-            "left": 11
+            "left": 11,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "ghost-spawn-door",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 2,
             "height": 0.5,
             "top": 15.5,
-            "left": 13
+            "left": 13,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-14",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 4,
             "top": 18.5,
@@ -302,7 +346,7 @@
     {
         "id": "wall-15",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 7,
             "height": 1,
             "top": 21.5,
@@ -312,17 +356,20 @@
     {
         "id": "wall-16",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 22.5,
-            "left": 13.5
+            "left": 13.5,
+            "borderTop": "none",
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-17",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 4,
             "top": 18.5,
@@ -332,37 +379,44 @@
     {
         "id": "wall-18",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 2,
             "height": 1,
             "top": 27.5,
-            "left": 0.5
+            "left": 0.5,
+            "borderLeft": "none",
+            "borderTopLeftRadius": 0,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-19",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 24.5,
-            "left": 2.5
+            "left": 2.5,
+            "borderBottomRightRadius": 0
         }
     },
     {
         "id": "wall-20",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 25.5,
-            "left": 4.5
+            "left": 4.5,
+            "borderTop": "none",
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-21",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 4,
             "height": 1,
             "top": 24.5,
@@ -372,7 +426,7 @@
     {
         "id": "wall-22",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 4,
             "height": 1,
             "top": 24.5,
@@ -382,37 +436,44 @@
     {
         "id": "wall-23",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 25.5,
-            "left": 22.5
+            "left": 22.5,
+            "borderTop": "none",
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-24",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 3,
             "height": 1,
             "top": 24.5,
-            "left": 22.5
+            "left": 22.5,
+            "borderBottomLeftRadius": 0
         }
     },
     {
         "id": "wall-25",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 2,
             "height": 1,
             "top": 27.5,
-            "left": 25.5
+            "left": 25.5,
+            "borderRight": "none",
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0
         }
     },
     {
         "id": "wall-26",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 9,
             "height": 1,
             "top": 30.5,
@@ -422,17 +483,20 @@
     {
         "id": "wall-27",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 27.5,
-            "left": 7.5
+            "left": 7.5,
+            "borderBottom": "none",
+            "borderBottomLeftRadius": 0,
+            "borderBottomRightRadius": 0
         }
     },
     {
         "id": "wall-28",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 7,
             "height": 1,
             "top": 27.5,
@@ -442,17 +506,20 @@
     {
         "id": "wall-29",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 28.5,
-            "left": 13.5
+            "left": 13.5,
+            "borderTop": "none",
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0
         }
     },
     {
         "id": "wall-30",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 9,
             "height": 1,
             "top": 30.5,
@@ -462,11 +529,14 @@
     {
         "id": "wall-31",
         "classes": "wall",
-        "tileOffsets": {
+        "styles": {
             "width": 1,
             "height": 3,
             "top": 27.5,
-            "left": 19.5
+            "left": 19.5,
+            "borderBottom": "none",
+            "borderBottomLeftRadius": 0,
+            "borderBottomRightRadius": 0
         }
     }
 ]

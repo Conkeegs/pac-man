@@ -11,9 +11,7 @@
     align-content: center;
 }
 
-#game-board {
-    width: 672px;
-    height: 864px;
+#board {
     position: relative;
 }
 
@@ -87,6 +85,11 @@
 #ghost-spawn-door {
     background-color: #f3cbf5;
     position: absolute;
+    border-radius: 0;
+}
+
+#ghost-spawn, #ghost-spawn-inner {
+    border-radius: 0;
 }
 
 .game-object {
@@ -97,22 +100,27 @@
     text-align: center;
 }
 
-.game-text {
-    position: absolute;
+#pac-man {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
-
+.path-line {
+    position: absolute;
+    background-color: white;
+}
 
 
 
 .grid-vert, .grid-horiz {
     position: absolute;
-    background-color: white;
+    background-color: tomato;
     opacity: 0.3;
 }
 
 .grid-vert:hover, .grid-horiz:hover {
-    opacity: .7;
+    opacity: 1;
 }
 
 .grid-vert {

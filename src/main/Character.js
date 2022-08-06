@@ -1,14 +1,17 @@
 'use strict';
 
 class Character extends GameObject {
-    constructor(source, name) {
+    constructor(name, source) {
         super(name);
 
-        let characterDiv = create('div', 'game-character-' + name);
-
-        characterDiv.css({ backgroundImage: source });
+        this.getElement().css({
+            width: px(TILESIZE + (TILESIZE * 0.5)),
+            height: px(TILESIZE + (TILESIZE * 0.5)),
+            backgroundImage: `url(${source})`
+        });
 
         this.source = source;
-        this.characterDiv = characterDiv;
+        this.width = TILESIZE + (TILESIZE * 0.5);
+        this.height = TILESIZE + (TILESIZE * 0.5);
     }
 }

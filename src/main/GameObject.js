@@ -4,28 +4,18 @@ class GameObject {
     constructor(name) {
         if (!name) {
             DebugWindow.error('GameObject.js', 'constructor', 'GameObject must have a name.');
+        } else if (gameObjects.includes(name)) {
+            DebugWindow.error('GameObject.js', 'constructor', `A GameObject with the name '${name}' already exists.`);
         }
 
-        let [boardWidth, boardHeight] = get('game-board').trueDimensions();
-        let width = boardWidth / COLUMNS;
-        let height = boardHeight / ROWS;
+        gameObjects.push(name);
 
-        this.element = create('div', DEFAULT, 'game-object');
-        this.element.id = name;
-
-        this.element.css({
-            width: px(width),
-            height: px(height)
-        });
-
-        if (this.element.css('width') !== this.element.css('height')) {
-            DebugWindow.error('GameObject.js', 'constructor', 'GameObject element width and height do not match.');
-        }
-
+        this.element = create('div', name, 'game-object');
         this.name = name;
-        this.width = width;
-        this.height = height;
-        this.type = this.element.classList[0];
+    }
+
+    getElement() {
+        return this.element;
     }
 
     getWidth() {
@@ -34,13 +24,5 @@ class GameObject {
 
     getHeight() {
         return this.height;
-    }
-
-    getElement() {
-        return this.element;
-    }
-
-    getType() {
-        return this.type;
     }
 }

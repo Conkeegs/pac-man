@@ -41,7 +41,11 @@ function get(selector) {
  * @returns
  */
 function px(pixels) {
-    return pixels + 'px';
+    if (pixels !== null && !isNaN(Number(pixels))) {
+        return pixels + 'px';
+    } else {
+        return null;
+    }
 }
 
 /**
@@ -58,6 +62,20 @@ function isObject(any) {
 }
 
 /**
+ *s
+ * @param {Any} any
+ * @param {Any} def
+ * @returns
+ */
+function maybe(any, def) {
+    if (typeof any !== 'undefined' && any !== null) {
+        return any;
+    } else {
+        return def;
+    }
+}
+
+/**
  * 
  * @param {Object} options
  * @returns
@@ -65,7 +83,7 @@ function isObject(any) {
 HTMLElement.prototype.css = function(style) {
     if (isObject(style)) {
         for (let [key, value] of Object.entries(style)) {
-            if (value) {
+            if (value !== null) {
                 this.style[key] = value;
             }
         }
@@ -90,11 +108,15 @@ HTMLElement.prototype.trueDimensions = function() {
 }
 
 HTMLCollection.prototype.css = function(style) {
-    for (let item of this) {
-        if (item instanceof HTMLElement) {
-            item.css(style);
-        } else {
-            DebugWindow.error('Helpers.js', 'css()', 'Item in HTMLCollection not instance of HTMLElement');
+    if (isObject(style)) {
+        for (let item of this) {
+            if (item instanceof HTMLElement) {
+                item.css(style);
+            } else {
+                DebugWindow.error('Helpers.js', 'css()', 'Item in HTMLCollection not instance of HTMLElement');
+            }
         }
+    } else {
+        return null;
     }
 };

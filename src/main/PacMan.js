@@ -1,7 +1,7 @@
 'use strict';
 
 class PacMan extends Character {
-    constructor(source, name, width = 20, height = 20) {
-        super(source, name, width, height);
+    constructor(name, source) {
+        super(name, source);
     }
 }

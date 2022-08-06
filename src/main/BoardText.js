@@ -1,17 +1,26 @@
 'use strict';
 
 class BoardText extends GameObject {
-    constructor(text, color = null, fontsize = 24, name) {
+    constructor(name, text, fontsize = TILESIZE, color = 'white') {
         super(name);
 
-        this.element.textContent = text;
+        if (fontsize > 24) {
+            DebugWindow.error('BoardText.js', 'constructor', `fontsize cannot be greater than ${TILESIZE}.`);
+        }
 
-        this.element.css({
-            fontSize: px(fontsize ? fontsize : 24),
-            color: color ? color : 'white',
+        this.getElement().textContent = text;
+
+        this.getElement().css({
+            width: px(TILESIZE),
+            height: px(TILESIZE),
+            fontSize: px(fontsize),
+            color: color,
         });
 
         this.text = text;
+        this.fontSize = fontsize;
         this.color = color;
+        this.width = TILESIZE;
+        this.height = TILESIZE;
     }
 }

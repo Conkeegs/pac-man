@@ -5,6 +5,7 @@ class DebugWindow {
         if (debug) {
             console.error(`Error in ${filename} -- ${method}(): ${reason}`);
 
+            get('game').innerHTML = null;
             stop();
         }
     }
