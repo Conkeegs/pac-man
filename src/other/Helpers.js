@@ -62,7 +62,7 @@ function isObject(any) {
 }
 
 /**
- *s
+ *
  * @param {Any} any
  * @param {Any} def
  * @returns
@@ -73,6 +73,29 @@ function maybe(any, def) {
     } else {
         return def;
     }
+}
+
+/**
+ *
+ * @param {Any} any
+ * @param {Any} def
+ * @returns
+ */
+function truthy(any, def) {
+    if (any) {
+        return any;
+    } else {
+        return def;
+    }
+}
+
+/**
+ * 
+ * @param  {...any} any 
+ */
+function die(...any) {
+    console.log(...any);
+    throw new Error('Stopping...');
 }
 
 /**

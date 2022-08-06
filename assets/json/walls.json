@@ -255,7 +255,7 @@
             "left": 13.5,
             "borderTopLeftRadius": 0,
             "borderTopRightRadius": 0,
-            "borderTop": "none"
+            "borderTop": 0
         }
     },
     {
@@ -268,7 +268,7 @@
             "left": 16.5,
             "borderTopRightRadius": 0,
             "borderBottomRightRadius": 0,
-            "borderRight": "none"
+            "borderRight": 0
         }
     },
     {
@@ -361,7 +361,7 @@
             "height": 3,
             "top": 22.5,
             "left": 13.5,
-            "borderTop": "none",
+            "borderTop": 0,
             "borderTopLeftRadius": 0,
             "borderTopRightRadius": 0
         }
@@ -384,7 +384,7 @@
             "height": 1,
             "top": 27.5,
             "left": 0.5,
-            "borderLeft": "none",
+            "borderLeft": 0,
             "borderTopLeftRadius": 0,
             "borderBottomLeftRadius": 0
         }
@@ -408,7 +408,7 @@
             "height": 3,
             "top": 25.5,
             "left": 4.5,
-            "borderTop": "none",
+            "borderTop": 0,
             "borderTopLeftRadius": 0,
             "borderTopRightRadius": 0
         }
@@ -441,7 +441,7 @@
             "height": 3,
             "top": 25.5,
             "left": 22.5,
-            "borderTop": "none",
+            "borderTop": 0,
             "borderTopLeftRadius": 0,
             "borderTopRightRadius": 0
         }
@@ -465,7 +465,7 @@
             "height": 1,
             "top": 27.5,
             "left": 25.5,
-            "borderRight": "none",
+            "borderRight": 0,
             "borderTopRightRadius": 0,
             "borderBottomRightRadius": 0
         }
@@ -488,7 +488,7 @@
             "height": 3,
             "top": 27.5,
             "left": 7.5,
-            "borderBottom": "none",
+            "borderBottom": 0,
             "borderBottomLeftRadius": 0,
             "borderBottomRightRadius": 0
         }
@@ -511,7 +511,7 @@
             "height": 3,
             "top": 28.5,
             "left": 13.5,
-            "borderTop": "none",
+            "borderTop": 0,
             "borderTopLeftRadius": 0,
             "borderTopRightRadius": 0
         }
@@ -534,7 +534,7 @@
             "height": 3,
             "top": 27.5,
             "left": 19.5,
-            "borderBottom": "none",
+            "borderBottom": 0,
             "borderBottomLeftRadius": 0,
             "borderBottomRightRadius": 0
         }

@@ -2,6 +2,12 @@
 
 class Board {
     constructor(color = '#070200') {
+        if (WIDTH % COLUMNS !== 0) {
+            DebugWindow.error('Board.js', 'constructor', 'Board width not divisible by 28.');
+        } else if (HEIGHT % ROWS !== 0) {
+            DebugWindow.error('Board.js', 'constructor', 'Board height not divisible by 36.');
+        }
+
         this.boardCreated = false;
 
         this.boardDiv = create('div', 'board').css({
@@ -10,12 +16,6 @@ class Board {
             backgroundColor: color
         });
 
-        if (WIDTH % COLUMNS !== 0) {
-            DebugWindow.error('Board.js', 'constructor', 'Board width not divisible by 28.');
-        } else if (HEIGHT % ROWS !== 0) {
-            DebugWindow.error('Board.js', 'constructor', 'Board height not divisible by 36.');
-        }
-
         if (!get('game')) {
             DebugWindow.error('Board.js', 'constructor', 'No #game element found.');
         } else {
@@ -23,7 +23,7 @@ class Board {
             get('game').appendChild(this.boardDiv);
         }
 
-        this.fetchBoardData('assets/json/board_walls.json').then((boardData) => {
+        this.fetchBoardData('assets/json/walls.json').then((boardData) => {
             for (let element of boardData) {
                 this.boardDiv.appendChild(create('div', element.id, element.classes).css({
                     width: px(TILESIZE * element.styles.width),
@@ -33,11 +33,7 @@ class Board {
                     borderTopLeftRadius: px(maybe(element.styles.borderTopLeftRadius, TILESIZE * 0.5)),
                     borderTopRightRadius: px(maybe(element.styles.borderTopRightRadius, TILESIZE * 0.5)),
                     borderBottomRightRadius: px(maybe(element.styles.borderBottomRightRadius, TILESIZE * 0.5)),
-                    borderBottomLeftRadius: px(maybe(element.styles.borderBottomLeftRadius, TILESIZE * 0.5)),
-                    borderTop: element.styles.borderTop == 'none' ? 'none' : null,
-                    borderRight: element.styles.borderRight == 'none' ? 'none' : null,
-                    borderBottom: element.styles.borderBottom == 'none' ? 'none' : null,
-                    borderLeft: element.styles.borderLeft == 'none' ? 'none' : null
+                    borderBottomLeftRadius: px(maybe(element.styles.borderBottomLeftRadius, TILESIZE * 0.5))
                 }));
             }
 
@@ -58,11 +54,11 @@ class Board {
         });
     }
 
-    centerX(tileX) {
+    offsetLeft(tileX) {
         return (TILESIZE * tileX) - (TILESIZE * 0.5);
     }
 
-    centerY(tileY) {
+    offsetTop(tileY) {
         return (TILESIZE * ((ROWS - tileY) + 1)) - (TILESIZE * 0.5);
     }
 
@@ -80,24 +76,24 @@ class Board {
         });
     }
 
-    placeGameObject(gameObject, offsetX, offsetY) {
+    placeGameObject(gameObject, tileX, tileY) {
         if (!gameObject instanceof GameObject) {
             DebugWindow.error('Board.js', 'placeGameObject', 'gameObject is not an actual instance of GameObject.');
         }
 
-        if (offsetX > 28) {
-            DebugWindow.error('Board.js', 'placeGameObject', 'offsetX value is above 28.');
-        } else if (offsetX < 0) {
-            DebugWindow.error('Board.js', 'placeGameObject', 'offsetX value is below 0.');
-        } else if (offsetY > 36) {
-            DebugWindow.error('Board.js', 'placeGameObject', 'offsetY value is above 36.');
-        } else if (offsetY < 0) {
-            DebugWindow.error('Board.js', 'placeGameObject', 'offsetY value is below 0.');
+        if (tileX > 28) {
+            DebugWindow.error('Board.js', 'placeGameObject', 'tileX value is above 28.');
+        } else if (tileX < 0) {
+            DebugWindow.error('Board.js', 'placeGameObject', 'tileX value is below 0.');
+        } else if (tileY > 36) {
+            DebugWindow.error('Board.js', 'placeGameObject', 'tileY value is above 36.');
+        } else if (tileY < 0) {
+            DebugWindow.error('Board.js', 'placeGameObject', 'tileY value is below 0.');
         }
 
         this.boardDiv.appendChild(gameObject.getElement().css({
-            left: px(TILESIZE * offsetX - gameObject.getWidth()),
-            bottom: px(TILESIZE * offsetY - gameObject.getHeight())
+            left: px(TILESIZE * tileX - gameObject.getWidth()),
+            bottom: px(TILESIZE * tileY - gameObject.getHeight())
         }));
     }
 
@@ -136,19 +132,19 @@ class Board {
 
             for (let [index, position] of Object.entries(boardData.nodes)) {
                 this.placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
-                nodePositions.push([this.centerX(position.x), this.centerY(position.y)]);
+                nodePositions.push([this.offsetLeft(position.x), this.offsetTop(position.y)]);
             }
 
             for (let [index, line] of Object.entries(boardData.lines)) {
-                for (let node of line.to) {
-                    let width = nodePositions[node][0] - nodePositions[line.index][0];
-                    let height = nodePositions[node][1] - nodePositions[line.index][1];
+                for (let endNode of line.to) {
+                    let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
+                    let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];
 
                     let lineElement = create('div', `pathline-${index}`, 'path-line').css({
-                        left: px(nodePositions[line.index][0]),
-                        top: px(nodePositions[line.index][1]),
                         width: px(width < 1 ? 1 : width),
                         height: px(height < 1 ? 1 : height),
+                        top: px(nodePositions[line.startNode][1]),
+                        left: px(nodePositions[line.startNode][0])
                     });
 
                     this.boardDiv.appendChild(lineElement);
