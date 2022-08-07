@@ -43,22 +43,22 @@ class Board {
 
             this.boardCreated = true;
         }).then(() => {
-            return this.paths();
+            return this.createPaths();
         }, (reason) => {
             DebugWindow.error('Board.js', 'constructor', `Could not fetch path data due to '${reason}'.`);
         }).then(() => {
             this.createMainGameObjects();
-            this.grid();
+            this.createGrid();
         }).catch((error) => {
             DebugWindow.error('Board.js', 'constructor', `Could not fetch wall data due to '${error.message}'.`);
         });
     }
 
-    offsetLeft(tileX) {
+    getOffsetLeft(tileX) {
         return (TILESIZE * tileX) - (TILESIZE * 0.5);
     }
 
-    offsetTop(tileY) {
+    getOffsetTop(tileY) {
         return (TILESIZE * ((ROWS - tileY) + 1)) - (TILESIZE * 0.5);
     }
 
@@ -98,10 +98,10 @@ class Board {
     }
 
     createMainGameObjects() {
-        this.placeGameObject(new PacMan('pac-man', 'assets/images/pacman-frame-1.png'), 15, 10.25);
+        this.placeGameObject(new PacMan('pac-man', 'assets/images/pacman-frame-0.png'), 15, 10.25);
     }
 
-    grid() {
+    createGrid() {
         if (!this.boardCreated) {
             DebugWindow.error('Board.js', 'grid', 'Board not fully created yet.');
         }
@@ -126,13 +126,13 @@ class Board {
         }
     }
 
-    paths() {
+    createPaths() {
         return this.fetchBoardData('assets/json/paths.json').then((boardData) => {
             let nodePositions = [];
 
             for (let [index, position] of Object.entries(boardData.nodes)) {
                 this.placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
-                nodePositions.push([this.offsetLeft(position.x), this.offsetTop(position.y)]);
+                nodePositions.push([this.getOffsetLeft(position.x), this.getOffsetTop(position.y)]);
             }
 
             for (let [index, line] of Object.entries(boardData.lines)) {
