@@ -10,7 +10,7 @@ class GameObject {
 
         gameObjects.push(name);
 
-        this.element = create('div', name, 'game-object');
+        this.element = create('div', name, 'game-object board-object');
         this.name = name;
     }
 

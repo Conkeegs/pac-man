@@ -109,7 +109,7 @@ class Board {
         for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
             this.placeGameObject(new BoardText(`grid-vert-num-${i}`, i, TILESIZE * 0.75), i, 0);
 
-            this.boardDiv.appendChild(create('div', null, 'grid-vert').css({
+            this.boardDiv.appendChild(create('div', null, 'grid-vert board-object').css({
                 left: px(left),
                 height: px(HEIGHT + TILESIZE)
             }));
@@ -118,7 +118,7 @@ class Board {
         for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
             this.placeGameObject(new BoardText(`grid-horiz-num-${i}`, i, TILESIZE * 0.75), 0, i);
             
-            this.boardDiv.appendChild(create('div', null, 'grid-horiz').css({
+            this.boardDiv.appendChild(create('div', null, 'grid-horiz board-object').css({
                 left: px(- TILESIZE),
                 top: px(top + TILESIZE),
                 width: px(WIDTH + TILESIZE)
@@ -140,7 +140,7 @@ class Board {
                     let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
                     let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];
 
-                    let lineElement = create('div', `pathline-${index}`, 'path-line').css({
+                    let lineElement = create('div', `pathline-${index}`, 'path-line board-object').css({
                         width: px(width < 1 ? 1 : width),
                         height: px(height < 1 ? 1 : height),
                         top: px(nodePositions[line.startNode][1]),
