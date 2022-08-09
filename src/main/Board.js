@@ -1,6 +1,9 @@
 'use strict';
 
 class Board {
+    boardCreated = false;
+    boardDiv = create('div', 'board');
+
     constructor(color = '#070200') {
         if (WIDTH % COLUMNS !== 0) {
             DebugWindow.error('Board.js', 'constructor', 'Board width not divisible by 28.');
@@ -8,9 +11,7 @@ class Board {
             DebugWindow.error('Board.js', 'constructor', 'Board height not divisible by 36.');
         }
 
-        this.boardCreated = false;
-
-        this.boardDiv = create('div', 'board').css({
+        this.boardDiv.css({
             width: px(WIDTH),
             height: px(HEIGHT),
             backgroundColor: color

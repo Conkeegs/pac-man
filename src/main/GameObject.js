@@ -1,6 +1,9 @@
 'use strict';
 
 class GameObject {
+    element;
+    name;
+
     constructor(name) {
         if (!name) {
             DebugWindow.error('GameObject.js', 'constructor', 'GameObject must have a name.');

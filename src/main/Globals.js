@@ -1,3 +1,5 @@
+'use strict';
+
 window.COLUMNS = 28;
 window.ROWS = 36;
 

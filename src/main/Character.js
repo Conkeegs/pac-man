@@ -1,6 +1,12 @@
 'use strict';
 
 class Character extends GameObject {
+    source;
+    width = TILESIZE + (TILESIZE * 0.5);
+    height = TILESIZE + (TILESIZE * 0.5);
+    moveInterval;
+    moving = false;
+
     constructor(name, source) {
         super(name);
 

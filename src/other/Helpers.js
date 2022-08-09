@@ -37,7 +37,7 @@ function get(selector) {
 
 /**
  *
- * @param {Number} pixels 
+ * @param {Number|String} pixels 
  * @returns
  */
 function px(pixels) {
