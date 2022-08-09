@@ -4,39 +4,39 @@ class Character extends GameObject {
     source;
     width = TILESIZE + (TILESIZE * 0.5);
     height = TILESIZE + (TILESIZE * 0.5);
-    moveInterval;
+    animationFrameId;
     moving = false;
     moveDirections = {
         left: () => {
-            this.moveInterval = setInterval(() => {
-                this.getElement().css({
-                    left: `calc(${this.getElement().css('left')} - 1px)`
-                })
-            })
+            this.getElement().css({
+                left: `calc(${this.getElement().css('left')} - 1px)`
+            });
+
+            this.animationFrameId = requestAnimationFrame(this.moveDirections['left']);
         },
         right: () => {
-            this.moveInterval = setInterval(() => {
-                this.getElement().css({
-                    left: `calc(${this.getElement().css('left')} + 1px)`
-                })
-            })
+            this.getElement().css({
+                left: `calc(${this.getElement().css('left')} + 1px)`
+            });
+
+            this.animationFrameId = requestAnimationFrame(this.moveDirections['right']);
         },
         up: () => {
-            this.moveInterval = setInterval(() => {
-                this.getElement().css({
-                    bottom: `calc(${this.getElement().css('bottom')} + 1px)`
-                });
-            })
+            this.getElement().css({
+                bottom: `calc(${this.getElement().css('bottom')} + 1px)`
+            });
+
+            this.animationFrameId = requestAnimationFrame(this.moveDirections['up']);
         },
         down: () => {
-            this.moveInterval = setInterval(() => {
-                this.getElement().css({
-                    bottom: `calc(${this.getElement().css('bottom')} - 1px)`
-                })
-            })
+            this.getElement().css({
+                bottom: `calc(${this.getElement().css('bottom')} - 1px)`
+            });
+
+            this.animationFrameId = requestAnimationFrame(this.moveDirections['down']);
         },
         stop: () => {
-            this.stopMoving()
+            this.stopMoving();
         }
     };
 
@@ -53,13 +53,14 @@ class Character extends GameObject {
     }
 
     startMoving(direction) {
+        this.animationFrameId = requestAnimationFrame(this.moveDirections[direction]);
         this.moving = true;
-        this.moveDirections[direction]();
     }
 
     stopMoving() {
+        cancelAnimationFrame(this.animationFrameId);
         this.moving = false;
-        clearInterval(this.moveInterval);
+
         return true;
     }
 }
