@@ -6,6 +6,39 @@ class Character extends GameObject {
     height = TILESIZE + (TILESIZE * 0.5);
     moveInterval;
     moving = false;
+    moveDirections = {
+        left: () => {
+            this.moveInterval = setInterval(() => {
+                this.getElement().css({
+                    left: `calc(${this.getElement().css('left')} - 1px)`
+                })
+            })
+        },
+        right: () => {
+            this.moveInterval = setInterval(() => {
+                this.getElement().css({
+                    left: `calc(${this.getElement().css('left')} + 1px)`
+                })
+            })
+        },
+        up: () => {
+            this.moveInterval = setInterval(() => {
+                this.getElement().css({
+                    bottom: `calc(${this.getElement().css('bottom')} + 1px)`
+                });
+            })
+        },
+        down: () => {
+            this.moveInterval = setInterval(() => {
+                this.getElement().css({
+                    bottom: `calc(${this.getElement().css('bottom')} - 1px)`
+                })
+            })
+        },
+        stop: () => {
+            this.stopMoving()
+        }
+    };
 
     constructor(name, source) {
         super(name);
@@ -17,7 +50,16 @@ class Character extends GameObject {
         });
 
         this.source = source;
-        this.width = TILESIZE + (TILESIZE * 0.5);
-        this.height = TILESIZE + (TILESIZE * 0.5);
+    }
+
+    startMoving(direction) {
+        this.moving = true;
+        this.moveDirections[direction]();
+    }
+
+    stopMoving() {
+        this.moving = false;
+        clearInterval(this.moveInterval);
+        return true;
     }
 }

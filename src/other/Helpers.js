@@ -96,6 +96,7 @@ function truthy(any, def) {
 function die(...any) {
     console.log(...any);
     throw new Error('Stopping...');
+    stop();
 }
 
 /**
