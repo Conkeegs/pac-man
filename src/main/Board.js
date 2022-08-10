@@ -49,12 +49,10 @@ class Board {
 
             this.#boardCreated = true;
         }).then(() => {
-            return this.#createPaths();
-        }, (reason) => {
-            DebugWindow.error('Board.js', 'constructor', `Could not fetch path data due to '${reason}'.`);
-        }).then(() => {
             this.#createMainGameObjects();
+            
             this.#createGrid();
+            this.#createPaths();
         }).catch((error) => {
             DebugWindow.error('Board.js', 'constructor', `Could not fetch wall data due to '${error.message}'.`);
         });
