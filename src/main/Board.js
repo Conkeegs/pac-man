@@ -20,11 +20,13 @@ class Board {
             backgroundColor: color
         });
 
-        if (!get('game')) {
+        let game = get('game');
+
+        if (!game) {
             DebugWindow.error('Board.js', 'constructor', 'No #game element found.');
         } else {
-            get('game').css({ backgroundColor: color });
-            get('game').appendChild(this.#boardDiv);
+            game.css({ backgroundColor: color });
+            game.appendChild(this.#boardDiv);
         }
 
         this.#fetchBoardData('assets/json/walls.json').then((boardData) => {
@@ -144,14 +146,12 @@ class Board {
                     let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
                     let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];
 
-                    let lineElement = create('div', `pathline-${index}`, 'path-line board-object').css({
+                    this.#boardDiv.appendChild(create('div', `pathline-${index}`, 'path-line board-object').css({
                         width: px(width < 1 ? 1 : width),
                         height: px(height < 1 ? 1 : height),
                         top: px(nodePositions[line.startNode][1]),
                         left: px(nodePositions[line.startNode][0])
-                    });
-
-                    this.#boardDiv.appendChild(lineElement);
+                    }));
                 }
             }
         });
