@@ -1,7 +1,9 @@
 'use strict';
 
 class GameObject {
-    #element;
+    element;
+    width;
+    height;
 
     constructor(name) {
         if (!name) {
@@ -12,10 +14,18 @@ class GameObject {
 
         gameObjects.push(name);
 
-        this.#element = create('div', name, 'game-object board-object');
+        this.element = create('div', name, 'game-object board-object');
     }
 
     getElement() {
-        return this.#element;
+        return this.element;
+    }
+
+    getWidth() {
+        return this.width;
+    }
+
+    getHeight() {
+        return this.height;
     }
 }

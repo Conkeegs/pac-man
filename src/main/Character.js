@@ -1,8 +1,8 @@
 'use strict';
 
 class Character extends GameObject {
-    #width = TILESIZE + (TILESIZE * 0.5);
-    #height = TILESIZE + (TILESIZE * 0.5);
+    width = TILESIZE + (TILESIZE * 0.5);
+    height = TILESIZE + (TILESIZE * 0.5);
     #animationFrameId;
     #moving = false;
     #moveDirections = {
@@ -35,8 +35,8 @@ class Character extends GameObject {
         super(name);
 
         this.getElement().css({
-            width: px(this.#width),
-            height: px(this.#height),
+            width: px(this.width),
+            height: px(this.height),
             backgroundImage: `url(${source})`
         });
     }
@@ -65,7 +65,6 @@ class Character extends GameObject {
     stopMoving() {
         cancelAnimationFrame(this.#animationFrameId);
         this.#moving = false;
-        this.#lastAnimationTime = null;
 
         return true;
     }

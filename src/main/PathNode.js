@@ -1,12 +1,15 @@
 'use strict';
 
 class PathNode extends GameObject {
+    width = TILESIZE;
+    height = TILESIZE;
+
     constructor(name, color = 'white') {
         super(name);
         
         this.getElement().css({
-            width: px(TILESIZE),
-            height: px(TILESIZE),
+            width: px(this.width),
+            height: px(this.height),
         });
 
         let nodeElement = create('div', `${name}-node-element`).css({

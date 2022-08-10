@@ -1,6 +1,9 @@
 'use strict';
 
 class BoardText extends GameObject {
+    width = TILESIZE;
+    height = TILESIZE;
+
     constructor(name, text, fontsize = TILESIZE, color = 'white') {
         super(name);
 
@@ -11,8 +14,8 @@ class BoardText extends GameObject {
         this.getElement().textContent = text;
 
         this.getElement().css({
-            width: px(TILESIZE),
-            height: px(TILESIZE),
+            width: px(this.width),
+            height: px(this.height),
             fontSize: px(fontsize),
             color: color,
         });
