@@ -1,14 +1,11 @@
 'use strict';
 
 class Character extends GameObject {
-    source;
-    width = TILESIZE + (TILESIZE * 0.5);
-    height = TILESIZE + (TILESIZE * 0.5);
-    animationFrameId;
-    moving = false;
-    lastAnimationTime = null;
-    elapsedAnimationTime = 0;
-    moveDirections = {
+    #width = TILESIZE + (TILESIZE * 0.5);
+    #height = TILESIZE + (TILESIZE * 0.5);
+    #animationFrameId;
+    #moving = false;
+    #moveDirections = {
         left: (elapsedTime) => {
             this.getElement().css({
                 left: `calc(${this.getElement().css('left')} - ${px(0.088 * elapsedTime)})`
@@ -38,37 +35,37 @@ class Character extends GameObject {
         super(name);
 
         this.getElement().css({
-            width: px(TILESIZE + (TILESIZE * 0.5)),
-            height: px(TILESIZE + (TILESIZE * 0.5)),
+            width: px(this.#width),
+            height: px(this.#height),
             backgroundImage: `url(${source})`
         });
+    }
 
-        this.source = source;
+    isMoving() {
+        return this.#moving;
     }
 
     startMoving(direction) {
-        this.animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, timeStamp));
-
-        this.moving = true;
+        let lastAnimationTime = null;
+        this.#animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, lastAnimationTime, timeStamp));
+        this.#moving = true;
     }
 
-    #move(direction, timeStamp) {
-        if (this.lastAnimationTime === null) {
-            this.lastAnimationTime = timeStamp;
+    #move(direction, lastAnimationTime, timeStamp) {
+        if (lastAnimationTime === null) {
+            lastAnimationTime = timeStamp;
         }
 
-        this.elapsedAnimationTime = timeStamp - this.lastAnimationTime;
+        this.#moveDirections[direction](timeStamp - lastAnimationTime);
 
-        this.moveDirections[direction](this.elapsedAnimationTime);
-
-        this.lastAnimationTime = timeStamp;
-        this.animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, timeStamp));
+        lastAnimationTime = timeStamp;
+        this.#animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, lastAnimationTime, timeStamp));
     }
 
     stopMoving() {
-        cancelAnimationFrame(this.animationFrameId);
-        this.moving = false;
-        this.lastAnimationTime = null;
+        cancelAnimationFrame(this.#animationFrameId);
+        this.#moving = false;
+        this.#lastAnimationTime = null;
 
         return true;
     }

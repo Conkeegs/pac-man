@@ -1,36 +1,36 @@
 'use strict';
 
 class PacMan extends Character {
-    moveCodes = {
+    #lastMoveCode;
+    #moveCodes = {
         ArrowLeft: "left",
         ArrowRight: "right",
         ArrowUp: "up",
         ArrowDown: "down",
         Space: 'stop'
     };
-    lastMoveCode;
 
     constructor(name, source) {
         super(name, source);
 
-        this.createMoveEventListeners();
+        this.#createMoveEventListeners();
     }
 
-    createMoveEventListeners() {
+    #createMoveEventListeners() {
         document.body.addEventListener('keydown', (event) => {
             event.stopImmediatePropagation();
 
             let code = event.code;
 
-            if (code === 'Space' && this.moving) {
+            if (code === 'Space' && this.isMoving()) {
                 this.stopMoving();
                 return;
             }
 
-            if ((!this.moving || this.lastMoveCode !== code) && code in this.moveCodes) {
+            if ((!this.isMoving() || this.#lastMoveCode !== code) && code in this.#moveCodes) {
                 this.stopMoving();
-                this.startMoving(this.moveCodes[code]);
-                this.lastMoveCode = code;
+                this.startMoving(this.#moveCodes[code]);
+                this.#lastMoveCode = code;
             }
         });
     }

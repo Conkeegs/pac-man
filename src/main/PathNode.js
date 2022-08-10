@@ -17,10 +17,5 @@ class PathNode extends GameObject {
         });
 
         this.getElement().appendChild(nodeElement);
-
-        this.width = TILESIZE;
-        this.height = TILESIZE;
-        this.nodeElement = nodeElement;
-        this.color = color;
     }
 }
