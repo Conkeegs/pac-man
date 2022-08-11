@@ -58,8 +58,8 @@ class Character extends GameObject {
 
         this.#moveDirections[direction](timeStamp - lastAnimationTime);
 
+        this.#animationFrameId = requestAnimationFrame((timeStampNew) => this.#move(direction, lastAnimationTime, timeStampNew));
         lastAnimationTime = timeStamp;
-        this.#animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, lastAnimationTime, timeStamp));
     }
 
     stopMoving() {
