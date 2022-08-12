@@ -2,8 +2,6 @@
 
 class GameObject {
     element;
-    width;
-    height;
 
     constructor(name) {
         if (!name) {
