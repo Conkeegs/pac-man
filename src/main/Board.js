@@ -48,7 +48,7 @@ class Board {
             });
 
             this.#boardCreated = true;
-        }).then(() => {
+
             this.#createMainGameObjects();
             
             this.#createGrid();
