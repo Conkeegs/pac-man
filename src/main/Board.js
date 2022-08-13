@@ -29,8 +29,8 @@ class Board {
             game.appendChild(this.#boardDiv);
         }
 
-        this.#fetchBoardData('assets/json/walls.json').then((boardData) => {
-            for (let element of boardData) {
+        fetchJSON('assets/json/walls.json').then((wallData) => {
+            for (let element of wallData) {
                 this.#boardDiv.appendChild(create('div', element.id, element.classes).css({
                     width: px(TILESIZE * element.styles.width),
                     height: px(TILESIZE * element.styles.height),
@@ -64,20 +64,6 @@ class Board {
 
     getOffsetTop(tileY) {
         return (TILESIZE * ((ROWS - tileY) + 1)) - (TILESIZE * 0.5);
-    }
-
-    #fetchBoardData(filename) {
-        return fetch(filename).then((response) => {
-            return response.json();
-        }).then((body) => {
-            if (!body) {
-                throw new Error('JSON response body is empty.');
-            } else {
-                return body;
-            }
-        }).catch((error) => {
-            DebugWindow.error('Board.js', '#fetchBoardData', `'${error.message}' while fetching data in ${filename}.`);
-        });
     }
 
     #placeGameObject(gameObject, tileX, tileY) {
@@ -131,16 +117,16 @@ class Board {
     }
 
     #createPaths() {
-        return this.#fetchBoardData('assets/json/paths.json').then((boardData) => {
+        return fetchJSON('assets/json/paths.json').then((pathData) => {
             let nodePositions = [];
             let pathLineIndex = 0;
 
-            for (let [index, position] of Object.entries(boardData.nodes)) {
+            for (let [index, position] of Object.entries(pathData.nodes)) {
                 this.#placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
                 nodePositions.push([this.getOffsetLeft(position.x), this.getOffsetTop(position.y)]);
             }
 
-            for (let line of boardData.lines) {
+            for (let line of pathData.lines) {
                 for (let endNode of line.to) {
                     let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
                     let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];

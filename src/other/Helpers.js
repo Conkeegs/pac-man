@@ -1,6 +1,25 @@
 'use strict';
 
 /**
+ * 
+ * @param {String} filename 
+ * @returns 
+ */
+function fetchJSON(filename) {
+    return fetch(filename).then((response) => {
+        return response.json();
+    }).then((body) => {
+        if (!body) {
+            throw new Error('JSON response body is empty.');
+        } else {
+            return body;
+        }
+    }).catch((error) => {
+        DebugWindow.error('Helpers.js', 'fetchJSON', `'${error.message}' while fetching data in ${filename}.`);
+    });
+}
+
+/**
  *
  * @param {String} name
  * @param {String} id
