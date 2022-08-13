@@ -60,11 +60,15 @@ function get(selector) {
  * @returns
  */
 function px(pixels) {
-    if (pixels !== null && !isNaN(Number(pixels))) {
-        return pixels + 'px';
-    } else {
-        return null;
+    if (pixels !== null) {
+        if (!isNaN(Number(pixels))) {
+            return pixels + 'px';
+        } else if (pixels.toString().slice(-2) == 'px') {
+            return Number(pixels);
+        }
     }
+
+    return null;
 }
 
 /**
