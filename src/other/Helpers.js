@@ -76,6 +76,15 @@ function maybe(any, def) {
 }
 
 /**
+ * 
+ * @param {Any} any 
+ * @returns {boolean}
+ */
+function exists(any) {
+    return any !== null && typeof any !== 'undefined';
+}
+
+/**
  *
  * @param {Any} any
  * @param {Any} def

@@ -3,11 +3,11 @@
 class PacMan extends Character {
     #lastMoveCode;
     #moveCodes = {
-        ArrowLeft: "left",
-        ArrowRight: "right",
-        ArrowUp: "up",
-        ArrowDown: "down",
-        Space: 'stop'
+        ArrowLeft: 0,
+        ArrowRight: 1,
+        ArrowUp: 2,
+        ArrowDown: 3,
+        Space: 4
     };
 
     constructor(name, source) {
@@ -27,7 +27,7 @@ class PacMan extends Character {
                 return;
             }
 
-            if ((!this.isMoving() || this.#lastMoveCode !== code) && code in this.#moveCodes) {
+            if ((!this.isMoving() || this.#lastMoveCode !== code) && exists(this.#moveCodes[code])) {
                 this.stopMoving();
                 this.startMoving(this.#moveCodes[code]);
                 this.#lastMoveCode = code;

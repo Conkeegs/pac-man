@@ -5,31 +5,31 @@ class Character extends GameObject {
     height = TILESIZE + (TILESIZE * 0.5);
     #animationFrameId;
     #moving = false;
-    #moveDirections = {
-        left: (elapsedTime) => {
+    #moveDirections = [
+        (elapsedTime) => {
             this.getElement().css({
                 left: `calc(${this.getElement().css('left')} - ${px(0.088 * elapsedTime)})`
             });
         },
-        right: (elapsedTime) => {
+        (elapsedTime) => {
             this.getElement().css({
                 left: `calc(${this.getElement().css('left')} + ${px(0.088 * elapsedTime)})`
             });
         },
-        up: (elapsedTime) => {
+        (elapsedTime) => {
             this.getElement().css({
                 bottom: `calc(${this.getElement().css('bottom')} + ${px(0.088 * elapsedTime)})`
             });
         },
-        down: (elapsedTime) => {
+        (elapsedTime) => {
             this.getElement().css({
                 bottom: `calc(${this.getElement().css('bottom')} - ${px(0.088 * elapsedTime)})`
             });
         },
-        stop: () => {
+        () => {
             this.stopMoving();
         }
-    };
+    ];
 
     constructor(name, source) {
         super(name);

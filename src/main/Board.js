@@ -133,18 +133,19 @@ class Board {
     #createPaths() {
         return this.#fetchBoardData('assets/json/paths.json').then((boardData) => {
             let nodePositions = [];
+            let pathLineIndex = 0;
 
             for (let [index, position] of Object.entries(boardData.nodes)) {
                 this.#placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
                 nodePositions.push([this.getOffsetLeft(position.x), this.getOffsetTop(position.y)]);
             }
 
-            for (let [index, line] of Object.entries(boardData.lines)) {
+            for (let line of boardData.lines) {
                 for (let endNode of line.to) {
                     let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
                     let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];
 
-                    this.#boardDiv.appendChild(create('div', `pathline-${index}`, 'path-line board-object').css({
+                    this.#boardDiv.appendChild(create('div', `pathline-${pathLineIndex++}`, 'path-line board-object').css({
                         width: px(width < 1 ? 1 : width),
                         height: px(height < 1 ? 1 : height),
                         top: px(nodePositions[line.startNode][1]),
