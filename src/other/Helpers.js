@@ -63,8 +63,12 @@ function px(pixels) {
     if (pixels !== null) {
         if (!isNaN(Number(pixels))) {
             return pixels + 'px';
-        } else if (pixels.toString().slice(-2) == 'px') {
-            return Number(pixels);
+        }
+
+        let pixelsSliced = pixels.toString().slice(-2);
+        
+        if (pixelsSliced == 'px') {
+            return Number(pixels.substring(0, pixels.indexOf(pixelsSliced)));
         }
     }
 
@@ -127,8 +131,8 @@ function truthy(any, def) {
  */
 function die(...any) {
     console.log(...any);
-    throw new Error('Stopping...');
     stop();
+    throw new Error('Stopping...');
 }
 
 /**
