@@ -58,11 +58,11 @@ class Board {
         });
     }
 
-    getOffsetLeft(tileX) {
+    static getOffsetLeft(tileX) {
         return (TILESIZE * tileX) - (TILESIZE * 0.5);
     }
 
-    getOffsetTop(tileY) {
+    static getOffsetTop(tileY) {
         return (TILESIZE * ((ROWS - tileY) + 1)) - (TILESIZE * 0.5);
     }
 
@@ -123,7 +123,7 @@ class Board {
 
             for (let [index, position] of Object.entries(pathData.nodes)) {
                 this.#placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
-                nodePositions.push([this.getOffsetLeft(position.x), this.getOffsetTop(position.y)]);
+                nodePositions.push([Board.getOffsetLeft(position.x), Board.getOffsetTop(position.y)]);
             }
 
             for (let line of pathData.lines) {
