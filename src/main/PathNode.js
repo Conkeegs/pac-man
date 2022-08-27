@@ -14,10 +14,9 @@ class PathNode extends GameObject {
             height: px(this.height),
         });
 
-        element.appendChild(create('div', `${name}-node-element`).css({
+        element.appendChild(create('div', `${name}-node-element`, 'node').css({
             width: px(TILESIZE * 0.5),
             height: px(TILESIZE * 0.5),
-            borderRadius: '50%',
             backgroundColor: color
         }));
     }

@@ -146,6 +146,10 @@
     background-size: cover;
 }
 
+.node {
+    border-radius: 50%;
+}
+
 .path-line {
     background-color: white;
 }
