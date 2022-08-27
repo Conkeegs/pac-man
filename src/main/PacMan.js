@@ -28,7 +28,6 @@ class PacMan extends Character {
             }
 
             if ((!this.isMoving() || this.#lastMoveCode !== code) && exists(this.#moveCodes[code])) {
-                this.stopMoving();
                 this.startMoving(this.#moveCodes[code]);
                 this.#lastMoveCode = code;
             }
