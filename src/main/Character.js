@@ -5,29 +5,30 @@ class Character extends GameObject {
     height = TILESIZE + (TILESIZE * 0.5);
     #animationFrameId;
     #moving = false;
+    #turnData;
     #moveDirections = [
         (elapsedTime) => {
-            this.getElement().css({
+            return px(this.getElement().css({
                 left: `calc(${this.getElement().css('left')} - ${px(0.088 * elapsedTime)})`
-            });
+            }).css('left'));
         },
         (elapsedTime) => {
-            this.getElement().css({
+            return px(this.getElement().css({
                 left: `calc(${this.getElement().css('left')} + ${px(0.088 * elapsedTime)})`
-            });
+            }).css('left'));
         },
         (elapsedTime) => {
-            this.getElement().css({
+            return px(this.getElement().css({
                 bottom: `calc(${this.getElement().css('bottom')} + ${px(0.088 * elapsedTime)})`
-            });
+            }).css('bottom'));
         },
         (elapsedTime) => {
-            this.getElement().css({
+            return px(this.getElement().css({
                 bottom: `calc(${this.getElement().css('bottom')} - ${px(0.088 * elapsedTime)})`
-            });
+            }).css('bottom'));
         },
         () => {
-            this.stopMoving();
+            return this.stopMoving();
         }
     ];
 
@@ -39,6 +40,17 @@ class Character extends GameObject {
             height: px(this.height),
             backgroundImage: `url(${source})`
         });
+
+        fetchJSON('assets/json/turns.json').then((turnData) => {
+            for (let turn of turnData) {
+                turn.x = Board.getOffsetLeft(turn.x);
+                turn.y = Board.getOffsetTop(turn.y);
+            }
+
+            console.log(turnData);
+
+            this.#turnData = turnData;
+        });
     }
 
     isMoving() {
@@ -47,6 +59,7 @@ class Character extends GameObject {
 
     startMoving(direction) {
         this.stopMoving();
+
         let lastAnimationTime = null;
         this.#animationFrameId = requestAnimationFrame((timeStamp) => this.#move(direction, lastAnimationTime, timeStamp));
         this.#moving = true;
@@ -57,16 +70,16 @@ class Character extends GameObject {
             lastAnimationTime = timeStamp;
         }
 
-        this.#moveDirections[direction](timeStamp - lastAnimationTime);
-
-        this.#animationFrameId = requestAnimationFrame((timeStampNew) => this.#move(direction, lastAnimationTime, timeStampNew));
+        let newPosition = this.#moveDirections[direction](timeStamp - lastAnimationTime);
+        
         lastAnimationTime = timeStamp;
+        this.#animationFrameId = requestAnimationFrame((timeStampNew) => this.#move(direction, lastAnimationTime, timeStampNew));
     }
 
     stopMoving() {
         cancelAnimationFrame(this.#animationFrameId);
         this.#moving = false;
 
-        return true;
+        return false;
     }
 }
