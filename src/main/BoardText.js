@@ -11,15 +11,11 @@ class BoardText extends GameObject {
             DebugWindow.error('BoardText.js', 'constructor', `fontsize cannot be greater than ${TILESIZE}.`);
         }
 
-        let element = this.getElement();
-
-        element.textContent = text;
-
-        element.css({
+        this.getElement().css({
             width: px(this.width),
             height: px(this.height),
             fontSize: px(fontsize),
             color: color,
-        });
+        }).textContent = text;
     }
 }

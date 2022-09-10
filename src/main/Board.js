@@ -11,9 +11,6 @@ class Board {
             DebugWindow.error('Board.js', 'constructor', 'Board height not divisible by 36.');
         }
 
-        this.#boardCreated = false;
-        this.#boardDiv = create('div', 'board');
-
         this.#boardDiv.css({
             width: px(WIDTH),
             height: px(HEIGHT),
@@ -25,8 +22,7 @@ class Board {
         if (!game) {
             DebugWindow.error('Board.js', 'constructor', 'No #game element found.');
         } else {
-            game.css({ backgroundColor: color });
-            game.appendChild(this.#boardDiv);
+            game.css({ backgroundColor: color }).appendChild(this.#boardDiv);
         }
 
         fetchJSON('assets/json/walls.json').then((wallData) => {
@@ -51,6 +47,7 @@ class Board {
 
             this.#createMainGameObjects();
             
+            // debugging methods
             this.#createGrid();
             this.#createPaths();
         }).catch((error) => {

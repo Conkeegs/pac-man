@@ -20,16 +20,16 @@ class PacMan extends Character {
         document.body.addEventListener('keydown', (event) => {
             event.stopImmediatePropagation();
 
-            let code = event.code;
+            let moveCode = this.#moveCodes[event.code];
 
-            if (code === 'Space' && this.isMoving()) {
+            if (moveCode == 4 && this.isMoving()) {
                 this.stopMoving();
                 return;
             }
 
-            if ((!this.isMoving() || this.#lastMoveCode !== code) && exists(this.#moveCodes[code])) {
-                this.startMoving(this.#moveCodes[code]);
-                this.#lastMoveCode = code;
+            if (exists(moveCode) && (!this.isMoving() || this.#lastMoveCode !== moveCode)) {
+                this.startMoving(moveCode);
+                this.#lastMoveCode = moveCode;
             }
         });
     }
