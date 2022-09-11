@@ -154,19 +154,6 @@ HTMLElement.prototype.css = function(style) {
     }
 }
 
-/**
- * 
- * @returns
- */
-HTMLElement.prototype.trueDimensions = function() {
-    let boundingClientRect = this.getBoundingClientRect();
-
-    return [
-        boundingClientRect.right - boundingClientRect.left,
-        boundingClientRect.bottom - boundingClientRect.top
-    ];
-}
-
 HTMLCollection.prototype.css = function(style) {
     if (isObject(style)) {
         for (let item of this) {
