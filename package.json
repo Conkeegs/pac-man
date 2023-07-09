@@ -4,8 +4,8 @@
   "description": "Just a JavaScript Pac-Man game.",
   "main": "index.js",
   "scripts": {
-    "build": "swc -f ./src/App.ts --config-file .swcrc --log-watch-compilation",
-    "dev": "swc -f ./src/App.ts --config-file .swcrc --log-watch-compilation --watch"
+    "build": "swc -f ./src/main/App.ts --config-file .swcrc --log-watch-compilation",
+    "dev": "swc -f ./src/main/App.ts --config-file .swcrc --log-watch-compilation --watch"
   },
   "repository": {
     "type": "git",

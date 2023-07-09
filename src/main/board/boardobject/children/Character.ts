@@ -19,13 +19,13 @@ class Character extends GameObject {
         },
         (elapsedTime) => {
             return px(this.getElement().css({
-                bottom: `calc(${this.getElement().css('bottom')} + ${px(0.088 * elapsedTime)})`
-            }).css('bottom'));
+                top: `calc(${this.getElement().css('top')} - ${px(0.088 * elapsedTime)})`
+            }).css('top'));
         },
         (elapsedTime) => {
             return px(this.getElement().css({
-                bottom: `calc(${this.getElement().css('bottom')} - ${px(0.088 * elapsedTime)})`
-            }).css('bottom'));
+                top: `calc(${this.getElement().css('top')} + ${px(0.088 * elapsedTime)})`
+            }).css('top'));
         },
         () => {
             return this.stopMoving();
@@ -43,8 +43,8 @@ class Character extends GameObject {
 
         fetchJSON('assets/json/turns.json').then((turnData) => {
             for (let turn of turnData) {
-                turn.x = Board.getOffsetLeft(turn.x);
-                turn.y = Board.getOffsetTop(turn.y);
+                turn.x = Board.calcTileOffset(turn.x) + (TILESIZE / 2);
+                turn.y = Board.calcTileOffset(turn.y) + (TILESIZE / 2);
             }
 
             console.log(turnData);
