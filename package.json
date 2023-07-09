@@ -4,10 +4,8 @@
   "description": "Just a JavaScript Pac-Man game.",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc --clean --build --verbose",
-    "watch": "npx tsc --watch",
-    "dev": "npx tsc --clean -- build --verbose",
-    // "debug": "npx tsc --clean --build --verbose --explainFiles --extendedDiagnostics --generateCpuProfile tsc-output.cpuprofile --listEmittedFiles --listFiles --traceResolution"
+    "build": "swc -f ./src/App.ts --config-file .swcrc --log-watch-compilation",
+    "dev": "swc -f ./src/App.ts --config-file .swcrc --log-watch-compilation --watch"
   },
   "repository": {
     "type": "git",
