@@ -24,12 +24,18 @@
         "sourceRoot": "src",
         "noErrorTruncation": true,
         "skipLibCheck": true,
-        "isolatedModules": true,
+        "esModuleInterop": true,
+        // look into SWC for these
+        // "moduleResolution": "classic",
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": true,
+        "useDefineForClassFields": true,
         "plugins": [
             {
                 "name": "typescript-eslint-language-service"
             }
-        ]
+        ],
+        "noEmit": true
     },
     "include": [
         "src/**/*"
