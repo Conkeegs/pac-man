@@ -1,12 +1,26 @@
 'use strict';
 
+import DebugWindow from "../debugwindow/DebugWindow";
+
+declare global {
+    interface HTMLElement {
+        css(style: string | CSSStyleDeclaration): HTMLElement | string;
+    }
+
+    interface HTMLCollectionBase {
+        css(style: CSSStyleDeclaration): boolean;
+    }
+}
+
 /**
- * 
- * @param {String} filename 
- * @returns 
+ *
+ *
+ * @export
+ * @param {string} filename
+ * @return {any}
  */
-function fetchJSON(filename) {
-    return fetch(filename).then((response) => {
+export function fetchJSON(filename: string): Promise<any> {
+    return fetch(filename).then((response: Response): Promise<any> => {
         return response.json();
     }).then((body) => {
         if (!body) {
@@ -21,12 +35,15 @@ function fetchJSON(filename) {
 
 /**
  *
- * @param {String} name
- * @param {String} id
- * @param {String} classes
- * @returns {HTMLElement} test
+ *
+ * @export
+ * @param {string} name
+ * @param {(string | null)} [id=null]
+ * @param {(string | null)} [classes=null]
+ * @param {(string | null)} [html=null]
+ * @return {HTMLElement}
  */
-function create(name, id = null, classes = null, html = null) {
+export function create(name: string, id: string | null = null, classes: string[] | null = null, html: string | null = null) {
     let element = document.createElement(name);
 
     if (id) {
@@ -34,7 +51,6 @@ function create(name, id = null, classes = null, html = null) {
     }
 
     if (classes) {
-        classes = classes.split(' ');
         element.classList.add(...classes);
     }
 
@@ -47,28 +63,43 @@ function create(name, id = null, classes = null, html = null) {
 
 /**
  *
- * @param {String} selector 
- * @returns
+ *
+ * @export
+ * @param {string} selector
+ * @return {(HTMLElement)}
  */
-function get(selector) {
-    return document.getElementById(selector) || document.getElementsByClassName(selector);
+export function get(selector: string): HTMLElement | null {
+    return document.getElementById(selector);
 }
 
 /**
  *
- * @param {Number|String} pixels 
- * @returns
+ *
+ * @export
+ * @param {string} selector
+ * @return {HTMLCollection}
  */
-function px(pixels) {
-    if (pixels !== null) {
-        if (!isNaN(Number(pixels))) {
-            return pixels + 'px';
-        }
+export function getMany(selector: string): HTMLCollection {
+    return document.getElementsByClassName(selector);
+}
 
-        let pixelsSliced = pixels.toString().slice(-2);
-        
-        if (pixelsSliced == 'px') {
-            return Number(pixels.substring(0, pixels.indexOf(pixelsSliced)));
+/**
+ *
+ *
+ * @export
+ * @param {(string | number | null)} pixels
+ * @return {(string | number | null)}
+ */
+export function px(pixels: string | number | null): string | number | null {
+    if (pixels !== null) {
+        if (!(typeof pixels === 'string')) {
+            return pixels + 'px';
+        } else {
+            const pixelsSliced: string = pixels.toString().slice(-2);
+
+            if (pixelsSliced == 'px') {
+                return Number(pixels.substring(0, pixels.indexOf(pixelsSliced)));
+            }
         }
     }
 
@@ -76,12 +107,14 @@ function px(pixels) {
 }
 
 /**
- *s
- * @param {Any} any
- * @returns
+ *
+ *
+ * @export
+ * @param {unknown} value
+ * @return {boolean}
  */
-function isObject(any) {
-    if (any instanceof Object && any !== null && !Array.isArray(any) && typeof any !== 'function') {
+export function isObject(value: unknown) {
+    if (value instanceof Object && value !== null && !Array.isArray(value) && typeof value !== 'function') {
         return true;
     } else {
         return false;
@@ -90,34 +123,40 @@ function isObject(any) {
 
 /**
  *
- * @param {Any} any
- * @param {Any} def
- * @returns
+ *
+ * @export
+ * @param {unknown} value
+ * @param {unknown} def
+ * @return {unknown}
  */
-function maybe(any, def) {
-    if (typeof any !== 'undefined' && any !== null) {
-        return any;
+export function maybe(value: unknown, otherwise: unknown): unknown {
+    if (typeof value !== 'undefined' && value !== null) {
+        return value;
     } else {
-        return def;
+        return otherwise;
     }
 }
 
 /**
- * 
- * @param {Any} any 
- * @returns {boolean}
+ *
+ *
+ * @export
+ * @param {unknown} value
+ * @return {boolean}
  */
-function exists(any) {
-    return any !== null && typeof any !== 'undefined';
+export function exists(value: unknown): boolean {
+    return value !== null && typeof value !== 'undefined';
 }
 
 /**
  *
- * @param {Any} any
- * @param {Any} def
- * @returns
+ *
+ * @export
+ * @param {unknown} any
+ * @param {unknown} def
+ * @return {unknown}
  */
-function truthy(any, def) {
+export function truthy(any: unknown, def: unknown): unknown {
     if (any) {
         return any;
     } else {
@@ -126,44 +165,48 @@ function truthy(any, def) {
 }
 
 /**
- * 
- * @param  {...any} any 
+ *
+ *
+ * @export
+ * @param {...any[]} any
  */
-function die(...any) {
+export function die(...any: any[]): void {
     console.log(...any);
     stop();
     throw new Error('Stopping...');
 }
 
-/**
- * 
- * @param {Object} options
- * @returns
- */
-HTMLElement.prototype.css = function(style) {
+
+HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration): HTMLElement | string {
     if (isObject(style)) {
         for (let [key, value] of Object.entries(style)) {
             if (value !== null) {
-                this.style[key] = value;
+                (this.style as any)[key] = value;
             }
         }
-    
+
         return this;
     } else {
-        return this.style[style];
+        return (this.style as any)[style as string];
     }
 }
 
-HTMLCollection.prototype.css = function(style) {
+HTMLCollection.prototype.css = function (style: CSSStyleDeclaration): boolean {
     if (isObject(style)) {
-        for (let item of this) {
+        const length = this.length;
+
+        for (let i = 0; i < length; i++) {
+            const item = this[i];
+
             if (item instanceof HTMLElement) {
                 item.css(style);
             } else {
-                DebugWindow.error('Helpers.js', 'css()', 'Item in HTMLCollection not instance of HTMLElement');
+                DebugWindow.error('Helpers.js', 'css()', 'Item in HTMLCollection not an instance of HTMLElement');
             }
         }
+
+        return true;
     } else {
-        return null;
+        return false;
     }
 };

@@ -1,20 +1,15 @@
 'use strict';
 
-window.COLUMNS = 28;
-window.ROWS = 36;
+export const COLUMNS: number = 28;
+export const ROWS: number = 36;
 
-window.debug = false;
+export const DEBUG: boolean = false;
 
-window.gameObjects = [];
+export const GAMEOBJECTS: string[] = [];
 
 let match = window.matchMedia('(min-width: 720px)');
 
-if (match.matches) {
-    window.WIDTH = 672;
-    window.HEIGHT = 864;
-} else {
-    window.WIDTH = 448;
-    window.HEIGHT = 576;
-}
+export const HEIGHT: number = match.matches ? 864 : 576;
+export const WIDTH: number = match.matches ? 672 : 448;
 
-window.TILESIZE = WIDTH / COLUMNS;
+export const TILESIZE: number = WIDTH / COLUMNS;

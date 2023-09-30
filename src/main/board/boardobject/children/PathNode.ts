@@ -1,23 +1,27 @@
 'use strict';
 
-class PathNode extends GameObject {
-    width = TILESIZE;
-    height = TILESIZE;
+import { TILESIZE } from "src/main/utils/Globals";
+import { create, px } from "src/main/utils/Utils";
+import { BoardObject } from "../BoardObject";
 
-    constructor(name, color = 'white') {
+export default class PathNode extends BoardObject {
+    public override width = TILESIZE;
+    public override height = TILESIZE;
+
+    constructor(name: string, color = 'white') {
         super(name);
 
-        let element = this.getElement();
-        
+        const element: HTMLElement = this.getElement();
+
         element.css({
             width: px(this.width),
             height: px(this.height),
-        });
+        } as CSSStyleDeclaration);
 
-        element.appendChild(create('div', `${name}-node-element`, 'node').css({
+        element.appendChild(create('div', `${name}-node-element`, ['node']).css({
             width: px(TILESIZE * 0.5),
             height: px(TILESIZE * 0.5),
             backgroundColor: color
-        }));
+        } as CSSStyleDeclaration) as HTMLElement);
     }
 }

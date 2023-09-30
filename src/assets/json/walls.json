@@ -1,7 +1,10 @@
 [
     {
         "id": "main-square-top",
-        "classes": "board-object main-square",
+        "classes": [
+            "board-object",
+            "main-square"
+        ],
         "styles": {
             "width": 28,
             "height": 10,
@@ -10,7 +13,10 @@
     },
     {
         "id": "main-square-top-inner",
-        "classes": "board-object main-square",
+        "classes": [
+            "board-object",
+            "main-square"
+        ],
         "styles": {
             "width": 27,
             "height": 9,
@@ -22,7 +28,10 @@
     },
     {
         "id": "main-square-bottom",
-        "classes": "board-object main-square",
+        "classes": [
+            "board-object",
+            "main-square"
+        ],
         "styles": {
             "width": 28,
             "height": 12,
@@ -31,7 +40,10 @@
     },
     {
         "id": "main-square-bottom-inner",
-        "classes": "board-object main-square",
+        "classes": [
+            "board-object",
+            "main-square"
+        ],
         "styles": {
             "width": 27,
             "height": 11,
@@ -43,7 +55,9 @@
     },
     {
         "id": "middle-cover",
-        "classes": "board-object",
+        "classes": [
+            "board-object"
+        ],
         "styles": {
             "width": 17,
             "height": 11,
@@ -53,7 +67,10 @@
     },
     {
         "id": "wall-teleport-1",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5.5,
             "height": 4,
@@ -65,7 +82,10 @@
     },
     {
         "id": "wall-teleport-1-inner",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5,
             "height": 3,
@@ -77,7 +97,10 @@
     },
     {
         "id": "wall-teleport-2",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5.5,
             "height": 4,
@@ -90,7 +113,10 @@
     },
     {
         "id": "wall-teleport-2-inner",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5,
             "height": 3,
@@ -103,7 +129,10 @@
     },
     {
         "id": "wall-teleport-3",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5.5,
             "height": 4,
@@ -115,7 +144,10 @@
     },
     {
         "id": "wall-teleport-3-inner",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5,
             "height": 3,
@@ -127,7 +159,10 @@
     },
     {
         "id": "wall-teleport-4",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5.5,
             "height": 4,
@@ -140,7 +175,10 @@
     },
     {
         "id": "wall-teleport-4-inner",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 5,
             "height": 3,
@@ -153,7 +191,10 @@
     },
     {
         "id": "wall-1",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 2,
@@ -163,7 +204,10 @@
     },
     {
         "id": "wall-2",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 4,
             "height": 2,
@@ -173,7 +217,10 @@
     },
     {
         "id": "wall-3",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 4,
@@ -185,7 +232,10 @@
     },
     {
         "id": "wall-4",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 4,
             "height": 2,
@@ -195,7 +245,10 @@
     },
     {
         "id": "wall-5",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 2,
@@ -205,7 +258,10 @@
     },
     {
         "id": "wall-6",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -215,7 +271,10 @@
     },
     {
         "id": "wall-7",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 7,
@@ -225,7 +284,10 @@
     },
     {
         "id": "wall-8",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -237,7 +299,10 @@
     },
     {
         "id": "wall-9",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 7,
             "height": 1,
@@ -247,7 +312,10 @@
     },
     {
         "id": "wall-10",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -260,7 +328,10 @@
     },
     {
         "id": "wall-11",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -273,7 +344,10 @@
     },
     {
         "id": "wall-12",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 7,
@@ -283,7 +357,10 @@
     },
     {
         "id": "wall-13",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -293,7 +370,10 @@
     },
     {
         "id": "ghost-spawn",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 7,
             "height": 4,
@@ -307,7 +387,10 @@
     },
     {
         "id": "ghost-spawn-inner",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 6,
             "height": 3,
@@ -321,7 +404,10 @@
     },
     {
         "id": "ghost-spawn-door",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 2,
             "height": 0.5,
@@ -335,7 +421,10 @@
     },
     {
         "id": "wall-14",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 4,
@@ -345,7 +434,10 @@
     },
     {
         "id": "wall-15",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 7,
             "height": 1,
@@ -355,7 +447,10 @@
     },
     {
         "id": "wall-16",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -368,7 +463,10 @@
     },
     {
         "id": "wall-17",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 4,
@@ -378,7 +476,10 @@
     },
     {
         "id": "wall-18",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 2,
             "height": 1,
@@ -391,7 +492,10 @@
     },
     {
         "id": "wall-19",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -402,7 +506,10 @@
     },
     {
         "id": "wall-20",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -415,7 +522,10 @@
     },
     {
         "id": "wall-21",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 4,
             "height": 1,
@@ -425,7 +535,10 @@
     },
     {
         "id": "wall-22",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 4,
             "height": 1,
@@ -435,7 +548,10 @@
     },
     {
         "id": "wall-23",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -448,7 +564,10 @@
     },
     {
         "id": "wall-24",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 3,
             "height": 1,
@@ -459,7 +578,10 @@
     },
     {
         "id": "wall-25",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 2,
             "height": 1,
@@ -472,7 +594,10 @@
     },
     {
         "id": "wall-26",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 9,
             "height": 1,
@@ -482,7 +607,10 @@
     },
     {
         "id": "wall-27",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -495,7 +623,10 @@
     },
     {
         "id": "wall-28",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 7,
             "height": 1,
@@ -505,7 +636,10 @@
     },
     {
         "id": "wall-29",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,
@@ -518,7 +652,10 @@
     },
     {
         "id": "wall-30",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 9,
             "height": 1,
@@ -528,7 +665,10 @@
     },
     {
         "id": "wall-31",
-        "classes": "board-object wall",
+        "classes": [
+            "board-object",
+            "wall"
+        ],
         "styles": {
             "width": 1,
             "height": 3,

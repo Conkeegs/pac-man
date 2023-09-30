@@ -1,8 +1,46 @@
 'use strict';
 
-class Board {
-    #boardCreated = false;
-    #boardDiv = create('div', 'board');
+import DebugWindow from "../debugwindow/DebugWindow";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals";
+import { create, fetchJSON, get, maybe, px } from "../utils/Utils";
+import { BoardObject } from "./boardobject/BoardObject";
+import BoardText from "./boardobject/children/BoardText";
+import PathNode from "./boardobject/children/PathNode";
+import PacMan from "./boardobject/children/character/PacMan";
+
+interface PathData {
+    nodes: [
+        {
+            x: number,
+            y: number
+        }
+    ],
+    lines: [
+        {
+            startNode: number,
+            to: number[]
+        }
+    ]
+}
+
+interface WallDataElement {
+    id: string,
+    classes: string[],
+    styles: {
+        width: number,
+        height: number,
+        top: number,
+        left?: number,
+        borderTopLeftRadius?: number,
+        borderTopRightRadius?: number,
+        borderBottomRightRadius?: number,
+        borderBottomLeftRadius?: number
+    }
+}
+
+export default class Board {
+    private boardCreated = false;
+    private boardDiv = create('div', 'board');
 
     constructor(color = '#070200') {
         if (WIDTH % COLUMNS !== 0) {
@@ -11,125 +49,125 @@ class Board {
             DebugWindow.error('Board.js', 'constructor', 'Board height not divisible by 36.');
         }
 
-        this.#boardDiv.css({
+        this.boardDiv.css({
             width: px(WIDTH),
             height: px(HEIGHT),
             backgroundColor: color
-        });
+        } as CSSStyleDeclaration);
 
-        let game = get('game');
+        let game: HTMLElement | null = get('game');
 
         if (!game) {
             DebugWindow.error('Board.js', 'constructor', 'No #game element found.');
         } else {
-            game.css({ backgroundColor: color }).appendChild(this.#boardDiv);
+            (game.css({ backgroundColor: color } as CSSStyleDeclaration) as HTMLElement).appendChild(this.boardDiv);
         }
 
-        fetchJSON('assets/json/walls.json').then((wallData) => {
+        fetchJSON('assets/json/walls.json').then((wallData: WallDataElement[]) => {
             for (let element of wallData) {
-                this.#boardDiv.appendChild(create('div', element.id, element.classes).css({
+                this.boardDiv.appendChild(create('div', element.id, element.classes).css({
                     width: px(Board.calcTileOffset(element.styles.width)),
                     height: px(Board.calcTileOffset(element.styles.height)),
                     top: px(Board.calcTileOffset(element.styles.top)),
-                    left: px(Board.calcTileOffset(element.styles.left)),
-                    borderTopLeftRadius: px(maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5))),
-                    borderTopRightRadius: px(maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5))),
-                    borderBottomRightRadius: px(maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5))),
-                    borderBottomLeftRadius: px(maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)))
-                }));
+                    left: px(Board.calcTileOffset(element.styles.left || 0)),
+                    borderTopLeftRadius: px(maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number),
+                    borderTopRightRadius: px(maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number),
+                    borderBottomRightRadius: px(maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number),
+                    borderBottomLeftRadius: px(maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number)
+                } as CSSStyleDeclaration) as HTMLElement);
             }
 
-            get('middle-cover').css({
+            get('middle-cover')!.css({
                 backgroundColor: color
-            });
+            } as CSSStyleDeclaration);
 
-            this.#boardCreated = true;
+            this.boardCreated = true;
 
-            this.#createMainGameObjects();
+            this.createMainBoardObjects();
 
             // debugging methods
-            this.#createGrid();
-            this.#createPaths();
+            this.createGrid();
+            this.createPaths();
         }).catch((error) => {
             DebugWindow.error('Board.js', 'constructor', `Could not fetch wall data due to '${error.message}'.`);
         });
     }
 
-    static calcTileOffset(numTiles) {
+    static calcTileOffset(numTiles: number) {
         return (TILESIZE * numTiles);
     }
 
-    #placeGameObject(gameObject, tileX, tileY) {
-        if (!gameObject instanceof GameObject) {
-            DebugWindow.error('Board.js', '#placeGameObject', 'gameObject is not an actual instance of GameObject.');
+    #placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
+        if (!(boardObject instanceof BoardObject)) {
+            DebugWindow.error('Board.js', '#placeBoardObject', 'boardObject is not an actual instance of BoardObject.');
         }
 
         if (tileX > 28) {
-            DebugWindow.error('Board.js', '#placeGameObject', 'tileX value is above 28.');
+            DebugWindow.error('Board.js', '#placeBoardObject', 'tileX value is above 28.');
         } else if (tileX < -1) {
-            DebugWindow.error('Board.js', '#placeGameObject', 'tileX value is below -1.');
+            DebugWindow.error('Board.js', '#placeBoardObject', 'tileX value is below -1.');
         } else if (tileY > 36) {
-            DebugWindow.error('Board.js', '#placeGameObject', 'tileY value is above 36.');
+            DebugWindow.error('Board.js', '#placeBoardObject', 'tileY value is above 36.');
         } else if (tileY < 0) {
-            DebugWindow.error('Board.js', '#placeGameObject', 'tileY value is below 0.');
+            DebugWindow.error('Board.js', '#placeBoardObject', 'tileY value is below 0.');
         }
 
-        this.#boardDiv.appendChild(gameObject.getElement().css({
+        this.boardDiv.appendChild(boardObject.getElement().css({
             left: px(Board.calcTileOffset(tileX) - TILESIZE),
             top: px((Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY)))
-        }));
+        } as CSSStyleDeclaration) as HTMLElement);
     }
 
-    #createMainGameObjects() {
-        this.#placeGameObject(new PacMan('pac-man', 'assets/images/pacman-frame-0.png'), 15, 10);
+    private createMainBoardObjects() {
+        this.#placeBoardObject(new PacMan('pac-man', 'assets/images/pacman-frame-0.png'), 15, 10);
     }
 
-    #createGrid() {
-        if (!this.#boardCreated) {
+    private createGrid() {
+        if (!this.boardCreated) {
             DebugWindow.error('Board.js', 'grid', 'Board not fully created yet.');
         }
 
         for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-            this.#placeGameObject(new BoardText(`grid-vert-num-${i}`, i, TILESIZE * 0.75), i, 0);
+            this.#placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i, 0);
 
-            this.#boardDiv.appendChild(create('div', null, 'grid-vert board-object').css({
+            this.boardDiv.appendChild(create('div', null, ['grid-vert', 'board-object']).css({
                 left: px(left),
                 height: px(HEIGHT + TILESIZE)
-            }));
+            } as CSSStyleDeclaration) as HTMLElement);
         }
 
         for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-            this.#placeGameObject(new BoardText(`grid-horiz-num-${i}`, i, TILESIZE * 0.75), 0, i);
+            this.#placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), 0, i);
 
-            this.#boardDiv.appendChild(create('div', null, 'grid-horiz board-object').css({
+            this.boardDiv.appendChild(create('div', null, ['grid-horiz', 'board-object']).css({
                 left: px(- TILESIZE),
                 top: px(top + TILESIZE),
                 width: px(WIDTH + TILESIZE)
-            }));
+            } as CSSStyleDeclaration) as HTMLElement);
         }
     }
 
-    #createPaths() {
-        return fetchJSON('assets/json/paths.json').then((pathData) => {
-            let nodePositions = [];
+    private createPaths() {
+        return fetchJSON('assets/json/paths.json').then((pathData: PathData) => {
+            let nodePositions: [number, number][] = [];
             let pathLineIndex = 0;
 
             for (let [index, position] of Object.entries(pathData.nodes)) {
-                this.#placeGameObject(new PathNode(`pathnode-${index}`), position.x, position.y);
+                this.#placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
                 nodePositions.push([Board.calcTileOffset(position.x) + (TILESIZE / 2), Board.calcTileOffset(position.y) + (TILESIZE / 2)]);
             }
 
             for (let line of pathData.lines) {
                 for (let endNode of line.to) {
-                    let width = nodePositions[endNode][0] - nodePositions[line.startNode][0];
-                    let height = nodePositions[endNode][1] - nodePositions[line.startNode][1];
+                    let width = nodePositions[endNode]![0] - nodePositions[line.startNode]![0];
+                    let height = nodePositions[endNode]![1] - nodePositions[line.startNode]![1];
 
-                    this.#boardDiv.appendChild(create('div', `pathline-${pathLineIndex++}`, 'path-line board-object').css({
+                    this.boardDiv.appendChild(create('div', `pathline-${pathLineIndex++}`, ['path-line', 'board-object']).css({
                         width: px(width < 1 ? 1 : width),
                         height: px(height < 1 ? 1 : height),
-                        top: px(nodePositions[line.startNode][1]),
-                        left: px(nodePositions[line.startNode][0])
-                    }));
+                        top: px(nodePositions[line.startNode]![1]),
+                        left: px(nodePositions[line.startNode]![0])
+                    } as CSSStyleDeclaration) as HTMLElement);
                 }
             }
         });

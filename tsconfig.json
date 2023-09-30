@@ -18,6 +18,7 @@
         "resolveJsonModule": true,
         "composite": true,
         "outDir": "dist",
+        "target": "ES2015",
         "declarationDir": "types",
         "removeComments": true,
         "sourceMap": true,
@@ -35,7 +36,11 @@
                 "name": "typescript-eslint-language-service"
             }
         ],
-        "noEmit": true
+        "noEmit": true,
+        "lib": [
+            "DOM",
+            "ES6"
+        ]
     },
     "include": [
         "src/**/*"
