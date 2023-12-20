@@ -3,3 +3,4 @@
 toDo.txt
 node_modules/**
 tsc-output.*
+dist/**
