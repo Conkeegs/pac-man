@@ -12,6 +12,40 @@ declare global {
 	}
 }
 
+HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string {
+	if (isObject(style)) {
+		for (let [key, value] of Object.entries(style)) {
+			if (value !== null) {
+				(this.style as any)[key] = value;
+			}
+		}
+
+		return this;
+	} else {
+		return (this.style as any)[style as string];
+	}
+};
+
+HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): boolean {
+	if (isObject(style)) {
+		const length = this.length;
+
+		for (let i = 0; i < length; i++) {
+			const item = this[i];
+
+			if (item instanceof HTMLElement) {
+				item.css(style);
+			} else {
+				DebugWindow.error("Helpers.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
+			}
+		}
+
+		return true;
+	} else {
+		return false;
+	}
+};
+
 /**
  *
  *
@@ -183,37 +217,3 @@ export function die(...any: any[]): void {
 	stop();
 	throw new Error("Stopping...");
 }
-
-HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string {
-	if (isObject(style)) {
-		for (let [key, value] of Object.entries(style)) {
-			if (value !== null) {
-				(this.style as any)[key] = value;
-			}
-		}
-
-		return this;
-	} else {
-		return (this.style as any)[style as string];
-	}
-};
-
-HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): boolean {
-	if (isObject(style)) {
-		const length = this.length;
-
-		for (let i = 0; i < length; i++) {
-			const item = this[i];
-
-			if (item instanceof HTMLElement) {
-				item.css(style);
-			} else {
-				DebugWindow.error("Helpers.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
-			}
-		}
-
-		return true;
-	} else {
-		return false;
-	}
-};
