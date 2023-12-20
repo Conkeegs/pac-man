@@ -133,4 +133,16 @@ export default class Character extends BoardObject {
 
 		return false;
 	}
+
+	public getName() {
+		return this.name;
+	}
+
+	public getSpeed() {
+		return this.speed;
+	}
+
+	public getSource() {
+		return this.source;
+	}
 }
