@@ -109,19 +109,19 @@ export default class Board {
 		return TILESIZE * numTiles;
 	}
 
-	#placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
+	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
 		if (!(boardObject instanceof BoardObject)) {
-			DebugWindow.error("Board.js", "#placeBoardObject", "boardObject is not an actual instance of BoardObject.");
+			DebugWindow.error("Board.js", "placeBoardObject", "boardObject is not an actual instance of BoardObject.");
 		}
 
 		if (tileX > 28) {
-			DebugWindow.error("Board.js", "#placeBoardObject", "tileX value is above 28.");
+			DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
 		} else if (tileX < -1) {
-			DebugWindow.error("Board.js", "#placeBoardObject", "tileX value is below -1.");
+			DebugWindow.error("Board.js", "placeBoardObject", "tileX value is below -1.");
 		} else if (tileY > 36) {
-			DebugWindow.error("Board.js", "#placeBoardObject", "tileY value is above 36.");
+			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is above 36.");
 		} else if (tileY < 0) {
-			DebugWindow.error("Board.js", "#placeBoardObject", "tileY value is below 0.");
+			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		}
 
 		this.boardDiv.appendChild(
@@ -133,7 +133,7 @@ export default class Board {
 	}
 
 	private createMainBoardObjects() {
-		this.#placeBoardObject(new PacMan("pac-man", "src/assets/images/pacman-frame-0.png"), 15, 10);
+		this.placeBoardObject(new PacMan("pac-man", 88, "src/assets/images/pacman-frame-0.png"), 15, 10);
 	}
 
 	private createGrid() {
@@ -142,7 +142,7 @@ export default class Board {
 		}
 
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.#placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i, 0);
+			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i, 0);
 
 			this.boardDiv.appendChild(
 				create("div", null, ["grid-vert", "board-object"]).css({
@@ -153,7 +153,7 @@ export default class Board {
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			this.#placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), 0, i);
+			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), 0, i);
 
 			this.boardDiv.appendChild(
 				create("div", null, ["grid-horiz", "board-object"]).css({
@@ -171,7 +171,7 @@ export default class Board {
 			let pathLineIndex = 0;
 
 			for (let [index, position] of Object.entries(pathData.nodes)) {
-				this.#placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
+				this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
 				nodePositions.push([
 					Board.calcTileOffset(position.x) + TILESIZE / 2,
 					Board.calcTileOffset(position.y) + TILESIZE / 2,
