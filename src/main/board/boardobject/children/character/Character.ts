@@ -113,15 +113,12 @@ export default class Character extends BoardObject {
 	}
 
 	private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
-		if (lastAnimationTime === null) {
-			lastAnimationTime = timeStamp;
-		}
+		lastAnimationTime = timeStamp;
 
 		let newPosition: string | number | null = (
 			this.moveDirections[direction] as (elapsedTime: number) => string | number | null
 		)(timeStamp - lastAnimationTime);
 
-		lastAnimationTime = timeStamp;
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
 		);
