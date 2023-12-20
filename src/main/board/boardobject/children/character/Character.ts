@@ -109,6 +109,7 @@ export default class Character extends BoardObject {
 		this.animationFrameId = requestAnimationFrame((timeStamp) =>
 			this.move(direction, lastAnimationTime, timeStamp)
 		);
+
 		this.moving = true;
 	}
 
