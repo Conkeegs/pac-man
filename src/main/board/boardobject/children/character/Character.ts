@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import Board from "../../../../board/Board";
 import { TILESIZE } from "../../../../utils/Globals";
@@ -7,93 +7,122 @@ import { BoardObject } from "../../BoardObject";
 import type MovementDirection from "./MovementDirection";
 
 interface TurnData {
-    x: number;
-    y: number,
-    directions: number[];
+	x: number;
+	y: number;
+	directions: number[];
 }
 
 export default class Character extends BoardObject {
-    public override width: number = TILESIZE + (TILESIZE * 0.5);
-    public override height = TILESIZE + (TILESIZE * 0.5);
-    private animationFrameId: number | null = null;
-    private moving = false;
-    // private turnData: object | null = null;
+	private name: string = null;
+	private speed: number | null = null;
+	private source: string = null;
+	public override width: number = TILESIZE + TILESIZE * 0.5;
+	public override height = TILESIZE + TILESIZE * 0.5;
+	private animationFrameId: number | null = null;
+	private moving = false;
+	// private turnData: object | null = null;
 
-    private moveDirections: (((elapsedTime: number) => string | number | null) | (() => boolean))[] = [
-        (elapsedTime) => {
-            return px((this.getElement().css({
-                left: `calc(${this.getElement().css('left')} - ${px(0.088 * elapsedTime)})`
-            } as CSSStyleDeclaration) as HTMLElement).css('left') as string);
-        },
-        (elapsedTime) => {
-            return px((this.getElement().css({
-                left: `calc(${this.getElement().css('left')} + ${px(0.088 * elapsedTime)})`
-            } as CSSStyleDeclaration) as HTMLElement).css('left') as string);
-        },
-        (elapsedTime) => {
-            return px((this.getElement().css({
-                top: `calc(${this.getElement().css('top')} - ${px(0.088 * elapsedTime)})`
-            } as CSSStyleDeclaration) as HTMLElement).css('top') as string);
-        },
-        (elapsedTime) => {
-            return px((this.getElement().css({
-                top: `calc(${this.getElement().css('top')} + ${px(0.088 * elapsedTime)})`
-            } as CSSStyleDeclaration) as HTMLElement).css('top') as string);
-        },
-        () => {
-            return this.stopMoving();
-        }
-    ];
+	private moveDirections: (((elapsedTime: number) => string | number | null) | (() => boolean))[] = [
+		(elapsedTime) => {
+			return px(
+				(
+					this.getElement().css({
+						left: `calc(${this.getElement().css("left")} - ${px(0.088 * elapsedTime)})`,
+					} as CSSStyleDeclaration) as HTMLElement
+				).css("left") as string
+			);
+		},
+		(elapsedTime) => {
+			return px(
+				(
+					this.getElement().css({
+						left: `calc(${this.getElement().css("left")} + ${px(0.088 * elapsedTime)})`,
+					} as CSSStyleDeclaration) as HTMLElement
+				).css("left") as string
+			);
+		},
+		(elapsedTime) => {
+			return px(
+				(
+					this.getElement().css({
+						top: `calc(${this.getElement().css("top")} - ${px(0.088 * elapsedTime)})`,
+					} as CSSStyleDeclaration) as HTMLElement
+				).css("top") as string
+			);
+		},
+		(elapsedTime) => {
+			return px(
+				(
+					this.getElement().css({
+						top: `calc(${this.getElement().css("top")} + ${px(0.088 * elapsedTime)})`,
+					} as CSSStyleDeclaration) as HTMLElement
+				).css("top") as string
+			);
+		},
+		() => {
+			return this.stopMoving();
+		},
+	];
 
-    constructor(name: string, source: string) {
-        super(name);
+	constructor(name: string, speed: number, source: string) {
+		super(name);
 
-        this.getElement().css({
-            width: px(this.width),
-            height: px(this.height),
-            backgroundImage: `url(${source})`
-        } as CSSStyleDeclaration);
+		this.name = name;
+		this.speed = speed;
+		this.source = source;
 
-        fetchJSON('src/assets/json/turns.json').then((turnData: TurnData[]) => {
-            for (let turn of turnData) {
-                turn.x = Board.calcTileOffset(turn.x) + (TILESIZE / 2);
-                turn.y = Board.calcTileOffset(turn.y) + (TILESIZE / 2);
-            }
+		this.getElement().css({
+			width: px(this.width),
+			height: px(this.height),
+			backgroundImage: `url(${source})`,
+		} as CSSStyleDeclaration);
 
-            console.log(turnData);
+		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
+			for (let turn of turnData) {
+				turn.x = Board.calcTileOffset(turn.x) + TILESIZE / 2;
+				turn.y = Board.calcTileOffset(turn.y) + TILESIZE / 2;
+			}
 
-            // this.turnData = turnData;
-        });
-    }
+			console.log(turnData);
 
-    public isMoving() {
-        return this.moving;
-    }
+			// this.turnData = turnData;
+		});
+	}
 
-    public startMoving(direction: MovementDirection) {
-        this.stopMoving();
+	public isMoving() {
+		return this.moving;
+	}
 
-        let lastAnimationTime: null | number = null;
+	public startMoving(direction: MovementDirection) {
+		this.stopMoving();
 
-        this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, lastAnimationTime, timeStamp));
-        this.moving = true;
-    }
+		let lastAnimationTime: null | number = null;
 
-    private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
-        if (lastAnimationTime === null) {
-            lastAnimationTime = timeStamp;
-        }
+		this.animationFrameId = requestAnimationFrame((timeStamp) =>
+			this.move(direction, lastAnimationTime, timeStamp)
+		);
+		this.moving = true;
+	}
 
-        // let newPosition: string | number | null = (this.moveDirections[direction] as (((elapsedTime: number) => string | number | null)))(timeStamp - lastAnimationTime);
+	private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
+		if (lastAnimationTime === null) {
+			lastAnimationTime = timeStamp;
+		}
 
-        lastAnimationTime = timeStamp;
-        this.animationFrameId = requestAnimationFrame((timeStampNew) => this.move(direction, lastAnimationTime, timeStampNew));
-    }
+		let newPosition: string | number | null = (
+			this.moveDirections[direction] as (elapsedTime: number) => string | number | null
+		)(timeStamp - lastAnimationTime);
 
-    public stopMoving() {
-        cancelAnimationFrame(this.animationFrameId as number);
-        this.moving = false;
+		lastAnimationTime = timeStamp;
+		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
+			this.move(direction, lastAnimationTime, timeStampNew)
+		);
+	}
 
-        return false;
-    }
+	public stopMoving() {
+		cancelAnimationFrame(this.animationFrameId as number);
+		this.moving = false;
+
+		return false;
+	}
 }
