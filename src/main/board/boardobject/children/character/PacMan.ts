@@ -35,6 +35,7 @@ export default class PacMan extends Character {
 
 			if (exists(moveCode) && (!this.isMoving() || this.lastMoveCode !== moveCode)) {
 				this.startMoving(moveCode);
+
 				this.lastMoveCode = moveCode;
 			}
 		});
