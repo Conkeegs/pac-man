@@ -217,3 +217,7 @@ export function die(...any: any[]): void {
 	stop();
 	throw new Error("Stopping...");
 }
+
+export function millisToSeconds(milliseconds: number) {
+	return milliseconds / 1000;
+}

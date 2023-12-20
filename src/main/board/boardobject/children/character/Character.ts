@@ -2,7 +2,7 @@
 
 import Board from "../../../../board/Board";
 import { TILESIZE } from "../../../../utils/Globals";
-import { fetchJSON, px } from "../../../../utils/Utils";
+import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils";
 import { BoardObject } from "../../BoardObject";
 import type MovementDirection from "./MovementDirection";
 
@@ -27,7 +27,9 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} - ${px(this.speed! * elapsedTime)})`,
+						left: `calc(${this.getElement().css("left")} - ${px(
+							this.speed! * millisToSeconds(elapsedTime)
+						)})`,
 					}) as HTMLElement
 				).css("left") as string
 			);
@@ -36,7 +38,9 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} + ${px(this.speed! * elapsedTime)})`,
+						left: `calc(${this.getElement().css("left")} + ${px(
+							this.speed! * millisToSeconds(elapsedTime)
+						)})`,
 					}) as HTMLElement
 				).css("left") as string
 			);
@@ -45,7 +49,9 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} - ${px(this.speed! * elapsedTime)})`,
+						top: `calc(${this.getElement().css("top")} - ${px(
+							this.speed! * millisToSeconds(elapsedTime)
+						)})`,
 					}) as HTMLElement
 				).css("top") as string
 			);
@@ -54,7 +60,9 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} + ${px(this.speed! * elapsedTime)})`,
+						top: `calc(${this.getElement().css("top")} + ${px(
+							this.speed! * millisToSeconds(elapsedTime)
+						)})`,
 					}) as HTMLElement
 				).css("top") as string
 			);
