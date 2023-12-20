@@ -1,9 +1,9 @@
 "use strict";
 
-import DebugWindow from "../../../debugwindow/DebugWindow";
-import { TILESIZE } from "../../../utils/Globals";
-import { px } from "../../../utils/Utils";
-import { BoardObject } from "../BoardObject";
+import DebugWindow from "../../../debugwindow/DebugWindow.js";
+import { TILESIZE } from "../../../utils/Globals.js";
+import { px } from "../../../utils/Utils.js";
+import { BoardObject } from "../BoardObject.js";
 
 export default class BoardText extends BoardObject {
 	public override width = TILESIZE;

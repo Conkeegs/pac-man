@@ -1,8 +1,8 @@
 "use strict";
 
-import { exists } from "../../../../utils/Utils";
-import Character from "./Character";
-import MovementDirection from "./MovementDirection";
+import { exists } from "../../../../utils/Utils.js";
+import Character from "./Character.js";
+import MovementDirection from "./MovementDirection.js";
 
 export default class PacMan extends Character {
 	private lastMoveCode: MovementDirection | null = null;

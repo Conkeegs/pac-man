@@ -1,12 +1,12 @@
 "use strict";
 
-import DebugWindow from "../debugwindow/DebugWindow";
-import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals";
-import { create, fetchJSON, get, maybe, px } from "../utils/Utils";
-import { BoardObject } from "./boardobject/BoardObject";
-import BoardText from "./boardobject/children/BoardText";
-import PathNode from "./boardobject/children/PathNode";
-import PacMan from "./boardobject/children/character/PacMan";
+import DebugWindow from "../debugwindow/DebugWindow.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
+import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
+import { BoardObject } from "./boardobject/BoardObject.js";
+import BoardText from "./boardobject/children/BoardText.js";
+import PathNode from "./boardobject/children/PathNode.js";
+import PacMan from "./boardobject/children/character/PacMan.js";
 
 interface PathData {
 	nodes: [

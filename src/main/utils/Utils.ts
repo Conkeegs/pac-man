@@ -1,6 +1,6 @@
 "use strict";
 
-import DebugWindow from "../debugwindow/DebugWindow";
+import DebugWindow from "../debugwindow/DebugWindow.js";
 
 declare global {
 	interface HTMLElement {

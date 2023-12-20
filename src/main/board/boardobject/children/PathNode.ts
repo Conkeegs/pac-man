@@ -1,8 +1,8 @@
 "use strict";
 
-import { TILESIZE } from "../../../utils/Globals";
-import { create, px } from "../../../utils/Utils";
-import { BoardObject } from "../BoardObject";
+import { TILESIZE } from "../../../utils/Globals.js";
+import { create, px } from "../../../utils/Utils.js";
+import { BoardObject } from "../BoardObject.js";
 
 export default class PathNode extends BoardObject {
 	public override width = TILESIZE;

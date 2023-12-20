@@ -1,10 +1,10 @@
 "use strict";
 
-import Board from "../../../../board/Board";
-import { TILESIZE } from "../../../../utils/Globals";
-import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils";
-import { BoardObject } from "../../BoardObject";
-import type MovementDirection from "./MovementDirection";
+import Board from "../../../../board/Board.js";
+import { TILESIZE } from "../../../../utils/Globals.js";
+import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
+import { BoardObject } from "../../BoardObject.js";
+import type MovementDirection from "./MovementDirection.js";
 
 interface TurnData {
 	x: number;
