@@ -3,6 +3,10 @@
     box-sizing: border-box;
 }
 
+body {
+    background-color: #070200;
+}
+
 #game {
     width: 100vw;
     height: 100vh;
@@ -136,7 +140,8 @@
     border-radius: 0;
 }
 
-#ghost-spawn, #ghost-spawn-inner {
+#ghost-spawn,
+#ghost-spawn-inner {
     border-radius: 0;
 }
 
@@ -154,12 +159,14 @@
     background-color: white;
 }
 
-.grid-vert, .grid-horiz {
+.grid-vert,
+.grid-horiz {
     background-color: tomato;
     opacity: 0.3;
 }
 
-.grid-vert:hover, .grid-horiz:hover {
+.grid-vert:hover,
+.grid-horiz:hover {
     opacity: 1;
 }
 
