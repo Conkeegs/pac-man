@@ -1,7 +1,7 @@
 'use strict';
 
-import { TILESIZE } from "src/main/utils/Globals";
-import { create, px } from "src/main/utils/Utils";
+import { TILESIZE } from "../../../utils/Globals";
+import { create, px } from "../../../utils/Utils";
 import { BoardObject } from "../BoardObject";
 
 export default class PathNode extends BoardObject {

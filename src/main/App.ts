@@ -1,4 +1,5 @@
 'use strict';
 
-debug = true;
+import Board from "./board/Board";
+
 let board = new Board();

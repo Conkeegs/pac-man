@@ -1,8 +1,8 @@
 'use strict';
 
-import Board from "src/main/board/Board";
-import { TILESIZE } from "src/main/utils/Globals";
-import { fetchJSON, px } from "src/main/utils/Utils";
+import Board from "../../../../board/Board";
+import { TILESIZE } from "../../../../utils/Globals";
+import { fetchJSON, px } from "../../../../utils/Utils";
 import { BoardObject } from "../../BoardObject";
 import type MovementDirection from "./MovementDirection";
 
@@ -54,7 +54,7 @@ export default class Character extends BoardObject {
             backgroundImage: `url(${source})`
         } as CSSStyleDeclaration);
 
-        fetchJSON('assets/json/turns.json').then((turnData: TurnData[]) => {
+        fetchJSON('src/assets/json/turns.json').then((turnData: TurnData[]) => {
             for (let turn of turnData) {
                 turn.x = Board.calcTileOffset(turn.x) + (TILESIZE / 2);
                 turn.y = Board.calcTileOffset(turn.y) + (TILESIZE / 2);

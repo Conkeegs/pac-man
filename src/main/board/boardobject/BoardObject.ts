@@ -1,8 +1,8 @@
 'use strict';
 
-import DebugWindow from "src/main/debugwindow/DebugWindow";
-import { GAMEOBJECTS } from "src/main/utils/Globals";
-import { create } from "src/main/utils/Utils";
+import DebugWindow from "../../debugwindow/DebugWindow";
+import { GAMEOBJECTS } from "../../utils/Globals";
+import { create } from "../../utils/Utils";
 
 export class BoardObject {
     private element: HTMLElement;

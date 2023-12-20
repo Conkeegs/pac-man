@@ -63,7 +63,7 @@ export default class Board {
             (game.css({ backgroundColor: color } as CSSStyleDeclaration) as HTMLElement).appendChild(this.boardDiv);
         }
 
-        fetchJSON('assets/json/walls.json').then((wallData: WallDataElement[]) => {
+        fetchJSON('src/assets/json/walls.json').then((wallData: WallDataElement[]) => {
             for (let element of wallData) {
                 this.boardDiv.appendChild(create('div', element.id, element.classes).css({
                     width: px(Board.calcTileOffset(element.styles.width)),
@@ -119,7 +119,7 @@ export default class Board {
     }
 
     private createMainBoardObjects() {
-        this.#placeBoardObject(new PacMan('pac-man', 'assets/images/pacman-frame-0.png'), 15, 10);
+        this.#placeBoardObject(new PacMan('pac-man', 'src/assets/images/pacman-frame-0.png'), 15, 10);
     }
 
     private createGrid() {
@@ -148,7 +148,7 @@ export default class Board {
     }
 
     private createPaths() {
-        return fetchJSON('assets/json/paths.json').then((pathData: PathData) => {
+        return fetchJSON('src/assets/json/paths.json').then((pathData: PathData) => {
             let nodePositions: [number, number][] = [];
             let pathLineIndex = 0;
 

@@ -1,8 +1,8 @@
 'use strict';
 
-import DebugWindow from "src/main/debugwindow/DebugWindow";
-import { TILESIZE } from "src/main/utils/Globals";
-import { px } from "src/main/utils/Utils";
+import DebugWindow from "../../../debugwindow/DebugWindow";
+import { TILESIZE } from "../../../utils/Globals";
+import { px } from "../../../utils/Utils";
 import { BoardObject } from "../BoardObject";
 
 export default class BoardText extends BoardObject {

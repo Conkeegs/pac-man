@@ -1,6 +1,6 @@
 'use strict';
 
-import { exists } from "src/main/utils/Utils";
+import { exists } from "../../../../utils/Utils";
 import Character from "./Character";
 import MovementDirection from "./MovementDirection";
 
