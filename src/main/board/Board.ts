@@ -53,14 +53,14 @@ export default class Board {
 			width: px(WIDTH),
 			height: px(HEIGHT),
 			backgroundColor: color,
-		} as CSSStyleDeclaration);
+		});
 
 		let game: HTMLElement | null = get("game");
 
 		if (!game) {
 			DebugWindow.error("Board.js", "constructor", "No #game element found.");
 		} else {
-			(game.css({ backgroundColor: color } as CSSStyleDeclaration) as HTMLElement).appendChild(this.boardDiv);
+			(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 		}
 
 		fetchJSON("src/assets/json/walls.json")
@@ -84,13 +84,13 @@ export default class Board {
 							borderBottomLeftRadius: px(
 								maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
 							),
-						} as CSSStyleDeclaration) as HTMLElement
+						}) as HTMLElement
 					);
 				}
 
 				get("middle-cover")!.css({
 					backgroundColor: color,
-				} as CSSStyleDeclaration);
+				});
 
 				this.boardCreated = true;
 
@@ -128,7 +128,7 @@ export default class Board {
 			boardObject.getElement().css({
 				left: px(Board.calcTileOffset(tileX) - TILESIZE),
 				top: px(Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY)),
-			} as CSSStyleDeclaration) as HTMLElement
+			}) as HTMLElement
 		);
 	}
 
@@ -148,7 +148,7 @@ export default class Board {
 				create("div", null, ["grid-vert", "board-object"]).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
-				} as CSSStyleDeclaration) as HTMLElement
+				}) as HTMLElement
 			);
 		}
 
@@ -160,7 +160,7 @@ export default class Board {
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
-				} as CSSStyleDeclaration) as HTMLElement
+				}) as HTMLElement
 			);
 		}
 	}
@@ -189,7 +189,7 @@ export default class Board {
 							height: px(height < 1 ? 1 : height),
 							top: px(nodePositions[line.startNode]![1]),
 							left: px(nodePositions[line.startNode]![0]),
-						} as CSSStyleDeclaration) as HTMLElement
+						}) as HTMLElement
 					);
 				}
 			}

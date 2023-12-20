@@ -13,9 +13,9 @@ interface TurnData {
 }
 
 export default class Character extends BoardObject {
-	private name: string = null;
+	private name: string | null = null;
 	private speed: number | null = null;
-	private source: string = null;
+	private source: string | null = null;
 	public override width: number = TILESIZE + TILESIZE * 0.5;
 	public override height = TILESIZE + TILESIZE * 0.5;
 	private animationFrameId: number | null = null;
@@ -27,8 +27,8 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} - ${px(0.088 * elapsedTime)})`,
-					} as CSSStyleDeclaration) as HTMLElement
+						left: `calc(${this.getElement().css("left")} - ${px(this.speed! * elapsedTime)})`,
+					}) as HTMLElement
 				).css("left") as string
 			);
 		},
@@ -36,8 +36,8 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} + ${px(0.088 * elapsedTime)})`,
-					} as CSSStyleDeclaration) as HTMLElement
+						left: `calc(${this.getElement().css("left")} + ${px(this.speed! * elapsedTime)})`,
+					}) as HTMLElement
 				).css("left") as string
 			);
 		},
@@ -45,8 +45,8 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} - ${px(0.088 * elapsedTime)})`,
-					} as CSSStyleDeclaration) as HTMLElement
+						top: `calc(${this.getElement().css("top")} - ${px(this.speed! * elapsedTime)})`,
+					}) as HTMLElement
 				).css("top") as string
 			);
 		},
@@ -54,8 +54,8 @@ export default class Character extends BoardObject {
 			return px(
 				(
 					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} + ${px(0.088 * elapsedTime)})`,
-					} as CSSStyleDeclaration) as HTMLElement
+						top: `calc(${this.getElement().css("top")} + ${px(this.speed! * elapsedTime)})`,
+					}) as HTMLElement
 				).css("top") as string
 			);
 		},
@@ -75,7 +75,7 @@ export default class Character extends BoardObject {
 			width: px(this.width),
 			height: px(this.height),
 			backgroundImage: `url(${source})`,
-		} as CSSStyleDeclaration);
+		});
 
 		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
 			for (let turn of turnData) {

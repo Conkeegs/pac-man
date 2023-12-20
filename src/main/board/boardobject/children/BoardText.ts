@@ -22,7 +22,7 @@ export default class BoardText extends BoardObject {
 				height: px(this.height),
 				fontSize: px(fontsize),
 				color: color,
-			} as CSSStyleDeclaration) as HTMLElement
+			}) as HTMLElement
 		).textContent = text;
 	}
 }

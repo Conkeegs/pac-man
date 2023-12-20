@@ -4,11 +4,11 @@ import DebugWindow from "../debugwindow/DebugWindow";
 
 declare global {
 	interface HTMLElement {
-		css(style: string | CSSStyleDeclaration): HTMLElement | string;
+		css(style: string | CSSStyleDeclaration | object): HTMLElement | string;
 	}
 
 	interface HTMLCollectionBase {
-		css(style: CSSStyleDeclaration): boolean;
+		css(style: CSSStyleDeclaration | object): boolean;
 	}
 }
 
@@ -184,7 +184,7 @@ export function die(...any: any[]): void {
 	throw new Error("Stopping...");
 }
 
-HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration): HTMLElement | string {
+HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string {
 	if (isObject(style)) {
 		for (let [key, value] of Object.entries(style)) {
 			if (value !== null) {
@@ -198,7 +198,7 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration): HTML
 	}
 };
 
-HTMLCollection.prototype.css = function (style: CSSStyleDeclaration): boolean {
+HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): boolean {
 	if (isObject(style)) {
 		const length = this.length;
 
