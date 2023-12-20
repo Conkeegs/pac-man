@@ -127,6 +127,7 @@ export default class Character extends BoardObject {
 
 	public stopMoving() {
 		cancelAnimationFrame(this.animationFrameId as number);
+
 		this.moving = false;
 
 		return false;

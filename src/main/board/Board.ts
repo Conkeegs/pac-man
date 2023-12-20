@@ -172,6 +172,7 @@ export default class Board {
 
 			for (let [index, position] of Object.entries(pathData.nodes)) {
 				this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
+
 				nodePositions.push([
 					Board.calcTileOffset(position.x) + TILESIZE / 2,
 					Board.calcTileOffset(position.y) + TILESIZE / 2,
