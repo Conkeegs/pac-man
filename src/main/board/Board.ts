@@ -181,15 +181,17 @@ export default class Board {
 
 			for (let line of pathData.lines) {
 				for (let endNode of line.to) {
-					let width = nodePositions[endNode]![0] - nodePositions[line.startNode]![0];
-					let height = nodePositions[endNode]![1] - nodePositions[line.startNode]![1];
+					const startNode = line.startNode;
+
+					let width = nodePositions[endNode]![0] - nodePositions[startNode]![0];
+					let height = nodePositions[endNode]![1] - nodePositions[startNode]![1];
 
 					this.boardDiv.appendChild(
 						create("div", `pathline-${pathLineIndex++}`, ["path-line", "board-object"]).css({
 							width: px(width < 1 ? 1 : width),
 							height: px(height < 1 ? 1 : height),
-							top: px(nodePositions[line.startNode]![1]),
-							left: px(nodePositions[line.startNode]![0]),
+							top: px(nodePositions[startNode]![1]),
+							left: px(nodePositions[startNode]![0]),
 						}) as HTMLElement
 					);
 				}
