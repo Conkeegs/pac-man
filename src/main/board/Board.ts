@@ -177,8 +177,8 @@ export default class Board {
 				this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
 
 				nodePositions.push([
-					Board.calcTileOffset(position.x) + TILESIZE / 2,
-					Board.calcTileOffset(position.y) + TILESIZE / 2,
+					Board.calcTileOffset(position.x) + Board.calcTileOffset(0.5),
+					Board.calcTileOffset(position.y) + Board.calcTileOffset(0.5),
 				]);
 			}
 

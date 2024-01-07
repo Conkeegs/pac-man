@@ -16,8 +16,8 @@ export default class Character extends BoardObject {
 	private name: string | null = null;
 	private speed: number | null = null;
 	private source: string | null = null;
-	public override width: number = TILESIZE + TILESIZE * 0.5;
-	public override height = TILESIZE + TILESIZE * 0.5;
+	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
+	public override height = TILESIZE + Board.calcTileOffset(0.5);
 	private animationFrameId: number | null = null;
 	private moving = false;
 	// private turnData: object | null = null;
@@ -87,8 +87,8 @@ export default class Character extends BoardObject {
 
 		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
-				turn.x = Board.calcTileOffset(turn.x) + TILESIZE / 2;
-				turn.y = Board.calcTileOffset(turn.y) + TILESIZE / 2;
+				turn.x = Board.calcTileOffset(turn.x) + Board.calcTileOffset(0.5);
+				turn.y = Board.calcTileOffset(turn.y) + Board.calcTileOffset(0.5);
 			}
 
 			console.log(turnData);

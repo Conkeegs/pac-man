@@ -2,6 +2,7 @@
 
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
+import Board from "../../Board.js";
 import { BoardObject } from "../BoardObject.js";
 
 export default class PathNode extends BoardObject {
@@ -20,8 +21,8 @@ export default class PathNode extends BoardObject {
 
 		element.appendChild(
 			create({ name: "div", id: `${name}-node-element`, classes: ["node"] }).css({
-				width: px(TILESIZE * 0.5),
-				height: px(TILESIZE * 0.5),
+				width: px(Board.calcTileOffset(0.5)),
+				height: px(Board.calcTileOffset(0.5)),
 				backgroundColor: color,
 			}) as HTMLElement
 		);
