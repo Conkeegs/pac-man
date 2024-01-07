@@ -126,7 +126,7 @@ export default class Board {
 
 		this.boardDiv.appendChild(
 			boardObject.getElement().css({
-				left: px(Board.calcTileOffset(tileX) - TILESIZE),
+				left: px(Board.calcTileOffset(tileX)),
 				top: px(Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY)),
 			}) as HTMLElement
 		);
@@ -142,7 +142,7 @@ export default class Board {
 		}
 
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i, 0);
+			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i - 1, 0);
 
 			this.boardDiv.appendChild(
 				create("div", null, ["grid-vert", "board-object"]).css({
@@ -153,7 +153,7 @@ export default class Board {
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), 0, i);
+			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), -1, i);
 
 			this.boardDiv.appendChild(
 				create("div", null, ["grid-horiz", "board-object"]).css({
