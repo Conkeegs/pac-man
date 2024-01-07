@@ -195,7 +195,7 @@ export function exists(value: unknown): boolean {
  * @param {unknown} def
  * @return {unknown}
  */
-export function truthy(any: unknown, def: unknown): unknown {
+export function truthyOrDefault(any: unknown, def: unknown): unknown {
 	if (any) {
 		return any;
 	} else {
