@@ -136,7 +136,15 @@ export default class Board {
 	}
 
 	private createMainBoardObjects() {
-		this.placeBoardObject(new PacMan("pac-man", 88, "src/assets/images/pacman-frame-0.png"), 15, 10);
+		const PACMAN_SPEED = 88;
+		const PACMAN_SPAWN_X = 15;
+		const PACMAN_SPAWN_Y = 10;
+
+		this.placeBoardObject(
+			new PacMan("pac-man", PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
+			PACMAN_SPAWN_X,
+			PACMAN_SPAWN_Y
+		);
 	}
 
 	private createGrid() {
@@ -145,7 +153,11 @@ export default class Board {
 		}
 
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i - 1, 0);
+			this.placeBoardObject(
+				new BoardText(`grid-vert-num-${i}`, i.toString(), Board.calcTileOffset(0.75)),
+				i - 1,
+				0
+			);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-vert", "board-object"] }).css({
@@ -156,7 +168,11 @@ export default class Board {
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), -1, i);
+			this.placeBoardObject(
+				new BoardText(`grid-horiz-num-${i}`, i.toString(), Board.calcTileOffset(0.75)),
+				-1,
+				i
+			);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-horiz", "board-object"] }).css({
