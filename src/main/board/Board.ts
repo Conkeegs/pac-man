@@ -183,11 +183,13 @@ export default class Board {
 			}
 
 			for (let line of pathData.lines) {
-				for (let endNode of line.to) {
-					const startNode = line.startNode;
+				const startNode = line.startNode;
 
-					let width = nodePositions[endNode]![0] - nodePositions[startNode]![0];
-					let height = nodePositions[endNode]![1] - nodePositions[startNode]![1];
+				for (let endNode of line.to) {
+					let width = Math.abs(nodePositions[endNode]![0] - nodePositions[startNode]![0]);
+					let height = Math.abs(nodePositions[endNode]![1] - nodePositions[startNode]![1]);
+
+					const heightLessThan1 = height < 1;
 
 					this.boardDiv.appendChild(
 						create({
@@ -196,8 +198,8 @@ export default class Board {
 							classes: ["path-line", "board-object"],
 						}).css({
 							width: px(width < 1 ? 1 : width),
-							height: px(height < 1 ? 1 : height),
-							top: px(nodePositions[startNode]![1]),
+							height: px(heightLessThan1 ? 1 : height),
+							bottom: px(nodePositions[startNode]![1] - TILESIZE - (heightLessThan1 ? 0 : height)),
 							left: px(nodePositions[startNode]![0]),
 						}) as HTMLElement
 					);
