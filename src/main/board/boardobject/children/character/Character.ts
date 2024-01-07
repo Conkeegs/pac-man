@@ -22,7 +22,7 @@ export default class Character extends BoardObject {
 	private moving = false;
 	// private turnData: object | null = null;
 
-	private moveDirections: (((elapsedTime: number) => string | number | null) | (() => boolean))[] = [
+	private moveDirections: (((elapsedTime: number) => string | number | undefined) | (() => boolean))[] = [
 		(elapsedTime) => {
 			return px(
 				(

@@ -126,11 +126,11 @@ export function getMany(selector: string): HTMLCollection {
  *
  *
  * @export
- * @param {(string | number | null)} pixels
- * @return {(string | number | null)}
+ * @param {(string | number | undefined)} pixels
+ * @return {(string | number | undefined)}
  */
-export function px(pixels: string | number | null): string | number | null {
-	if (pixels !== null) {
+export function px(pixels?: string | number): string | number | undefined {
+	if (typeof pixels !== "undefined") {
 		if (!(typeof pixels === "string")) {
 			return pixels + "px";
 		} else {
@@ -142,7 +142,7 @@ export function px(pixels: string | number | null): string | number | null {
 		}
 	}
 
-	return null;
+	return undefined;
 }
 
 /**
