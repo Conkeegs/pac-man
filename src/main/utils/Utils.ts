@@ -74,30 +74,27 @@ export function fetchJSON(filename: string): Promise<any> {
  *
  *
  * @export
- * @param {string} name
- * @param {(string | null)} [id=null]
- * @param {(string | null)} [classes=null]
- * @param {(string | null)} [html=null]
+ * @param {{
+ * name: string;
+ * id?: string;
+ * classes?: string[];
+ * html?: string;
+ * }} data
  * @return {HTMLElement}
  */
-export function create(
-	name: string,
-	id: string | null = null,
-	classes: string[] | null = null,
-	html: string | null = null
-) {
-	let element = document.createElement(name);
+export function create(data: { name: string; id?: string; classes?: string[]; html?: string }) {
+	let element = document.createElement(data.name);
 
-	if (id) {
-		element.id = id;
+	if (data.id) {
+		element.id = data.id;
 	}
 
-	if (classes) {
-		element.classList.add(...classes);
+	if (data.classes) {
+		element.classList.add(...data.classes);
 	}
 
-	if (html) {
-		element.innerHTML = html;
+	if (data.html) {
+		element.innerHTML = data.html;
 	}
 
 	return element;
@@ -214,7 +211,9 @@ export function truthy(any: unknown, def: unknown): unknown {
  */
 export function die(...any: any[]): void {
 	console.log(...any);
+
 	stop();
+
 	throw new Error("Stopping...");
 }
 

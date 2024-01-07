@@ -19,7 +19,7 @@ export default class PathNode extends BoardObject {
 		});
 
 		element.appendChild(
-			create("div", `${name}-node-element`, ["node"]).css({
+			create({ name: "div", id: `${name}-node-element`, classes: ["node"] }).css({
 				width: px(TILESIZE * 0.5),
 				height: px(TILESIZE * 0.5),
 				backgroundColor: color,

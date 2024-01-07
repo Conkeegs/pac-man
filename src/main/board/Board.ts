@@ -40,7 +40,10 @@ interface WallDataElement {
 
 export default class Board {
 	private boardCreated = false;
-	private boardDiv = create("div", "board");
+	private boardDiv = create({
+		name: "div",
+		id: "board",
+	});
 
 	constructor(color = "#070200") {
 		if (WIDTH % COLUMNS !== 0) {
@@ -67,7 +70,7 @@ export default class Board {
 			.then((wallData: WallDataElement[]) => {
 				for (let element of wallData) {
 					this.boardDiv.appendChild(
-						create("div", element.id, element.classes).css({
+						create({ name: "div", id: element.id, classes: element.classes }).css({
 							width: px(Board.calcTileOffset(element.styles.width)),
 							height: px(Board.calcTileOffset(element.styles.height)),
 							top: px(Board.calcTileOffset(element.styles.top)),
@@ -145,7 +148,7 @@ export default class Board {
 			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), TILESIZE * 0.75), i - 1, 0);
 
 			this.boardDiv.appendChild(
-				create("div", null, ["grid-vert", "board-object"]).css({
+				create({ name: "div", classes: ["grid-vert", "board-object"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
 				}) as HTMLElement
@@ -156,7 +159,7 @@ export default class Board {
 			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), TILESIZE * 0.75), -1, i);
 
 			this.boardDiv.appendChild(
-				create("div", null, ["grid-horiz", "board-object"]).css({
+				create({ name: "div", classes: ["grid-horiz", "board-object"] }).css({
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
@@ -187,7 +190,11 @@ export default class Board {
 					let height = nodePositions[endNode]![1] - nodePositions[startNode]![1];
 
 					this.boardDiv.appendChild(
-						create("div", `pathline-${pathLineIndex++}`, ["path-line", "board-object"]).css({
+						create({
+							name: "div",
+							id: `pathline-${pathLineIndex++}`,
+							classes: ["path-line", "board-object"],
+						}).css({
 							width: px(width < 1 ? 1 : width),
 							height: px(height < 1 ? 1 : height),
 							top: px(nodePositions[startNode]![1]),

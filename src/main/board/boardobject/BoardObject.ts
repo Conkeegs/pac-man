@@ -19,7 +19,7 @@ export class BoardObject {
 
 		GAMEOBJECTS.push(name);
 
-		this.element = create("div", name, ["game-object", "board-object"]);
+		this.element = create({ name: "div", id: name, classes: ["game-object", "board-object"] });
 	}
 
 	public getElement(): HTMLElement {
