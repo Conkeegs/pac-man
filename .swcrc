@@ -1,28 +1,29 @@
 {
     "$schema": "https://json.schemastore.org/swcrc",
     "test": ".*\\.ts$",
-    "sourceMaps": true,
+    "sourceMaps": "inline",
+    // "inlineSourcesContent": true,
+    // "isModule": true,
+    // "inputSourceMap": "./web.js",
     "exclude": [
-        "**/*.spec.ts",
+        // "**/*.spec.ts",
         "node_modules"
     ],
     "jsc": {
-        "minify": {
-            "compress": true,
-            "dead_code": true
-        },
-        "baseUrl": ".",
+        // "minify": {
+        //     "compress": true,
+        //     "dead_code": true
+        // },
+        // "baseUrl": "./src",
         "parser": {
             "syntax": "typescript",
             "tsx": false,
             "dynamicImport": false,
             "decorators": false
-            // "decorators": true
         },
         "target": "es2015",
         "loose": true,
         "externalHelpers": true,
-        // Requires v1.2.50 or upper and requires target to be es2016 or upper.
         "keepClassNames": false,
         "transform": {
             "constModules": {
@@ -36,21 +37,18 @@
                     }
                 }
             }
-            //     "legacyDecorator": true,
-            //     "decoratorMetadata": true
         }
     },
-    "minify": true,
+    // "minify": true,
     "env": {
         "loose": true,
         "bugfixes": true
     },
     "module": {
         "type": "es6",
-        // These are defaults.
         "strict": false,
         "strictMode": true,
         "lazy": false,
-        "noInterop": false
+        "noInterop": false,
     }
 }
