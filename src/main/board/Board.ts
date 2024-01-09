@@ -138,7 +138,7 @@ export default class Board {
 	private createMainBoardObjects() {
 		const PACMAN_SPEED = 88;
 		const PACMAN_SPAWN_X = 15;
-		const PACMAN_SPAWN_Y = 10;
+		const PACMAN_SPAWN_Y = 10.25;
 
 		this.placeBoardObject(
 			new PacMan("pac-man", PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
