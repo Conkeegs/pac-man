@@ -7,8 +7,8 @@ import { create } from "../../utils/Utils.js";
 export class BoardObject {
 	private element: HTMLElement;
 
-	protected width: number | null = null;
-	protected height: number | null = null;
+	protected width: number | undefined;
+	protected height: number | undefined;
 
 	constructor(name: string) {
 		if (!name) {
@@ -26,11 +26,11 @@ export class BoardObject {
 		return this.element;
 	}
 
-	public getWidth(): number | null {
+	public getWidth(): number | undefined {
 		return this.width;
 	}
 
-	public getHeight(): number | null {
+	public getHeight(): number | undefined {
 		return this.height;
 	}
 }

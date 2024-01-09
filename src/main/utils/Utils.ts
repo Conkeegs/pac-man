@@ -15,7 +15,7 @@ declare global {
 HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string {
 	if (isObject(style)) {
 		for (let [key, value] of Object.entries(style)) {
-			if (value !== null) {
+			if (exists(value)) {
 				(this.style as any)[key] = value;
 			}
 		}
@@ -153,7 +153,7 @@ export function px(pixels?: string | number): string | number | undefined {
  * @return {boolean}
  */
 export function isObject(value: unknown) {
-	if (value instanceof Object && value !== null && !Array.isArray(value) && typeof value !== "function") {
+	if (value instanceof Object && exists(value) && !Array.isArray(value) && typeof value !== "function") {
 		return true;
 	} else {
 		return false;
@@ -169,7 +169,7 @@ export function isObject(value: unknown) {
  * @return {unknown}
  */
 export function maybe(value: unknown, otherwise: unknown): unknown {
-	if (typeof value !== "undefined" && value !== null) {
+	if (exists(value)) {
 		return value;
 	} else {
 		return otherwise;

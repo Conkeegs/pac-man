@@ -5,7 +5,7 @@ import Character from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
 
 export default class PacMan extends Character {
-	private lastMoveCode: MovementDirection | null = null;
+	private lastMoveCode: MovementDirection | undefined;
 	private moveCodes = {
 		ArrowLeft: MovementDirection.LEFT,
 		ArrowRight: MovementDirection.RIGHT,

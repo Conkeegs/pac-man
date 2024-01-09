@@ -4,7 +4,7 @@ import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject } from "../../BoardObject.js";
-import type MovementDirection from "./MovementDirection.js";
+import MovementDirection from "./MovementDirection.js";
 
 interface TurnData {
 	x: number;
@@ -13,12 +13,12 @@ interface TurnData {
 }
 
 export default class Character extends BoardObject {
-	private name: string | null = null;
-	private speed: number | null = null;
-	private source: string | null = null;
+	private name: string | undefined;
+	private speed: number | undefined;
+	private source: string | undefined;
 	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
-	private animationFrameId: number | null = null;
+	private animationFrameId: number | undefined;
 	private moving = false;
 	// private turnData: object | null = null;
 
