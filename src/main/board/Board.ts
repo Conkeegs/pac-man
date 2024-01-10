@@ -184,43 +184,43 @@ export default class Board {
 		}
 	}
 
-	private createPaths() {
-		return fetchJSON("src/assets/json/paths.json").then((pathData: PathData) => {
-			let nodePositions: [number, number][] = [];
-			let pathLineIndex = 0;
+	private async createPaths() {
+		const pathData: PathData = await fetchJSON("src/assets/json/paths.json");
 
-			for (let [index, position] of Object.entries(pathData.nodes)) {
-				this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
+		const nodePositions: [number, number][] = [];
+		let pathLineIndex = 0;
 
-				nodePositions.push([
-					Board.calcTileOffset(position.x) + Board.calcTileOffset(0.5),
-					Board.calcTileOffset(position.y) + Board.calcTileOffset(0.5),
-				]);
+		for (let [index, position] of Object.entries(pathData.nodes)) {
+			this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
+
+			nodePositions.push([
+				Board.calcTileOffset(position.x) + Board.calcTileOffset(0.5),
+				Board.calcTileOffset(position.y) + Board.calcTileOffset(0.5),
+			]);
+		}
+
+		for (let line of pathData.lines) {
+			const startNode = line.startNode;
+
+			for (let endNode of line.to) {
+				let width = Math.abs(nodePositions[endNode]![0] - nodePositions[startNode]![0]);
+				let height = Math.abs(nodePositions[endNode]![1] - nodePositions[startNode]![1]);
+
+				const heightLessThan1 = height < 1;
+
+				this.boardDiv.appendChild(
+					create({
+						name: "div",
+						id: `pathline-${pathLineIndex++}`,
+						classes: ["path-line", "board-object"],
+					}).css({
+						width: px(width < 1 ? 1 : width),
+						height: px(heightLessThan1 ? 1 : height),
+						bottom: px(nodePositions[startNode]![1] - TILESIZE - (heightLessThan1 ? 0 : height)),
+						left: px(nodePositions[startNode]![0]),
+					}) as HTMLElement
+				);
 			}
-
-			for (let line of pathData.lines) {
-				const startNode = line.startNode;
-
-				for (let endNode of line.to) {
-					let width = Math.abs(nodePositions[endNode]![0] - nodePositions[startNode]![0]);
-					let height = Math.abs(nodePositions[endNode]![1] - nodePositions[startNode]![1]);
-
-					const heightLessThan1 = height < 1;
-
-					this.boardDiv.appendChild(
-						create({
-							name: "div",
-							id: `pathline-${pathLineIndex++}`,
-							classes: ["path-line", "board-object"],
-						}).css({
-							width: px(width < 1 ? 1 : width),
-							height: px(heightLessThan1 ? 1 : height),
-							bottom: px(nodePositions[startNode]![1] - TILESIZE - (heightLessThan1 ? 0 : height)),
-							left: px(nodePositions[startNode]![0]),
-						}) as HTMLElement
-					);
-				}
-			}
-		});
+		}
 	}
 }

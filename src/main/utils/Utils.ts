@@ -53,21 +53,18 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
  * @param {string} filename
  * @return {any}
  */
-export function fetchJSON(filename: string): Promise<any> {
-	return fetch(filename)
-		.then((response: Response): Promise<any> => {
-			return response.json();
-		})
-		.then((body) => {
-			if (!body) {
-				throw new Error("JSON response body is empty.");
-			} else {
-				return body;
-			}
-		})
-		.catch((error) => {
-			DebugWindow.error("Helpers.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
-		});
+export async function fetchJSON(filename: string): Promise<any> {
+	try {
+		const body = await (await fetch(filename)).json();
+
+		if (!body) {
+			throw new Error("JSON response body is empty.");
+		}
+
+		return body;
+	} catch (error: any) {
+		DebugWindow.error("Helpers.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
+	}
 }
 
 /**
