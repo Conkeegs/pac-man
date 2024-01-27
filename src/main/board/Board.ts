@@ -127,10 +127,18 @@ export default class Board {
 			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		}
 
+		const left = Board.calcTileOffset(tileX);
+		const top = Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY);
+
+		boardObject.setPosition({
+			left,
+			top,
+		});
+
 		this.boardDiv.appendChild(
 			boardObject.getElement().css({
-				left: px(Board.calcTileOffset(tileX)),
-				top: px(Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY)),
+				left: px(left),
+				top: px(top),
 			}) as HTMLElement
 		);
 	}

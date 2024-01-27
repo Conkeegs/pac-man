@@ -5,7 +5,7 @@ export const ROWS: 36 = 36;
 
 export const DEBUG: boolean = false;
 
-export const GAMEOBJECTS: string[] = [];
+export const BOARDOBJECTS: string[] = [];
 
 let match = window.matchMedia("(min-width: 720px)");
 

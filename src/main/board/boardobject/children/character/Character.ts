@@ -2,8 +2,8 @@
 
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
-import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
-import { BoardObject } from "../../BoardObject.js";
+import { add, fetchJSON, millisToSeconds, px, subtract } from "../../../../utils/Utils.js";
+import { BoardObject, type Position } from "../../BoardObject.js";
 import MovementDirection from "./MovementDirection.js";
 
 interface TurnData {
@@ -12,70 +12,140 @@ interface TurnData {
 	directions: number[];
 }
 
+// type PositionHandler = ((elapsedTime: number) => string | number | undefined) | (() => boolean);
+
 export default class Character extends BoardObject {
-	private name: string | undefined;
 	private speed: number | undefined;
 	private source: string | undefined;
-	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
-	public override height = TILESIZE + Board.calcTileOffset(0.5);
 	private animationFrameId: number | undefined;
 	private moving = false;
-	// private turnData: object | null = null;
+	// private turnData: object | undefined;
 
-	private moveDirections: (((elapsedTime: number) => string | number | undefined) | (() => boolean))[] = [
-		(elapsedTime) => {
-			return px(
-				(
-					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} - ${px(
-							this.speed! * millisToSeconds(elapsedTime)
-						)})`,
-					}) as HTMLElement
-				).css("left") as string
-			);
+	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
+	public override height = TILESIZE + Board.calcTileOffset(0.5);
+
+	private movementOperators = {
+		[MovementDirection.LEFT]: {
+			direction: "left",
+			arithmetic: subtract,
 		},
-		(elapsedTime) => {
-			return px(
-				(
-					this.getElement().css({
-						left: `calc(${this.getElement().css("left")} + ${px(
-							this.speed! * millisToSeconds(elapsedTime)
-						)})`,
-					}) as HTMLElement
-				).css("left") as string
-			);
+		[MovementDirection.RIGHT]: {
+			direction: "left",
+			arithmetic: add,
 		},
-		(elapsedTime) => {
-			return px(
-				(
-					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} - ${px(
-							this.speed! * millisToSeconds(elapsedTime)
-						)})`,
-					}) as HTMLElement
-				).css("top") as string
-			);
+		[MovementDirection.UP]: {
+			direction: "top",
+			arithmetic: subtract,
 		},
-		(elapsedTime) => {
-			return px(
-				(
-					this.getElement().css({
-						top: `calc(${this.getElement().css("top")} + ${px(
-							this.speed! * millisToSeconds(elapsedTime)
-						)})`,
-					}) as HTMLElement
-				).css("top") as string
-			);
+		[MovementDirection.DOWN]: {
+			direction: "top",
+			arithmetic: add,
 		},
-		() => {
-			return this.stopMoving();
-		},
-	];
+	};
+
+	// private positionHandlers: PositionHandler[] = [
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					left: `calc(${this.getElement().css("left")} - ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("left") as string
+	// 		);
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					left: `calc(${this.getElement().css("left")} + ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("left") as string
+	// 		);
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					top: `calc(${this.getElement().css("top")} - ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("top") as string
+	// 		);
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					top: `calc(${this.getElement().css("top")} + ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("top") as string
+	// 		);
+	// 	},
+	// 	() => {
+	// 		return this.stopMoving();
+	// 	},
+	// ];
+
+	// private positionHandlers: PositionHandler[] = [
+	// 	(elapsedTime) => {
+	// 		const element = this.getElement();
+	// 		const newPosition =
+	// 			(px(element.css("left") as string) as number) - this.speed! * millisToSeconds(elapsedTime);
+
+	// 		element.css({
+	// 			left: newPosition,
+	// 		});
+
+	// 		return newPosition;
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					left: `calc(${this.getElement().css("left")} + ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("left") as string
+	// 		);
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					top: `calc(${this.getElement().css("top")} - ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("top") as string
+	// 		);
+	// 	},
+	// 	(elapsedTime) => {
+	// 		return px(
+	// 			(
+	// 				this.getElement().css({
+	// 					top: `calc(${this.getElement().css("top")} + ${px(
+	// 						this.speed! * millisToSeconds(elapsedTime)
+	// 					)})`,
+	// 				}) as HTMLElement
+	// 			).css("top") as string
+	// 		);
+	// 	},
+	// 	() => {
+	// 		return this.stopMoving();
+	// 	},
+	// ];
 
 	constructor(name: string, speed: number, source: string) {
 		super(name);
 
-		this.name = name;
 		this.speed = speed;
 		this.source = source;
 
@@ -91,8 +161,6 @@ export default class Character extends BoardObject {
 				turn.y = Board.calcTileOffset(turn.y) + Board.calcTileOffset(0.5);
 			}
 
-			console.log(turnData);
-
 			// this.turnData = turnData;
 		});
 	}
@@ -104,25 +172,89 @@ export default class Character extends BoardObject {
 	public startMoving(direction: MovementDirection) {
 		this.stopMoving();
 
-		let lastAnimationTime: null | number = null;
-
-		this.animationFrameId = requestAnimationFrame((timeStamp) =>
-			this.move(direction, lastAnimationTime, timeStamp)
-		);
+		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
 
 		this.moving = true;
 	}
 
 	private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
+		if (lastAnimationTime) {
+			this.updatePosition(direction, timeStamp - lastAnimationTime);
+		}
+
 		lastAnimationTime = timeStamp;
 
-		let newPosition: string | number | null = (
-			this.moveDirections[direction] as (elapsedTime: number) => string | number | null
-		)(timeStamp - lastAnimationTime);
+		// (this.positionHandlers[direction] as PositionHandler)(timeStamp - lastAnimationTime);
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
 		);
+	}
+
+	/**
+	 *
+	 * @param direction
+	 * @param elapsedTime
+	 * @returns { string | number | boolean | undefined }
+	 */
+	// private updatePosition(direction: MovementDirection, elapsedTime: number) {
+	// 	if (direction === MovementDirection.STOP) {
+	// 		return this.stopMoving();
+	// 	}
+
+	// const cssOperators = this.movementCssOperators[direction as keyof typeof this.movementCssOperators];
+	// const cssDirection = cssOperators.direction;
+
+	// console.log({ newPosition });
+	// console.log({ cssMethdType: typeof this.getElement().css });
+
+	// return px(
+	// 	(
+	// 		this.getElement().css({
+	// 			[cssDirection]: `calc(${this.getElement().css(cssDirection)} ${cssOperators.arithmetic} ${px(
+	// 				this.speed! * millisToSeconds(elapsedTime)
+	// 			)})`,
+	// 		}) as HTMLElement
+	// 	).css(cssDirection) as string
+	// );
+
+	// const newPosition = px(this.getElement().css(cssDirection) as string)
+
+	// return px(
+	// 	(
+	// 		this.getElement().css({
+	// 			[cssDirection]: `calc(${this.getElement().css(cssDirection)} ${cssOperators.arithmetic} ${px(
+	// 				this.speed! * millisToSeconds(elapsedTime)
+	// 			)})`,
+	// 		}) as HTMLElement
+	// 	).css(cssDirection) as string
+	// );
+	// }
+
+	/**
+	 *
+	 * @param direction
+	 * @param elapsedTime
+	 * @returns { void }
+	 */
+	private updatePosition(direction: MovementDirection, elapsedTime: number): void {
+		if (direction === MovementDirection.STOP) {
+			this.stopMoving();
+		}
+
+		const operators = this.movementOperators[direction as keyof typeof this.movementOperators];
+		const cssDirection = operators.direction;
+
+		const newDirectionPosition = operators.arithmetic(
+			this.position![cssDirection as keyof Position],
+			this.speed! * millisToSeconds(elapsedTime)
+		);
+
+		this.getElement().css({
+			[cssDirection]: px(newDirectionPosition),
+		});
+
+		this.position![cssDirection as keyof Position] = newDirectionPosition;
 	}
 
 	public stopMoving() {
