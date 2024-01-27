@@ -4,7 +4,7 @@ import DebugWindow from "../debugwindow/DebugWindow.js";
 
 declare global {
 	interface HTMLElement {
-		css(style: string | CSSStyleDeclaration | object): HTMLElement | string;
+		css(style: string | CSSStyleDeclaration | object): HTMLElement | string | undefined;
 	}
 
 	interface HTMLCollectionBase {
@@ -12,7 +12,7 @@ declare global {
 	}
 }
 
-HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string {
+HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string | undefined {
 	if (isObject(style)) {
 		for (let [key, value] of Object.entries(style)) {
 			if (exists(value)) {
@@ -21,9 +21,21 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | obje
 		}
 
 		return this;
-	} else {
+	}
+
+	const typeOfStyle = typeof style;
+
+	if (typeOfStyle == "string") {
 		return (this.style as any)[style as string];
 	}
+
+	DebugWindow.error(
+		"Utils.js",
+		"css()",
+		`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`
+	);
+
+	return;
 };
 
 HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): boolean {
@@ -36,7 +48,7 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
 			if (item instanceof HTMLElement) {
 				item.css(style);
 			} else {
-				DebugWindow.error("Helpers.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
+				DebugWindow.error("Utils.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
 			}
 		}
 
@@ -63,7 +75,7 @@ export async function fetchJSON(filename: string): Promise<any> {
 
 		return body;
 	} catch (error: any) {
-		DebugWindow.error("Helpers.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
+		DebugWindow.error("Utils.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
 	}
 }
 
@@ -216,4 +228,12 @@ export function die(...any: any[]): void {
 
 export function millisToSeconds(milliseconds: number) {
 	return milliseconds / 1000;
+}
+
+export function add(first: number, second: number) {
+	return first + second;
+}
+
+export function subtract(first: number, second: number) {
+	return first - second;
 }
