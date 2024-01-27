@@ -27,6 +27,7 @@ export default class PacMan extends Character {
 			let moveCode = this.moveCodes[event.code as keyof typeof this.moveCodes];
 
 			if (moveCode == MovementDirection.STOP && this.isMoving()) {
+				event.preventDefault();
 				this.stopMoving();
 
 				return;
