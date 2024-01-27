@@ -8,9 +8,13 @@ export default class PacMan extends Character {
 	private lastMoveCode: MovementDirection | undefined;
 	private moveCodes = {
 		ArrowLeft: MovementDirection.LEFT,
+		KeyA: MovementDirection.LEFT,
 		ArrowRight: MovementDirection.RIGHT,
+		KeyD: MovementDirection.RIGHT,
 		ArrowUp: MovementDirection.UP,
+		KeyW: MovementDirection.UP,
 		ArrowDown: MovementDirection.DOWN,
+		KeyS: MovementDirection.DOWN,
 		Space: MovementDirection.STOP,
 	};
 
