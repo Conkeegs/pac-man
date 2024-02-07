@@ -29,7 +29,7 @@ module.exports = config({
 			loose: true,
 			bugfixes: true,
 		},
-		// minify: true,
+		minify: true,
 		// script: true,
 		jsc: {
 			// "minify": {

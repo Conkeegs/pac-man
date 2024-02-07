@@ -39,7 +39,7 @@
             }
         }
     },
-    // "minify": true,
+    "minify": true,
     "env": {
         "loose": true,
         "bugfixes": true
