@@ -239,6 +239,12 @@ export default class Character extends BoardObject {
 	 * @param timeStamp the current number of milliseconds that represents current time
 	 */
 	private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
+		if (direction === MovementDirection.STOP) {
+			this.stopMoving();
+
+			return;
+		}
+
 		// only updates character's position if we've already called the "move" function before
 		if (lastAnimationTime) {
 			this.updatePosition(direction, timeStamp - lastAnimationTime);
@@ -302,12 +308,6 @@ export default class Character extends BoardObject {
 	 * @returns { void }
 	 */
 	private updatePosition(direction: MovementDirection, elapsedTime: number): void {
-		if (direction === MovementDirection.STOP) {
-			this.stopMoving();
-
-			return;
-		}
-
 		const operators = this.movementOperators[direction as keyof typeof this.movementOperators];
 		const cssDirection = operators.direction;
 
