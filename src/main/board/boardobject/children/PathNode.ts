@@ -5,10 +5,19 @@ import { create, px } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
 import { BoardObject } from "../BoardObject.js";
 
+/**
+ * Represents a circular node at each location on the board where characters can turn.
+ */
 export default class PathNode extends BoardObject {
 	public override width = TILESIZE;
 	public override height = TILESIZE;
 
+	/**
+	 * Creates a path node.
+	 *
+	 * @param name
+	 * @param color the color of the path node
+	 */
 	constructor(name: string, color = "white") {
 		super(name);
 

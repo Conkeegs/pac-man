@@ -8,21 +8,47 @@ import BoardText from "./boardobject/children/BoardText.js";
 import PathNode from "./boardobject/children/PathNode.js";
 import PacMan from "./boardobject/children/character/PacMan.js";
 
+/**
+ * Represents the white lines between each "turn" node when in debug mode.
+ */
 interface PathData {
+	/**
+	 * Each circular node involved in connecting each line.
+	 */
 	nodes: [
 		{
+			/**
+			 * The horizontal number of the tile the node is located at.
+			 */
 			x: number;
+			/**
+			 * The vertical number of the tile the node is located at.
+			 */
 			y: number;
 		}
 	];
+	/**
+	 * Each lines that connects to the circular nodes.
+	 */
 	lines: [
 		{
+			/**
+			 * Indexes into the "nodes" array and represents the starting circular node that this line starts
+			 * at.
+			 */
 			startNode: number;
+			/**
+			 * Collection of numbers that index into the "nodes" array to represent the ending circular nodes that this
+			 * line ends at. Can be more than one since all circular nodes extend out to two other circular nodes.
+			 */
 			to: number[];
 		}
 	];
 }
 
+/**
+ * HTML-specific attribute data about every wall in the game.
+ */
 interface WallDataElement {
 	id: string;
 	classes: string[];
@@ -38,13 +64,28 @@ interface WallDataElement {
 	};
 }
 
+/**
+ * The board contains all the main elements in the game: characters, ghosts, items, etc.
+ */
 export default class Board {
+	/**
+	 * Whether the board has finished creation or not.
+	 */
 	private boardCreated = false;
+
+	/**
+	 * The container of everything that the board holds.
+	 */
 	private boardDiv = create({
 		name: "div",
 		id: "board",
 	});
 
+	/**
+	 * Creates the board.
+	 *
+	 * @param color the background color of the board
+	 */
 	constructor(color = "#070200") {
 		if (WIDTH % COLUMNS !== 0) {
 			DebugWindow.error("Board.js", "constructor", "Board width not divisible by 28.");
@@ -66,6 +107,7 @@ export default class Board {
 			(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 		}
 
+		// setup walls
 		fetchJSON("src/assets/json/walls.json")
 			.then((wallData: WallDataElement[]) => {
 				for (let element of wallData) {
@@ -108,10 +150,24 @@ export default class Board {
 			});
 	}
 
+	/**
+	 * Calculates an offset (in pixels) for a given number of square tiles by multiplying it by the game's current
+	 * tile size.
+	 *
+	 * @param numTiles the number of square tiles to calculate an offset for
+	 * @returns `TILESIZE` * `numTiles`
+	 */
 	static calcTileOffset(numTiles: number) {
 		return TILESIZE * numTiles;
 	}
 
+	/**
+	 * Places a board object (characters, items, or text) at the given `x` and `y` tile offset.
+	 *
+	 * @param boardObject the board object to place
+	 * @param tileX the horizontal offset of the board object
+	 * @param tileY the vertical offset of the board object
+	 */
 	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
 		if (!(boardObject instanceof BoardObject)) {
 			DebugWindow.error("Board.js", "placeBoardObject", "boardObject is not an actual instance of BoardObject.");
@@ -143,6 +199,9 @@ export default class Board {
 		);
 	}
 
+	/**
+	 * Creates main objects on the board. This includes characters, items, and text.
+	 */
 	private createMainBoardObjects() {
 		const PACMAN_SPEED = 88;
 		const PACMAN_SPAWN_X = 15;
@@ -155,6 +214,9 @@ export default class Board {
 		);
 	}
 
+	/**
+	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
+	 */
 	private createGrid() {
 		if (!this.boardCreated) {
 			DebugWindow.error("Board.js", "grid", "Board not fully created yet.");
@@ -192,6 +254,9 @@ export default class Board {
 		}
 	}
 
+	/**
+	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
+	 */
 	private async createPaths() {
 		const pathData: PathData = await fetchJSON("src/assets/json/paths.json");
 

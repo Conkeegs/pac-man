@@ -4,8 +4,18 @@ import { exists } from "../../../../utils/Utils.js";
 import Character from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
 
+/**
+ * Represents the PacMan character on the board.
+ */
 export default class PacMan extends Character {
+	/**
+	 * The last direction the user moved in.
+	 */
 	private lastMoveCode: MovementDirection | undefined;
+
+	/**
+	 * All supported keyboard keys for moving PacMan.
+	 */
 	private moveCodes = {
 		ArrowLeft: MovementDirection.LEFT,
 		KeyA: MovementDirection.LEFT,
@@ -18,12 +28,22 @@ export default class PacMan extends Character {
 		Space: MovementDirection.STOP,
 	};
 
+	/**
+	 * Creates PacMan.
+	 *
+	 * @param name
+	 * @param speed
+	 * @param source
+	 */
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
 
 		this.createMoveEventListeners();
 	}
 
+	/**
+	 * DOM event listeners that allow the user to control PacMan.
+	 */
 	private createMoveEventListeners() {
 		document.body.addEventListener("keydown", (event) => {
 			event.stopImmediatePropagation();
