@@ -226,7 +226,7 @@ export function truthyOrDefault(value: unknown, def: unknown): unknown {
  *
  * @export
  * @param value any valid JavaScript value
- * @returns `true` if `value` is `null` or `undefined`, `false` otherwise
+ * @returns `true` if `value` is not `null` or `undefined`, `false` otherwise
  */
 export function exists(value: unknown): boolean {
 	return value !== null && typeof value !== "undefined";
