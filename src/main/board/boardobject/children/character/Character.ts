@@ -26,6 +26,13 @@ interface TurnData {
 	directions: MovementDirection[];
 }
 
+type MovementOperators = {
+	[key in MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN]: {
+		direction: "left" | "top";
+		arithmetic: (first: number, second: number) => number;
+	};
+};
+
 // type PositionHandler = ((elapsedTime: number) => string | number | undefined) | (() => boolean);
 
 /**
@@ -60,7 +67,7 @@ export default class Character extends BoardObject {
 	 * Represents CSS operations that must happen when a given characters moves in a given direction.
 	 * For example, when the character moves left, we must subtract from its current css "left" value.
 	 */
-	private movementOperators = {
+	private movementOperators: MovementOperators = {
 		[MovementDirection.LEFT]: {
 			direction: "left",
 			arithmetic: subtract,
@@ -308,7 +315,7 @@ export default class Character extends BoardObject {
 	 * @returns { void }
 	 */
 	private updatePosition(direction: MovementDirection, elapsedTime: number): void {
-		const operators = this.movementOperators[direction as keyof typeof this.movementOperators];
+		const operators = this.movementOperators[direction as keyof MovementOperators];
 		const cssDirection = operators.direction;
 
 		// depending on which direction character is moving in, subtract/add from the character's current position
