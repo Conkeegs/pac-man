@@ -3,7 +3,7 @@
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { add, fetchJSON, millisToSeconds, px, subtract } from "../../../../utils/Utils.js";
-import { BoardObject, type Position } from "../../BoardObject.js";
+import { BoardObject } from "../../BoardObject.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -26,10 +26,31 @@ interface TurnData {
 	directions: MovementDirection[];
 }
 
+/**
+ * Depending on which direction a character is moving in, this object will return a set of data
+ * related to getting the `x` or `y` position key we need (so we can modify it), what position-setter
+ * function to call, and whether to subtract/add to the character current `x` or `y` position.
+ */
 type MovementOperators = {
 	[key in MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN]: {
-		direction: "left" | "top";
-		arithmetic: (first: number, second: number) => number;
+		/**
+		 * Used to index into either the `x` or `y` value of this character's `Position`.
+		 */
+		positionKey: "x" | "y";
+		/**
+		 * The `BoardObject` method to call for this character that either sets its `x` or `y` position.
+		 *
+		 * @param positionKey the `x` or `y` value of this character's `Position`
+		 */
+		positionSetter: (positionKey: number) => void;
+		/**
+		 * Adds/subtracts from this character's `x` or `y` position on the board and returns the difference.
+		 *
+		 * @param xOrYPosition the `x` or `y` value of this character's `Position`
+		 * @param speedElapsedTimeProduct this character's speed multiplied by the number of milliseconds between the current frame and the last
+		 * @returns the difference between `xOrYPosition` and `speedElapsedTimeProduct`
+		 */
+		arithmetic: (xOrYPosition: number, speedElapsedTimeProduct: number) => number;
 	};
 };
 
@@ -64,127 +85,31 @@ export default class Character extends BoardObject {
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
 
 	/**
-	 * Represents CSS operations that must happen when a given characters moves in a given direction.
-	 * For example, when the character moves left, we must subtract from its current css "left" value.
+	 * Represents CSS operations that must happen when this character moves in a given direction.
+	 * For example, when the character moves left, we must subtract from its current css `transform: translateX` value.
 	 */
 	private movementOperators: MovementOperators = {
 		[MovementDirection.LEFT]: {
-			direction: "left",
+			positionKey: "x",
+			positionSetter: this.setPositionX,
 			arithmetic: subtract,
 		},
 		[MovementDirection.RIGHT]: {
-			direction: "left",
+			positionKey: "x",
+			positionSetter: this.setPositionX,
 			arithmetic: add,
 		},
 		[MovementDirection.UP]: {
-			direction: "top",
+			positionKey: "y",
+			positionSetter: this.setPositionY,
 			arithmetic: subtract,
 		},
 		[MovementDirection.DOWN]: {
-			direction: "top",
+			positionKey: "y",
+			positionSetter: this.setPositionY,
 			arithmetic: add,
 		},
 	};
-
-	// private positionHandlers: PositionHandler[] = [
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					left: `calc(${this.getElement().css("left")} - ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("left") as string
-	// 		);
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					left: `calc(${this.getElement().css("left")} + ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("left") as string
-	// 		);
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					top: `calc(${this.getElement().css("top")} - ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("top") as string
-	// 		);
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					top: `calc(${this.getElement().css("top")} + ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("top") as string
-	// 		);
-	// 	},
-	// 	() => {
-	// 		return this.stopMoving();
-	// 	},
-	// ];
-
-	// private positionHandlers: PositionHandler[] = [
-	// 	(elapsedTime) => {
-	// 		const element = this.getElement();
-	// 		const newPosition =
-	// 			(px(element.css("left") as string) as number) - this.speed! * millisToSeconds(elapsedTime);
-
-	// 		element.css({
-	// 			left: newPosition,
-	// 		});
-
-	// 		return newPosition;
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					left: `calc(${this.getElement().css("left")} + ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("left") as string
-	// 		);
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					top: `calc(${this.getElement().css("top")} - ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("top") as string
-	// 		);
-	// 	},
-	// 	(elapsedTime) => {
-	// 		return px(
-	// 			(
-	// 				this.getElement().css({
-	// 					top: `calc(${this.getElement().css("top")} + ${px(
-	// 						this.speed! * millisToSeconds(elapsedTime)
-	// 					)})`,
-	// 				}) as HTMLElement
-	// 			).css("top") as string
-	// 		);
-	// 	},
-	// 	() => {
-	// 		return this.stopMoving();
-	// 	},
-	// ];
 
 	/**
 	 * Creates a character.
@@ -267,46 +192,6 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 *
-	 * @param direction
-	 * @param elapsedTime
-	 * @returns { string | number | boolean | undefined }
-	 */
-	// private updatePosition(direction: MovementDirection, elapsedTime: number) {
-	// 	if (direction === MovementDirection.STOP) {
-	// 		return this.stopMoving();
-	// 	}
-
-	// const cssOperators = this.movementCssOperators[direction as keyof typeof this.movementCssOperators];
-	// const cssDirection = cssOperators.direction;
-
-	// console.log({ newPosition });
-	// console.log({ cssMethdType: typeof this.getElement().css });
-
-	// return px(
-	// 	(
-	// 		this.getElement().css({
-	// 			[cssDirection]: `calc(${this.getElement().css(cssDirection)} ${cssOperators.arithmetic} ${px(
-	// 				this.speed! * millisToSeconds(elapsedTime)
-	// 			)})`,
-	// 		}) as HTMLElement
-	// 	).css(cssDirection) as string
-	// );
-
-	// const newPosition = px(this.getElement().css(cssDirection) as string)
-
-	// return px(
-	// 	(
-	// 		this.getElement().css({
-	// 			[cssDirection]: `calc(${this.getElement().css(cssDirection)} ${cssOperators.arithmetic} ${px(
-	// 				this.speed! * millisToSeconds(elapsedTime)
-	// 			)})`,
-	// 		}) as HTMLElement
-	// 	).css(cssDirection) as string
-	// );
-	// }
-
-	/**
 	 * Updates this character's position in memory and also updates the character's CSS so that it physically moves on the board
 	 * every frame.
 	 *
@@ -316,19 +201,22 @@ export default class Character extends BoardObject {
 	 */
 	private updatePosition(direction: MovementDirection, elapsedTime: number): void {
 		const operators = this.movementOperators[direction as keyof MovementOperators];
-		const cssDirection = operators.direction;
+		// const cssDirection = operators.direction;
+		// const positionKey = operators.positionKey;
 
 		// depending on which direction character is moving in, subtract/add from the character's current position
 		const newDirectionPosition = operators.arithmetic(
-			this.position![cssDirection as keyof Position],
+			this.getPosition()![operators.positionKey],
 			this.speed! * millisToSeconds(elapsedTime)
 		);
 
-		this.getElement().css({
-			[cssDirection]: px(newDirectionPosition),
-		});
+		operators.positionSetter(newDirectionPosition);
 
-		this.position![cssDirection as keyof Position] = newDirectionPosition;
+		// this.getElement().css({
+		// 	[cssDirection]: px(newDirectionPosition),
+		// });
+
+		// this.position![cssDirection as keyof Position] = newDirectionPosition;
 	}
 
 	/**

@@ -186,11 +186,16 @@ export default class Board {
 		const left = Board.calcTileOffset(tileX);
 		const top = Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY);
 
-		boardObject.setPosition({
-			left,
-			top,
-		});
+		boardObject.setPosition(
+			{
+				x: left,
+				y: top,
+			},
+			// stop BoardObject from using "translate" function during initial placement
+			false
+		);
 
+		// don't use "translate" here yet so we can set initial css position
 		this.boardDiv.appendChild(
 			boardObject.getElement().css({
 				left: px(left),

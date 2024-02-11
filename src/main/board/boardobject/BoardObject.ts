@@ -2,14 +2,14 @@
 
 import DebugWindow from "../../debugwindow/DebugWindow.js";
 import { BOARDOBJECTS } from "../../utils/Globals.js";
-import { create } from "../../utils/Utils.js";
+import { create, px } from "../../utils/Utils.js";
 
 /**
  * Represents a board object's horizontal and vertical offsets on the board.
  */
 export type Position = {
-	left: number;
-	top: number;
+	x: number;
+	y: number;
 };
 
 /**
@@ -36,7 +36,7 @@ export class BoardObject {
 	/**
 	 * The board object's position on the board.
 	 */
-	protected position: Position | undefined;
+	private position: Position | undefined;
 
 	/**
 	 * Creates a board object.
@@ -59,12 +59,55 @@ export class BoardObject {
 	}
 
 	/**
-	 * Saves this board object's position in memory.
+	 * Sets this board object's position on the board and in memory.
+	 *
+	 * @param position the new position of the board object
+	 * @param modifyCss whether or not to physically animate the board object using CSS `translate()` function
+	 */
+	public setPosition(position: Position, modifyCss = true): void {
+		if (modifyCss) {
+			this.element.css({
+				transform: `translate(${px(position.x)}, ${px(position.y)})`,
+			});
+		}
+
+		this.position = position;
+	}
+
+	/**
+	 * Sets this board object's `x` position on the board and in memory.
 	 *
 	 * @param position the new position of the board object
 	 */
-	public setPosition(position: Position): void {
-		this.position = position;
+	public setPositionX(x: number): void {
+		this.element.css({
+			transform: `translate(${px(x)}, ${px(this.position!.y)})`,
+		});
+
+		this.position!.x = x;
+	}
+
+	/**
+	 * Sets this board object's `y` position on the board and in memory.
+	 *
+	 * @param position the new position of the board object
+	 */
+	public setPositionY(y: number): void {
+		this.element.css({
+			transform: `translate(${px(this.position!.x)}, ${px(y)})`,
+		});
+
+		this.position!.y = y;
+	}
+
+	/**
+	 * Gets this board object's position on the board.
+	 *
+	 * @param position the new position of the board object
+	 * @param modifyCss
+	 */
+	public getPosition(): Position | undefined {
+		return this.position;
 	}
 
 	/**
