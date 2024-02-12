@@ -28,7 +28,7 @@ export default class BoardText extends BoardObject {
 		}
 
 		(
-			this.getElement().css({
+			this.element.css({
 				width: px(this.width),
 				height: px(this.height),
 				fontSize: px(fontsize),

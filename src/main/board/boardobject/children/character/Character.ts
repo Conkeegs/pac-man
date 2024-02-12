@@ -110,7 +110,7 @@ export default class Character extends BoardObject {
 		this.speed = speed;
 		this.source = source;
 
-		this.getElement().css({
+		this.element.css({
 			width: px(this.width),
 			height: px(this.height),
 			backgroundImage: `url(${source})`,

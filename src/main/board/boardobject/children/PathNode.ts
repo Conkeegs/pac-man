@@ -21,7 +21,7 @@ export default class PathNode extends BoardObject {
 	constructor(name: string, color = "white") {
 		super(name);
 
-		const element: HTMLElement = this.getElement();
+		const element: HTMLElement = this.element;
 
 		element.css({
 			width: px(this.width),
