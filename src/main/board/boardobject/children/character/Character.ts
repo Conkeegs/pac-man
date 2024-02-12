@@ -2,7 +2,7 @@
 
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
-import { add, fetchJSON, millisToSeconds, px, subtract } from "../../../../utils/Utils.js";
+import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject } from "../../BoardObject.js";
 import MovementDirection from "./MovementDirection.js";
 
@@ -27,31 +27,30 @@ interface TurnData {
 }
 
 /**
- * Depending on which direction a character is moving in, this object will return a set of data
- * related to getting the `x` or `y` position key we need (so we can modify it), what position-setter
- * function to call, and whether to subtract/add to the character current `x` or `y` position.
+ * Represents this character's CSS `transform` `x` and `y` values.
  */
-type MovementOperators = {
-	[key in MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN]: {
+type Transform = {
+	/**
+	 * The character's `translateX` value in pixels.
+	 */
+	x: number;
+	/**
+	 * The character's `translateY` value in pixels.
+	 */
+	y: number;
+};
+
+/**
+ * Depending on which direction a character is moving in, this object holds methods which
+ * will change the character's CSS `transform` value and also set it in memory.
+ */
+type MovementMethods = {
+	[key in MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN]: (
 		/**
-		 * Used to index into either the `x` or `y` value of this character's `Position`.
+		 * The amount of pixels to change the `translateX` or `translateY` value (negative or positive).
 		 */
-		positionKey: "x" | "y";
-		/**
-		 * The `BoardObject` method to call for this character that either sets its `x` or `y` position.
-		 *
-		 * @param positionKey the `x` or `y` value of this character's `Position`
-		 */
-		positionSetter: (positionKey: number) => void;
-		/**
-		 * Adds/subtracts from this character's `x` or `y` position on the board and returns the difference.
-		 *
-		 * @param xOrYPosition the `x` or `y` value of this character's `Position`
-		 * @param speedElapsedTimeProduct this character's speed multiplied by the number of milliseconds between the current frame and the last
-		 * @returns the difference between `xOrYPosition` and `speedElapsedTimeProduct`
-		 */
-		arithmetic: (xOrYPosition: number, speedElapsedTimeProduct: number) => number;
-	};
+		amount: number
+	) => void;
 };
 
 // type PositionHandler = ((elapsedTime: number) => string | number | undefined) | (() => boolean);
@@ -80,35 +79,22 @@ export default class Character extends BoardObject {
 	 * Data telling this character where it is allowed to turn
 	 */
 	private turnData: TurnData[] | undefined;
+	/**
+	 * This character's CSS `transform` value, holding both its `translateX` and `translateY` values.
+	 */
+	private transform: Transform;
 
 	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
 
 	/**
-	 * Represents CSS operations that must happen when this character moves in a given direction.
-	 * For example, when the character moves left, we must subtract from its current css `transform: translateX` value.
+	 * Holds methods which will change the character's CSS `transform` value and also set it in memory.
 	 */
-	private movementOperators: MovementOperators = {
-		[MovementDirection.LEFT]: {
-			positionKey: "x",
-			positionSetter: this.setPositionX,
-			arithmetic: subtract,
-		},
-		[MovementDirection.RIGHT]: {
-			positionKey: "x",
-			positionSetter: this.setPositionX,
-			arithmetic: add,
-		},
-		[MovementDirection.UP]: {
-			positionKey: "y",
-			positionSetter: this.setPositionY,
-			arithmetic: subtract,
-		},
-		[MovementDirection.DOWN]: {
-			positionKey: "y",
-			positionSetter: this.setPositionY,
-			arithmetic: add,
-		},
+	private movementMethods: MovementMethods = {
+		[MovementDirection.LEFT]: this.moveLeft,
+		[MovementDirection.RIGHT]: this.moveRight,
+		[MovementDirection.UP]: this.moveUp,
+		[MovementDirection.DOWN]: this.moveDown,
 	};
 
 	/**
@@ -130,6 +116,11 @@ export default class Character extends BoardObject {
 			backgroundImage: `url(${source})`,
 		});
 
+		this.transform = {
+			x: 0,
+			y: 0,
+		};
+
 		// tell the character where it can turn
 		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
@@ -139,6 +130,24 @@ export default class Character extends BoardObject {
 
 			this.turnData = turnData;
 		});
+	}
+
+	/**
+
+	public setTransformX(x: number): void {
+		this.element.css({
+			transform: `translate(${px(x)}, ${px(this.transform.y)})`,
+		});
+
+		this.transform.x = x;
+	}
+
+	public setTransformY(y: number): void {
+		this.element.css({
+			transform: `translate(${px(this.transform.x)}, ${px(y)})`,
+		});
+
+		this.transform.y = y;
 	}
 
 	/**
@@ -179,7 +188,9 @@ export default class Character extends BoardObject {
 
 		// only updates character's position if we've already called the "move" function before
 		if (lastAnimationTime) {
-			this.updatePosition(direction, timeStamp - lastAnimationTime);
+			this.movementMethods[direction as keyof MovementMethods](
+				this.speed! * millisToSeconds(timeStamp - lastAnimationTime)
+			);
 		}
 
 		lastAnimationTime = timeStamp;
@@ -192,61 +203,46 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Updates this character's position in memory and also updates the character's CSS so that it physically moves on the board
-	 * every frame.
+	 * Animates this character upwards using by settings its CSS `transform` value, and also makes sure
+	 * to update this character's `Position` so that it matches the amount of pixels moved.
 	 *
-	 * @param direction the direction the character is currently trying to move in
-	 * @param elapsedTime the number of milliseconds between this frame and the last
-	 * @returns { void }
+	 * @param amount the amount of pixels to move the character up
 	 */
-	private updatePosition(direction: MovementDirection, elapsedTime: number): void {
-		const operators = this.movementOperators[direction as keyof MovementOperators];
-		// const cssDirection = operators.direction;
-		// const positionKey = operators.positionKey;
-
-		// depending on which direction character is moving in, subtract/add from the character's current position
-		const newDirectionPosition = operators.arithmetic(
-			this.getPosition()![operators.positionKey],
-			this.speed! * millisToSeconds(elapsedTime)
-		);
-
-		operators.positionSetter(newDirectionPosition);
-
-		// this.getElement().css({
-		// 	[cssDirection]: px(newDirectionPosition),
-		// });
-
-		// this.position![cssDirection as keyof Position] = newDirectionPosition;
+	private moveUp(amount: number): void {
+		this.setTransformY(this.transform.y + amount);
+		this.setPositionY(this.getPosition()!.y + amount, false);
 	}
 
 	/**
-	 * Cancels this character's current animation frame so that `this.move()` isn't called anymore.
+	 * Animates this character downwards using by settings its CSS `transform` value, and also makes sure
+	 * to update this character's `Position` so that it matches the amount of pixels moved.
 	 *
-	 * @returns
+	 * @param amount the amount of pixels to move the character down
 	 */
-	public stopMoving() {
-		cancelAnimationFrame(this.animationFrameId as number);
-
-		this.moving = false;
-
-		return false;
+	private moveDown(amount: number): void {
+		this.setTransformY(this.transform.y - amount);
+		this.setPositionY(this.getPosition()!.y - amount, false);
 	}
 
 	/**
-	 * Gets this character's speed in pixels-per-second.
+	 * Animates this character left using by settings its CSS `transform` value, and also makes sure
+	 * to update this character's `Position` so that it matches the amount of pixels moved.
 	 *
-	 * @returns this character's speed in pixels-per-second
+	 * @param amount the amount of pixels to move the character left
 	 */
-	public getSpeed() {
-		return this.speed;
+	private moveLeft(amount: number): void {
+		this.setTransformX(this.transform.x - amount);
+		this.setPositionX(this.getPosition()!.x - amount, false);
 	}
 
 	/**
-	 * Gets the path to the character's picture file.
+	 * Animates this character right using by settings its CSS `transform` value, and also makes sure
+	 * to update this character's `Position` so that it matches the amount of pixels moved.
 	 *
-	 * @returns the path to the character's picture file
+	 * @param amount the amount of pixels to move the character right
 	 */
-	public getSource() {
-		return this.source;
+	private moveRight(amount: number): void {
+		this.setTransformX(this.transform.x + amount);
+		this.setPositionX(this.getPosition()!.x + amount, false);
 	}
 }

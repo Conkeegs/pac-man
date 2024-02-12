@@ -17,9 +17,9 @@ export type Position = {
  */
 export class BoardObject {
 	/**
-	 * The HTML elements that contains this board object.
+	 * The HTML element that contains this board object.
 	 */
-	private element: HTMLElement;
+	protected element: HTMLElement;
 
 	/**
 	 * The board objects's unique name and HTML id.
@@ -62,12 +62,13 @@ export class BoardObject {
 	 * Sets this board object's position on the board and in memory.
 	 *
 	 * @param position the new position of the board object
-	 * @param modifyCss whether or not to physically animate the board object using CSS `translate()` function
+	 * @param modifyCss whether or not to physically modify the board objects CSS `left` and `top` values
 	 */
 	public setPosition(position: Position, modifyCss = true): void {
 		if (modifyCss) {
 			this.element.css({
-				transform: `translate(${px(position.x)}, ${px(position.y)})`,
+				left: px(position.x),
+				top: px(position.y),
 			});
 		}
 
@@ -77,12 +78,15 @@ export class BoardObject {
 	/**
 	 * Sets this board object's `x` position on the board and in memory.
 	 *
-	 * @param position the new position of the board object
+	 * @param x the new `x` position of the board object
+	 * @param modifyCss whether or not to physically modify the board objects CSS `left` value
 	 */
-	public setPositionX(x: number): void {
-		this.element.css({
-			transform: `translate(${px(x)}, ${px(this.position!.y)})`,
-		});
+	public setPositionX(x: number, modifyCss = true): void {
+		if (modifyCss) {
+			this.element.css({
+				left: px(x),
+			});
+		}
 
 		this.position!.x = x;
 	}
@@ -90,12 +94,15 @@ export class BoardObject {
 	/**
 	 * Sets this board object's `y` position on the board and in memory.
 	 *
-	 * @param position the new position of the board object
+	 * @param y the new `y` position of the board object
+	 * @param modifyCss whether or not to physically modify the board objects CSS `top` value
 	 */
-	public setPositionY(y: number): void {
-		this.element.css({
-			transform: `translate(${px(this.position!.x)}, ${px(y)})`,
-		});
+	public setPositionY(y: number, modifyCss = true): void {
+		if (modifyCss) {
+			this.element.css({
+				top: px(y),
+			});
+		}
 
 		this.position!.y = y;
 	}
@@ -103,8 +110,7 @@ export class BoardObject {
 	/**
 	 * Gets this board object's position on the board.
 	 *
-	 * @param position the new position of the board object
-	 * @param modifyCss
+	 * @returns the board objects `Position` or `undefined`
 	 */
 	public getPosition(): Position | undefined {
 		return this.position;
