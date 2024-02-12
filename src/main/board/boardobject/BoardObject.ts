@@ -59,6 +59,51 @@ export class BoardObject {
 	}
 
 	/**
+	 * Gets this board object's position on the board.
+	 *
+	 * @returns the board objects `Position` or `undefined`
+	 */
+	public getPosition(): Position | undefined {
+		return this.position;
+	}
+
+	/**
+	 * Gets the HTML element that contains this board object.
+	 *
+	 * @returns the HTML element that contains this board object
+	 */
+	public getElement(): HTMLElement {
+		return this.element;
+	}
+
+	/**
+	 * Gets the board objects's unique name and HTML id.
+	 *
+	 * @returns the board objects's unique name and HTML id
+	 */
+	public getName() {
+		return this.name;
+	}
+
+	/**
+	 * Gets this board object's width in pixels.
+	 *
+	 * @returns board object's width in pixels
+	 */
+	public getWidth(): number | undefined {
+		return this.width;
+	}
+
+	/**
+	 * Gets this board object's width in pixels.
+	 *
+	 * @returns this board object's width in pixels
+	 */
+	public getHeight(): number | undefined {
+		return this.height;
+	}
+
+	/**
 	 * Sets this board object's position on the board and in memory.
 	 *
 	 * @param position the new position of the board object
@@ -105,50 +150,5 @@ export class BoardObject {
 		}
 
 		this.position!.y = y;
-	}
-
-	/**
-	 * Gets this board object's position on the board.
-	 *
-	 * @returns the board objects `Position` or `undefined`
-	 */
-	public getPosition(): Position | undefined {
-		return this.position;
-	}
-
-	/**
-	 * Gets the HTML element that contains this board object.
-	 *
-	 * @returns the HTML element that contains this board object
-	 */
-	public getElement(): HTMLElement {
-		return this.element;
-	}
-
-	/**
-	 * Gets the board objects's unique name and HTML id.
-	 *
-	 * @returns the board objects's unique name and HTML id
-	 */
-	public getName() {
-		return this.name;
-	}
-
-	/**
-	 * Gets this board object's width in pixels.
-	 *
-	 * @returns board object's width in pixels
-	 */
-	public getWidth(): number | undefined {
-		return this.width;
-	}
-
-	/**
-	 * Gets this board object's width in pixels.
-	 *
-	 * @returns this board object's width in pixels
-	 */
-	public getHeight(): number | undefined {
-		return this.height;
 	}
 }

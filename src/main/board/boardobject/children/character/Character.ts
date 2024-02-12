@@ -133,6 +133,22 @@ export default class Character extends BoardObject {
 	}
 
 	/**
+	 * Gets this character's speed in pixels-per-second.
+	 *
+	 * @returns this character's speed in pixels-per-second
+	 */
+	public getSpeed() {
+		return this.speed;
+	}
+
+	/**
+	 * Gets the path to the character's picture file.
+	 *
+	 * @returns the path to the character's picture file
+	 */
+	public getSource() {
+		return this.source;
+	}
 
 	public setTransformX(x: number): void {
 		this.element.css({
@@ -156,6 +172,19 @@ export default class Character extends BoardObject {
 	 */
 	public isMoving() {
 		return this.moving;
+	}
+
+	/**
+	 * Cancels this character's current animation frame so that `this.move()` isn't called anymore.
+	 *
+	 * @returns
+	 */
+	public stopMoving() {
+		cancelAnimationFrame(this.animationFrameId as number);
+
+		this.moving = false;
+
+		return false;
 	}
 
 	/**
