@@ -55,7 +55,7 @@ export class BoardObject {
 		// keep track of this board object so we can clean it up later, if needed
 		BOARDOBJECTS.push(name);
 
-		this.element = create({ name: "div", id: name, classes: ["game-object", "board-object"] });
+		this.element = create({ name: "div", id: name, classes: ["board-object"] });
 	}
 
 	/**

@@ -225,7 +225,7 @@ export default class Board {
 			);
 
 			this.boardDiv.appendChild(
-				create({ name: "div", classes: ["grid-vert", "board-object"] }).css({
+				create({ name: "div", classes: ["grid-vert"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
 				}) as HTMLElement
@@ -240,7 +240,7 @@ export default class Board {
 			);
 
 			this.boardDiv.appendChild(
-				create({ name: "div", classes: ["grid-horiz", "board-object"] }).css({
+				create({ name: "div", classes: ["grid-horiz"] }).css({
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
@@ -280,7 +280,7 @@ export default class Board {
 					create({
 						name: "div",
 						id: `pathline-${pathLineIndex++}`,
-						classes: ["path-line", "board-object"],
+						classes: ["path-line"],
 					}).css({
 						width: px(width < 1 ? 1 : width),
 						height: px(heightLessThan1 ? 1 : height),
