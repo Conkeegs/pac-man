@@ -238,8 +238,8 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character up
 	 */
 	private moveUp(amount: number): void {
-		this.setTransformY(this.transform.y + amount);
-		this.setPositionY(this.getPosition()!.y + amount, false);
+		this.setTransformY(this.transform.y - amount);
+		this.setPositionY(this.getPosition()!.y - amount, false);
 	}
 
 	/**
@@ -249,8 +249,8 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character down
 	 */
 	private moveDown(amount: number): void {
-		this.setTransformY(this.transform.y - amount);
-		this.setPositionY(this.getPosition()!.y - amount, false);
+		this.setTransformY(this.transform.y + amount);
+		this.setPositionY(this.getPosition()!.y + amount, false);
 	}
 
 	/**
