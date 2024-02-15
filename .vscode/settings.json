@@ -2,6 +2,7 @@
     "typescript.preferences.preferTypeOnlyAutoImports": true,
     "typescript.preferences.importModuleSpecifierEnding": "js",
     "cSpell.words": [
+        "BOARDOBJECTS",
         "TILESIZE"
     ]
 }
