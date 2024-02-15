@@ -227,7 +227,7 @@ export default class Character extends BoardObject {
 
 		// only updates character's position if we've already called the "move" function before
 		if (lastAnimationTime) {
-			this.movementMethods[direction as keyof MovementMethods](
+			this.movementMethods[direction as keyof MovementMethods].bind(this)(
 				this.speed! * millisToSeconds(timeStamp - lastAnimationTime)
 			);
 		}
