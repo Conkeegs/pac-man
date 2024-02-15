@@ -45,6 +45,7 @@ export default class PacMan extends Character {
 	 * DOM event listeners that allow the user to control PacMan.
 	 */
 	private createMoveEventListeners() {
+		// listen for movement keys for PacMan
 		document.body.addEventListener("keydown", (event) => {
 			event.stopImmediatePropagation();
 
@@ -57,6 +58,8 @@ export default class PacMan extends Character {
 				return;
 			}
 
+			// make sure the key pressed is a valid key that moves PacMan and that he is either not moving, or that
+			// we want to turn in a separate direction than the one PacMan is heading in at this moment
 			if (exists(moveCode) && (!this.isMoving() || this.lastMoveCode !== moveCode)) {
 				this.startMoving(moveCode);
 
