@@ -150,6 +150,11 @@ export default class Character extends BoardObject {
 		return this.source;
 	}
 
+	/**
+	 * Sets this character's `transformX` CSS value and in-memory.
+	 *
+	 * @param x the amount to change the `transformX` by
+	 */
 	public setTransformX(x: number): void {
 		this.element.css({
 			transform: `translate(${px(x)}, ${px(this.transform.y)})`,
@@ -158,6 +163,11 @@ export default class Character extends BoardObject {
 		this.transform.x = x;
 	}
 
+	/**
+	 * Sets this character's `transformY` CSS value and in-memory.
+	 *
+	 * @param y the amount to change the `transformY` by
+	 */
 	public setTransformY(y: number): void {
 		this.element.css({
 			transform: `translate(${px(this.transform.x)}, ${px(y)})`,
