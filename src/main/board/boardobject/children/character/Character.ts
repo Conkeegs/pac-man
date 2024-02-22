@@ -11,7 +11,7 @@ import MovementDirection from "./MovementDirection.js";
  * and also includes an array of `MovementDirection` values to tell the character
  * what directions it can turn when it reaches the given turn coordinates.
  */
-interface TurnData {
+export interface TurnData {
 	/**
 	 * The `x` position of the turn.
 	 */
@@ -53,7 +53,10 @@ type MovementMethods = {
 	) => void;
 };
 
-// type PositionHandler = ((elapsedTime: number) => string | number | undefined) | (() => boolean);
+/**
+ * The minimum number of pixels away from a turn location that a character must be in order to turn on it.
+ */
+export const TURN_THRESHOLD = 0.3;
 
 /**
  * A character is any of the AI or user-controlled objects on the board.
@@ -78,11 +81,17 @@ export default class Character extends BoardObject {
 	/**
 	 * Data telling this character where it is allowed to turn
 	 */
-	private turnData: TurnData[] | undefined;
+	protected turnData: TurnData[] | undefined;
 	/**
 	 * This character's CSS `transform` value, holding both its `translateX` and `translateY` values.
 	 */
 	private transform: Transform;
+	/**
+	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
+	 * within `TURN_THRESHOLD` pixels of the turn yet, and so must queue the turn. The length of this array
+	 * must always be `1`.
+	 */
+	private turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
 
 	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
@@ -151,9 +160,22 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Sets this character's `transformX` CSS value and in-memory.
+	 * Sets this character's `transformX` and `translateY` CSS values and in-memory.
 	 *
-	 * @param x the amount to change the `transformX` by
+	 * @param transform the amounts to change the `translateX` and `translateY` values by
+	 */
+	public setTransform(transform: Transform): void {
+		this.element.css({
+			transform: `translate(${px(transform.x)}, ${px(transform.y)})`,
+		});
+
+		this.transform = transform;
+	}
+
+	/**
+	 * Sets this character's `translateX` CSS value and in-memory.
+	 *
+	 * @param x the amount to change the `translateX` by
 	 */
 	public setTransformX(x: number): void {
 		this.element.css({
@@ -198,17 +220,73 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Starts recursively calling `this.move()` method to move this character.
+	 * Sets up initial request for animation frame and then starts recursively calling `this.move()` method to move this character.
 	 *
 	 * @param direction the direction the character is currently trying to move in
+	 * @param fromTurn optional parameter which tells the location that the character is turning at. This might not
+	 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
+	 * where it is currently heading, and not making a 90 degree turn.
 	 */
-	public startMoving(direction: MovementDirection) {
+	public startMoving(direction: MovementDirection, fromTurn?: TurnData) {
 		// call this so we can reset the animation frame id every time a character moves
 		this.stopMoving();
+
+		if (fromTurn) {
+			const position = this.getPosition()!;
+
+			// we know at this point that we're within this turn's threshold, so correct the character's position
+			// by moving it to the turn's exact location to keep the character's movement consistent
+			if (position.x !== fromTurn.x || position.y !== fromTurn.y) {
+				this.setPosition(
+					{
+						x: fromTurn.x,
+						y: fromTurn.y,
+					},
+					false
+				);
+
+				const transform = this.transform;
+				const xDifference = position.x - fromTurn.x;
+				const yDifference = position.y - fromTurn.y;
+
+				// subtract/add from/to character's transform, depending on whether we need to move them up/down in order
+				// to match the turn's position
+				this.setTransform({
+					x: xDifference > 0 ? transform.x - xDifference : transform.x + xDifference,
+					y: yDifference > 0 ? transform.y - yDifference : transform.y + yDifference,
+				});
+			}
+		}
 
 		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
 
 		this.moving = true;
+	}
+
+	/**
+	 * Queues a turn for a future point in time so that when the character reaches the threshold of the turn,
+	 * they will turn at it.
+	 *
+	 * @param direction the direction the character wants to move at a future point in time
+	 * @param turn the turn location the character wants to turn at in a future point in time
+	 */
+	protected queueTurn(direction: MovementDirection, turn: TurnData): void {
+		this.turnQueue.push({
+			direction,
+			turn,
+		});
+	}
+
+	/**
+	 * Determines if a character is within `TURN_THRESHOLD` pixels of a turn's position.
+	 *
+	 * @param turn the turn position to check against
+	 * @returns boolean indicating if the character is within the pixel threshold of this turn
+	 */
+	protected isWithinTurnDistance(turn: TurnData): boolean {
+		const position = this.getPosition()!;
+
+		return Math.abs(position.x - turn.x) <= TURN_THRESHOLD && Math.abs(position.y - turn.y) <= TURN_THRESHOLD;
 	}
 
 	/**
@@ -223,6 +301,18 @@ export default class Character extends BoardObject {
 			this.stopMoving();
 
 			return;
+		}
+
+		// check the turn queue for any queued turns
+		if (this.turnQueue.length) {
+			const queuedTurnInfo = this.turnQueue[0]!;
+			const turn = queuedTurnInfo.turn;
+
+			// every frame, check if the character is within the queued-turn's threshold, and turn
+			// the character in that direction when it is
+			if (this.isWithinTurnDistance(turn)) {
+				this.startMoving(queuedTurnInfo.direction, turn);
+			}
 		}
 
 		// only updates character's position if we've already called the "move" function before
