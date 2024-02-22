@@ -244,7 +244,7 @@ export function die(...any: any[]): void {
 
 	stop();
 
-	throw new Error("Stopping...");
+	throw new Error(...any);
 }
 
 /**
