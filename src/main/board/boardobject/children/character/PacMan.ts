@@ -1,7 +1,7 @@
 "use strict";
 
 import { exists } from "../../../../utils/Utils.js";
-import Character, { TURN_THRESHOLD, type TurnData } from "./Character.js";
+import Character, { type TurnData } from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -12,6 +12,10 @@ export default class PacMan extends Character {
 	 * The last direction the user moved in.
 	 */
 	private lastMoveCode: MovementDirection | undefined;
+	/**
+	 * Whether or not PacMan is currently listening for movement inputs.
+	 */
+	private listenForKeydown: boolean = true;
 
 	/**
 	 * All supported keyboard keys for moving PacMan.
@@ -68,8 +72,15 @@ export default class PacMan extends Character {
 	 * DOM event listeners that allow the user to control PacMan.
 	 */
 	private createMoveEventListeners() {
+		const documentBody = document.body;
+
 		// listen for movement keys for PacMan
-		document.body.addEventListener("keydown", (event) => {
+		documentBody.addEventListener("keydown", (event) => {
+			// make sure we are currently listening for movement inputs before continuing
+			if (this.listenForKeydown === false) {
+				return;
+			}
+
 			event.stopImmediatePropagation();
 
 			let moveCode = this.moveCodes[event.code as keyof typeof this.moveCodes];
@@ -82,6 +93,10 @@ export default class PacMan extends Character {
 			if (!exists(moveCode) || (isMoving && lastMoveCode === moveCode)) {
 				return;
 			}
+
+			// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
+			// if our movement key is valid
+			this.listenForKeydown = false;
 
 			if (moveCode === MovementDirection.STOP) {
 				if (isMoving) {
@@ -148,6 +163,18 @@ export default class PacMan extends Character {
 			// PacMan hasn't arrived in its threshold yet
 			if (this.canTurnWithMoveCode(moveCode, nearestTurn)) {
 				this.queueTurn(moveCode, nearestTurn);
+			}
+		});
+
+		// listen for user releasing a movement key
+		documentBody.addEventListener("keyup", (event) => {
+			let moveCode = this.moveCodes[event.code as keyof typeof this.moveCodes];
+
+			// check for user releasing a valid movement key, and let PacMan class know that it can
+			// once again start listening for more movement inputs. this prevents user from mashing
+			// random movements keys and getting unexpected behavior from the movement listener above
+			if (exists(moveCode) && this.isMoving() && moveCode === this.lastMoveCode) {
+				this.listenForKeydown = true;
 			}
 		});
 	}
