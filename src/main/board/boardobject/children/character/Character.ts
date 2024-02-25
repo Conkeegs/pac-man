@@ -187,9 +187,9 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Sets this character's `transformY` CSS value and in-memory.
+	 * Sets this character's `translateY` CSS value and in-memory.
 	 *
-	 * @param y the amount to change the `transformY` by
+	 * @param y the amount to change the `translateY` by
 	 */
 	public setTransformY(y: number): void {
 		this.element.css({
@@ -221,7 +221,7 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Sets up initial request for animation frame and then starts recursively calling `this.move()` method to move this character.
+	 * Sets up initial request for animation frame and then starts recursively calling `Character.move()` method to move this character.
 	 *
 	 * @param direction the direction the character is currently trying to move in
 	 * @param fromTurn optional parameter which tells the location that the character is turning at. This might not
