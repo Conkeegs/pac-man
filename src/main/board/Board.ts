@@ -162,6 +162,28 @@ export default class Board {
 	}
 
 	/**
+	 * Takes a horizontal (x) tile number and calculates the offset in pixels so that items
+	 * can be positioned horizontally on the board correctly.
+	 *
+	 * @param tileX the horizontal tile number to calculate an offset for
+	 * @returns the x position for the given tile number
+	 */
+	static calcTileX(tileX: number): number {
+		return Board.calcTileOffset(tileX) - TILESIZE;
+	}
+
+	/**
+	 * Takes a vertical (y) tile number and calculates the offset in pixels so that items
+	 * can be positioned vertically on the board correctly.
+	 *
+	 * @param tileX the horizontal tile number to calculate an offset for
+	 * @returns the x position for the given tile number
+	 */
+	static calcTileY(tileY: number): number {
+		return Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY) - TILESIZE;
+	}
+
+	/**
 	 * Places a board object (characters, items, or text) at the given `x` and `y` tile offset.
 	 *
 	 * @param boardObject the board object to place

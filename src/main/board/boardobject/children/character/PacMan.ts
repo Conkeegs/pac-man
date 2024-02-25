@@ -1,6 +1,7 @@
 "use strict";
 
-import { exists } from "../../../../utils/Utils.js";
+import { defined, die, exists } from "../../../../utils/Utils.js";
+import type { Position } from "../../BoardObject.js";
 import Character, { type TurnData } from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
 
@@ -42,6 +43,34 @@ export default class PacMan extends Character {
 		[MovementDirection.UP]: MovementDirection.DOWN,
 		[MovementDirection.DOWN]: MovementDirection.UP,
 	};
+
+	/**
+	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
+	 * direction PacMan is currently heading and if it is on the same "row"/"column" as PacMan.
+	 */
+	private turnValidators = {
+		[MovementDirection.LEFT]: (turn: TurnData, position: Position) => {
+			// only turns to the left of PacMan and in the same row
+			return turn.x <= position.x && turn.y - this.getHeight()! / 2 === position.y;
+		},
+		[MovementDirection.RIGHT]: (turn: TurnData, position: Position) => {
+			// only turns to the right of PacMan and in the same row
+			return turn.x >= position.x && turn.y - this.getHeight()! / 2 === position.y;
+		},
+		[MovementDirection.UP]: (turn: TurnData, position: Position) => {
+			// only turns above PacMan and in the same column
+			return turn.y <= position.y && turn.x - this.getWidth()! / 2 === position.x;
+		},
+		[MovementDirection.DOWN]: (turn: TurnData, position: Position) => {
+			// only turns below PacMan and in the same column
+			return turn.y >= position.y && turn.x - this.getWidth()! / 2 === position.x;
+		},
+	};
+
+	/**
+	 * The directions that PacMan can move in upon first spawning.
+	 */
+	private readonly SPAWN_MOVECODES = [MovementDirection.RIGHT, MovementDirection.LEFT];
 
 	/**
 	 * Creates PacMan.
@@ -94,30 +123,61 @@ export default class PacMan extends Character {
 				return;
 			}
 
+			console.log("NOT LISTENING");
+
 			// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
 			// if our movement key is valid
 			this.listenForKeydown = false;
 
 			if (moveCode === MovementDirection.STOP) {
+				console.log("IS STOP", isMoving);
 				if (isMoving) {
 					event.preventDefault();
 					this.stopMoving();
+
+					die({
+						position: this.getPosition(),
+					});
+				}
+
+				// console.log({ avg: this.positionSum / this.positionCount });
+				// console.log({ frameCount: this.frameCount, fps: this.frameCount / this.frameSecondsSum });
+
+				return;
+			}
+
+			// let PacMan immediately start moving (left or right) if he has just spawned
+			if (!defined(lastMoveCode) && isMoving === false) {
+				if (this.SPAWN_MOVECODES.includes(moveCode)) {
+					// PacMan is going to move, so set his last move code
+					this.lastMoveCode = moveCode;
+					console.log("JUST SPAWNED");
+
+					this.startMoving(moveCode);
 				}
 
 				return;
 			}
 
-			this.lastMoveCode = moveCode;
+			console.log({
+				moveCode,
+				lastMoveCode,
+				opposite: this.moveCodeOpposites[lastMoveCode as keyof typeof this.moveCodeOpposites],
+			});
 
 			if (
 				// check if the character has moved in any direction in the past
-				lastMoveCode &&
+				defined(lastMoveCode) &&
 				// check if the character is considered "moving"
 				isMoving &&
 				// check if the new direction that the character is trying to move in is the opposite of the last direction
 				// it was moving in
 				moveCode === this.moveCodeOpposites[lastMoveCode as keyof typeof this.moveCodeOpposites]
 			) {
+				// PacMan is going to move, so set his last move code
+				this.lastMoveCode = moveCode;
+				console.log("TURNING AROUND");
+
 				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
 				// in the opposite direction instead of a 90-degree angle
 				this.startMoving(moveCode);
@@ -125,43 +185,61 @@ export default class PacMan extends Character {
 				return;
 			}
 
-			const turnData = this.turnData!;
+			const position = this.getPosition()!;
+			let nearestTurn: TurnData | undefined;
 
-			// check if there is a turn that is within turning-distance at this precise moment in time.
-			// this way, we can turn PacMan immediately upon the key press
-			let nearestTurn = turnData.find((turn) => {
-				return this.isWithinTurnDistance(turn) && this.canTurnWithMoveCode(moveCode, turn);
+			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
+			// turn threshold
+			const filteredTurnData = this.turnData!.filter((turn) => {
+				// turns "ahead" of PacMan
+				if (this.turnValidators[lastMoveCode as keyof typeof this.turnValidators](turn, position)) {
+					return true;
+				}
+
+				// turn within turn threshold
+				if (this.isWithinTurnDistance(turn) && this.canTurnWithMoveCode(moveCode, turn)) {
+					nearestTurn = turn;
+
+					return true;
+				}
+
+				return false;
 			});
+
+			console.log({ filteredTurnData, nearestTurn });
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (nearestTurn) {
+				// PacMan is going to move, so set his last move code
+				this.lastMoveCode = moveCode;
+				console.log("NEAREST TURN IMMEDIATELY");
+
 				this.startMoving(moveCode, nearestTurn);
 
 				return;
 			}
 
-			const position = this.getPosition()!;
-			let closestTurnDistance = Infinity;
+			// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
+			// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows PacMan
+			// to turn (given the input moveCode), we find the closest turn to PacMan, instead of a turn that may be at the "start" of the
+			// "filteredTurnData" array
+			if (lastMoveCode === MovementDirection.LEFT || lastMoveCode === MovementDirection.UP) {
+				filteredTurnData.reverse();
+			}
 
-			// at this point, we know there is not an immediately-available turn to turn at, so find the nearest-available turn
-			nearestTurn = turnData.reduce((closestTurn, currentTurn) => {
-				const closestTurnDistanceNew = Math.min(
-					closestTurnDistance,
-					Math.sqrt(Math.pow(currentTurn.x - position.x, 2) + Math.pow(currentTurn.y - position.y, 2))
-				);
+			// at this point, we know there is not an immediately-available turn to turn at, so find the nearest-available turn that allows our
+			// "moveCode"
+			nearestTurn = filteredTurnData.find((turn) => turn.directions.includes(moveCode));
 
-				if (closestTurnDistance > closestTurnDistanceNew) {
-					closestTurnDistance = closestTurnDistanceNew;
-
-					return currentTurn;
-				}
-
-				return closestTurn;
-			}, position as TurnData);
+			console.log({ nearestTurn });
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
-			if (this.canTurnWithMoveCode(moveCode, nearestTurn)) {
+			if (nearestTurn && this.canTurnWithMoveCode(moveCode, nearestTurn)) {
+				// PacMan is going to move, so set his last move code
+				this.lastMoveCode = moveCode;
+				console.log("VALID TURN AHEAD, QUEUEING");
+
 				this.queueTurn(moveCode, nearestTurn);
 			}
 		});
@@ -173,7 +251,9 @@ export default class PacMan extends Character {
 			// check for user releasing a valid movement key, and let PacMan class know that it can
 			// once again start listening for more movement inputs. this prevents user from mashing
 			// random movements keys and getting unexpected behavior from the movement listener above
-			if (exists(moveCode) && this.isMoving() && moveCode === this.lastMoveCode) {
+			if (exists(moveCode)) {
+				console.log("LISTENING AGAIN");
+
 				this.listenForKeydown = true;
 			}
 		});

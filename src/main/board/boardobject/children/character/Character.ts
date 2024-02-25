@@ -56,7 +56,7 @@ type MovementMethods = {
 /**
  * The minimum number of pixels away from a turn location that a character must be in order to turn on it.
  */
-export const TURN_THRESHOLD = 0.3;
+export const TURN_THRESHOLD = 2;
 
 /**
  * A character is any of the AI or user-controlled objects on the board.
@@ -79,10 +79,6 @@ export default class Character extends BoardObject {
 	 */
 	private moving = false;
 	/**
-	 * Data telling this character where it is allowed to turn
-	 */
-	protected turnData: TurnData[] | undefined;
-	/**
 	 * This character's CSS `transform` value, holding both its `translateX` and `translateY` values.
 	 */
 	private transform: Transform;
@@ -92,6 +88,11 @@ export default class Character extends BoardObject {
 	 * must always be `1`.
 	 */
 	private turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
+
+	/**
+	 * Data telling this character where it is allowed to turn
+	 */
+	protected turnData: TurnData[] | undefined;
 
 	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
@@ -232,28 +233,32 @@ export default class Character extends BoardObject {
 		this.stopMoving();
 
 		if (fromTurn) {
-			const position = this.getPosition()!;
+			const oldPosition = this.getPosition()!;
+			// find the "true" position x & y that the Character should be placed at when performing a turn (since
+			// it could be within the turn's threshold, but not perfectly placed at the turn position)
+			const characterTurnX = fromTurn.x - this.getWidth()! / 2;
+			const characterTurnY = fromTurn.y - this.getHeight()! / 2;
 
 			// we know at this point that we're within this turn's threshold, so correct the character's position
 			// by moving it to the turn's exact location to keep the character's movement consistent
-			if (position.x !== fromTurn.x || position.y !== fromTurn.y) {
+			if (oldPosition.x !== characterTurnX || oldPosition.y !== characterTurnY) {
 				this.setPosition(
 					{
-						x: fromTurn.x,
-						y: fromTurn.y,
+						x: characterTurnX,
+						y: characterTurnY,
 					},
 					false
 				);
 
+				// get the character's new position in order to compare it to its old one, since it moved a small distance
+				// to "correct" its position
+				const newPosition = this.getPosition()!;
 				const transform = this.transform;
-				const xDifference = position.x - fromTurn.x;
-				const yDifference = position.y - fromTurn.y;
 
-				// subtract/add from/to character's transform, depending on whether we need to move them up/down in order
-				// to match the turn's position
+				// add to character's transform since we've "corrected" its position by a little bit
 				this.setTransform({
-					x: xDifference > 0 ? transform.x - xDifference : transform.x + xDifference,
-					y: yDifference > 0 ? transform.y - yDifference : transform.y + yDifference,
+					x: transform.x + (newPosition.x - oldPosition.x),
+					y: transform.y + (newPosition.y - oldPosition.y),
 				});
 			}
 		}
@@ -271,6 +276,11 @@ export default class Character extends BoardObject {
 	 * @param turn the turn location the character wants to turn at in a future point in time
 	 */
 	protected queueTurn(direction: MovementDirection, turn: TurnData): void {
+		if (this.turnQueue.length) {
+			// clear the queue if we're queueing a separate turn before another ones completes
+			this.dequeueTurns();
+		}
+
 		this.turnQueue.push({
 			direction,
 			turn,
@@ -286,7 +296,13 @@ export default class Character extends BoardObject {
 	protected isWithinTurnDistance(turn: TurnData): boolean {
 		const position = this.getPosition()!;
 
-		return Math.abs(position.x - turn.x) <= TURN_THRESHOLD && Math.abs(position.y - turn.y) <= TURN_THRESHOLD;
+		// add half of the character's width/height to the turn's x & y position so that
+		// our threshold takes effect when the character is about "half" way over the turn's
+		// position
+		return (
+			Math.abs(position.x + this.width / 2 - turn.x) <= TURN_THRESHOLD &&
+			Math.abs(position.y + this.height / 2 - turn.y) <= TURN_THRESHOLD
+		);
 	}
 
 	/**
@@ -312,6 +328,10 @@ export default class Character extends BoardObject {
 			// the character in that direction when it is
 			if (this.isWithinTurnDistance(turn)) {
 				this.startMoving(queuedTurnInfo.direction, turn);
+				this.dequeueTurns();
+
+				// break out of the recursive animation frame calls so we can start moving in another direction
+				return;
 			}
 		}
 
@@ -329,6 +349,13 @@ export default class Character extends BoardObject {
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
 		);
+	}
+
+	/**
+	 * Empties the turn queue for this character.
+	 */
+	private dequeueTurns(): void {
+		this.turnQueue = [];
 	}
 
 	/**

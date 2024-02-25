@@ -233,6 +233,16 @@ export function exists(value: unknown): boolean {
 }
 
 /**
+ * Determines if a variable's value is `undefined` or not.
+ *
+ * @param value any valid JavaScript type
+ * @returns boolean indicating whether `value` is `undefined`
+ */
+export function defined(value: unknown): boolean {
+	return typeof value !== "undefined";
+}
+
+/**
  * Logs message(s) to the console, kills JavaScript load in the browser, and throws an error.
  * Mostly for testing purposes.
  *
