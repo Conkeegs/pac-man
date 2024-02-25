@@ -134,8 +134,8 @@ export default class Character extends BoardObject {
 		// tell the character where it can turn
 		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
-				turn.x = Board.calcTileOffset(turn.x) + Board.calcTileOffset(0.5);
-				turn.y = Board.calcTileOffset(turn.y) + Board.calcTileOffset(0.5);
+				turn.x = Board.calcTileX(turn.x + 0.5);
+				turn.y = Board.calcTileY(turn.y - 0.5);
 			}
 
 			this.turnData = turnData;

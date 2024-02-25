@@ -205,8 +205,8 @@ export default class Board {
 			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		}
 
-		const left = Board.calcTileOffset(tileX) - TILESIZE;
-		const top = Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY) - TILESIZE;
+		const left = Board.calcTileX(tileX);
+		const top = Board.calcTileY(tileY);
 
 		boardObject.setPosition({
 			x: left,
@@ -221,7 +221,7 @@ export default class Board {
 	 */
 	private createMainBoardObjects() {
 		const PACMAN_SPEED = 88;
-		const PACMAN_SPAWN_X = 16;
+		const PACMAN_SPAWN_X = 14.25;
 		const PACMAN_SPAWN_Y = 9.25;
 
 		this.placeBoardObject(
