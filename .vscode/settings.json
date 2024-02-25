@@ -3,6 +3,7 @@
     "typescript.preferences.importModuleSpecifierEnding": "js",
     "cSpell.words": [
         "BOARDOBJECTS",
+        "MOVECODES",
         "TILESIZE"
     ]
 }
