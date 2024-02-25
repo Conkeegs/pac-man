@@ -183,8 +183,8 @@ export default class Board {
 			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		}
 
-		const left = Board.calcTileOffset(tileX);
-		const top = Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY);
+		const left = Board.calcTileOffset(tileX) - TILESIZE;
+		const top = Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY) - TILESIZE;
 
 		boardObject.setPosition({
 			x: left,
@@ -199,8 +199,8 @@ export default class Board {
 	 */
 	private createMainBoardObjects() {
 		const PACMAN_SPEED = 88;
-		const PACMAN_SPAWN_X = 15;
-		const PACMAN_SPAWN_Y = 10.25;
+		const PACMAN_SPAWN_X = 16;
+		const PACMAN_SPAWN_Y = 9.25;
 
 		this.placeBoardObject(
 			new PacMan("pac-man", PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
@@ -218,11 +218,7 @@ export default class Board {
 		}
 
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.placeBoardObject(
-				new BoardText(`grid-vert-num-${i}`, i.toString(), Board.calcTileOffset(0.75)),
-				i - 1,
-				0
-			);
+			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), Board.calcTileOffset(0.75)), i, 0);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-vert"] }).css({
@@ -233,11 +229,7 @@ export default class Board {
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			this.placeBoardObject(
-				new BoardText(`grid-horiz-num-${i}`, i.toString(), Board.calcTileOffset(0.75)),
-				-1,
-				i
-			);
+			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), Board.calcTileOffset(0.75)), 0, i);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-horiz"] }).css({
@@ -284,8 +276,8 @@ export default class Board {
 					}).css({
 						width: px(width < 1 ? 1 : width),
 						height: px(heightLessThan1 ? 1 : height),
-						bottom: px(nodePositions[startNode]![1] - TILESIZE - (heightLessThan1 ? 0 : height)),
-						left: px(nodePositions[startNode]![0]),
+						bottom: px(nodePositions[startNode]![1] - (heightLessThan1 ? 0 : height)),
+						left: px(nodePositions[startNode]![0] - TILESIZE),
 					}) as HTMLElement
 				);
 			}
