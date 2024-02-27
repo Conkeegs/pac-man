@@ -229,13 +229,13 @@ export default class PacMan extends Character {
 
 			// at this point, we know there is not an immediately-available turn to turn at, so find the nearest-available turn that allows our
 			// "moveCode"
-			nearestTurn = filteredTurnData.find((turn) => turn.directions.includes(moveCode));
+			nearestTurn = filteredTurnData.find((turn) => this.canTurnWithMoveCode(moveCode, turn));
 
 			console.log({ nearestTurn });
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
-			if (nearestTurn && this.canTurnWithMoveCode(moveCode, nearestTurn)) {
+			if (nearestTurn) {
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
 				console.log("VALID TURN AHEAD, QUEUEING");
