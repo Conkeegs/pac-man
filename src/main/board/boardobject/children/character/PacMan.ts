@@ -51,19 +51,19 @@ export default class PacMan extends Character {
 	private turnValidators = {
 		[MovementDirection.LEFT]: (turn: TurnData, position: Position) => {
 			// only turns to the left of PacMan and in the same row
-			return turn.x <= position.x && turn.y - this.getHeight()! / 2 === position.y;
+			return turn.x <= position.x - this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
 		},
 		[MovementDirection.RIGHT]: (turn: TurnData, position: Position) => {
 			// only turns to the right of PacMan and in the same row
-			return turn.x >= position.x && turn.y - this.getHeight()! / 2 === position.y;
+			return turn.x >= position.x + this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
 		},
 		[MovementDirection.UP]: (turn: TurnData, position: Position) => {
 			// only turns above PacMan and in the same column
-			return turn.y <= position.y && turn.x - this.getWidth()! / 2 === position.x;
+			return turn.y <= position.y - this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
 		},
 		[MovementDirection.DOWN]: (turn: TurnData, position: Position) => {
 			// only turns below PacMan and in the same column
-			return turn.y >= position.y && turn.x - this.getWidth()! / 2 === position.x;
+			return turn.y >= position.y + this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
 		},
 	};
 
