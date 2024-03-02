@@ -24,7 +24,7 @@ export class BoardObject {
 	/**
 	 * The board objects's unique name and HTML id.
 	 */
-	protected name: string | undefined;
+	protected readonly name: string | undefined;
 	/**
 	 * The board object's width in pixels.
 	 */
