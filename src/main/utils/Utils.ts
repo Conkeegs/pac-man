@@ -229,7 +229,7 @@ export function truthyOrDefault(value: unknown, def: unknown): unknown {
  * @returns `true` if `value` is not `null` or `undefined`, `false` otherwise
  */
 export function exists(value: unknown): boolean {
-	return value !== null && typeof value !== "undefined";
+	return value !== null && defined(value);
 }
 
 /**
