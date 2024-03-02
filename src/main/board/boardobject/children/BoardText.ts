@@ -24,7 +24,11 @@ export default class BoardText extends BoardObject {
 		super(name);
 
 		if (fontsize > 24) {
-			DebugWindow.error("BoardText.js", "constructor", `fontsize cannot be greater than ${TILESIZE}.`);
+			DebugWindow.error(
+				"BoardText.js",
+				"constructor",
+				`fontsize cannot be greater than tile size: ${px(TILESIZE)}.`
+			);
 		}
 
 		(

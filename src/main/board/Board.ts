@@ -195,10 +195,6 @@ export default class Board {
 	 * @param tileY the vertical offset of the board object
 	 */
 	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
-		if (!(boardObject instanceof BoardObject)) {
-			DebugWindow.error("Board.js", "placeBoardObject", "boardObject is not an actual instance of BoardObject.");
-		}
-
 		if (tileX > 28) {
 			DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
 		} else if (tileX < -1) {
@@ -235,10 +231,6 @@ export default class Board {
 	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
 	 */
 	private createGrid() {
-		if (!this.boardCreated) {
-			DebugWindow.error("Board.js", "grid", "Board not fully created yet.");
-		}
-
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
 			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), Board.calcTileOffset(0.75)), i, 0);
 
