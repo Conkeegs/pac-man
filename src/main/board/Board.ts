@@ -81,8 +81,12 @@ export default class Board {
 		id: "board",
 	});
 
+	private static readonly PACMAN_SPEED = 88;
+	private static readonly PACMAN_SPAWN_X = 14.25;
+	private static readonly PACMAN_SPAWN_Y = 9.25;
+
 	/**
-	 * Creates the board.
+	 * Creates the board.s
 	 *
 	 * @param color the background color of the board
 	 */
@@ -220,14 +224,10 @@ export default class Board {
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	private createMainBoardObjects() {
-		const PACMAN_SPEED = 88;
-		const PACMAN_SPAWN_X = 14.25;
-		const PACMAN_SPAWN_Y = 9.25;
-
 		this.placeBoardObject(
-			new PacMan("pac-man", PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
-			PACMAN_SPAWN_X,
-			PACMAN_SPAWN_Y
+			new PacMan("pac-man", Board.PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
+			Board.PACMAN_SPAWN_X,
+			Board.PACMAN_SPAWN_Y
 		);
 	}
 
