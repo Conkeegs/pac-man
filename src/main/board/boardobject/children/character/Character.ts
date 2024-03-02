@@ -83,16 +83,21 @@ export default class Character extends BoardObject {
 	 */
 	private transform: Transform;
 	/**
+	 * The current direction this character is currently moving in.
+	 */
+	private currentDirection: MovementDirection | undefined;
+
+	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
 	 * within `TURN_THRESHOLD` pixels of the turn yet, and so must queue the turn. The length of this array
 	 * must always be `1`.
 	 */
-	private turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
+	protected turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
 
 	/**
 	 * Data telling this character where it is allowed to turn
 	 */
-	protected turnData: TurnData[] | undefined;
+	public turnData: TurnData[] | undefined;
 
 	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override height = TILESIZE + Board.calcTileOffset(0.5);
@@ -158,6 +163,15 @@ export default class Character extends BoardObject {
 	 */
 	public getSource() {
 		return this.source;
+	}
+
+	/**
+	 * Get what direction this character is currently moving in.
+	 *
+	 * @returns the current direction the character is moving in
+	 */
+	public getCurrentDirection(): MovementDirection | undefined {
+		return this.currentDirection;
 	}
 
 	/**
@@ -229,8 +243,13 @@ export default class Character extends BoardObject {
 	 * where it is currently heading, and not making a 90 degree turn.
 	 */
 	public startMoving(direction: MovementDirection, fromTurn?: TurnData) {
-		// call this so we can reset the animation frame id every time a character moves
-		this.stopMoving();
+		// set this character's current direction since we now know that it's going to start moving
+		this.currentDirection = direction;
+
+		if (this.isMoving()) {
+			// call this so we can reset the animation frame id every time a character moves
+			this.stopMoving();
+		}
 
 		if (fromTurn) {
 			const oldPosition = this.getPosition()!;
@@ -288,6 +307,13 @@ export default class Character extends BoardObject {
 	}
 
 	/**
+	 * Empties the turn queue for this character.
+	 */
+	protected dequeueTurns(): void {
+		this.turnQueue = [];
+	}
+
+	/**
 	 * Determines if a character is within `TURN_THRESHOLD` pixels of a turn's position.
 	 *
 	 * @param turn the turn position to check against
@@ -316,6 +342,12 @@ export default class Character extends BoardObject {
 		if (direction === MovementDirection.STOP) {
 			this.stopMoving();
 
+			return;
+		}
+
+		// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
+		// will keep going, so make sure the character stops calls "move()" here
+		if (!this.isMoving()) {
 			return;
 		}
 
@@ -349,13 +381,6 @@ export default class Character extends BoardObject {
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
 		);
-	}
-
-	/**
-	 * Empties the turn queue for this character.
-	 */
-	private dequeueTurns(): void {
-		this.turnQueue = [];
 	}
 
 	/**

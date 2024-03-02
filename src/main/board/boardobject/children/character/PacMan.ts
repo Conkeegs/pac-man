@@ -70,7 +70,7 @@ export default class PacMan extends Character {
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
-	private readonly SPAWN_MOVECODES = [MovementDirection.RIGHT, MovementDirection.LEFT];
+	private static readonly SPAWN_MOVECODES = [MovementDirection.RIGHT, MovementDirection.LEFT];
 
 	/**
 	 * Creates PacMan.
@@ -116,10 +116,11 @@ export default class PacMan extends Character {
 			const isMoving = this.isMoving();
 
 			const lastMoveCode = this.lastMoveCode;
+			const currentDirection = this.getCurrentDirection();
 
 			// make sure the key pressed is a valid key that moves PacMan and that he isn't trying to move in the same direction
 			// as the one he was just traveling in
-			if (!exists(moveCode) || (isMoving && lastMoveCode === moveCode)) {
+			if (!exists(moveCode) || (isMoving && (lastMoveCode === moveCode || currentDirection === moveCode))) {
 				return;
 			}
 
@@ -148,7 +149,7 @@ export default class PacMan extends Character {
 
 			// let PacMan immediately start moving (left or right) if he has just spawned
 			if (!defined(lastMoveCode) && isMoving === false) {
-				if (this.SPAWN_MOVECODES.includes(moveCode)) {
+				if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
 					// PacMan is going to move, so set his last move code
 					this.lastMoveCode = moveCode;
 					console.log("JUST SPAWNED");
@@ -169,20 +170,26 @@ export default class PacMan extends Character {
 				// check if the character has moved in any direction in the past
 				defined(lastMoveCode) &&
 				// check if the character is considered "moving"
-				isMoving &&
-				// check if the new direction that the character is trying to move in is the opposite of the last direction
-				// it was moving in
-				moveCode === this.moveCodeOpposites[lastMoveCode as keyof typeof this.moveCodeOpposites]
+				isMoving
 			) {
-				// PacMan is going to move, so set his last move code
-				this.lastMoveCode = moveCode;
-				console.log("TURNING AROUND");
+				// cancel any future turns since at this point, we know the user wants to move PacMan in another direction
+				if (this.turnQueue.length) {
+					this.dequeueTurns();
+				}
 
-				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
-				// in the opposite direction instead of a 90-degree angle
-				this.startMoving(moveCode);
+				// check if the new direction that PacMan is trying to move in is the opposite of the direction
+				// he is currently moving in
+				if (moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]) {
+					// PacMan is going to move, so set his last move code
+					this.lastMoveCode = moveCode;
+					console.log("TURNING AROUND");
 
-				return;
+					// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
+					// in the opposite direction instead of a 90-degree angle
+					this.startMoving(moveCode);
+
+					return;
+				}
 			}
 
 			const position = this.getPosition()!;
