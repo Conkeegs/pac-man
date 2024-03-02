@@ -170,26 +170,25 @@ export default class PacMan extends Character {
 				// check if the character has moved in any direction in the past
 				defined(lastMoveCode) &&
 				// check if the character is considered "moving"
-				isMoving
+				isMoving &&
+				// check if the new direction that PacMan is trying to move in is the opposite of the direction
+				// he is currently moving in
+				moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]
 			) {
-				// cancel any future turns since at this point, we know the user wants to move PacMan in another direction
 				if (this.turnQueue.length) {
+					// we know at this point that we want to cancel any queued turns since we want to move in
+					// the opposite direction
 					this.dequeueTurns();
 				}
 
-				// check if the new direction that PacMan is trying to move in is the opposite of the direction
-				// he is currently moving in
-				if (moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]) {
-					// PacMan is going to move, so set his last move code
-					this.lastMoveCode = moveCode;
-					console.log("TURNING AROUND");
+				// PacMan is going to move, so set his last move code
+				this.lastMoveCode = moveCode;
 
-					// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
-					// in the opposite direction instead of a 90-degree angle
-					this.startMoving(moveCode);
+				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
+				// in the opposite direction instead of a 90-degree angle
+				this.startMoving(moveCode);
 
-					return;
-				}
+				return;
 			}
 
 			const position = this.getPosition()!;
@@ -199,7 +198,7 @@ export default class PacMan extends Character {
 			// turn threshold
 			const filteredTurnData = this.turnData!.filter((turn) => {
 				// turns "ahead" of PacMan
-				if (this.turnValidators[lastMoveCode as keyof typeof this.turnValidators](turn, position)) {
+				if (this.turnValidators[currentDirection as keyof typeof this.turnValidators](turn, position)) {
 					return true;
 				}
 
@@ -217,6 +216,12 @@ export default class PacMan extends Character {
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (nearestTurn) {
+				if (this.turnQueue.length) {
+					// we know at this point that we want to cancel any queued turns since we want to immediately
+					// start moving in another direction
+					this.dequeueTurns();
+				}
+
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
 				console.log("NEAREST TURN IMMEDIATELY");
@@ -230,7 +235,7 @@ export default class PacMan extends Character {
 			// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows PacMan
 			// to turn (given the input moveCode), we find the closest turn to PacMan, instead of a turn that may be at the "start" of the
 			// "filteredTurnData" array
-			if (lastMoveCode === MovementDirection.LEFT || lastMoveCode === MovementDirection.UP) {
+			if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
 				filteredTurnData.reverse();
 			}
 

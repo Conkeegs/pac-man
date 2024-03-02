@@ -246,7 +246,7 @@ export default class Character extends BoardObject {
 		// set this character's current direction since we now know that it's going to start moving
 		this.currentDirection = direction;
 
-		if (this.isMoving()) {
+		if (this.moving) {
 			// call this so we can reset the animation frame id every time a character moves
 			this.stopMoving();
 		}
@@ -347,7 +347,7 @@ export default class Character extends BoardObject {
 
 		// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
 		// will keep going, so make sure the character stops calls "move()" here
-		if (!this.isMoving()) {
+		if (!this.moving) {
 			return;
 		}
 
