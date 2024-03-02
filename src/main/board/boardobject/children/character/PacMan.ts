@@ -124,14 +124,11 @@ export default class PacMan extends Character {
 				return;
 			}
 
-			console.log("NOT LISTENING");
-
 			// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
 			// if our movement key is valid
 			this.listenForKeydown = false;
 
 			if (moveCode === MovementDirection.STOP) {
-				console.log("IS STOP", isMoving);
 				if (isMoving) {
 					event.preventDefault();
 					this.stopMoving();
@@ -152,19 +149,12 @@ export default class PacMan extends Character {
 				if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
 					// PacMan is going to move, so set his last move code
 					this.lastMoveCode = moveCode;
-					console.log("JUST SPAWNED");
 
 					this.startMoving(moveCode);
 				}
 
 				return;
 			}
-
-			console.log({
-				moveCode,
-				lastMoveCode,
-				opposite: this.moveCodeOpposites[lastMoveCode as keyof typeof this.moveCodeOpposites],
-			});
 
 			if (
 				// check if the character has moved in any direction in the past
@@ -212,8 +202,6 @@ export default class PacMan extends Character {
 				return false;
 			});
 
-			console.log({ filteredTurnData, nearestTurn });
-
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (nearestTurn) {
 				if (this.turnQueue.length) {
@@ -224,7 +212,6 @@ export default class PacMan extends Character {
 
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
-				console.log("NEAREST TURN IMMEDIATELY");
 
 				this.startMoving(moveCode, nearestTurn);
 
@@ -243,14 +230,11 @@ export default class PacMan extends Character {
 			// "moveCode"
 			nearestTurn = filteredTurnData.find((turn) => this.canTurnWithMoveCode(moveCode, turn));
 
-			console.log({ nearestTurn });
-
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
 			if (nearestTurn) {
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
-				console.log("VALID TURN AHEAD, QUEUEING");
 
 				this.queueTurn(moveCode, nearestTurn);
 			}
@@ -264,8 +248,6 @@ export default class PacMan extends Character {
 			// once again start listening for more movement inputs. this prevents user from mashing
 			// random movements keys and getting unexpected behavior from the movement listener above
 			if (exists(moveCode)) {
-				console.log("LISTENING AGAIN");
-
 				this.listenForKeydown = true;
 			}
 		});
