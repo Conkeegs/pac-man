@@ -182,7 +182,7 @@ export default class PacMan extends Character {
 			}
 
 			const position = this.getPosition()!;
-			let nearestTurn: TurnData | undefined;
+			let nearestTurnableTurn: TurnData | undefined;
 
 			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
 			// turn threshold
@@ -194,7 +194,7 @@ export default class PacMan extends Character {
 
 				// turn within turn threshold
 				if (this.isWithinTurnDistance(turn) && this.canTurnWithMoveCode(moveCode, turn)) {
-					nearestTurn = turn;
+					nearestTurnableTurn = turn;
 
 					return true;
 				}
@@ -203,7 +203,7 @@ export default class PacMan extends Character {
 			});
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-			if (nearestTurn) {
+			if (nearestTurnableTurn) {
 				if (this.turnQueue.length) {
 					// we know at this point that we want to cancel any queued turns since we want to immediately
 					// start moving in another direction
@@ -213,7 +213,7 @@ export default class PacMan extends Character {
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
 
-				this.startMoving(moveCode, nearestTurn);
+				this.startMoving(moveCode, nearestTurnableTurn);
 
 				return;
 			}
@@ -228,15 +228,15 @@ export default class PacMan extends Character {
 
 			// at this point, we know there is not an immediately-available turn to turn at, so find the nearest-available turn that allows our
 			// "moveCode"
-			nearestTurn = filteredTurnData.find((turn) => this.canTurnWithMoveCode(moveCode, turn));
+			nearestTurnableTurn = filteredTurnData.find((turn) => this.canTurnWithMoveCode(moveCode, turn));
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
-			if (nearestTurn) {
+			if (nearestTurnableTurn) {
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
 
-				this.queueTurn(moveCode, nearestTurn);
+				this.queueTurn(moveCode, nearestTurnableTurn);
 			}
 		});
 
