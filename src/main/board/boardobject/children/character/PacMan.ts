@@ -62,6 +62,20 @@ export default class PacMan extends Character {
 	}
 
 	/**
+	 * Starts moving `PacMan`, while also setting his `lastMoveCode` in memory to keep track of the
+	 * last move input that was entered for him.
+	 *
+	 * @param moveCode the direction `PacMan` wants to move
+	 * @param turn optional turn in case `PacMan` is going to turn at a turn's location
+	 */
+	public override startMoving(moveCode: MovementDirection, turn?: TurnData): void {
+		// PacMan is going to move, so set his last move code
+		this.lastMoveCode = moveCode;
+
+		super.startMoving(moveCode, turn);
+	}
+
+	/**
 	 * DOM event listeners that allow the user to control PacMan.
 	 */
 	private createMoveEventListeners() {
@@ -111,9 +125,6 @@ export default class PacMan extends Character {
 			// let PacMan immediately start moving (left or right) if he has just spawned
 			if (!defined(lastMoveCode) && isMoving === false) {
 				if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
-					// PacMan is going to move, so set his last move code
-					this.lastMoveCode = moveCode;
-
 					this.startMoving(moveCode);
 				}
 
@@ -122,46 +133,36 @@ export default class PacMan extends Character {
 
 			if (
 				// check if the character has moved in any direction in the past
-				defined(lastMoveCode)
+				!defined(lastMoveCode)
 			) {
-				if (
-					// check if the character is considered "moving"
-					isMoving &&
-					// check if the new direction that PacMan is trying to move in is the opposite of the direction
-					// he is currently moving in
-					moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]
-				) {
-					if (this.turnQueue.length) {
-						// we know at this point that we want to cancel any queued turns since we want to move in
-						// the opposite direction
-						this.dequeueTurns();
-					}
+				return;
+			}
 
-					// PacMan is going to move, so set his last move code
-					this.lastMoveCode = moveCode;
+			if (
+				// check if the character is considered "moving"
+				isMoving &&
+				// check if the new direction that PacMan is trying to move in is the opposite of the direction
+				// he is currently moving in
+				moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]
+			) {
+				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
+				// in the opposite direction instead of a 90-degree angle
+				this.startMoving(moveCode);
 
-					// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
-					// in the opposite direction instead of a 90-degree angle
-					this.startMoving(moveCode);
+				return;
+			}
 
-					return;
-				} else {
-					const nearestStoppingTurn = this.nearestStoppingTurn;
+			const nearestStoppingTurn = this.nearestStoppingTurn;
 
-					// if all of these are true, PacMan should be considered "stopped" against a wall
-					if (
-						!isMoving &&
-						nearestStoppingTurn &&
-						Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)
-					) {
-						// PacMan is going to move, so set his last move code
-						this.lastMoveCode = moveCode;
+			if (
+				// if all of these are true, PacMan should be considered "stopped" against a wall
+				!isMoving &&
+				nearestStoppingTurn &&
+				Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)
+			) {
+				this.startMoving(moveCode);
 
-						this.startMoving(moveCode);
-
-						return;
-					}
-				}
+				return;
 			}
 
 			const position = this.getPosition()!;
@@ -187,15 +188,6 @@ export default class PacMan extends Character {
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (nearestTurnableTurn) {
-				if (this.turnQueue.length) {
-					// we know at this point that we want to cancel any queued turns since we want to immediately
-					// start moving in another direction
-					this.dequeueTurns();
-				}
-
-				// PacMan is going to move, so set his last move code
-				this.lastMoveCode = moveCode;
-
 				this.startMoving(moveCode, nearestTurnableTurn);
 
 				return;

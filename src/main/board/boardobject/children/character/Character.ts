@@ -281,6 +281,11 @@ export default class Character extends BoardObject {
 		// set this character's current direction since we now know that it's going to start moving
 		this.currentDirection = direction;
 
+		if (this.turnQueue.length) {
+			// reset turn queue each time we head in a new direction
+			this.dequeueTurns();
+		}
+
 		if (this.moving) {
 			// call this so we can reset the animation frame id every time a character moves
 			this.stopMoving();
@@ -316,13 +321,6 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Empties the turn queue for this character.
-	 */
-	protected dequeueTurns(): void {
-		this.turnQueue = [];
-	}
-
-	/**
 	 * Determines if a character is within `TURN_THRESHOLD` pixels of a turn's position.
 	 *
 	 * @param turn the turn position to check against
@@ -350,6 +348,13 @@ export default class Character extends BoardObject {
 	 */
 	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: TurnData): boolean {
 		return turn.directions.includes(direction);
+	}
+
+	/**
+	 * Empties the turn queue for this character.
+	 */
+	private dequeueTurns(): void {
+		this.turnQueue = [];
 	}
 
 	/**
