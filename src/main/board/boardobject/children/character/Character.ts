@@ -3,7 +3,7 @@
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
-import { BoardObject } from "../../BoardObject.js";
+import { BoardObject, type Position } from "../../BoardObject.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -86,6 +86,10 @@ export default class Character extends BoardObject {
 	 * The current direction this character is currently moving in.
 	 */
 	private currentDirection: MovementDirection | undefined;
+	/**
+	 * The current frame iteration that this character's animation frame is on.
+	 */
+	private frameCount: number = 0;
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -93,6 +97,32 @@ export default class Character extends BoardObject {
 	 * must always be `1`.
 	 */
 	protected turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
+	/**
+	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
+	 */
+	protected nearestStoppingTurn: TurnData | undefined;
+	/**
+	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
+	 * direction this `Character` is currently heading and if it is on the same "row"/"column" as the `Character`.
+	 */
+	protected turnValidators = {
+		[MovementDirection.LEFT]: (turn: TurnData, position: Position) => {
+			// only turns to the left of Character and in the same row
+			return turn.x <= position.x - this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
+		},
+		[MovementDirection.RIGHT]: (turn: TurnData, position: Position) => {
+			// only turns to the right of Character and in the same row
+			return turn.x >= position.x + this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
+		},
+		[MovementDirection.UP]: (turn: TurnData, position: Position) => {
+			// only turns above Character and in the same column
+			return turn.y <= position.y - this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
+		},
+		[MovementDirection.DOWN]: (turn: TurnData, position: Position) => {
+			// only turns below Character and in the same column
+			return turn.y >= position.y + this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
+		},
+	};
 
 	/**
 	 * Data telling this character where it is allowed to turn
@@ -227,6 +257,7 @@ export default class Character extends BoardObject {
 	 * @returns
 	 */
 	public stopMoving() {
+		this.dequeueTurns();
 		cancelAnimationFrame(this.animationFrameId as number);
 
 		this.moving = false;
@@ -243,6 +274,10 @@ export default class Character extends BoardObject {
 	 * where it is currently heading, and not making a 90 degree turn.
 	 */
 	public startMoving(direction: MovementDirection, fromTurn?: TurnData) {
+		// make sure we reset the frame count and nearest turn every time we start moving in a new direction so that we can
+		// accurately track characters colliding with walls down the movement pipeline
+		this.frameCount = 0;
+		this.nearestStoppingTurn = undefined;
 		// set this character's current direction since we now know that it's going to start moving
 		this.currentDirection = direction;
 
@@ -252,34 +287,8 @@ export default class Character extends BoardObject {
 		}
 
 		if (fromTurn) {
-			const oldPosition = this.getPosition()!;
-			// find the "true" position x & y that the Character should be placed at when performing a turn (since
-			// it could be within the turn's threshold, but not perfectly placed at the turn position)
-			const characterTurnX = fromTurn.x - this.getWidth()! / 2;
-			const characterTurnY = fromTurn.y - this.getHeight()! / 2;
-
-			// we know at this point that we're within this turn's threshold, so correct the character's position
-			// by moving it to the turn's exact location to keep the character's movement consistent
-			if (oldPosition.x !== characterTurnX || oldPosition.y !== characterTurnY) {
-				this.setPosition(
-					{
-						x: characterTurnX,
-						y: characterTurnY,
-					},
-					false
-				);
-
-				// get the character's new position in order to compare it to its old one, since it moved a small distance
-				// to "correct" its position
-				const newPosition = this.getPosition()!;
-				const transform = this.transform;
-
-				// add to character's transform since we've "corrected" its position by a little bit
-				this.setTransform({
-					x: transform.x + (newPosition.x - oldPosition.x),
-					y: transform.y + (newPosition.y - oldPosition.y),
-				});
-			}
+			// snap to turn-position to keep collision detection consistent
+			this.offsetPositionToTurn(fromTurn);
 		}
 
 		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
@@ -332,6 +341,56 @@ export default class Character extends BoardObject {
 	}
 
 	/**
+	 * Every turn's position only allows a certain set of directions for a `Character` to move in. This method determines
+	 * if the `Character` can turn in a certain direction at the given `turn`.
+	 *
+	 * @param direction the direction `Character` wants to move in
+	 * @param turn the turn position `Character` wants to turn at
+	 * @returns boolean indicating whether the `Character` can use a given `direction` to turn at the given `turn`
+	 */
+	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: TurnData): boolean {
+		return turn.directions.includes(direction);
+	}
+
+	/**
+	 * Given a turn, this function will physically "snap" this `Character`'s position to it. This is
+	 * useful since collision detection relies on specific offsets of characters on the board, relative
+	 * to each turn.
+	 *
+	 * @param turn the turn to snap this `Character`'s physical to
+	 */
+	private offsetPositionToTurn(turn: TurnData): void {
+		const oldPosition = this.getPosition()!;
+		// find the "true" position x & y that the Character should be placed at when performing a turn (since
+		// it could be within the turn's threshold, but not perfectly placed at the turn position)
+		const characterTurnX = turn.x - this.getWidth()! / 2;
+		const characterTurnY = turn.y - this.getHeight()! / 2;
+
+		// we know at this point that we're within this turn's threshold, so correct the character's position
+		// by moving it to the turn's exact location to keep the character's movement consistent
+		if (oldPosition.x !== characterTurnX || oldPosition.y !== characterTurnY) {
+			this.setPosition(
+				{
+					x: characterTurnX,
+					y: characterTurnY,
+				},
+				false
+			);
+
+			// get the character's new position in order to compare it to its old one, since it moved a small distance
+			// to "correct" its position
+			const newPosition = this.getPosition()!;
+			const transform = this.transform;
+
+			// add to character's transform since we've "corrected" its position by a little bit
+			this.setTransform({
+				x: transform.x + (newPosition.x - oldPosition.x),
+				y: transform.y + (newPosition.y - oldPosition.y),
+			});
+		}
+	}
+
+	/**
 	 * Recursively calls itself to update the character's position every frame.
 	 *
 	 * @param direction the direction the character is currently trying to move in
@@ -351,6 +410,32 @@ export default class Character extends BoardObject {
 			return;
 		}
 
+		const currentDirection = this.currentDirection!;
+
+		// make sure we look for the nearest turn when at least one frame has passed already. this way, we make
+		// sure that we've called "move()" at least once already, and we can accurately track when this character
+		// arrives at its "nearestTurn" and stop the character if it hits a wall
+		if (this.frameCount === 1) {
+			const filteredTurnData = this.turnData!.filter((turn) => {
+				// turns "ahead" of PacMan which do not accept the current direction of movement that this character
+				// is currently moving in
+				return (
+					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
+						turn,
+						this.getPosition()!
+					) && !Character.canTurnWithMoveDirection(currentDirection, turn)
+				);
+			});
+
+			// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
+			// reverse the array here so that the nearest turn isn't at the "end" of the array
+			if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
+				filteredTurnData.reverse();
+			}
+
+			this.nearestStoppingTurn = filteredTurnData[0];
+		}
+
 		// check the turn queue for any queued turns
 		if (this.turnQueue.length) {
 			const queuedTurnInfo = this.turnQueue[0]!;
@@ -365,10 +450,26 @@ export default class Character extends BoardObject {
 				// break out of the recursive animation frame calls so we can start moving in another direction
 				return;
 			}
+		} else {
+			const nearestTurn = this.nearestStoppingTurn;
+
+			if (
+				nearestTurn &&
+				// check if character is within nearest turn's distance (e.g. technically hitting the wall)
+				this.isWithinTurnDistance(nearestTurn)
+			) {
+				this.stopMoving();
+				// snap character to "stop" location to keep collision detection consistent
+				this.offsetPositionToTurn(nearestTurn);
+
+				// break out of the recursive animation frame calls so we can stop at this Character's nearest turn
+				return;
+			}
 		}
 
 		// only updates character's position if we've already called the "move" function before
 		if (lastAnimationTime) {
+			// only updates character's position if we've already called the "move" function before
 			this.movementMethods[direction as keyof MovementMethods].bind(this)(
 				this.speed! * millisToSeconds(timeStamp - lastAnimationTime)
 			);
@@ -376,7 +477,7 @@ export default class Character extends BoardObject {
 
 		lastAnimationTime = timeStamp;
 
-		// (this.positionHandlers[direction] as PositionHandler)(timeStamp - lastAnimationTime);
+		this.frameCount++;
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)

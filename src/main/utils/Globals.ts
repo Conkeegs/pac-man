@@ -1,4 +1,7 @@
 "use strict";
+
+import MovementDirection from "../board/boardobject/children/character/MovementDirection.js";
+
 /**
  * The number of square columns on the board.
  */
@@ -34,3 +37,10 @@ export const WIDTH: number = match.matches ? 672 : 448;
  * The size of the square tiles on the board, based on the `WIDTH` and `COLUMNS` globals.
  */
 export const TILESIZE: number = WIDTH / COLUMNS;
+
+export const moveCodeWords = {
+	[MovementDirection.LEFT]: "LEFT",
+	[MovementDirection.RIGHT]: "RIGHT",
+	[MovementDirection.UP]: "UP",
+	[MovementDirection.DOWN]: "DOWN",
+};
