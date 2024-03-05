@@ -46,14 +46,14 @@ export class BoardObject {
 	constructor(name: string) {
 		if (!name) {
 			DebugWindow.error("BoardObject.js", "constructor", "BoardObject must have a name.");
-		} else if (BOARDOBJECTS.includes(name)) {
+		} else if (BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === "name")) {
 			DebugWindow.error("BoardObject.js", "constructor", `A BoardObject with the name '${name}' already exists.`);
 		}
 
 		this.name = name;
 
 		// keep track of this board object so we can clean it up later, if needed
-		BOARDOBJECTS.push(name);
+		BOARDOBJECTS.push(this);
 
 		this.element = create({ name: "div", id: name, classes: ["board-object"] });
 	}

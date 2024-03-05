@@ -1,5 +1,6 @@
 "use strict";
 
+import type { BoardObject } from "../board/boardobject/BoardObject.js";
 import MovementDirection from "../board/boardobject/children/character/MovementDirection.js";
 
 /**
@@ -20,7 +21,7 @@ export const DEBUG: boolean = false;
  * An array of classes that extends the `BoardObject` class so we can add/remove them when needed,
  * and also check for duplicates since each of them have unique `name` properties.
  */
-export const BOARDOBJECTS: string[] = [];
+export const BOARDOBJECTS: BoardObject[] = [];
 
 let match = window.matchMedia("(min-width: 720px)");
 
