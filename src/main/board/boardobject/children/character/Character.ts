@@ -424,7 +424,6 @@ export default class Character extends BoardObject {
 			// the character in that direction when it is
 			if (this.isWithinTurnDistance(turn)) {
 				this.startMoving(queuedTurnInfo.direction, turn);
-				this.dequeueTurns();
 
 				// break out of the recursive animation frame calls so we can start moving in another direction
 				return;
