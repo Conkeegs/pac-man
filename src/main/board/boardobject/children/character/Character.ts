@@ -415,11 +415,30 @@ export default class Character extends BoardObject {
 			return;
 		}
 
+		// check the turn queue for any queued turns
+		if (this.turnQueue.length) {
+			const queuedTurnInfo = this.turnQueue[0]!;
+			const turn = queuedTurnInfo.turn;
+
+			// every frame, check if the character is within the queued-turn's threshold, and turn
+			// the character in that direction when it is
+			if (this.isWithinTurnDistance(turn)) {
+				this.startMoving(queuedTurnInfo.direction, turn);
+				this.dequeueTurns();
+
+				// break out of the recursive animation frame calls so we can start moving in another direction
+				return;
+			}
+		}
+
 		const currentDirection = this.currentDirection!;
 
+		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
+		// the character doesn't just stop and cancel valid queued-turns.
 		// make sure we look for the nearest turn when at least one frame has passed already. this way, we make
 		// sure that we've called "move()" at least once already, and we can accurately track when this character
-		// arrives at its "nearestTurn" and stop the character if it hits a wall
+		// arrives at its "nearestTurn" and stop the character if it hits a wall. this will also prevent characters with
+		// queued-turns that are technically "behind" a wall from ever executing the turn
 		if (this.frameCount === 1) {
 			const filteredTurnData = this.turnData!.filter((turn) => {
 				// turns "ahead" of PacMan which do not accept the current direction of movement that this character
@@ -441,35 +460,19 @@ export default class Character extends BoardObject {
 			this.nearestStoppingTurn = filteredTurnData[0];
 		}
 
-		// check the turn queue for any queued turns
-		if (this.turnQueue.length) {
-			const queuedTurnInfo = this.turnQueue[0]!;
-			const turn = queuedTurnInfo.turn;
+		const nearestTurn = this.nearestStoppingTurn;
 
-			// every frame, check if the character is within the queued-turn's threshold, and turn
-			// the character in that direction when it is
-			if (this.isWithinTurnDistance(turn)) {
-				this.startMoving(queuedTurnInfo.direction, turn);
-				this.dequeueTurns();
+		if (
+			nearestTurn &&
+			// check if character is within nearest turn's distance (e.g. technically hitting the wall)
+			this.isWithinTurnDistance(nearestTurn)
+		) {
+			this.stopMoving();
+			// snap character to "stop" location to keep collision detection consistent
+			this.offsetPositionToTurn(nearestTurn);
 
-				// break out of the recursive animation frame calls so we can start moving in another direction
-				return;
-			}
-		} else {
-			const nearestTurn = this.nearestStoppingTurn;
-
-			if (
-				nearestTurn &&
-				// check if character is within nearest turn's distance (e.g. technically hitting the wall)
-				this.isWithinTurnDistance(nearestTurn)
-			) {
-				this.stopMoving();
-				// snap character to "stop" location to keep collision detection consistent
-				this.offsetPositionToTurn(nearestTurn);
-
-				// break out of the recursive animation frame calls so we can stop at this Character's nearest turn
-				return;
-			}
+			// break out of the recursive animation frame calls so we can stop at this Character's nearest turn
+			return;
 		}
 
 		// only updates character's position if we've already called the "move" function before
