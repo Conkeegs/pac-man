@@ -9,8 +9,8 @@ import { BoardObject } from "../BoardObject.js";
  * Represents a circular node at each location on the board where characters can turn.
  */
 export default class PathNode extends BoardObject {
-	public override width = TILESIZE;
-	public override height = TILESIZE;
+	public override readonly width = TILESIZE;
+	public override readonly height = TILESIZE;
 
 	/**
 	 * Creates a path node.

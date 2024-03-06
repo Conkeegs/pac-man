@@ -9,8 +9,8 @@ import { BoardObject } from "../BoardObject.js";
  * Represents text on the board.
  */
 export default class BoardText extends BoardObject {
-	public override width = TILESIZE;
-	public override height = TILESIZE;
+	public override readonly width = TILESIZE;
+	public override readonly height = TILESIZE;
 
 	/**
 	 * Creates a board text object.

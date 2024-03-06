@@ -15,7 +15,7 @@ export type Position = {
 /**
  * Represents characters/small, generally tile-sized objects on the board.
  */
-export class BoardObject {
+export abstract class BoardObject {
 	/**
 	 * The HTML element that contains this board object.
 	 */
@@ -28,11 +28,11 @@ export class BoardObject {
 	/**
 	 * The board object's width in pixels.
 	 */
-	protected width: number | undefined;
+	protected readonly width: number | undefined;
 	/**
 	 * The board object's height in pixels.
 	 */
-	protected height: number | undefined;
+	protected readonly height: number | undefined;
 	/**
 	 * The board object's position on the board.
 	 */
