@@ -11,7 +11,7 @@ import MovementDirection from "./MovementDirection.js";
  * and also includes an array of `MovementDirection` values to tell the character
  * what directions it can turn when it reaches the given turn coordinates.
  */
-export interface TurnData {
+export interface TurnData extends Position {
 	/**
 	 * The `x` position of the turn.
 	 */
@@ -27,20 +27,6 @@ export interface TurnData {
 }
 
 /**
- * Represents this character's CSS `transform` `x` and `y` values.
- */
-type Transform = {
-	/**
-	 * The character's `translateX` value in pixels.
-	 */
-	x: number;
-	/**
-	 * The character's `translateY` value in pixels.
-	 */
-	y: number;
-};
-
-/**
  * Depending on which direction a character is moving in, this object holds methods which
  * will change the character's CSS `transform` value and also set it in memory.
  */
@@ -54,9 +40,9 @@ type MovementMethods = {
 };
 
 /**
- * The minimum number of pixels away from a turn location that a character must be in order to turn on it.
+ * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
  */
-export const TURN_THRESHOLD = 2;
+export const COLLISION_THRESHOLD = 2;
 
 /**
  * A character is any of the AI or user-controlled objects on the board.
@@ -79,10 +65,6 @@ export default class Character extends BoardObject {
 	 */
 	private moving = false;
 	/**
-	 * This character's CSS `transform` value, holding both its `translateX` and `translateY` values.
-	 */
-	private transform: Transform;
-	/**
 	 * The current direction this character is currently moving in.
 	 */
 	private currentDirection: MovementDirection | undefined;
@@ -90,6 +72,23 @@ export default class Character extends BoardObject {
 	 * The current frame iteration that this character's animation frame is on.
 	 */
 	private frameCount: number = 0;
+	/**
+	 * The directions that this character must be moving in order to search for the nearest "teleport" position.
+	 */
+	private readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [MovementDirection.LEFT, MovementDirection.RIGHT];
+	/**
+	 * The `x` and `y` positions on the board of each teleporter's collision.
+	 */
+	private readonly TELEPORTER_POSITIONS = {
+		[MovementDirection.LEFT]: {
+			x: 0,
+			y: Board.calcTileY(18.25),
+		},
+		[MovementDirection.RIGHT]: {
+			x: Board.calcTileX(29),
+			y: Board.calcTileY(18.25),
+		},
+	};
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -123,14 +122,23 @@ export default class Character extends BoardObject {
 			return turn.y >= position.y + this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
 		},
 	};
+	/**
+	 * Takes a direction that a Character can move and returns the opposite direction of it.
+	 */
+	protected static readonly directionOpposites = {
+		[MovementDirection.LEFT]: MovementDirection.RIGHT,
+		[MovementDirection.RIGHT]: MovementDirection.LEFT,
+		[MovementDirection.UP]: MovementDirection.DOWN,
+		[MovementDirection.DOWN]: MovementDirection.UP,
+	};
 
 	/**
 	 * Data telling this character where it is allowed to turn
 	 */
 	public turnData: TurnData[] | undefined;
 
-	public override width: number = TILESIZE + Board.calcTileOffset(0.5);
-	public override height = TILESIZE + Board.calcTileOffset(0.5);
+	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
+	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
 
 	/**
 	 * Holds methods which will change the character's CSS `transform` value and also set it in memory.
@@ -160,11 +168,6 @@ export default class Character extends BoardObject {
 			height: px(this.height),
 			backgroundImage: `url(${source})`,
 		});
-
-		this.transform = {
-			x: 0,
-			y: 0,
-		};
 
 		// tell the character where it can turn
 		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
@@ -205,45 +208,6 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Sets this character's `transformX` and `translateY` CSS values and in-memory.
-	 *
-	 * @param transform the amounts to change the `translateX` and `translateY` values by
-	 */
-	public setTransform(transform: Transform): void {
-		this.element.css({
-			transform: `translate(${px(transform.x)}, ${px(transform.y)})`,
-		});
-
-		this.transform = transform;
-	}
-
-	/**
-	 * Sets this character's `translateX` CSS value and in-memory.
-	 *
-	 * @param x the amount to change the `translateX` by
-	 */
-	public setTransformX(x: number): void {
-		this.element.css({
-			transform: `translate(${px(x)}, ${px(this.transform.y)})`,
-		});
-
-		this.transform.x = x;
-	}
-
-	/**
-	 * Sets this character's `translateY` CSS value and in-memory.
-	 *
-	 * @param y the amount to change the `translateY` by
-	 */
-	public setTransformY(y: number): void {
-		this.element.css({
-			transform: `translate(${px(this.transform.x)}, ${px(y)})`,
-		});
-
-		this.transform.y = y;
-	}
-
-	/**
 	 * Determines if the character is currently moving.
 	 * @returns `boolean` if the character is moving or not
 	 */
@@ -261,6 +225,11 @@ export default class Character extends BoardObject {
 		cancelAnimationFrame(this.animationFrameId as number);
 
 		this.moving = false;
+		// make sure we reset the frame count and nearest turn every time this character stops so that we can
+		// accurately track characters colliding with walls down the movement pipeline
+		this.frameCount = 0;
+		this.nearestStoppingTurn = undefined;
+		this.currentDirection = undefined;
 
 		return false;
 	}
@@ -274,13 +243,6 @@ export default class Character extends BoardObject {
 	 * where it is currently heading, and not making a 90 degree turn.
 	 */
 	public startMoving(direction: MovementDirection, fromTurn?: TurnData) {
-		// make sure we reset the frame count and nearest turn every time we start moving in a new direction so that we can
-		// accurately track characters colliding with walls down the movement pipeline
-		this.frameCount = 0;
-		this.nearestStoppingTurn = undefined;
-		// set this character's current direction since we now know that it's going to start moving
-		this.currentDirection = direction;
-
 		if (this.turnQueue.length) {
 			// reset turn queue each time we head in a new direction
 			this.dequeueTurns();
@@ -290,6 +252,9 @@ export default class Character extends BoardObject {
 			// call this so we can reset the animation frame id every time a character moves
 			this.stopMoving();
 		}
+
+		// set this character's current direction since we now know that it's going to start moving
+		this.currentDirection = direction;
 
 		if (fromTurn) {
 			// snap to turn-position to keep collision detection consistent
@@ -333,8 +298,30 @@ export default class Character extends BoardObject {
 		// our threshold takes effect when the character is about "half" way over the turn's
 		// position
 		return (
-			Math.abs(position.x + this.width / 2 - turn.x) <= TURN_THRESHOLD &&
-			Math.abs(position.y + this.height / 2 - turn.y) <= TURN_THRESHOLD
+			Character.distanceWithinThreshold(position.x + this.width / 2, turn.x) &&
+			Character.distanceWithinThreshold(position.y + this.height / 2, turn.y)
+		);
+	}
+
+	/**
+	 * Determines if a character is within `TURN_THRESHOLD` pixels of a teleporter.
+	 *
+	 * @param position the position of the teleporter's collision
+	 * @returns boolean indicating if the character is within the pixel threshold of the teleporter
+	 */
+	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
+		const position = this.getPosition()!;
+		const currentDirection = this.currentDirection;
+		let positionX = position.x;
+
+		// since characters' x position will always be on their left-most side, we need to offset their x position
+		// by their width. this way, the character only teleports from the left side when their whole body has crossed
+		if (currentDirection === MovementDirection.LEFT) {
+			positionX += this.width;
+		}
+
+		return (
+			Character.distanceWithinThreshold(positionX, teleporterPosition.x) && position.y === teleporterPosition.y
 		);
 	}
 
@@ -348,6 +335,18 @@ export default class Character extends BoardObject {
 	 */
 	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: TurnData): boolean {
 		return turn.directions.includes(direction);
+	}
+
+	/**
+	 * Determines whether two positions on the board (`x` or `y`) are within `COLLISION_THRESHOLD` pixels of
+	 * each other.
+	 *
+	 * @param offset1 the first `x` or `y` position
+	 * @param offset2 the second `x` or `y` position
+	 * @returns boolean indicating if they're within the collision threshold
+	 */
+	private static distanceWithinThreshold(offset1: number, offset2: number): boolean {
+		return Math.abs(offset1 - offset2) <= COLLISION_THRESHOLD;
 	}
 
 	/**
@@ -379,19 +378,11 @@ export default class Character extends BoardObject {
 					x: characterTurnX,
 					y: characterTurnY,
 				},
-				false
+				{
+					modifyCss: false,
+					modifyTransform: true,
+				}
 			);
-
-			// get the character's new position in order to compare it to its old one, since it moved a small distance
-			// to "correct" its position
-			const newPosition = this.getPosition()!;
-			const transform = this.transform;
-
-			// add to character's transform since we've "corrected" its position by a little bit
-			this.setTransform({
-				x: transform.x + (newPosition.x - oldPosition.x),
-				y: transform.y + (newPosition.y - oldPosition.y),
-			});
 		}
 	}
 
@@ -434,11 +425,10 @@ export default class Character extends BoardObject {
 
 		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
 		// the character doesn't just stop and cancel valid queued-turns.
-		// make sure we look for the nearest turn when at least one frame has passed already. this way, we make
-		// sure that we've called "move()" at least once already, and we can accurately track when this character
-		// arrives at its "nearestTurn" and stop the character if it hits a wall. this will also prevent characters with
-		// queued-turns that are technically "behind" a wall from ever executing the turn
-		if (this.frameCount === 1) {
+		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
+		// track when this character arrives at its "nearestTurn" and stop the character if it hits a wall. this will also prevent
+		// characters with queued-turns that are technically "behind" a wall from ever executing the turn
+		if (this.frameCount === 0) {
 			const filteredTurnData = this.turnData!.filter((turn) => {
 				// turns "ahead" of PacMan which do not accept the current direction of movement that this character
 				// is currently moving in
@@ -474,7 +464,34 @@ export default class Character extends BoardObject {
 			return;
 		}
 
-		// only updates character's position if we've already called the "move" function before
+		const teleporterPositions = this.TELEPORTER_POSITIONS;
+
+		// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
+		// of one, and teleport them when they are
+		if (
+			this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
+			this.isWithinTeleporterDistance(teleporterPositions[currentDirection as keyof typeof teleporterPositions])
+		) {
+			// set character's position to the opposite teleporter
+			this.setPositionX(
+				teleporterPositions[
+					Character.directionOpposites[
+						currentDirection as keyof typeof Character.directionOpposites
+					] as keyof typeof teleporterPositions
+				].x,
+				{
+					modifyCss: false,
+					modifyTransform: true,
+				}
+			);
+
+			// start moving them in the same direction, again, because if we don't, we'll have an old "nearestStoppingTurn"
+			// stored in memory, and the character will phase through walls
+			this.startMoving(currentDirection);
+
+			return;
+		}
+
 		if (lastAnimationTime) {
 			// only updates character's position if we've already called the "move" function before
 			this.movementMethods[direction as keyof MovementMethods].bind(this)(
@@ -498,8 +515,10 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character up
 	 */
 	private moveUp(amount: number): void {
-		this.setTransformY(this.transform.y - amount);
-		this.setPositionY(this.getPosition()!.y - amount, false);
+		this.setPositionY(this.getPosition()!.y - amount, {
+			modifyCss: false,
+			modifyTransform: true,
+		});
 	}
 
 	/**
@@ -509,8 +528,10 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character down
 	 */
 	private moveDown(amount: number): void {
-		this.setTransformY(this.transform.y + amount);
-		this.setPositionY(this.getPosition()!.y + amount, false);
+		this.setPositionY(this.getPosition()!.y + amount, {
+			modifyCss: false,
+			modifyTransform: true,
+		});
 	}
 
 	/**
@@ -520,8 +541,10 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character left
 	 */
 	private moveLeft(amount: number): void {
-		this.setTransformX(this.transform.x - amount);
-		this.setPositionX(this.getPosition()!.x - amount, false);
+		this.setPositionX(this.getPosition()!.x - amount, {
+			modifyCss: false,
+			modifyTransform: true,
+		});
 	}
 
 	/**
@@ -531,7 +554,9 @@ export default class Character extends BoardObject {
 	 * @param amount the amount of pixels to move the character right
 	 */
 	private moveRight(amount: number): void {
-		this.setTransformX(this.transform.x + amount);
-		this.setPositionX(this.getPosition()!.x + amount, false);
+		this.setPositionX(this.getPosition()!.x + amount, {
+			modifyCss: false,
+			modifyTransform: true,
+		});
 	}
 }

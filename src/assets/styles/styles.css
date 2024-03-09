@@ -1,10 +1,14 @@
+:root {
+    --bodyBackgroundColor: #070200;
+}
+
 * {
     margin: 0;
     box-sizing: border-box;
 }
 
 body {
-    background-color: #070200;
+    background-color: var(--bodyBackgroundColor);
 }
 
 #game {
@@ -28,7 +32,7 @@ body {
 }
 
 .main-square {
-    background-color: #070200;
+    background-color: var(--bodyBackgroundColor);
     border: 2px solid #2e27be;
     width: 100%;
     border-radius: 6px;
@@ -84,7 +88,7 @@ body {
 }
 
 .wall {
-    background-color: #070200;
+    background-color: var(--bodyBackgroundColor);
     border: 2px solid #2e27be;
     border-radius: 6px;
     position: absolute;
@@ -136,6 +140,11 @@ body {
 
 #wall-31 {
     border-bottom: none;
+}
+
+.teleport-cover {
+    background-color: var(--bodyBackgroundColor);
+    position: absolute;
 }
 
 #ghost-spawn-door {

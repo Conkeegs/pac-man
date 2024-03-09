@@ -1,7 +1,6 @@
 "use strict";
 
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
-import MovementDirection from "../board/boardobject/children/character/MovementDirection.js";
 
 /**
  * The number of square columns on the board.
@@ -39,9 +38,4 @@ export const WIDTH: number = match.matches ? 672 : 448;
  */
 export const TILESIZE: number = WIDTH / COLUMNS;
 
-export const moveCodeWords = {
-	[MovementDirection.LEFT]: "LEFT",
-	[MovementDirection.RIGHT]: "RIGHT",
-	[MovementDirection.UP]: "UP",
-	[MovementDirection.DOWN]: "DOWN",
-};
+export const CHARACTER_Z_INDEX: number = 0;

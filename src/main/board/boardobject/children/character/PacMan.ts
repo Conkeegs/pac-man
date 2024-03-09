@@ -33,17 +33,6 @@ export default class PacMan extends Character {
 	};
 
 	/**
-	 * Takes a direction that PacMan can move and returns the opposite direction of it. Helps determine
-	 * if we need to call `Character.startMoving()` with the `fromTurn` parameter or not.
-	 */
-	private moveCodeOpposites = {
-		[MovementDirection.LEFT]: MovementDirection.RIGHT,
-		[MovementDirection.RIGHT]: MovementDirection.LEFT,
-		[MovementDirection.UP]: MovementDirection.DOWN,
-		[MovementDirection.DOWN]: MovementDirection.UP,
-	};
-
-	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
 	private static readonly SPAWN_MOVECODES = [MovementDirection.RIGHT, MovementDirection.LEFT];
@@ -143,7 +132,7 @@ export default class PacMan extends Character {
 				isMoving &&
 				// check if the new direction that PacMan is trying to move in is the opposite of the direction
 				// he is currently moving in
-				moveCode === this.moveCodeOpposites[currentDirection as keyof typeof this.moveCodeOpposites]
+				moveCode === Character.directionOpposites[currentDirection as keyof typeof Character.directionOpposites]
 			) {
 				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
 				// in the opposite direction instead of a 90-degree angle

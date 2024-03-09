@@ -1,7 +1,7 @@
 "use strict";
 
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
+import { CHARACTER_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
@@ -115,26 +115,34 @@ export default class Board {
 		fetchJSON("src/assets/json/walls.json")
 			.then((wallData: WallDataElement[]) => {
 				for (let element of wallData) {
-					this.boardDiv.appendChild(
-						create({ name: "div", id: element.id, classes: element.classes }).css({
-							width: px(Board.calcTileOffset(element.styles.width)),
-							height: px(Board.calcTileOffset(element.styles.height)),
-							top: px(Board.calcTileOffset(element.styles.top)),
-							left: px(Board.calcTileOffset(element.styles.left || 0)),
-							borderTopLeftRadius: px(
-								maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
-							),
-							borderTopRightRadius: px(
-								maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
-							),
-							borderBottomRightRadius: px(
-								maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
-							),
-							borderBottomLeftRadius: px(
-								maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
-							),
-						}) as HTMLElement
-					);
+					const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
+						width: px(Board.calcTileOffset(element.styles.width)),
+						height: px(Board.calcTileOffset(element.styles.height)),
+						top: px(Board.calcTileOffset(element.styles.top)),
+						left: px(Board.calcTileOffset(element.styles.left || 0)),
+						borderTopLeftRadius: px(
+							maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
+						),
+						borderTopRightRadius: px(
+							maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
+						),
+						borderBottomRightRadius: px(
+							maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
+						),
+						borderBottomLeftRadius: px(
+							maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
+						),
+					}) as HTMLElement;
+
+					// make sure invisible walls that are outside of teleports display over characters so that it looks
+					// like the character's "disappear" through them
+					if (wall.classList.contains("teleport-cover")) {
+						wall.css({
+							zIndex: CHARACTER_Z_INDEX + 1,
+						});
+					}
+
+					this.boardDiv.appendChild(wall);
 				}
 
 				get("middle-cover")!.css({
@@ -208,10 +216,16 @@ export default class Board {
 		const left = Board.calcTileX(tileX);
 		const top = Board.calcTileY(tileY);
 
-		boardObject.setPosition({
-			x: left,
-			y: top,
-		});
+		boardObject.setPosition(
+			{
+				x: left,
+				y: top,
+			},
+			{
+				modifyCss: true,
+				modifyTransform: false,
+			}
+		);
 
 		this.boardDiv.appendChild(boardObject.getElement());
 	}

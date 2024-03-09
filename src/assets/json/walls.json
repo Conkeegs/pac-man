@@ -629,5 +629,37 @@
             "borderBottomLeftRadius": 0,
             "borderBottomRightRadius": 0
         }
+    },
+    {
+        "id": "teleport-cover-1",
+        "classes": [
+            "teleport-cover"
+        ],
+        "styles": {
+            "width": 3,
+            "height": 3,
+            "top": 16,
+            "left": -3,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
+        }
+    },
+    {
+        "id": "teleport-cover-2",
+        "classes": [
+            "teleport-cover"
+        ],
+        "styles": {
+            "width": 3,
+            "height": 3,
+            "top": 16,
+            "left": 28,
+            "borderTopLeftRadius": 0,
+            "borderTopRightRadius": 0,
+            "borderBottomRightRadius": 0,
+            "borderBottomLeftRadius": 0
+        }
     }
 ]
