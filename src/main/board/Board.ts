@@ -1,7 +1,7 @@
 "use strict";
 
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { CHARACTER_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
@@ -138,7 +138,7 @@ export default class Board {
 					// like the character's "disappear" through them
 					if (wall.classList.contains("teleport-cover")) {
 						wall.css({
-							zIndex: CHARACTER_Z_INDEX + 1,
+							zIndex: 1,
 						});
 					}
 

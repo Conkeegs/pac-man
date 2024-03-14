@@ -81,7 +81,9 @@ export default class Character extends BoardObject {
 	 */
 	private readonly TELEPORTER_POSITIONS = {
 		[MovementDirection.LEFT]: {
-			x: 0,
+			// subtract by character's width. otherwise, when character is teleported to this left teleporter's position,
+			// it will have its left-hand side placed at the start of the entrance, instead of emerging from it
+			x: Board.calcTileX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
 			y: Board.calcTileY(18.25),
 		},
 		[MovementDirection.RIGHT]: {
@@ -228,7 +230,6 @@ export default class Character extends BoardObject {
 		// make sure we reset the frame count and nearest turn every time this character stops so that we can
 		// accurately track characters colliding with walls down the movement pipeline
 		this.frameCount = 0;
-		this.nearestStoppingTurn = undefined;
 		this.currentDirection = undefined;
 
 		return false;
@@ -311,14 +312,7 @@ export default class Character extends BoardObject {
 	 */
 	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
 		const position = this.getPosition()!;
-		const currentDirection = this.currentDirection;
 		let positionX = position.x;
-
-		// since characters' x position will always be on their left-most side, we need to offset their x position
-		// by their width. this way, the character only teleports from the left side when their whole body has crossed
-		if (currentDirection === MovementDirection.LEFT) {
-			positionX += this.width;
-		}
 
 		return (
 			Character.distanceWithinThreshold(positionX, teleporterPosition.x) && position.y === teleporterPosition.y

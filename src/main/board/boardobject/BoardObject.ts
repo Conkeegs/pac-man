@@ -83,7 +83,9 @@ export abstract class BoardObject {
 		// keep track of this board object so we can clean it up later, if needed
 		BOARDOBJECTS.push(this);
 
-		this.element = create({ name: "div", id: name, classes: ["board-object"] });
+		this.element = create({ name: "div", id: name, classes: ["board-object"] }).css({
+			zIndex: 0,
+		}) as HTMLElement;
 	}
 
 	/**

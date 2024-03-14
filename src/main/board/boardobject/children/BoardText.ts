@@ -37,6 +37,7 @@ export default class BoardText extends BoardObject {
 				height: px(this.height),
 				fontSize: px(fontsize),
 				color: color,
+				zIndex: 2,
 			}) as HTMLElement
 		).textContent = text;
 	}
