@@ -196,10 +196,9 @@ export abstract class BoardObject {
 		if (options.modifyTransform) {
 			// get the board object's new position in order to compare it to its old one
 			const newPositionX = x;
-			const transform = this.transform;
 
 			// add to board object's transform
-			this.setTransformX(transform.x + (newPositionX - oldPositionX));
+			this.setTransformX(this.transform.x + (newPositionX - oldPositionX));
 		}
 	}
 
@@ -229,10 +228,9 @@ export abstract class BoardObject {
 		if (options.modifyTransform) {
 			// get the board object's new position in order to compare it to its old one
 			const newPositionY = y;
-			const transform = this.transform;
 
 			// add to board object's transform
-			this.setTransformY(transform.y + (newPositionY - oldPositionY));
+			this.setTransformY(this.transform.y + (newPositionY - oldPositionY));
 		}
 	}
 

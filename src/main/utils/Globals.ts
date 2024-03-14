@@ -27,15 +27,13 @@ let match = window.matchMedia("(min-width: 720px)");
 /**
  * The height of the board.
  */
-export const HEIGHT: number = match.matches ? 864 : 576;
+export const HEIGHT: 864 | 576 = match.matches ? 864 : 576;
 /**
  * The width of th board.
  */
-export const WIDTH: number = match.matches ? 672 : 448;
+export const WIDTH: 672 | 448 = match.matches ? 672 : 448;
 
 /**
  * The size of the square tiles on the board, based on the `WIDTH` and `COLUMNS` globals.
  */
 export const TILESIZE: number = WIDTH / COLUMNS;
-
-export const CHARACTER_Z_INDEX: number = 0;
