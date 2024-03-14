@@ -51,11 +51,11 @@ export default class Character extends BoardObject {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */
-	private readonly speed: number | undefined;
+	private readonly speed: number;
 	/**
 	 * The path to the character's picture file.
 	 */
-	private readonly source: string | undefined;
+	private readonly source: string;
 	/**
 	 * The current animation frame requested by the DOM for this character.
 	 */
@@ -63,7 +63,7 @@ export default class Character extends BoardObject {
 	/**
 	 * Determines if the characters is currently moving.
 	 */
-	private moving = false;
+	private moving: boolean = false;
 	/**
 	 * The current direction this character is currently moving in.
 	 */

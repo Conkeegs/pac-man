@@ -71,19 +71,19 @@ export default class Board {
 	/**
 	 * Whether the board has finished creation or not.
 	 */
-	private boardCreated = false;
+	private boardCreated: boolean = false;
 
 	/**
 	 * The container of everything that the board holds.
 	 */
-	private boardDiv = create({
+	private boardDiv: HTMLDivElement = create({
 		name: "div",
 		id: "board",
-	});
+	}) as HTMLDivElement;
 
-	private static readonly PACMAN_SPEED = 88;
-	private static readonly PACMAN_SPAWN_X = 14.25;
-	private static readonly PACMAN_SPAWN_Y = 9.25;
+	private static readonly PACMAN_SPEED: 88 = 88;
+	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
+	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
 
 	/**
 	 * Creates the board.s

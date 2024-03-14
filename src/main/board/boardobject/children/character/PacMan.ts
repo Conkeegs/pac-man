@@ -35,7 +35,7 @@ export default class PacMan extends Character {
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
-	private static readonly SPAWN_MOVECODES = [MovementDirection.RIGHT, MovementDirection.LEFT];
+	private static readonly SPAWN_MOVECODES: MovementDirection[] = [MovementDirection.RIGHT, MovementDirection.LEFT];
 
 	/**
 	 * Creates PacMan.
