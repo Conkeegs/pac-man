@@ -109,7 +109,7 @@ export default class Character extends BoardObject {
 	protected turnValidators = {
 		[MovementDirection.LEFT]: (turn: TurnData, position: Position) => {
 			// only turns to the left of Character and in the same row
-			return turn.x <= position.x - this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
+			return turn.x <= position.x + this.getWidth()! / 2 && turn.y - this.getHeight()! / 2 === position.y;
 		},
 		[MovementDirection.RIGHT]: (turn: TurnData, position: Position) => {
 			// only turns to the right of Character and in the same row
@@ -117,7 +117,7 @@ export default class Character extends BoardObject {
 		},
 		[MovementDirection.UP]: (turn: TurnData, position: Position) => {
 			// only turns above Character and in the same column
-			return turn.y <= position.y - this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
+			return turn.y <= position.y + this.getHeight()! / 2 && turn.x - this.getWidth()! / 2 === position.x;
 		},
 		[MovementDirection.DOWN]: (turn: TurnData, position: Position) => {
 			// only turns below Character and in the same column
