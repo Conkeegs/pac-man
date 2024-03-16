@@ -7,5 +7,6 @@
         "PACMAN",
         "Teleporter",
         "TILESIZE"
-    ]
+    ],
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

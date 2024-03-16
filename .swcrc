@@ -2,8 +2,8 @@
     "$schema": "https://json.schemastore.org/swcrc",
     "test": ".*\\.ts$",
     "sourceMaps": "inline",
-    // "inlineSourcesContent": true,
-    // "isModule": true,
+    "inlineSourcesContent": true,
+    "isModule": true,
     // "inputSourceMap": "./web.js",
     "exclude": [
         // "**/*.spec.ts",
@@ -23,27 +23,27 @@
         },
         "target": "es2015",
         "loose": true,
-        "externalHelpers": true,
+        // "externalHelpers": true,
         "keepClassNames": false,
-        "transform": {
-            "constModules": {
-                "globals": {
-                    "@pacman/env-flags": {
-                        "DEBUG": "true"
-                    },
-                    "@pacman/features": {
-                        "FEATURE_A": "false",
-                        "FEATURE_B": "true"
-                    }
-                }
-            }
-        }
+        // "transform": {
+        //     "constModules": {
+        //         "globals": {
+        //             "@pacman/env-flags": {
+        //                 "DEBUG": "true"
+        //             },
+        //             "@pacman/features": {
+        //                 "FEATURE_A": "false",
+        //                 "FEATURE_B": "true"
+        //             }
+        //         }
+        //     }
+        // }
     },
     "minify": true,
-    "env": {
-        "loose": true,
-        "bugfixes": true
-    },
+    // "env": {
+    //     "loose": true,
+    //     "bugfixes": true
+    // },
     "module": {
         "type": "es6",
         "strict": false,

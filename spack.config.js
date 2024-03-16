@@ -17,20 +17,27 @@ module.exports = config({
 		noInterop: false,
 	},
 	options: {
+		module: {
+			type: "es6",
+			strict: false,
+			strictMode: true,
+			lazy: false,
+			noInterop: false,
+		},
 		test: ".*\\.ts$",
 		sourceMaps: "inline",
 		// inlineSourcesContent: true,
-		// isModule: true,
+		isModule: true,
 		exclude: [
 			// "**/*.spec.ts",
 			"node_modules",
 		],
-		env: {
-			loose: true,
-			bugfixes: true,
-		},
+		// env: {
+		// 	loose: true,
+		// 	bugfixes: true,
+		// },
 		minify: true,
-		// script: true,
+		script: false,
 		jsc: {
 			// "minify": {
 			//     "compress": true,
