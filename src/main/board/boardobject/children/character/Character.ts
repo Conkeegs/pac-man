@@ -1,5 +1,7 @@
 "use strict";
 
+import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import JsonRegistry from "../../../../assets/JsonRegistry.js";
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
@@ -40,14 +42,25 @@ type MovementMethods = {
 };
 
 /**
- * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
+ * Represents the forward direction of this character's animation.
  */
-export const COLLISION_THRESHOLD = 2;
+type ANIMATION_DIRECTION_FORWARDS = 0;
+/**
+ * Represents the backward direction of this character's animation.
+ */
+type ANIMATION_DIRECTION_BACKWARDS = 1;
 
+/**
+ * The possible directions that this character's animation can play in.
+ */
+type ANIMATION_DIRECTIONS = {
+	FORWARDS: ANIMATION_DIRECTION_FORWARDS;
+	BACKWARDS: ANIMATION_DIRECTION_BACKWARDS;
+};
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default class Character extends BoardObject {
+export default abstract class Character extends BoardObject {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */
@@ -60,6 +73,37 @@ export default class Character extends BoardObject {
 	 * The current animation frame requested by the DOM for this character.
 	 */
 	private animationFrameId: number | undefined;
+	/**
+	 * The id of the `setInterval()` call made for animating this character.
+	 */
+	private animationIntervalId: number | undefined;
+	/**
+	 * The frame of animation that this character is currently on.
+	 */
+	private animationFrame: number = 0;
+	/**
+	 * The direction (forwards or backwards) that this character's animation is currently playing in.
+	 */
+	private animationDirection: ANIMATION_DIRECTION_FORWARDS | ANIMATION_DIRECTION_BACKWARDS = 0;
+	/**
+	 * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
+	 */
+	private static readonly COLLISION_THRESHOLD: 2 = 2;
+	/**
+	 * The max number of animation states this character can be in.
+	 */
+	private static readonly MAX_ANIMATION_FRAMES: 3 = 3;
+	/**
+	 * How long each animation state for this character lasts.
+	 */
+	private static readonly ANIMATION_STATE_MILLIS: 30 = 30;
+	/**
+	 * The possible directions that this character's animation can play in.
+	 */
+	private static readonly ANIMATION_DIRECTIONS: ANIMATION_DIRECTIONS = {
+		FORWARDS: 0,
+		BACKWARDS: 1,
+	};
 	/**
 	 * Determines if the characters is currently moving.
 	 */
@@ -172,7 +216,7 @@ export default class Character extends BoardObject {
 		});
 
 		// tell the character where it can turn
-		fetchJSON("src/assets/json/turns.json").then((turnData: TurnData[]) => {
+		fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
 				turn.x = Board.calcTileX(turn.x + 0.5);
 				turn.y = Board.calcTileY(turn.y - 0.5);
@@ -225,6 +269,7 @@ export default class Character extends BoardObject {
 	public stopMoving() {
 		this.dequeueTurns();
 		cancelAnimationFrame(this.animationFrameId as number);
+		clearInterval(this.animationIntervalId);
 
 		this.moving = false;
 		// make sure we reset the frame count and nearest turn every time this character stops so that we can
@@ -261,6 +306,14 @@ export default class Character extends BoardObject {
 			// snap to turn-position to keep collision detection consistent
 			this.offsetPositionToTurn(fromTurn);
 		}
+
+		/**
+		 * Start playing this character's animations as they move.
+		 */
+		this.animationIntervalId = window.setInterval(
+			this.updateAnimationState.bind(this),
+			Character.ANIMATION_STATE_MILLIS
+		);
 
 		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
 
@@ -332,7 +385,46 @@ export default class Character extends BoardObject {
 	}
 
 	/**
-	 * Determines whether two positions on the board (`x` or `y`) are within `COLLISION_THRESHOLD` pixels of
+	 * Updates this character's animation state while it moves. This method automatically deals with playing the animation both
+	 * forwards and backwards so that it looks smoother.
+	 */
+	protected updateAnimationState(): void {
+		const forwards = Character.ANIMATION_DIRECTIONS.FORWARDS;
+		const backwards = Character.ANIMATION_DIRECTIONS.BACKWARDS;
+		const animationDirection = this.animationDirection;
+
+		// increment animation frame so character changes how it looks
+		this.animationDirection === forwards ? this.animationFrame++ : this.animationFrame--;
+
+		// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
+		// now
+		if (this.animationFrame === Character.MAX_ANIMATION_FRAMES && animationDirection === forwards) {
+			this.animationDirection = backwards;
+			this.animationFrame--;
+		}
+
+		// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
+		// now
+		if (this.animationFrame === -1 && animationDirection === backwards) {
+			this.animationDirection = forwards;
+			this.animationFrame++;
+		}
+
+		let imageName = `${this.name}-${this.animationFrame}`;
+
+		// since "0" represents the character's base-frame, any other number corresponds with a movement direction, and therefore we
+		// should append the current direction so that we find the proper movement-based image file
+		if (this.animationFrame !== 0) {
+			imageName += `-${this.currentDirection}`;
+		}
+
+		this.element.css({
+			backgroundImage: `url(${ImageRegistry.getImage(imageName as keyof typeof ImageRegistry.IMAGE_LIST)})`,
+		});
+	}
+
+	/**
+	 * Determines whether two positions on the board (`x` or `y`) are within `CHaracter.COLLISION_THRESHOLD` pixels of
 	 * each other.
 	 *
 	 * @param offset1 the first `x` or `y` position
@@ -340,7 +432,7 @@ export default class Character extends BoardObject {
 	 * @returns boolean indicating if they're within the collision threshold
 	 */
 	private static distanceWithinThreshold(offset1: number, offset2: number): boolean {
-		return Math.abs(offset1 - offset2) <= COLLISION_THRESHOLD;
+		return Math.abs(offset1 - offset2) <= Character.COLLISION_THRESHOLD;
 	}
 
 	/**

@@ -288,3 +288,24 @@ export function add(first: number, second: number) {
 export function subtract(first: number, second: number) {
 	return first - second;
 }
+
+/**
+ * Creates a path to the images directory, given an image's name.
+ *
+ * @param name the image's file name
+ * @param extension the extension of the image (default: `.png`)
+ * @returns a relative path to the image file
+ */
+export function getImageSrc(name: string, extension: string = "png"): string {
+	return `src/assets/images/${name}.${extension}`;
+}
+
+/**
+ * Creates a path to the json directory, given a json file's name.
+ *
+ * @param name the json file's name
+ * @returns a relative path to the json file
+ */
+export function getJsonSrc(name: string): string {
+	return `src/assets/json/${name}.json`;
+}

@@ -1,5 +1,7 @@
 "use strict";
 
+import ImageRegistry from "../assets/ImageRegistry.js";
+import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
@@ -112,7 +114,7 @@ export default class Board {
 		}
 
 		// setup walls
-		fetchJSON("src/assets/json/walls.json")
+		fetchJSON(JsonRegistry.getJson("walls"))
 			.then((wallData: WallDataElement[]) => {
 				for (let element of wallData) {
 					const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
@@ -235,7 +237,7 @@ export default class Board {
 	 */
 	private createMainBoardObjects() {
 		this.placeBoardObject(
-			new PacMan("pac-man", Board.PACMAN_SPEED, "src/assets/images/pacman-frame-0.png"),
+			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
 			Board.PACMAN_SPAWN_X,
 			Board.PACMAN_SPAWN_Y
 		);
@@ -273,7 +275,7 @@ export default class Board {
 	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
 	 */
 	private async createPaths() {
-		const pathData: PathData = await fetchJSON("src/assets/json/paths.json");
+		const pathData: PathData = await fetchJSON(JsonRegistry.getJson("paths"));
 
 		const nodePositions: [number, number][] = [];
 		let pathLineIndex = 0;
