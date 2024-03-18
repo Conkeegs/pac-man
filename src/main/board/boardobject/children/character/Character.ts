@@ -307,9 +307,7 @@ export default abstract class Character extends BoardObject {
 			this.offsetPositionToTurn(fromTurn);
 		}
 
-		/**
-		 * Start playing this character's animations as they move.
-		 */
+		// start playing this character's animations as they move.
 		this.animationIntervalId = window.setInterval(
 			this.updateAnimationState.bind(this),
 			Character.ANIMATION_STATE_MILLIS
@@ -412,8 +410,6 @@ export default abstract class Character extends BoardObject {
 
 		let imageName = `${this.name}-${this.animationFrame}`;
 
-		// since "0" represents the character's base-frame, any other number corresponds with a movement direction, and therefore we
-		// should append the current direction so that we find the proper movement-based image file
 		if (this.animationFrame !== 0) {
 			imageName += `-${this.currentDirection}`;
 		}
