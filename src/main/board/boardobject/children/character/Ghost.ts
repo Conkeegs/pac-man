@@ -1,5 +1,5 @@
-import Character from "./Character";
-import type UpdatesAnimationState from "./UpdatesAnimationState";
+import Character from "./Character.js";
+import type UpdatesAnimationState from "./UpdatesAnimationState.js";
 
 /**
  * Represents any of the four ghosts on the board.
@@ -17,6 +17,8 @@ export default abstract class Ghost extends Character implements UpdatesAnimatio
 	 */
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
+
+		this.element.classList.add("ghost");
 	}
 
 	/**
