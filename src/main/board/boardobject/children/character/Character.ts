@@ -457,7 +457,7 @@ export default abstract class Character extends BoardObject {
 		// characters with queued-turns that are technically "behind" a wall from ever executing the turn
 		if (this.frameCount === 0) {
 			const filteredTurnData = this.turnData!.filter((turn) => {
-				// turns "ahead" of PacMan which do not accept the current direction of movement that this character
+				// turns "ahead" of character which do not accept the current direction of movement that this character
 				// is currently moving in
 				return (
 					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
@@ -513,7 +513,7 @@ export default abstract class Character extends BoardObject {
 			);
 
 			// start moving them in the same direction, again, because if we don't, we'll have an old "nearestStoppingTurn"
-			// stored in memory, and the character will phase through walls
+			// stored in memory, and the character will phase through walls to get to it
 			this.startMoving(currentDirection);
 
 			return;
