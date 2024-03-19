@@ -48,11 +48,11 @@ export abstract class BoardObject {
 	/**
 	 * The board object's width in pixels.
 	 */
-	protected readonly width: number | undefined;
+	protected abstract readonly width: number | undefined;
 	/**
 	 * The board object's height in pixels.
 	 */
-	protected readonly height: number | undefined;
+	protected abstract readonly height: number | undefined;
 	/**
 	 * This board objet's CSS `transform` value, holding both its `translateX` and `translateY` values.
 	 */

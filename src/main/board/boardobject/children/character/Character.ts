@@ -6,6 +6,7 @@ import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
+import type HasBoardObjectProperties from "../../HasBoardObjectProperties.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -44,7 +45,7 @@ type MovementMethods = {
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default abstract class Character extends BoardObject {
+export default abstract class Character extends BoardObject implements HasBoardObjectProperties {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */
