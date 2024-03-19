@@ -356,7 +356,7 @@ export default abstract class Character extends BoardObject {
 	 * Updates this character's animation state while it moves. This method uses the child's implementation of the `_getAnimationImage()`
 	 * method, since each `Character` child should implement the `UpdatesAnimationState` interface.
 	 */
-	protected updateAnimationImage(): void {
+	private updateAnimationImage(): void {
 		this.element.css({
 			backgroundImage: `url(${ImageRegistry.getImage(
 				this._getAnimationImage() as keyof typeof ImageRegistry.IMAGE_LIST
