@@ -37,3 +37,8 @@ export const WIDTH: 672 | 448 = match.matches ? 672 : 448;
  * The size of the square tiles on the board, based on the `WIDTH` and `COLUMNS` globals.
  */
 export const TILESIZE: number = WIDTH / COLUMNS;
+
+/**
+ * `z-index` CSS property of all `BoardObject` instances on the board.
+ */
+export const BOARD_OBJECT_Z_INDEX: 0 = 0;

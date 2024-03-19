@@ -1,7 +1,7 @@
 "use strict";
 
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
-import { TILESIZE } from "../../../utils/Globals.js";
+import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../utils/Globals.js";
 import { px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 
@@ -37,7 +37,7 @@ export default class BoardText extends BoardObject {
 				height: px(this.height),
 				fontSize: px(fontsize),
 				color: color,
-				zIndex: 2,
+				zIndex: BOARD_OBJECT_Z_INDEX + 2,
 			}) as HTMLElement
 		).textContent = text;
 	}

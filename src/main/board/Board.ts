@@ -3,7 +3,7 @@
 import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
+import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
@@ -156,7 +156,7 @@ export default class Board {
 					// like the character's "disappear" through them
 					if (wall.classList.contains("teleport-cover")) {
 						wall.css({
-							zIndex: 1,
+							zIndex: BOARD_OBJECT_Z_INDEX + 1,
 						});
 					}
 

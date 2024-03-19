@@ -1,7 +1,7 @@
 "use strict";
 
 import DebugWindow from "../../debugwindow/DebugWindow.js";
-import { BOARDOBJECTS } from "../../utils/Globals.js";
+import { BOARDOBJECTS, BOARD_OBJECT_Z_INDEX } from "../../utils/Globals.js";
 import { create, px } from "../../utils/Utils.js";
 
 /**
@@ -84,7 +84,7 @@ export abstract class BoardObject {
 		BOARDOBJECTS.push(this);
 
 		this.element = create({ name: "div", id: name, classes: ["board-object"] }).css({
-			zIndex: 0,
+			zIndex: BOARD_OBJECT_Z_INDEX,
 		}) as HTMLElement;
 	}
 
