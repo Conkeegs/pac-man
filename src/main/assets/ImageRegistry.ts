@@ -13,14 +13,14 @@ type IMAGE_LIST = {
 	"pacman-2-1": string;
 	"pacman-2-2": string;
 	"pacman-2-3": string;
-	"ghost-0-0": string;
-	"ghost-0-1": string;
-	"ghost-0-2": string;
-	"ghost-0-3": string;
-	"ghost-1-0": string;
-	"ghost-1-1": string;
-	"ghost-1-2": string;
-	"ghost-1-3": string;
+	"blinky-0-0": string;
+	"blinky-0-1": string;
+	"blinky-0-2": string;
+	"blinky-0-3": string;
+	"blinky-1-0": string;
+	"blinky-1-1": string;
+	"blinky-1-2": string;
+	"blinky-1-3": string;
 };
 
 export default class ImageRegistry {
@@ -37,14 +37,14 @@ export default class ImageRegistry {
 		"pacman-2-1": getImageSrc("pacman-2-1"),
 		"pacman-2-2": getImageSrc("pacman-2-2"),
 		"pacman-2-3": getImageSrc("pacman-2-3"),
-		"ghost-0-0": getImageSrc("ghost-0-0"),
-		"ghost-0-1": getImageSrc("ghost-0-1"),
-		"ghost-0-2": getImageSrc("ghost-0-2"),
-		"ghost-0-3": getImageSrc("ghost-0-3"),
-		"ghost-1-0": getImageSrc("ghost-1-0"),
-		"ghost-1-1": getImageSrc("ghost-1-1"),
-		"ghost-1-2": getImageSrc("ghost-1-2"),
-		"ghost-1-3": getImageSrc("ghost-1-3"),
+		"blinky-0-0": getImageSrc("blinky-0-0"),
+		"blinky-0-1": getImageSrc("blinky-0-1"),
+		"blinky-0-2": getImageSrc("blinky-0-2"),
+		"blinky-0-3": getImageSrc("blinky-0-3"),
+		"blinky-1-0": getImageSrc("blinky-1-0"),
+		"blinky-1-1": getImageSrc("blinky-1-1"),
+		"blinky-1-2": getImageSrc("blinky-1-2"),
+		"blinky-1-3": getImageSrc("blinky-1-3"),
 	};
 
 	/**

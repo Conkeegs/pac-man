@@ -8,7 +8,11 @@ import { create, fetchJSON, get, maybe, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import PathNode from "./boardobject/children/PathNode.js";
+import Blinky from "./boardobject/children/character/Blinky.js";
+import Clyde from "./boardobject/children/character/Clyde.js";
+import Inky from "./boardobject/children/character/Inky.js";
 import PacMan from "./boardobject/children/character/PacMan.js";
+import Pinky from "./boardobject/children/character/Pinky.js";
 
 /**
  * Represents the white lines between each "turn" node when in debug mode.
@@ -86,6 +90,18 @@ export default class Board {
 	private static readonly PACMAN_SPEED: 88 = 88;
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
+	private static readonly BLINKY_SPEED: 88 = 88;
+	private static readonly BLINKY_SPAWN_X: 14.25 = 14.25;
+	private static readonly BLINKY_SPAWN_Y: 21.25 = 21.25;
+	private static readonly INKY_SPEED: 88 = 88;
+	private static readonly INKY_SPAWN_X: 12.25 = 12.25;
+	private static readonly INKY_SPAWN_Y: 18.25 = 18.25;
+	private static readonly PINKY_SPEED: 88 = 88;
+	private static readonly PINKY_SPAWN_X: 14.25 = 14.25;
+	private static readonly PINKY_SPAWN_Y: 18.25 = 18.25;
+	private static readonly CLYDE_SPEED: 88 = 88;
+	private static readonly CLYDE_SPAWN_X: 16.25 = 16.25;
+	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
 
 	/**
 	 * Creates the board.s
@@ -240,6 +256,30 @@ export default class Board {
 			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
 			Board.PACMAN_SPAWN_X,
 			Board.PACMAN_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Blinky("blinky", Board.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0")),
+			Board.BLINKY_SPAWN_X,
+			Board.BLINKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("blinky-0-2")),
+			Board.INKY_SPAWN_X,
+			Board.INKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("blinky-0-3")),
+			Board.PINKY_SPAWN_X,
+			Board.PINKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("blinky-0-2")),
+			Board.CLYDE_SPAWN_X,
+			Board.CLYDE_SPAWN_Y
 		);
 	}
 
