@@ -42,22 +42,6 @@ type MovementMethods = {
 };
 
 /**
- * Represents the forward direction of this character's animation.
- */
-type ANIMATION_DIRECTION_FORWARDS = 0;
-/**
- * Represents the backward direction of this character's animation.
- */
-type ANIMATION_DIRECTION_BACKWARDS = 1;
-
-/**
- * The possible directions that this character's animation can play in.
- */
-type ANIMATION_DIRECTIONS = {
-	FORWARDS: ANIMATION_DIRECTION_FORWARDS;
-	BACKWARDS: ANIMATION_DIRECTION_BACKWARDS;
-};
-/**
  * A character is any of the AI or user-controlled objects on the board.
  */
 export default abstract class Character extends BoardObject {
@@ -78,40 +62,17 @@ export default abstract class Character extends BoardObject {
 	 */
 	private animationIntervalId: number | undefined;
 	/**
-	 * The frame of animation that this character is currently on.
-	 */
-	private animationFrame: number = 0;
-	/**
-	 * The direction (forwards or backwards) that this character's animation is currently playing in.
-	 */
-	private animationDirection: ANIMATION_DIRECTION_FORWARDS | ANIMATION_DIRECTION_BACKWARDS = 0;
-	/**
 	 * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
 	 */
 	private static readonly COLLISION_THRESHOLD: 2 = 2;
-	/**
-	 * The max number of animation states this character can be in.
-	 */
-	private static readonly MAX_ANIMATION_FRAMES: 3 = 3;
 	/**
 	 * How long each animation state for this character lasts.
 	 */
 	private static readonly ANIMATION_STATE_MILLIS: 30 = 30;
 	/**
-	 * The possible directions that this character's animation can play in.
-	 */
-	private static readonly ANIMATION_DIRECTIONS: ANIMATION_DIRECTIONS = {
-		FORWARDS: 0,
-		BACKWARDS: 1,
-	};
-	/**
 	 * Determines if the characters is currently moving.
 	 */
 	private moving: boolean = false;
-	/**
-	 * The current direction this character is currently moving in.
-	 */
-	private currentDirection: MovementDirection | undefined;
 	/**
 	 * The current frame iteration that this character's animation frame is on.
 	 */
@@ -146,6 +107,10 @@ export default abstract class Character extends BoardObject {
 	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
 	 */
 	protected nearestStoppingTurn: TurnData | undefined;
+	/**
+	 * The current direction this character is currently moving in.
+	 */
+	protected currentDirection: MovementDirection | undefined;
 	/**
 	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
 	 * direction this `Character` is currently heading and if it is on the same "row"/"column" as the `Character`.
@@ -309,7 +274,7 @@ export default abstract class Character extends BoardObject {
 
 		// start playing this character's animations as they move.
 		this.animationIntervalId = window.setInterval(
-			this.updateAnimationState.bind(this),
+			this.updateAnimationImage.bind(this),
 			Character.ANIMATION_STATE_MILLIS
 		);
 
@@ -317,6 +282,11 @@ export default abstract class Character extends BoardObject {
 
 		this.moving = true;
 	}
+
+	/**
+	 * Returns the name of an animation-related image for the character.
+	 */
+	abstract _getAnimationImage(): string;
 
 	/**
 	 * Queues a turn for a future point in time so that when the character reaches the threshold of the turn,
@@ -383,39 +353,14 @@ export default abstract class Character extends BoardObject {
 	}
 
 	/**
-	 * Updates this character's animation state while it moves. This method automatically deals with playing the animation both
-	 * forwards and backwards so that it looks smoother.
+	 * Updates this character's animation state while it moves. This method uses the child's implementation of the `_getAnimationImage()`
+	 * method, since each `Character` child should implement the `UpdatesAnimationState` interface.
 	 */
-	protected updateAnimationState(): void {
-		const forwards = Character.ANIMATION_DIRECTIONS.FORWARDS;
-		const backwards = Character.ANIMATION_DIRECTIONS.BACKWARDS;
-		const animationDirection = this.animationDirection;
-
-		// increment animation frame so character changes how it looks
-		this.animationDirection === forwards ? this.animationFrame++ : this.animationFrame--;
-
-		// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
-		// now
-		if (this.animationFrame === Character.MAX_ANIMATION_FRAMES && animationDirection === forwards) {
-			this.animationDirection = backwards;
-			this.animationFrame--;
-		}
-
-		// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
-		// now
-		if (this.animationFrame === -1 && animationDirection === backwards) {
-			this.animationDirection = forwards;
-			this.animationFrame++;
-		}
-
-		let imageName = `${this.name}-${this.animationFrame}`;
-
-		if (this.animationFrame !== 0) {
-			imageName += `-${this.currentDirection}`;
-		}
-
+	protected updateAnimationImage(): void {
 		this.element.css({
-			backgroundImage: `url(${ImageRegistry.getImage(imageName as keyof typeof ImageRegistry.IMAGE_LIST)})`,
+			backgroundImage: `url(${ImageRegistry.getImage(
+				this._getAnimationImage() as keyof typeof ImageRegistry.IMAGE_LIST
+			)})`,
 		});
 	}
 

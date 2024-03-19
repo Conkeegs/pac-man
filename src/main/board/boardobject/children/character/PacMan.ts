@@ -3,11 +3,29 @@
 import { defined, die, exists } from "../../../../utils/Utils.js";
 import Character, { type TurnData } from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
+import type UpdatesAnimationState from "./UpdatesAnimationState.js";
+
+/**
+ * Represents the forward direction of pacman's animation.
+ */
+type ANIMATION_DIRECTION_FORWARDS = 0;
+/**
+ * Represents the backward direction of pacman's animation.
+ */
+type ANIMATION_DIRECTION_BACKWARDS = 1;
+
+/**
+ * The possible directions that pacman's animation can play in.
+ */
+type ANIMATION_DIRECTIONS = {
+	FORWARDS: ANIMATION_DIRECTION_FORWARDS;
+	BACKWARDS: ANIMATION_DIRECTION_BACKWARDS;
+};
 
 /**
  * Represents the PacMan character on the board.
  */
-export default class PacMan extends Character {
+export default class PacMan extends Character implements UpdatesAnimationState {
 	/**
 	 * The last direction the user moved in.
 	 */
@@ -16,7 +34,14 @@ export default class PacMan extends Character {
 	 * Whether or not PacMan is currently listening for movement inputs.
 	 */
 	private listenForKeydown: boolean = true;
-
+	/**
+	 * The direction (forwards or backwards) that pacman's animation is currently playing in.
+	 */
+	private animationDirection: ANIMATION_DIRECTION_FORWARDS | ANIMATION_DIRECTION_BACKWARDS = 0;
+	/**
+	 * The frame of animation that pacman is currently on.
+	 */
+	_animationFrame: number = 0;
 	/**
 	 * All supported keyboard keys for moving PacMan.
 	 */
@@ -31,11 +56,21 @@ export default class PacMan extends Character {
 		KeyS: MovementDirection.DOWN,
 		Space: MovementDirection.STOP,
 	};
-
+	/**
+	 * The max number of animation states pacman can be in.
+	 */
+	readonly _MAX_ANIMATION_FRAMES: 3 = 3;
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
 	private static readonly SPAWN_MOVECODES: MovementDirection[] = [MovementDirection.RIGHT, MovementDirection.LEFT];
+	/**
+	 * The possible directions that pacman's animation can play in.
+	 */
+	private static readonly ANIMATION_DIRECTIONS: ANIMATION_DIRECTIONS = {
+		FORWARDS: 0,
+		BACKWARDS: 1,
+	};
 
 	/**
 	 * Creates PacMan.
@@ -62,6 +97,42 @@ export default class PacMan extends Character {
 		this.lastMoveCode = moveCode;
 
 		super.startMoving(moveCode, turn);
+	}
+
+	/**
+	 * Gets the name of the image file relating to pacman's current animation frame and direction.
+	 *
+	 * @returns the name of the image file relating to pacman's current animation frame and direction
+	 */
+	override _getAnimationImage(): string {
+		const forwards = PacMan.ANIMATION_DIRECTIONS.FORWARDS;
+		const backwards = PacMan.ANIMATION_DIRECTIONS.BACKWARDS;
+		const animationDirection = this.animationDirection;
+
+		// increment animation frame so character changes how it looks
+		this.animationDirection === forwards ? this._animationFrame++ : this._animationFrame--;
+
+		// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
+		// now
+		if (this._animationFrame === this._MAX_ANIMATION_FRAMES && animationDirection === forwards) {
+			this.animationDirection = backwards;
+			this._animationFrame--;
+		}
+
+		// // if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
+		// // now
+		if (this._animationFrame === -1 && animationDirection === backwards) {
+			this.animationDirection = forwards;
+			this._animationFrame++;
+		}
+
+		let imageName = `${this.name}-${this._animationFrame}`;
+
+		if (this._animationFrame !== 0) {
+			imageName += `-${this.currentDirection}`;
+		}
+
+		return imageName;
 	}
 
 	/**
