@@ -232,14 +232,15 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
 			// turn threshold
 			const filteredTurnData = this.turnData!.filter((turn) => {
-				// turns "ahead" of PacMan
-				if (this.turnValidators[currentDirection as keyof typeof this.turnValidators](turn, position)) {
-					return true;
-				}
-
-				// turn within turn threshold
-				if (this.isWithinTurnDistance(turn) && Character.canTurnWithMoveDirection(moveCode, turn)) {
-					nearestTurnableTurn = turn;
+				// turns "ahead" of PacMan and which allow him to turn in the given "moveCode" direction
+				if (
+					this.turnValidators[currentDirection as keyof typeof this.turnValidators](turn, position) &&
+					Character.canTurnWithMoveDirection(moveCode, turn)
+				) {
+					// turn within turn threshold
+					if (this.isWithinTurnDistance(turn)) {
+						nearestTurnableTurn = turn;
+					}
 
 					return true;
 				}
@@ -262,9 +263,8 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 				filteredTurnData.reverse();
 			}
 
-			// at this point, we know there is not an immediately-available turn to turn at, so find the nearest-available turn that allows our
-			// "moveCode"
-			nearestTurnableTurn = filteredTurnData.find((turn) => Character.canTurnWithMoveDirection(moveCode, turn));
+			// at this point, we know there is not an immediately-available turn to turn at, so just go with the nearest "turnable" turn
+			nearestTurnableTurn = filteredTurnData[0];
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
