@@ -334,10 +334,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
 		const position = this.getPosition()!;
-		let positionX = position.x;
 
 		return (
-			Character.distanceWithinThreshold(positionX, teleporterPosition.x) && position.y === teleporterPosition.y
+			Character.distanceWithinThreshold(position.x, teleporterPosition.x) && position.y === teleporterPosition.y
 		);
 	}
 
