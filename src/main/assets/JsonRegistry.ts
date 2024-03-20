@@ -9,6 +9,9 @@ type JSON_LIST = {
 	turns: string;
 };
 
+/**
+ * List of all json file paths.
+ */
 export default class JsonRegistry {
 	/**
 	 * List of all json file paths.
