@@ -75,9 +75,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	private moving: boolean = false;
 	/**
-	 * The current frame iteration that this character's animation frame is on.
+	 * Data telling this character where it is allowed to turn
 	 */
-	private frameCount: number = 0;
+	private static turnData: TurnData[] | undefined;
 	/**
 	 * The directions that this character must be moving in order to search for the nearest "teleport" position.
 	 */
@@ -105,13 +105,13 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	protected turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
 	/**
-	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
-	 */
-	protected nearestStoppingTurn: TurnData | undefined;
-	/**
 	 * The current direction this character is currently moving in.
 	 */
 	protected currentDirection: MovementDirection | undefined;
+	/**
+	 * The current frame iteration that this character's animation frame is on.
+	 */
+	protected frameCount: number = 0;
 	/**
 	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
 	 * direction this `Character` is currently heading and if it is on the same "row"/"column" as the `Character`.
@@ -143,11 +143,6 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		[MovementDirection.UP]: MovementDirection.DOWN,
 		[MovementDirection.DOWN]: MovementDirection.UP,
 	};
-
-	/**
-	 * Data telling this character where it is allowed to turn
-	 */
-	public turnData: TurnData[] | undefined;
 
 	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
@@ -188,7 +183,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 				turn.y = Board.calcTileY(turn.y - 0.5);
 			}
 
-			this.turnData = turnData;
+			Character.turnData = turnData;
 		});
 	}
 
@@ -290,6 +285,12 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	abstract _getAnimationImage(): string;
 
 	/**
+	 * Updates the character in a given frame. Returning `true` will break a character out of
+	 * recursive `Character.move()` method calls.
+	 */
+	abstract _runFrameUpdate(): boolean;
+
+	/**
 	 * Queues a turn for a future point in time so that when the character reaches the threshold of the turn,
 	 * they will turn at it.
 	 *
@@ -353,6 +354,104 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	}
 
 	/**
+	 * Given a turn, this function will physically "snap" this `Character`'s position to it. This is
+	 * useful since collision detection relies on specific offsets of characters on the board, relative
+	 * to each turn.
+	 *
+	 * @param turn the turn to snap this `Character`'s physical to
+	 */
+	protected offsetPositionToTurn(turn: TurnData): void {
+		const oldPosition = this.getPosition()!;
+		// find the "true" position x & y that the Character should be placed at when performing a turn (since
+		// it could be within the turn's threshold, but not perfectly placed at the turn position)
+		const characterTurnX = turn.x - this.getWidth()! / 2;
+		const characterTurnY = turn.y - this.getHeight()! / 2;
+
+		// we know at this point that we're within this turn's threshold, so correct the character's position
+		// by moving it to the turn's exact location to keep the character's movement consistent
+		if (oldPosition.x !== characterTurnX || oldPosition.y !== characterTurnY) {
+			this.setPosition(
+				{
+					x: characterTurnX,
+					y: characterTurnY,
+				},
+				{
+					modifyCss: false,
+					modifyTransform: true,
+				}
+			);
+		}
+	}
+
+	/**
+	 * This method will return the "closest" turn to a `Character`, based on the current direction it is moving.
+	 *
+	 * @returns the closest turn to this character
+	 */
+	protected findNearestTurn(): TurnData | undefined {
+		// find turns "ahead" of character
+		const filteredTurnData = Character.turnData!.filter((turn) =>
+			this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn, this.getPosition()!)
+		);
+
+		const currentDirection = this.currentDirection;
+
+		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
+		// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows PacMan
+		// to turn (given the input moveCode), we find the closest turn to PacMan, instead of a turn that may be at the "start" of the
+		// "filteredTurnData" array
+		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
+			filteredTurnData.reverse();
+		}
+
+		return filteredTurnData[0];
+	}
+
+	/**
+	 * Given a criteria, this method will return the "closest" turn to a `Character`, based on the current direction it is moving.
+	 *
+	 * @param filter given a turn, this function decides whether the turn falls under a specified criteria
+	 * @param callback any logic to run when a turn falls under `filter`'s criteria
+	 * @returns the closest turn to this character that falls under `filter`'s criteria
+	 */
+	protected findNearestTurnWhere(
+		filter: (turn: TurnData) => boolean,
+		callback?: ((turn: TurnData) => unknown) | undefined
+	): TurnData | undefined {
+		// find turns "ahead" of character and that fit the "filter"
+		const filteredTurnData = Character.turnData!.filter((turn) => {
+			if (
+				this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](
+					turn,
+					this.getPosition()!
+				) &&
+				filter(turn)
+			) {
+				// run callback if our filter passes, and it's defined
+				if (callback) {
+					callback(turn);
+				}
+
+				return true;
+			}
+
+			return false;
+		});
+
+		const currentDirection = this.currentDirection;
+
+		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
+		// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows PacMan
+		// to turn (given the input moveCode), we find the closest turn to PacMan, instead of a turn that may be at the "start" of the
+		// "filteredTurnData" array
+		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
+			filteredTurnData.reverse();
+		}
+
+		return filteredTurnData[0];
+	}
+
+	/**
 	 * Updates this character's animation state while it moves. This method uses the child's implementation of the `_getAnimationImage()`
 	 * method, since each `Character` child should implement the `UpdatesAnimationState` interface.
 	 */
@@ -381,36 +480,6 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	private dequeueTurns(): void {
 		this.turnQueue = [];
-	}
-
-	/**
-	 * Given a turn, this function will physically "snap" this `Character`'s position to it. This is
-	 * useful since collision detection relies on specific offsets of characters on the board, relative
-	 * to each turn.
-	 *
-	 * @param turn the turn to snap this `Character`'s physical to
-	 */
-	private offsetPositionToTurn(turn: TurnData): void {
-		const oldPosition = this.getPosition()!;
-		// find the "true" position x & y that the Character should be placed at when performing a turn (since
-		// it could be within the turn's threshold, but not perfectly placed at the turn position)
-		const characterTurnX = turn.x - this.getWidth()! / 2;
-		const characterTurnY = turn.y - this.getHeight()! / 2;
-
-		// we know at this point that we're within this turn's threshold, so correct the character's position
-		// by moving it to the turn's exact location to keep the character's movement consistent
-		if (oldPosition.x !== characterTurnX || oldPosition.y !== characterTurnY) {
-			this.setPosition(
-				{
-					x: characterTurnX,
-					y: characterTurnY,
-				},
-				{
-					modifyCss: false,
-					modifyTransform: true,
-				}
-			);
-		}
 	}
 
 	/**
@@ -448,50 +517,14 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			}
 		}
 
-		const currentDirection = this.currentDirection!;
-
-		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
-		// the character doesn't just stop and cancel valid queued-turns.
-		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
-		// track when this character arrives at its "nearestTurn" and stop the character if it hits a wall. this will also prevent
-		// characters with queued-turns that are technically "behind" a wall from ever executing the turn
-		if (this.frameCount === 0) {
-			const filteredTurnData = this.turnData!.filter((turn) => {
-				// turns "ahead" of character which do not accept the current direction of movement that this character
-				// is currently moving in
-				return (
-					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
-						turn,
-						this.getPosition()!
-					) && !Character.canTurnWithMoveDirection(currentDirection, turn)
-				);
-			});
-
-			// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-			// reverse the array here so that the nearest turn isn't at the "end" of the array
-			if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-				filteredTurnData.reverse();
-			}
-
-			this.nearestStoppingTurn = filteredTurnData[0];
-		}
-
-		const nearestTurn = this.nearestStoppingTurn;
-
-		if (
-			nearestTurn &&
-			// check if character is within nearest turn's distance (e.g. technically hitting the wall)
-			this.isWithinTurnDistance(nearestTurn)
-		) {
-			this.stopMoving();
-			// snap character to "stop" location to keep collision detection consistent
-			this.offsetPositionToTurn(nearestTurn);
-
-			// break out of the recursive animation frame calls so we can stop at this Character's nearest turn
+		// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
+		// update returns "true", so we can optionally break out of the recursive "move()" calls
+		if (this._runFrameUpdate()) {
 			return;
 		}
 
 		const teleporterPositions = this.TELEPORTER_POSITIONS;
+		const currentDirection = this.currentDirection!;
 
 		// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
 		// of one, and teleport them when they are
@@ -512,8 +545,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 				}
 			);
 
-			// start moving them in the same direction, again, because if we don't, we'll have an old "nearestStoppingTurn"
-			// stored in memory, and the character will phase through walls to get to it
+			// start moving character in the same direction, again, because if we don't, the character will still have "stale" data tied to it.
+			// for example, an "old" queued-turn, which was valid before the character teleported, but invalid afterwards. it could also
+			// give pacman an invalid "nearestStoppingTurn", etc.
 			this.startMoving(currentDirection);
 
 			return;

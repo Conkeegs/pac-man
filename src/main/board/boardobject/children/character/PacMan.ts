@@ -3,6 +3,7 @@
 import { defined, die, exists } from "../../../../utils/Utils.js";
 import Character, { type TurnData } from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
+import type RunsFrameUpdate from "./RunsFrameUpdate.js";
 import type UpdatesAnimationState from "./UpdatesAnimationState.js";
 
 /**
@@ -25,7 +26,7 @@ type ANIMATION_DIRECTIONS = {
 /**
  * Represents the PacMan character on the board.
  */
-export default class PacMan extends Character implements UpdatesAnimationState {
+export default class PacMan extends Character implements UpdatesAnimationState, RunsFrameUpdate {
 	/**
 	 * The last direction the user moved in.
 	 */
@@ -38,6 +39,10 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 	 * The direction (forwards or backwards) that pacman's animation is currently playing in.
 	 */
 	private animationDirection: ANIMATION_DIRECTION_FORWARDS | ANIMATION_DIRECTION_BACKWARDS = 0;
+	/**
+	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
+	 */
+	private nearestStoppingTurn: TurnData | undefined;
 	/**
 	 * The frame of animation that pacman is currently on.
 	 */
@@ -226,45 +231,29 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 				return;
 			}
 
-			const position = this.getPosition()!;
-			let nearestTurnableTurn: TurnData | undefined;
+			let thresholdTurn: TurnData | undefined;
 
 			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
 			// turn threshold
-			const filteredTurnData = this.turnData!.filter((turn) => {
-				// turns "ahead" of PacMan and which allow him to turn in the given "moveCode" direction
-				if (
-					this.turnValidators[currentDirection as keyof typeof this.turnValidators](turn, position) &&
-					Character.canTurnWithMoveDirection(moveCode, turn)
-				) {
-					// turn within turn threshold
+			const nearestTurnableTurn = this.findNearestTurnWhere(
+				(turn) =>
+					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
+						turn,
+						this.getPosition()!
+					) && Character.canTurnWithMoveDirection(moveCode, turn),
+				(turn) => {
 					if (this.isWithinTurnDistance(turn)) {
-						nearestTurnableTurn = turn;
+						thresholdTurn = turn;
 					}
-
-					return true;
 				}
-
-				return false;
-			});
+			);
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-			if (nearestTurnableTurn) {
-				this.startMoving(moveCode, nearestTurnableTurn);
+			if (thresholdTurn) {
+				this.startMoving(moveCode, thresholdTurn);
 
 				return;
 			}
-
-			// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-			// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows PacMan
-			// to turn (given the input moveCode), we find the closest turn to PacMan, instead of a turn that may be at the "start" of the
-			// "filteredTurnData" array
-			if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-				filteredTurnData.reverse();
-			}
-
-			// at this point, we know there is not an immediately-available turn to turn at, so just go with the nearest "turnable" turn
-			nearestTurnableTurn = filteredTurnData[0];
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
@@ -287,5 +276,44 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 				this.listenForKeydown = true;
 			}
 		});
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	override _runFrameUpdate(): boolean {
+		const currentDirection = this.currentDirection!;
+
+		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
+		// pacman doesn't just stop and cancel valid queued-turns.
+		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
+		// track when pacman arrives at its "nearestTurn" and stop pacman if he hits a wall. this will also prevent
+		// pacman from ever executing a queued-turn when he is technically "behind" a wall
+		if (this.frameCount === 0) {
+			this.nearestStoppingTurn = this.findNearestTurnWhere(
+				(turn) =>
+					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
+						turn,
+						this.getPosition()!
+					) && !Character.canTurnWithMoveDirection(currentDirection, turn)
+			);
+		}
+
+		const nearestStoppingTurn = this.nearestStoppingTurn;
+
+		if (
+			nearestStoppingTurn &&
+			// check if pacman is within nearest turn's distance (e.g. technically hitting the wall)
+			this.isWithinTurnDistance(nearestStoppingTurn)
+		) {
+			this.stopMoving();
+			// snap pacman to "stop" location to keep collision detection consistent
+			this.offsetPositionToTurn(nearestStoppingTurn);
+
+			// break out of the recursive animation frame calls so we can stop at pacman's nearest turn
+			return true;
+		}
+
+		return false;
 	}
 }
