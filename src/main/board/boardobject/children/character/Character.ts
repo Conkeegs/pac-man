@@ -69,7 +69,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * How long each animation state for this character lasts.
 	 */
-	private static readonly ANIMATION_STATE_MILLIS: 30 = 30;
+	abstract readonly _ANIMATION_STATE_MILLIS: number;
 	/**
 	 * Determines if the characters is currently moving.
 	 */
@@ -276,7 +276,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		// start playing this character's animations as they move.
 		this.animationIntervalId = window.setInterval(
 			this.updateAnimationImage.bind(this),
-			Character.ANIMATION_STATE_MILLIS
+			this._ANIMATION_STATE_MILLIS
 		);
 
 		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));

@@ -7,6 +7,7 @@ import type UpdatesAnimationState from "./UpdatesAnimationState.js";
 export default abstract class Ghost extends Character implements UpdatesAnimationState {
 	readonly _MAX_ANIMATION_FRAMES: 2 = 2;
 	_animationFrame: number = 0;
+	readonly _ANIMATION_STATE_MILLIS: 100 = 100;
 
 	/**
 	 * Creates a `Ghost`.

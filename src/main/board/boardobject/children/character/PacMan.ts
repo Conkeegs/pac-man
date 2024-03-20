@@ -60,6 +60,7 @@ export default class PacMan extends Character implements UpdatesAnimationState {
 	 * The max number of animation states pacman can be in.
 	 */
 	readonly _MAX_ANIMATION_FRAMES: 3 = 3;
+	readonly _ANIMATION_STATE_MILLIS: 30 = 30;
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */

@@ -8,6 +8,10 @@ export default interface UpdatesAnimationState {
 	 */
 	_MAX_ANIMATION_FRAMES: number;
 	/**
+	 * The number of milliseconds between each animation state change for a character.
+	 */
+	_ANIMATION_STATE_MILLIS: number;
+	/**
 	 * The current animation frame this character is on.
 	 */
 	_animationFrame: number;
