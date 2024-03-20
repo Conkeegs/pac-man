@@ -265,19 +265,19 @@ export default class Board {
 		);
 
 		this.placeBoardObject(
-			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("blinky-0-2")),
+			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("inky-0-2")),
 			Board.INKY_SPAWN_X,
 			Board.INKY_SPAWN_Y
 		);
 
 		this.placeBoardObject(
-			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("blinky-0-3")),
+			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("pinky-0-3")),
 			Board.PINKY_SPAWN_X,
 			Board.PINKY_SPAWN_Y
 		);
 
 		this.placeBoardObject(
-			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("blinky-0-2")),
+			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("clyde-0-2")),
 			Board.CLYDE_SPAWN_X,
 			Board.CLYDE_SPAWN_Y
 		);

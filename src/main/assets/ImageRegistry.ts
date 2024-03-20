@@ -21,6 +21,30 @@ type IMAGE_LIST = {
 	"blinky-1-1": string;
 	"blinky-1-2": string;
 	"blinky-1-3": string;
+	"inky-0-0": string;
+	"inky-0-1": string;
+	"inky-0-2": string;
+	"inky-0-3": string;
+	"inky-1-0": string;
+	"inky-1-1": string;
+	"inky-1-2": string;
+	"inky-1-3": string;
+	"pinky-0-0": string;
+	"pinky-0-1": string;
+	"pinky-0-2": string;
+	"pinky-0-3": string;
+	"pinky-1-0": string;
+	"pinky-1-1": string;
+	"pinky-1-2": string;
+	"pinky-1-3": string;
+	"clyde-0-0": string;
+	"clyde-0-1": string;
+	"clyde-0-2": string;
+	"clyde-0-3": string;
+	"clyde-1-0": string;
+	"clyde-1-1": string;
+	"clyde-1-2": string;
+	"clyde-1-3": string;
 };
 
 export default class ImageRegistry {
@@ -45,6 +69,30 @@ export default class ImageRegistry {
 		"blinky-1-1": getImageSrc("blinky-1-1"),
 		"blinky-1-2": getImageSrc("blinky-1-2"),
 		"blinky-1-3": getImageSrc("blinky-1-3"),
+		"inky-0-0": getImageSrc("inky-0-0"),
+		"inky-0-1": getImageSrc("inky-0-1"),
+		"inky-0-2": getImageSrc("inky-0-2"),
+		"inky-0-3": getImageSrc("inky-0-3"),
+		"inky-1-0": getImageSrc("inky-1-0"),
+		"inky-1-1": getImageSrc("inky-1-1"),
+		"inky-1-2": getImageSrc("inky-1-2"),
+		"inky-1-3": getImageSrc("inky-1-3"),
+		"pinky-0-0": getImageSrc("pinky-0-0"),
+		"pinky-0-1": getImageSrc("pinky-0-1"),
+		"pinky-0-2": getImageSrc("pinky-0-2"),
+		"pinky-0-3": getImageSrc("pinky-0-3"),
+		"pinky-1-0": getImageSrc("pinky-1-0"),
+		"pinky-1-1": getImageSrc("pinky-1-1"),
+		"pinky-1-2": getImageSrc("pinky-1-2"),
+		"pinky-1-3": getImageSrc("pinky-1-3"),
+		"clyde-0-0": getImageSrc("clyde-0-0"),
+		"clyde-0-1": getImageSrc("clyde-0-1"),
+		"clyde-0-2": getImageSrc("clyde-0-2"),
+		"clyde-0-3": getImageSrc("clyde-0-3"),
+		"clyde-1-0": getImageSrc("clyde-1-0"),
+		"clyde-1-1": getImageSrc("clyde-1-1"),
+		"clyde-1-2": getImageSrc("clyde-1-2"),
+		"clyde-1-3": getImageSrc("clyde-1-3"),
 	};
 
 	/**
