@@ -309,3 +309,13 @@ export function getImageSrc(name: string, extension: string = "png"): string {
 export function getJsonSrc(name: string): string {
 	return `src/assets/json/${name}.json`;
 }
+
+/**
+ * Gets a random integer between 0 and `max`.
+ *
+ * @param max the max integer that can be returned
+ * @returns a random number between 0 and `max` (inclusive)
+ */
+export function getRandomInt(max: number): number {
+	return Math.floor(Math.random() * (max + 1));
+}
