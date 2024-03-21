@@ -1,6 +1,7 @@
 "use strict";
 
 import DebugWindow from "../debugwindow/DebugWindow.js";
+import { BOARD_OBJECT_Z_INDEX } from "./Globals.js";
 
 declare global {
 	interface HTMLElement {
@@ -318,4 +319,27 @@ export function getJsonSrc(name: string): string {
  */
 export function getRandomInt(max: number): number {
 	return Math.floor(Math.random() * (max + 1));
+}
+
+/**
+ * Inserts an easily-visible square onto the board at a specified position. Useful for debugging.
+ *
+ * @param x the horizontal position of the square
+ * @param y the vertical position of the square
+ */
+export function insertDivAtPosition(x: number, y: number): void {
+	get("board")!.appendChild(
+		create({
+			name: "div",
+			classes: ["position-div"],
+		}).css({
+			position: "absolute",
+			left: px(x),
+			top: px(y),
+			zIndex: BOARD_OBJECT_Z_INDEX + 1,
+			backgroundColor: "purple",
+			height: px(10),
+			width: px(10),
+		}) as HTMLElement
+	);
 }
