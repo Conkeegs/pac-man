@@ -91,10 +91,6 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	private moving: boolean = false;
 	/**
-	 * Data telling this character where it is allowed to turn
-	 */
-	private static turnData: TurnData[] | undefined;
-	/**
 	 * The directions that this character must be moving in order to search for the nearest "teleport" position.
 	 */
 	private readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [MovementDirection.LEFT, MovementDirection.RIGHT];
@@ -112,6 +108,15 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			x: Board.calcTileX(29),
 			y: Board.calcTileY(18.25),
 		},
+	};
+	/**
+	 * Holds methods which will change the character's CSS `transform` value and also set it in memory.
+	 */
+	private movementMethods: MovementMethods = {
+		[MovementDirection.LEFT]: this.moveLeft,
+		[MovementDirection.RIGHT]: this.moveRight,
+		[MovementDirection.UP]: this.moveUp,
+		[MovementDirection.DOWN]: this.moveDown,
 	};
 
 	/**
@@ -166,16 +171,10 @@ export default abstract class Character extends BoardObject implements HasBoardO
 
 	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
-
 	/**
-	 * Holds methods which will change the character's CSS `transform` value and also set it in memory.
+	 * Data telling this character where it is allowed to turn
 	 */
-	private movementMethods: MovementMethods = {
-		[MovementDirection.LEFT]: this.moveLeft,
-		[MovementDirection.RIGHT]: this.moveRight,
-		[MovementDirection.UP]: this.moveUp,
-		[MovementDirection.DOWN]: this.moveDown,
-	};
+	public static turnData: TurnData[] | undefined;
 
 	/**
 	 * Creates a character.
