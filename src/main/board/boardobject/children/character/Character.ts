@@ -3,7 +3,7 @@
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import JsonRegistry from "../../../../assets/JsonRegistry.js";
 import Board from "../../../../board/Board.js";
-import { TILESIZE } from "../../../../utils/Globals.js";
+import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
 import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
 import type HasBoardObjectProperties from "../../HasBoardObjectProperties.js";
@@ -113,6 +113,10 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	protected frameCount: number = 0;
 	/**
+	 * The last direction the user moved in.
+	 */
+	protected lastMoveCode: MovementDirection | undefined;
+	/**
 	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
 	 * direction this `Character` is currently heading and if it is on the same "row"/"column" as the `Character`.
 	 */
@@ -167,6 +171,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	constructor(name: string, speed: number, source: string) {
 		super(name);
 
+		// keep track of every character created for convenience
+		CHARACTERS.push(this);
+
 		this.speed = speed;
 		this.source = source;
 
@@ -215,6 +222,16 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	}
 
 	/**
+	 * Gets the last direction this character moved in. This is useful, especially for pausing/unpausing, since
+	 * we can use it to re-animate characters after unpausing the game.
+	 *
+	 * @returns the last `MovementDirection` this character moved in
+	 */
+	public getLastMoveCode(): MovementDirection | undefined {
+		return this.lastMoveCode;
+	}
+
+	/**
 	 * Determines if the character is currently moving.
 	 * @returns `boolean` if the character is moving or not
 	 */
@@ -225,10 +242,17 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * Cancels this character's current animation frame so that `this.move()` isn't called anymore.
 	 *
+	 * @param paused whether or not this character is stopping due to the game pausing
 	 * @returns
 	 */
-	public stopMoving() {
-		this.dequeueTurns();
+	public stopMoving(paused: boolean = false) {
+		// only forget this data if this character didn't just "stop" because the game paused. otherwise, we
+		// can't re-animate them after unpausing/know where they were heading, etc.
+		if (!paused) {
+			this.dequeueTurns();
+			this.lastMoveCode = undefined;
+		}
+
 		cancelAnimationFrame(this.animationFrameId as number);
 		clearInterval(this.animationIntervalId);
 
@@ -245,28 +269,46 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * Sets up initial request for animation frame and then starts recursively calling `Character.move()` method to move this character.
 	 *
 	 * @param direction the direction the character is currently trying to move in
-	 * @param fromTurn optional parameter which tells the location that the character is turning at. This might not
-	 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
-	 * where it is currently heading, and not making a 90 degree turn.
+	 * @param options options that modify the way that this character starts moving
 	 */
-	public startMoving(direction: MovementDirection, fromTurn?: TurnData) {
-		if (this.turnQueue.length) {
-			// reset turn queue each time we head in a new direction
-			this.dequeueTurns();
+	public startMoving(
+		direction: MovementDirection,
+		options?: {
+			/**
+			 * Optional parameter which tells the location that the character is turning at. This might not
+			 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
+			 * where it is currently heading, and not making a 90 degree turn.
+			 */
+			fromTurn?: TurnData;
+			/**
+			 * Whether or not this character will start moving after having been in a "paused" state.
+			 */
+			wasPaused?: boolean;
+		}
+	) {
+		const wasPaused = options?.wasPaused;
+
+		if (!wasPaused) {
+			if (this.turnQueue.length) {
+				// reset turn queue each time we head in a new direction
+				this.dequeueTurns();
+			}
+
+			if (this.moving) {
+				// call this so we can reset the animation frame id every time a character moves
+				this.stopMoving();
+			}
 		}
 
-		if (this.moving) {
-			// call this so we can reset the animation frame id every time a character moves
-			this.stopMoving();
-		}
-
-		// set this character's current direction since we now know that it's going to start moving
-		this.currentDirection = direction;
+		const fromTurn = options?.fromTurn;
 
 		if (fromTurn) {
 			// snap to turn-position to keep collision detection consistent
 			this.offsetPositionToTurn(fromTurn);
 		}
+
+		// set this character's current direction since we now know that it's going to start moving
+		this.currentDirection = direction;
 
 		// start playing this character's animations as they move.
 		this.animationIntervalId = window.setInterval(
@@ -277,6 +319,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
 
 		this.moving = true;
+		this.lastMoveCode = direction;
 	}
 
 	/**
@@ -496,6 +539,14 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			return;
 		}
 
+		// if the game pauses, we want this character to stop moving, but preserve data that is important for unpausing
+		// this character
+		if (Board.GAME_PAUSED) {
+			this.stopMoving(true);
+
+			return;
+		}
+
 		// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
 		// will keep going, so make sure the character stops calls "move()" here
 		if (!this.moving) {
@@ -510,7 +561,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			// every frame, check if the character is within the queued-turn's threshold, and turn
 			// the character in that direction when it is
 			if (this.isWithinTurnDistance(turn)) {
-				this.startMoving(queuedTurnInfo.direction, turn);
+				this.startMoving(queuedTurnInfo.direction, {
+					fromTurn: turn,
+				});
 
 				// break out of the recursive animation frame calls so we can start moving in another direction
 				return;

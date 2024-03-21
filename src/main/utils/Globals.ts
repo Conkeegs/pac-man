@@ -1,6 +1,7 @@
 "use strict";
 
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
+import type Character from "../board/boardobject/children/character/Character.js";
 
 /**
  * The number of square columns on the board.
@@ -21,6 +22,11 @@ export const DEBUG: boolean = false;
  * and also check for duplicates since each of them have unique `name` properties.
  */
 export const BOARDOBJECTS: BoardObject[] = [];
+
+/**
+ * An array of classes that extends the `Character` class so we can add/remove them when needed.
+ */
+export const CHARACTERS: Character[] = [];
 
 const match = window.matchMedia("(min-width: 720px)");
 

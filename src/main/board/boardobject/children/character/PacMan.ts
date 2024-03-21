@@ -28,10 +28,6 @@ type ANIMATION_DIRECTIONS = {
  */
 export default class PacMan extends Character implements UpdatesAnimationState, RunsFrameUpdate {
 	/**
-	 * The last direction the user moved in.
-	 */
-	private lastMoveCode: MovementDirection | undefined;
-	/**
 	 * Whether or not PacMan is currently listening for movement inputs.
 	 */
 	private listenForKeydown: boolean = true;
@@ -89,20 +85,6 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 		super(name, speed, source);
 
 		this.createMoveEventListeners();
-	}
-
-	/**
-	 * Starts moving `PacMan`, while also setting his `lastMoveCode` in memory to keep track of the
-	 * last move input that was entered for him.
-	 *
-	 * @param moveCode the direction `PacMan` wants to move
-	 * @param turn optional turn in case `PacMan` is going to turn at a turn's location
-	 */
-	public override startMoving(moveCode: MovementDirection, turn?: TurnData): void {
-		// PacMan is going to move, so set his last move code
-		this.lastMoveCode = moveCode;
-
-		super.startMoving(moveCode, turn);
 	}
 
 	/**
@@ -250,7 +232,9 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (thresholdTurn) {
-				this.startMoving(moveCode, thresholdTurn);
+				this.startMoving(moveCode, {
+					fromTurn: thresholdTurn,
+				});
 
 				return;
 			}
