@@ -214,10 +214,13 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 			if (
 				// if all of these are true, PacMan should be considered "stopped" against a wall
 				!isMoving &&
-				nearestStoppingTurn &&
-				Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)
+				nearestStoppingTurn
 			) {
-				this.startMoving(moveCode);
+				if (Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)) {
+					this.startMoving(moveCode);
+
+					return;
+				}
 
 				return;
 			}
