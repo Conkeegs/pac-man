@@ -43,6 +43,22 @@ type MovementMethods = {
 };
 
 /**
+ * Options that modify the way that this character starts moving
+ */
+export type StartMoveOptions = {
+	/**
+	 * Optional parameter which tells the location that the character is turning at. This might not
+	 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
+	 * where it is currently heading, and not making a 90 degree turn.
+	 */
+	fromTurn?: TurnData;
+	/**
+	 * Whether or not this character will start moving after having been in a "paused" state.
+	 */
+	wasPaused?: boolean;
+};
+
+/**
  * A character is any of the AI or user-controlled objects on the board.
  */
 export default abstract class Character extends BoardObject implements HasBoardObjectProperties {
@@ -271,21 +287,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * @param direction the direction the character is currently trying to move in
 	 * @param options options that modify the way that this character starts moving
 	 */
-	public startMoving(
-		direction: MovementDirection,
-		options?: {
-			/**
-			 * Optional parameter which tells the location that the character is turning at. This might not
-			 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
-			 * where it is currently heading, and not making a 90 degree turn.
-			 */
-			fromTurn?: TurnData;
-			/**
-			 * Whether or not this character will start moving after having been in a "paused" state.
-			 */
-			wasPaused?: boolean;
-		}
-	) {
+	public startMoving(direction: MovementDirection, options?: StartMoveOptions) {
 		const wasPaused = options?.wasPaused;
 
 		if (!wasPaused) {

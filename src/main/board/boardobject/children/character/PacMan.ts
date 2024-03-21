@@ -1,7 +1,7 @@
 "use strict";
 
 import { defined, die, exists } from "../../../../utils/Utils.js";
-import Character, { type TurnData } from "./Character.js";
+import Character, { type StartMoveOptions, type TurnData } from "./Character.js";
 import MovementDirection from "./MovementDirection.js";
 import type RunsFrameUpdate from "./RunsFrameUpdate.js";
 import type UpdatesAnimationState from "./UpdatesAnimationState.js";
@@ -39,6 +39,10 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
 	 */
 	private nearestStoppingTurn: TurnData | undefined;
+	/**
+	 * Whether or not pacman is spawning.
+	 */
+	private spawning: boolean = true;
 	/**
 	 * The frame of animation that pacman is currently on.
 	 */
@@ -124,6 +128,18 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 	}
 
 	/**
+	 * Overrides `Character.startMoving()` since pacman needs to keep track of whether he's spawning or not.
+	 *
+	 */
+	public override startMoving(direction: MovementDirection, options?: StartMoveOptions): void {
+		if (this.spawning) {
+			this.spawning = false;
+		}
+
+		super.startMoving(direction, options);
+	}
+
+	/**
 	 * DOM event listeners that allow the user to control PacMan.
 	 */
 	private createMoveEventListeners() {
@@ -171,18 +187,11 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 			}
 
 			// let PacMan immediately start moving (left or right) if he has just spawned
-			if (!defined(lastMoveCode) && isMoving === false) {
+			if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
 				if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
 					this.startMoving(moveCode);
 				}
 
-				return;
-			}
-
-			if (
-				// check if the character has moved in any direction in the past
-				!defined(lastMoveCode)
-			) {
 				return;
 			}
 
