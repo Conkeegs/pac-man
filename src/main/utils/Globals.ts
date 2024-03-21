@@ -22,7 +22,7 @@ export const DEBUG: boolean = false;
  */
 export const BOARDOBJECTS: BoardObject[] = [];
 
-let match = window.matchMedia("(min-width: 720px)");
+const match = window.matchMedia("(min-width: 720px)");
 
 /**
  * The height of the board.
