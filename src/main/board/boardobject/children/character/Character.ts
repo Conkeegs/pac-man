@@ -1,10 +1,9 @@
 "use strict";
 
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
-import JsonRegistry from "../../../../assets/JsonRegistry.js";
 import Board from "../../../../board/Board.js";
 import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
-import { fetchJSON, millisToSeconds, px } from "../../../../utils/Utils.js";
+import { millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
 import type HasBoardObjectProperties from "../../HasBoardObjectProperties.js";
 import MovementDirection from "./MovementDirection.js";
@@ -172,7 +171,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
 	/**
-	 * Data telling this character where it is allowed to turn
+	 * Data telling characters where they are allowed to turn.
 	 */
 	public static turnData: TurnData[] | undefined;
 
@@ -196,16 +195,6 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			width: px(this.width),
 			height: px(this.height),
 			backgroundImage: `url(${source})`,
-		});
-
-		// tell the character where it can turn
-		fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
-			for (let turn of turnData) {
-				turn.x = Board.calcTileX(turn.x + 0.5);
-				turn.y = Board.calcTileY(turn.y - 0.5);
-			}
-
-			Character.turnData = turnData;
 		});
 	}
 
