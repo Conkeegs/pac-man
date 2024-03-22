@@ -1,10 +1,17 @@
+@font-face {
+    font-family: pacmanFont;
+    src: url(../fonts//Emulogic-zrEw.ttf);
+}
+
 :root {
     --bodyBackgroundColor: #070200;
+    --defaultFont: pacmanFont;
 }
 
 * {
     margin: 0;
     box-sizing: border-box;
+    font-family: var(--defaultFont);
 }
 
 body {
