@@ -313,7 +313,11 @@ export default class Board {
 	 */
 	private createGrid() {
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-vert-num-${i}`, i.toString(), Board.calcTileOffset(0.75)), i, 0);
+			this.placeBoardObject(
+				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
+				i,
+				0
+			);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-vert"] }).css({
@@ -324,7 +328,14 @@ export default class Board {
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			this.placeBoardObject(new BoardText(`grid-horiz-num-${i}`, i.toString(), Board.calcTileOffset(0.75)), 0, i);
+			// store as variable so we can use it to offset the text, based on the number of characters
+			const numString = i.toString();
+
+			this.placeBoardObject(
+				new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }),
+				0 - (numString.length - 1),
+				i
+			);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-horiz"] }).css({

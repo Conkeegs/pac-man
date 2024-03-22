@@ -2,7 +2,7 @@
 
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../utils/Globals.js";
-import { px } from "../../../utils/Utils.js";
+import { create, px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 
 /**
@@ -15,15 +15,32 @@ export default class BoardText extends BoardObject {
 	/**
 	 * Creates a board text object.
 	 *
-	 * @param name
-	 * @param text the text content to be displayed
-	 * @param fontsize the size of the text's font
-	 * @param color the color of the text
+	 * @param data information about how to display the text
 	 */
-	constructor(name: string, text: string, fontsize = TILESIZE, color = "white") {
-		super(name);
+	constructor(data: {
+		name: string;
+		/**
+		 * The text to be displayed to the user.
+		 */
+		text: string;
+		/**
+		 * Font size of `text`. Defaults to `TILESIZE`.
+		 */
+		fontsize?: number;
+		/**
+		 * Color of `text`. Defaults to `white`.
+		 */
+		color?: string;
+		/**
+		 * Whether or not to display the text vertically. Defaults to `false`.
+		 */
+		vertical?: boolean;
+	}) {
+		super(data.name);
 
-		if (fontsize > 24) {
+		const fontSize = data.fontsize || TILESIZE;
+
+		if (fontSize > 24) {
 			DebugWindow.error(
 				"BoardText.js",
 				"constructor",
@@ -31,14 +48,34 @@ export default class BoardText extends BoardObject {
 			);
 		}
 
-		(
-			this.element.css({
-				width: px(this.width),
-				height: px(this.height),
-				fontSize: px(fontsize),
-				color: color,
-				zIndex: BOARD_OBJECT_Z_INDEX + 2,
-			}) as HTMLElement
-		).textContent = text;
+		// display text above board objects
+		this.element.css({
+			zIndex: BOARD_OBJECT_Z_INDEX + 1,
+		});
+
+		const color = data.color || "white";
+		const vertical = data.vertical ?? false;
+
+		for (const [index, character] of Object.entries(data.text)) {
+			// create a tile-sized container for each character in the text, so each character appears to
+			// display in a different tile
+			const container = create({
+				name: "div",
+				classes: ["board-text-container"],
+			}).css({
+				color,
+				width: px(TILESIZE),
+				height: px(TILESIZE),
+			}) as HTMLElement;
+
+			// judge whether or not to display text vertically
+			container.css({
+				[!vertical ? "left" : "top"]: px(TILESIZE * Number(index)),
+			});
+
+			container.textContent = character;
+
+			(this.element as HTMLElement).appendChild(container);
+		}
 	}
 }

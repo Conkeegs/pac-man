@@ -30,7 +30,8 @@ body {
     position: relative;
 }
 
-.board-object {
+.board-object,
+.board-text-container {
     position: absolute;
     display: grid;
     justify-content: center;
