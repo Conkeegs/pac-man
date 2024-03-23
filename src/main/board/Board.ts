@@ -4,7 +4,7 @@ import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, CHARACTERS, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, defined, fetchJSON, get, maybe, px } from "../utils/Utils.js";
+import { create, defined, fetchJSON, get, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import PathNode from "./boardobject/children/PathNode.js";
@@ -55,7 +55,7 @@ interface PathData {
 /**
  * HTML-specific attribute data about every wall in the game.
  */
-interface WallDataElement {
+export interface WallDataElement {
 	id: string;
 	classes: string[];
 	styles: {
@@ -74,19 +74,6 @@ interface WallDataElement {
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board {
-	/**
-	 * Whether the board has finished creation or not.
-	 */
-	private boardCreated: boolean = false;
-
-	/**
-	 * The container of everything that the board holds.
-	 */
-	private boardDiv: HTMLDivElement = create({
-		name: "div",
-		id: "board",
-	}) as HTMLDivElement;
-
 	private static readonly PACMAN_SPEED: 88 = 88;
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
@@ -104,9 +91,20 @@ export default class Board {
 	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
 
 	/**
+	 * The container of everything that the board holds.
+	 */
+	public boardDiv: HTMLDivElement = create({
+		name: "div",
+		id: "board",
+	}) as HTMLDivElement;
+	/**
 	 * Whether or not the game is currently paused.
 	 */
 	public static GAME_PAUSED: boolean = false;
+	/**
+	 * The default background color of the board.
+	 */
+	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
 
 	/**
 	 * Creates the board.s
@@ -154,55 +152,9 @@ export default class Board {
 			}
 		});
 
-		// setup walls
-		fetchJSON(JsonRegistry.getJson("walls"))
-			.then((wallData: WallDataElement[]) => {
-				for (let element of wallData) {
-					const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
-						width: px(Board.calcTileOffset(element.styles.width)),
-						height: px(Board.calcTileOffset(element.styles.height)),
-						top: px(Board.calcTileOffset(element.styles.top)),
-						left: px(Board.calcTileOffset(element.styles.left || 0)),
-						borderTopLeftRadius: px(
-							maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderTopRightRadius: px(
-							maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderBottomRightRadius: px(
-							maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderBottomLeftRadius: px(
-							maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
-						),
-					}) as HTMLElement;
-
-					// make sure invisible walls that are outside of teleports display over characters so that it looks
-					// like the character's "disappear" through them
-					if (wall.classList.contains("teleport-cover")) {
-						wall.css({
-							zIndex: BOARD_OBJECT_Z_INDEX + 1,
-						});
-					}
-
-					this.boardDiv.appendChild(wall);
-				}
-
-				get("middle-cover")!.css({
-					backgroundColor: color,
-				});
-
-				this.boardCreated = true;
-
-				this.createMainBoardObjects();
-
-				// debugging methods
-				this.createGrid();
-				this.createPaths();
-			})
-			.catch((error) => {
-				DebugWindow.error("Board.js", "constructor", `Could not fetch wall data due to '${error.message}'.`);
-			});
+		// debugging methods
+		this.createGrid();
+		this.createPaths();
 	}
 
 	/**
@@ -323,6 +275,7 @@ export default class Board {
 				create({ name: "div", classes: ["grid-vert"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
+					zIndex: BOARD_OBJECT_Z_INDEX + 2,
 				}) as HTMLElement
 			);
 		}
@@ -342,6 +295,7 @@ export default class Board {
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
+					zIndex: BOARD_OBJECT_Z_INDEX + 2,
 				}) as HTMLElement
 			);
 		}

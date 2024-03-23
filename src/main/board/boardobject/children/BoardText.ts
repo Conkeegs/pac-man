@@ -50,7 +50,7 @@ export default class BoardText extends BoardObject {
 
 		// display text above board objects
 		this.element.css({
-			zIndex: BOARD_OBJECT_Z_INDEX + 1,
+			zIndex: BOARD_OBJECT_Z_INDEX + 2,
 		});
 
 		const color = data.color || "white";
