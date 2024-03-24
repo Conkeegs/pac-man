@@ -175,13 +175,10 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 					event.preventDefault();
 					this.stopMoving();
 
-					die({
-						position: this.getPosition(),
-					});
+					die("dead");
 				}
 
 				// console.log({ avg: this.positionSum / this.positionCount });
-				// console.log({ frameCount: this.frameCount, fps: this.frameCount / this.frameSecondsSum });
 
 				return;
 			}

@@ -80,7 +80,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
 	 */
-	private static readonly COLLISION_THRESHOLD: 2 = 2;
+	private static readonly COLLISION_THRESHOLD: 1 = 1;
 	/**
 	 * How long each animation state for this character lasts.
 	 */
@@ -485,6 +485,42 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	}
 
 	/**
+	 * Determines if this character is colliding with another `BoardObject`.
+	 *
+	 * @param boardObject the board object this character might be colliding with
+	 * @returns boolean indicating if the two are colliding
+	 */
+	protected isCollidingWithBoardObject(boardObject: BoardObject): boolean {
+		const thisPosition = this.getPosition()!;
+		const thisPositionX = thisPosition.x;
+		const thisPositionY = thisPosition.y;
+		const boardObjectPosition = boardObject.getPosition()!;
+		const boardObjectX = boardObjectPosition.x;
+		const boardObjectY = boardObjectPosition.y;
+		const currentDirection = this.currentDirection;
+
+		// don't bother testing against board objects that aren't in the same row/column as this character
+		if (
+			((currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.RIGHT) &&
+				boardObjectY !== thisPositionY) ||
+			((currentDirection === MovementDirection.UP || currentDirection === MovementDirection.DOWN) &&
+				boardObjectX !== thisPositionX)
+		) {
+			return false;
+		}
+
+		// divide width/heights by 2 since we want boardobjects to collide when they're about "half" way over each other
+		return (
+			((Character.distanceWithinThreshold(thisPositionX, boardObjectX + boardObject.getWidth()! / 2) ||
+				Character.distanceWithinThreshold(thisPositionX + this.width / 2, boardObjectX)) &&
+				thisPositionY === boardObjectY) ||
+			((Character.distanceWithinThreshold(thisPositionY, boardObjectY + boardObject.getHeight()! / 2) ||
+				Character.distanceWithinThreshold(thisPositionY + this.height / 2, boardObjectY)) &&
+				thisPositionX === boardObjectX)
+		);
+	}
+
+	/**
 	 * Updates this character's animation state while it moves. This method uses the child's implementation of the `_getAnimationImage()`
 	 * method, since each `Character` child should implement the `UpdatesAnimationState` interface.
 	 */
@@ -541,6 +577,23 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		// will keep going, so make sure the character stops calls "move()" here
 		if (!this.moving) {
 			return;
+		}
+
+		// check for collisions between this character and other board objects
+		for (let i = 0; i < CHARACTERS.length; i++) {
+			const character = CHARACTERS[i]!;
+
+			// filter out the current character we're operating on
+			if (character.name === this.name) {
+				continue;
+			}
+
+			if (this.isCollidingWithBoardObject(character)) {
+				console.log("COLLISION");
+
+				this.stopMoving();
+				return;
+			}
 		}
 
 		// check the turn queue for any queued turns
@@ -606,6 +659,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		lastAnimationTime = timeStamp;
 
 		this.frameCount++;
+		// this.frameSecondsSum += millisToSeconds(timeStamp - lastAnimationTime);
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
