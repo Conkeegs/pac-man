@@ -178,8 +178,6 @@ export default class PacMan extends Character implements UpdatesAnimationState, 
 					die("dead");
 				}
 
-				// console.log({ avg: this.positionSum / this.positionCount });
-
 				return;
 			}
 
