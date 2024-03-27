@@ -191,6 +191,51 @@ export default class Board {
 	}
 
 	/**
+	 * Creates main objects on the board. This includes characters, items, and text.
+	 */
+	public createMainBoardObjects() {
+		this.placeBoardObject(
+			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
+			Board.PACMAN_SPAWN_X,
+			Board.PACMAN_SPAWN_Y
+		);
+		//
+		this.placeBoardObject(
+			new Blinky("blinky", Board.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0")),
+			// Board.BLINKY_SPAWN_X,
+			// Board.BLINKY_SPAWN_Y
+			Board.PACMAN_SPAWN_X,
+			Board.BLINKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("inky-0-2")),
+			// Board.INKY_SPAWN_X,
+			// Board.INKY_SPAWN_Y
+			Board.PACMAN_SPAWN_X,
+			Board.BLINKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("pinky-0-3")),
+			// Board.PINKY_SPAWN_X,
+			// Board.PINKY_SPAWN_Y
+			Board.PACMAN_SPAWN_X,
+			Board.BLINKY_SPAWN_Y
+		);
+
+		this.placeBoardObject(
+			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("clyde-0-2")),
+			// Board.CLYDE_SPAWN_X,
+			// Board.CLYDE_SPAWN_Y
+			Board.PACMAN_SPAWN_X,
+			Board.BLINKY_SPAWN_Y
+		);
+
+		for (let i = 2; i <= 27; i++) {}
+	}
+
+	/**
 	 * Places a board object (characters, items, or text) at the given `x` and `y` tile offset.
 	 *
 	 * @param boardObject the board object to place
@@ -223,41 +268,6 @@ export default class Board {
 		);
 
 		this.boardDiv.appendChild(boardObject.getElement());
-	}
-
-	/**
-	 * Creates main objects on the board. This includes characters, items, and text.
-	 */
-	private createMainBoardObjects() {
-		this.placeBoardObject(
-			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
-			Board.PACMAN_SPAWN_X,
-			Board.PACMAN_SPAWN_Y
-		);
-
-		this.placeBoardObject(
-			new Blinky("blinky", Board.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0")),
-			Board.BLINKY_SPAWN_X,
-			Board.BLINKY_SPAWN_Y
-		);
-
-		this.placeBoardObject(
-			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("inky-0-2")),
-			Board.INKY_SPAWN_X,
-			Board.INKY_SPAWN_Y
-		);
-
-		this.placeBoardObject(
-			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("pinky-0-3")),
-			Board.PINKY_SPAWN_X,
-			Board.PINKY_SPAWN_Y
-		);
-
-		this.placeBoardObject(
-			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("clyde-0-2")),
-			Board.CLYDE_SPAWN_X,
-			Board.CLYDE_SPAWN_Y
-		);
 	}
 
 	/**
