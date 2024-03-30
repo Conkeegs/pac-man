@@ -78,13 +78,17 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	private animationIntervalId: number | undefined;
 	/**
-	 * The minimum number of pixels away from another position on the board that a character must be to be considered "colliding" with it.
+	 * The minimum number of pixels away from another position on the board that this character must be to be considered "colliding".
 	 */
-	private static readonly COLLISION_THRESHOLD: 1 = 1;
+	private collisionThreshold: number;
 	/**
 	 * How long each animation state for this character lasts.
 	 */
 	abstract readonly _ANIMATION_STATE_MILLIS: number;
+	/**
+	 * How many milliseconds have passed since the last time `Character.move()` was called.
+	 */
+	private deltaTimeSum: number = 0;
 	/**
 	 * Determines if the characters is currently moving.
 	 */
@@ -93,6 +97,11 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * The directions that this character must be moving in order to search for the nearest "teleport" position.
 	 */
 	private readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [MovementDirection.LEFT, MovementDirection.RIGHT];
+	/**
+	 * Extra amount of pixels added to each character's collision threshold to account for differing pixels a character
+	 * moves on each frame.
+	 */
+	private static readonly COLLISION_PADDING: 0.5 = 0.5;
 	/**
 	 * The `x` and `y` positions on the board of each teleporter's collision.
 	 */
@@ -117,10 +126,81 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		[MovementDirection.UP]: this.moveUp,
 		[MovementDirection.DOWN]: this.moveDown,
 	};
+	/**
+	 * Methods called for this character, depending on which direction they're moving, which deal with detecting collisions
+	 * between other `BoardObject`s. Divide width/heights by 2 since we want `BoardObject`s to collide when they're about "half"
+	 * way over each other.
+	 */
+	private directionalCollisionHandlers = {
+		[MovementDirection.LEFT]: (boardObject: BoardObject) => {
+			const thisPosition = this.getPosition()!;
+			const thisPositionX = thisPosition.x;
+			const thisPositionY = thisPosition.y;
+			const boardObjectPosition = boardObject.getPosition()!;
+			const boardObjectX = boardObjectPosition.x;
+			const boardObjectY = boardObjectPosition.y;
+
+			// collision with "left" side of this character
+			return (
+				this.distanceWithinThreshold(thisPositionX, boardObjectX + boardObject.getWidth()! / 2) &&
+				thisPositionY === boardObjectY
+			);
+		},
+		[MovementDirection.RIGHT]: (boardObject: BoardObject) => {
+			const thisPosition = this.getPosition()!;
+			const thisPositionX = thisPosition.x;
+			const thisPositionY = thisPosition.y;
+			const boardObjectPosition = boardObject.getPosition()!;
+			const boardObjectX = boardObjectPosition.x;
+			const boardObjectY = boardObjectPosition.y;
+
+			// collision with "right" side of this character
+			return (
+				this.distanceWithinThreshold(thisPositionX + this.width / 2, boardObjectX) &&
+				thisPositionY === boardObjectY
+			);
+		},
+		[MovementDirection.UP]: (boardObject: BoardObject) => {
+			const thisPosition = this.getPosition()!;
+			const thisPositionX = thisPosition.x;
+			const thisPositionY = thisPosition.y;
+			const boardObjectPosition = boardObject.getPosition()!;
+			const boardObjectX = boardObjectPosition.x;
+			const boardObjectY = boardObjectPosition.y;
+
+			// collision with "top" side of this character
+			return (
+				this.distanceWithinThreshold(thisPositionY, boardObjectY + boardObject.getHeight()! / 2) &&
+				thisPositionX === boardObjectX
+			);
+		},
+		[MovementDirection.DOWN]: (boardObject: BoardObject) => {
+			const thisPosition = this.getPosition()!;
+			const thisPositionX = thisPosition.x;
+			const thisPositionY = thisPosition.y;
+			const boardObjectPosition = boardObject.getPosition()!;
+			const boardObjectX = boardObjectPosition.x;
+			const boardObjectY = boardObjectPosition.y;
+
+			// collision with "bottom" side of this character
+			return (
+				this.distanceWithinThreshold(thisPositionY + this.height / 2, boardObjectY) &&
+				thisPositionX === boardObjectX
+			);
+		},
+	};
+	/**
+	 * The desired frames-per-second that a character should update at.
+	 */
+	private static readonly DESIRED_FPS: 30 = 30;
+	/**
+	 * The rough amount of milliseconds that should pass before a character updates on a frame.
+	 */
+	private static readonly MS_PER_FRAME: number = 1000 / Character.DESIRED_FPS;
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
-	 * within `TURN_THRESHOLD` pixels of the turn yet, and so must queue the turn. The length of this array
+	 * within `this.collisionThreshold` pixels of the turn yet, and so must queue the turn. The length of this array
 	 * must always be `1`.
 	 */
 	protected turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
@@ -175,6 +255,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 */
 	public static turnData: TurnData[] | undefined;
 
+	frameCountTimeStamp = 0;
+	framesCounted = 0;
+
 	/**
 	 * Creates a character.
 	 *
@@ -190,6 +273,10 @@ export default abstract class Character extends BoardObject implements HasBoardO
 
 		this.speed = speed;
 		this.source = source;
+		// faster character need larger collision thresholds, otherwise, their collision may never be detected since
+		// their position might update "past" any colliders
+		this.collisionThreshold =
+			Math.ceil(speed * millisToSeconds(Character.MS_PER_FRAME)) + Character.COLLISION_PADDING;
 
 		this.element.css({
 			width: px(this.width),
@@ -255,6 +342,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		if (!paused) {
 			this.dequeueTurns();
 			this.lastMoveCode = undefined;
+			this.deltaTimeSum = 0;
 		}
 
 		cancelAnimationFrame(this.animationFrameId as number);
@@ -306,7 +394,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			this._ANIMATION_STATE_MILLIS
 		);
 
-		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, null, timeStamp));
+		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, 0, timeStamp));
 
 		this.moving = true;
 		this.lastMoveCode = direction;
@@ -343,7 +431,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	}
 
 	/**
-	 * Determines if a character is within `TURN_THRESHOLD` pixels of a turn's position.
+	 * Determines if a character is within `this.collisionThreshold` pixels of a turn's position.
 	 *
 	 * @param turn the turn position to check against
 	 * @returns boolean indicating if the character is within the pixel threshold of this turn
@@ -355,13 +443,13 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		// our threshold takes effect when the character is about "half" way over the turn's
 		// position
 		return (
-			Character.distanceWithinThreshold(position.x + this.width / 2, turn.x) &&
-			Character.distanceWithinThreshold(position.y + this.height / 2, turn.y)
+			this.distanceWithinThreshold(position.x + this.width / 2, turn.x) &&
+			this.distanceWithinThreshold(position.y + this.height / 2, turn.y)
 		);
 	}
 
 	/**
-	 * Determines if a character is within `TURN_THRESHOLD` pixels of a teleporter.
+	 * Determines if a character is within `this.collisionThreshold` pixels of a teleporter.
 	 *
 	 * @param position the position of the teleporter's collision
 	 * @returns boolean indicating if the character is within the pixel threshold of the teleporter
@@ -369,9 +457,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
 		const position = this.getPosition()!;
 
-		return (
-			Character.distanceWithinThreshold(position.x, teleporterPosition.x) && position.y === teleporterPosition.y
-		);
+		return this.distanceWithinThreshold(position.x, teleporterPosition.x) && position.y === teleporterPosition.y;
 	}
 
 	/**
@@ -509,15 +595,9 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			return false;
 		}
 
-		// divide width/heights by 2 since we want boardobjects to collide when they're about "half" way over each other
-		return (
-			((Character.distanceWithinThreshold(thisPositionX, boardObjectX + boardObject.getWidth()! / 2) ||
-				Character.distanceWithinThreshold(thisPositionX + this.width / 2, boardObjectX)) &&
-				thisPositionY === boardObjectY) ||
-			((Character.distanceWithinThreshold(thisPositionY, boardObjectY + boardObject.getHeight()! / 2) ||
-				Character.distanceWithinThreshold(thisPositionY + this.height / 2, boardObjectY)) &&
-				thisPositionX === boardObjectX)
-		);
+		return this.directionalCollisionHandlers[
+			currentDirection as keyof typeof this.directionalCollisionHandlers
+		].bind(this)(boardObject);
 	}
 
 	/**
@@ -533,15 +613,15 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	}
 
 	/**
-	 * Determines whether two positions on the board (`x` or `y`) are within `CHaracter.COLLISION_THRESHOLD` pixels of
+	 * Determines whether two positions on the board (`x` or `y`) are within `this.collisionThreshold` pixels of
 	 * each other.
 	 *
 	 * @param offset1 the first `x` or `y` position
 	 * @param offset2 the second `x` or `y` position
 	 * @returns boolean indicating if they're within the collision threshold
 	 */
-	private static distanceWithinThreshold(offset1: number, offset2: number): boolean {
-		return Math.abs(offset1 - offset2) <= Character.COLLISION_THRESHOLD;
+	private distanceWithinThreshold(offset1: number, offset2: number): boolean {
+		return Math.abs(offset1 - offset2) <= this.collisionThreshold;
 	}
 
 	/**
@@ -558,108 +638,134 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * @param lastAnimationTime the number of milliseconds between this animation frame and the last one
 	 * @param timeStamp the current number of milliseconds that represents current time
 	 */
-	private move(direction: MovementDirection, lastAnimationTime: null | number, timeStamp: number) {
-		if (direction === MovementDirection.STOP) {
-			this.stopMoving();
+	private move(direction: MovementDirection, lastAnimationTime: number, timeStamp: number) {
+		const deltaTime = timeStamp - lastAnimationTime;
 
-			return;
+		this.deltaTimeSum += deltaTime;
+
+		// prevents "deltaTimeSum" from being very large at the start of this character's movement, and therefore
+		// moving the character a very large distance (even through walls) when it first starts moving
+		if (!lastAnimationTime) {
+			this.deltaTimeSum = 0;
 		}
 
-		// if the game pauses, we want this character to stop moving, but preserve data that is important for unpausing
-		// this character
-		if (Board.GAME_PAUSED) {
-			this.stopMoving(true);
+		// if (this.frameCount === 0) {
+		// 	this.frameCountTimeStamp = timeStamp;
+		// }
 
-			return;
-		}
+		// if (timeStamp >= this.frameCountTimeStamp + 1000) {
+		// 	// Update every second
+		// 	console.log({ fps: this.framesCounted });
+		// 	this.framesCounted = 0;
+		// 	this.frameCountTimeStamp = timeStamp;
+		// }
 
-		// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
-		// will keep going, so make sure the character stops calls "move()" here
-		if (!this.moving) {
-			return;
-		}
+		const deltaTimeSum = this.deltaTimeSum;
 
-		// check for collisions between this character and other board objects
-		for (let i = 0; i < CHARACTERS.length; i++) {
-			const character = CHARACTERS[i]!;
-
-			// filter out the current character we're operating on
-			if (character.name === this.name) {
-				continue;
-			}
-
-			if (this.isCollidingWithBoardObject(character)) {
-				console.log("COLLISION");
-
+		// we only want to update this character at about "Character.MS_PER_FRAME" milliseconds
+		if (deltaTimeSum >= Character.MS_PER_FRAME) {
+			if (direction === MovementDirection.STOP) {
 				this.stopMoving();
+
 				return;
 			}
-		}
 
-		// check the turn queue for any queued turns
-		if (this.turnQueue.length) {
-			const queuedTurnInfo = this.turnQueue[0]!;
-			const turn = queuedTurnInfo.turn;
+			// if the game pauses, we want this character to stop moving, but preserve data that is important for unpausing
+			// this character
+			if (Board.GAME_PAUSED) {
+				this.stopMoving(true);
 
-			// every frame, check if the character is within the queued-turn's threshold, and turn
-			// the character in that direction when it is
-			if (this.isWithinTurnDistance(turn)) {
-				this.startMoving(queuedTurnInfo.direction, {
-					fromTurn: turn,
-				});
-
-				// break out of the recursive animation frame calls so we can start moving in another direction
 				return;
 			}
-		}
 
-		// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
-		// update returns "true", so we can optionally break out of the recursive "move()" calls
-		if (this._runFrameUpdate()) {
-			return;
-		}
+			// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
+			// will keep going, so make sure the character stops calls "move()" here
+			if (!this.moving) {
+				return;
+			}
 
-		const teleporterPositions = this.TELEPORTER_POSITIONS;
-		const currentDirection = this.currentDirection!;
+			// check for collisions between this character and other board objects
+			for (let i = 0; i < CHARACTERS.length; i++) {
+				const character = CHARACTERS[i]!;
 
-		// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
-		// of one, and teleport them when they are
-		if (
-			this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
-			this.isWithinTeleporterDistance(teleporterPositions[currentDirection as keyof typeof teleporterPositions])
-		) {
-			// set character's position to the opposite teleporter
-			this.setPositionX(
-				teleporterPositions[
-					Character.directionOpposites[
-						currentDirection as keyof typeof Character.directionOpposites
-					] as keyof typeof teleporterPositions
-				].x,
-				{
-					modifyCss: false,
-					modifyTransform: true,
+				// filter out the current character we're operating on
+				if (character.name === this.name) {
+					continue;
 				}
-			);
 
-			// start moving character in the same direction, again, because if we don't, the character will still have "stale" data tied to it.
-			// for example, an "old" queued-turn, which was valid before the character teleported, but invalid afterwards. it could also
-			// give pacman an invalid "nearestStoppingTurn", etc.
-			this.startMoving(currentDirection);
+				if (this.isCollidingWithBoardObject(character)) {
+					console.log("COLLISION");
 
-			return;
-		}
+					this.stopMoving();
+					return;
+				}
+			}
 
-		if (lastAnimationTime) {
-			// only updates character's position if we've already called the "move" function before
+			// check the turn queue for any queued turns
+			if (this.turnQueue.length) {
+				const queuedTurnInfo = this.turnQueue[0]!;
+				const turn = queuedTurnInfo.turn;
+
+				// every frame, check if the character is within the queued-turn's threshold, and turn
+				// the character in that direction when it is
+				if (this.isWithinTurnDistance(turn)) {
+					this.startMoving(queuedTurnInfo.direction, {
+						fromTurn: turn,
+					});
+
+					// break out of the recursive animation frame calls so we can start moving in another direction
+					return;
+				}
+			}
+
+			// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
+			// update returns "true", so we can optionally break out of the recursive "move()" calls
+			if (this._runFrameUpdate()) {
+				return;
+			}
+
+			const teleporterPositions = this.TELEPORTER_POSITIONS;
+			const currentDirection = this.currentDirection!;
+
+			// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
+			// of one, and teleport them when they are
+			if (
+				this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
+				this.isWithinTeleporterDistance(
+					teleporterPositions[currentDirection as keyof typeof teleporterPositions]
+				)
+			) {
+				// set character's position to the opposite teleporter
+				this.setPositionX(
+					teleporterPositions[
+						Character.directionOpposites[
+							currentDirection as keyof typeof Character.directionOpposites
+						] as keyof typeof teleporterPositions
+					].x,
+					{
+						modifyCss: false,
+						modifyTransform: true,
+					}
+				);
+
+				// start moving character in the same direction, again, because if we don't, the character will still have "stale" data tied to it.
+				// for example, an "old" queued-turn, which was valid before the character teleported, but invalid afterwards. it could also
+				// give pacman an invalid "nearestStoppingTurn", etc.
+				this.startMoving(currentDirection);
+
+				return;
+			}
+
 			this.movementMethods[direction as keyof MovementMethods].bind(this)(
-				this.speed! * millisToSeconds(timeStamp - lastAnimationTime)
+				this.speed! * millisToSeconds(Character.MS_PER_FRAME)
 			);
+
+			this.frameCount++;
+			// this.framesCounted++;
+			this.deltaTimeSum = 0;
 		}
 
 		lastAnimationTime = timeStamp;
-
-		this.frameCount++;
-		// this.frameSecondsSum += millisToSeconds(timeStamp - lastAnimationTime);
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
