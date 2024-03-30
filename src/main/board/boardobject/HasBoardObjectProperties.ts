@@ -6,9 +6,9 @@ export default interface HasBoardObjectProperties {
 	/**
 	 * The calculated width property.
 	 */
-	width: number | undefined;
+	width: number;
 	/**
 	 * The calculated height property.
 	 */
-	height: number | undefined;
+	height: number;
 }

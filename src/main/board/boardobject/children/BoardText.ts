@@ -4,11 +4,12 @@ import DebugWindow from "../../../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
+import type HasBoardObjectProperties from "../HasBoardObjectProperties.js";
 
 /**
  * Represents text on the board.
  */
-export default class BoardText extends BoardObject {
+export default class BoardText extends BoardObject implements HasBoardObjectProperties {
 	public override readonly width: number = TILESIZE;
 	public override readonly height: number = TILESIZE;
 
