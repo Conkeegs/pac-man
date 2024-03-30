@@ -5,8 +5,9 @@ import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, CHARACTERS, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, defined, fetchJSON, get, px } from "../utils/Utils.js";
-import { BoardObject } from "./boardobject/BoardObject.js";
+import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
+import Food from "./boardobject/children/Food.js";
 import PathNode from "./boardobject/children/PathNode.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
 import Clyde from "./boardobject/children/character/Clyde.js";
@@ -71,6 +72,20 @@ export interface WallDataElement {
 }
 
 /**
+ * Information about locations of PacMan food on the board.
+ */
+export type FoodData = {
+	/**
+	 * The horizontal level of a row of food or the x-locations of multiple food dots.
+	 */
+	x: number | number[];
+	/**
+	 * The vertical level of a column of food or the y-locations of multiple food dots.
+	 */
+	y: number | number[];
+};
+
+/**
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board {
@@ -105,6 +120,10 @@ export default class Board {
 	 * The default background color of the board.
 	 */
 	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
+	/**
+	 * Information about locations of PacMan food on the board.
+	 */
+	public static foodData: FoodData[] | undefined = [];
 
 	/**
 	 * Creates the board.s
@@ -194,6 +213,44 @@ export default class Board {
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public createMainBoardObjects() {
+		const foodPositions: Position[] = [];
+
+		// place all food on the board
+		for (const data of Board.foodData!) {
+			const x = data.x;
+
+			if (!Array.isArray(x)) {
+				const yValues = data.y as number[];
+
+				for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
+					// make sure food isn't already at the current position prevent overlaps
+					if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
+						this.placeBoardObject(new Food(`food-horiz-${i}`), x, i);
+
+						foodPositions.push({
+							x,
+							y: i,
+						});
+					}
+				}
+			} else {
+				const xValues = data.x as number[];
+				const y = data.y as number;
+
+				for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
+					// make sure food isn't already at the current position prevent overlaps
+					if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
+						this.placeBoardObject(new Food(`food-vert-${i}`), i, y);
+
+						foodPositions.push({
+							x: i,
+							y,
+						});
+					}
+				}
+			}
+		}
+
 		this.placeBoardObject(
 			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
 			Board.PACMAN_SPAWN_X,

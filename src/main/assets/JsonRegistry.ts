@@ -7,6 +7,7 @@ type JSON_LIST = {
 	paths: string;
 	walls: string;
 	turns: string;
+	food: string;
 };
 
 /**
@@ -20,6 +21,7 @@ export default class JsonRegistry {
 		paths: getJsonSrc("paths"),
 		walls: getJsonSrc("walls"),
 		turns: getJsonSrc("turns"),
+		food: getJsonSrc("food"),
 	};
 
 	/**

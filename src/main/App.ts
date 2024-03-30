@@ -1,7 +1,7 @@
 "use strict";
 
 import JsonRegistry from "./assets/JsonRegistry.js";
-import Board, { type WallDataElement } from "./board/Board.js";
+import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
 import { BOARD_OBJECT_Z_INDEX } from "./utils/Globals.js";
@@ -39,7 +39,7 @@ class App {
 	 *
 	 * @returns promise which loads all game resources
 	 */
-	private static loadGame(): Promise<[void, void]> {
+	private static loadGame(): Promise<[void, void, void]> {
 		return Promise.all([
 			// tell all characters where it can turn
 			fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
@@ -82,6 +82,9 @@ class App {
 
 					App.loadedWallData.push(wall);
 				}
+			}),
+			fetchJSON(JsonRegistry.getJson("food")).then((foodData: FoodData[]) => {
+				Board.foodData = foodData;
 			}),
 		]);
 	}
