@@ -256,7 +256,7 @@ export default class Board {
 			Board.PACMAN_SPAWN_X,
 			Board.PACMAN_SPAWN_Y
 		);
-		//
+
 		this.placeBoardObject(
 			new Blinky("blinky", Board.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0")),
 			// Board.BLINKY_SPAWN_X,
@@ -288,8 +288,6 @@ export default class Board {
 			Board.PACMAN_SPAWN_X,
 			Board.BLINKY_SPAWN_Y
 		);
-
-		for (let i = 2; i <= 27; i++) {}
 	}
 
 	/**
