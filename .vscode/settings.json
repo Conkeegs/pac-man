@@ -4,6 +4,8 @@
     "cSpell.words": [
         "Blinky",
         "BOARDOBJECTS",
+        "Collidable",
+        "COLLIDABLES",
         "MILLIS",
         "MOVECODES",
         "PACMAN",
