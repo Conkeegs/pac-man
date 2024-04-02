@@ -98,10 +98,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * The directions that this character must be moving in order to search for the nearest "teleport" position.
 	 */
-	private static readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [
-		MovementDirection.LEFT,
-		MovementDirection.RIGHT,
-	];
+	private readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [MovementDirection.LEFT, MovementDirection.RIGHT];
 	/**
 	 * Extra amount of pixels added to each character's collision threshold to account for differing pixels a character
 	 * moves on each frame.
@@ -110,7 +107,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * The `x` and `y` positions on the board of each teleporter's collision.
 	 */
-	private static readonly TELEPORTER_POSITIONS = {
+	private readonly TELEPORTER_POSITIONS = {
 		[MovementDirection.LEFT]: {
 			// subtract by character's width. otherwise, when character is teleported to this left teleporter's position,
 			// it will have its left-hand side placed at the start of the entrance, instead of emerging from it
@@ -755,13 +752,13 @@ export default abstract class Character extends BoardObject implements HasBoardO
 				return;
 			}
 
-			const teleporterPositions = Character.TELEPORTER_POSITIONS;
+			const teleporterPositions = this.TELEPORTER_POSITIONS;
 			const currentDirection = this.currentDirection!;
 
 			// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
 			// of one, and teleport them when they are
 			if (
-				Character.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
+				this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
 				this.isWithinTeleporterDistance(
 					teleporterPositions[currentDirection as keyof typeof teleporterPositions]
 				)
