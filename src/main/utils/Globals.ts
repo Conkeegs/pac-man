@@ -1,6 +1,7 @@
 "use strict";
 
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
+import type Collidable from "../board/boardobject/Collidable.js";
 import type Character from "../board/boardobject/children/character/Character.js";
 
 /**
@@ -27,6 +28,11 @@ export const BOARDOBJECTS: BoardObject[] = [];
  * An array of classes that extends the `Character` class so we can add/remove them when needed.
  */
 export const CHARACTERS: Character[] = [];
+/**
+ * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
+ * and make sure collision detection for characters is optimized into "groups".
+ */
+export const COLLIDABLES_MAP: { [key: string]: Collidable[] } = {};
 
 const match = window.matchMedia("(min-width: 720px)");
 

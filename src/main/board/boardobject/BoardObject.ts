@@ -235,6 +235,14 @@ export abstract class BoardObject {
 	}
 
 	/**
+	 * Deleted this boardobject off of the game's board.
+	 */
+	public delete(): void {
+		this.element.remove();
+		BOARDOBJECTS.splice(BOARDOBJECTS.indexOf(this), 1);
+	}
+
+	/**
 	 * Sets this board object's `transformX` and `translateY` CSS values and in-memory.
 	 *
 	 * @param transform the amounts to change the `translateX` and `translateY` values by

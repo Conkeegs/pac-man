@@ -2,9 +2,11 @@
 
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
-import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
-import { millisToSeconds, px } from "../../../../utils/Utils.js";
+import { CHARACTERS, COLLIDABLES_MAP, TILESIZE } from "../../../../utils/Globals.js";
+import { defined, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
+import type Collidable from "../../Collidable.js";
+import CollidableManager from "../../CollidableManager.js";
 import type HasBoardObjectProperties from "../../HasBoardObjectProperties.js";
 import MovementDirection from "./MovementDirection.js";
 
@@ -60,7 +62,7 @@ export type StartMoveOptions = {
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default abstract class Character extends BoardObject implements HasBoardObjectProperties {
+export default abstract class Character extends BoardObject implements HasBoardObjectProperties, Collidable {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */
@@ -132,61 +134,27 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * way over each other.
 	 */
 	private directionalCollisionHandlers = {
-		[MovementDirection.LEFT]: (boardObject: BoardObject) => {
-			const thisPosition = this.getPosition()!;
-			const thisPositionX = thisPosition.x;
-			const thisPositionY = thisPosition.y;
-			const boardObjectPosition = boardObject.getPosition()!;
-			const boardObjectX = boardObjectPosition.x;
-			const boardObjectY = boardObjectPosition.y;
-
+		[MovementDirection.LEFT]: (collidable: Collidable) => {
 			// collision with "left" side of this character
-			return (
-				this.distanceWithinThreshold(thisPositionX, boardObjectX + boardObject.getWidth()! / 2) &&
-				thisPositionY === boardObjectY
+			return this.distanceWithinThreshold(
+				this.getPosition()!.x,
+				collidable.getPosition()!.x + collidable.getWidth()! / 2
 			);
 		},
-		[MovementDirection.RIGHT]: (boardObject: BoardObject) => {
-			const thisPosition = this.getPosition()!;
-			const thisPositionX = thisPosition.x;
-			const thisPositionY = thisPosition.y;
-			const boardObjectPosition = boardObject.getPosition()!;
-			const boardObjectX = boardObjectPosition.x;
-			const boardObjectY = boardObjectPosition.y;
-
+		[MovementDirection.RIGHT]: (collidable: Collidable) => {
 			// collision with "right" side of this character
-			return (
-				this.distanceWithinThreshold(thisPositionX + this.width / 2, boardObjectX) &&
-				thisPositionY === boardObjectY
-			);
+			return this.distanceWithinThreshold(this.getPosition()!.x + this.width / 2, collidable.getPosition()!.x);
 		},
-		[MovementDirection.UP]: (boardObject: BoardObject) => {
-			const thisPosition = this.getPosition()!;
-			const thisPositionX = thisPosition.x;
-			const thisPositionY = thisPosition.y;
-			const boardObjectPosition = boardObject.getPosition()!;
-			const boardObjectX = boardObjectPosition.x;
-			const boardObjectY = boardObjectPosition.y;
-
+		[MovementDirection.UP]: (collidable: Collidable) => {
 			// collision with "top" side of this character
-			return (
-				this.distanceWithinThreshold(thisPositionY, boardObjectY + boardObject.getHeight()! / 2) &&
-				thisPositionX === boardObjectX
+			return this.distanceWithinThreshold(
+				this.getPosition()!.y,
+				collidable.getPosition()!.y + collidable.getHeight()! / 2
 			);
 		},
-		[MovementDirection.DOWN]: (boardObject: BoardObject) => {
-			const thisPosition = this.getPosition()!;
-			const thisPositionX = thisPosition.x;
-			const thisPositionY = thisPosition.y;
-			const boardObjectPosition = boardObject.getPosition()!;
-			const boardObjectX = boardObjectPosition.x;
-			const boardObjectY = boardObjectPosition.y;
-
+		[MovementDirection.DOWN]: (collidable: Collidable) => {
 			// collision with "bottom" side of this character
-			return (
-				this.distanceWithinThreshold(thisPositionY + this.height / 2, boardObjectY) &&
-				thisPositionX === boardObjectX
-			);
+			return this.distanceWithinThreshold(this.getPosition()!.y + this.height / 2, collidable.getPosition()!.y);
 		},
 	};
 	/**
@@ -197,6 +165,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	 * The rough amount of milliseconds that should pass before a character updates on a frame.
 	 */
 	private static readonly MS_PER_FRAME: number = 1000 / Character.DESIRED_FPS;
+	readonly _collidableManager: CollidableManager;
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -277,6 +246,7 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		// their position might update "past" any colliders
 		this.collisionThreshold =
 			Math.ceil(speed * millisToSeconds(Character.MS_PER_FRAME)) + Character.COLLISION_PADDING;
+		this._collidableManager = new CollidableManager(this);
 
 		this.element.css({
 			width: px(this.width),
@@ -330,6 +300,30 @@ export default abstract class Character extends BoardObject implements HasBoardO
 		return this.moving;
 	}
 
+	public override setPosition(position: Position, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+		this._collidableManager.updateTileKeys(position);
+
+		super.setPosition(position, options);
+	}
+
+	public override setPositionX(x: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+		this._collidableManager.updateTileKeys({
+			x,
+			y: this.getPosition()!.y,
+		});
+
+		super.setPositionX(x, options);
+	}
+
+	public override setPositionY(y: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+		this._collidableManager.updateTileKeys({
+			x: this.getPosition()!.x,
+			y,
+		});
+
+		super.setPositionY(y, options);
+	}
+
 	/**
 	 * Cancels this character's current animation frame so that `this.move()` isn't called anymore.
 	 *
@@ -343,6 +337,8 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			this.dequeueTurns();
 			this.lastMoveCode = undefined;
 			this.deltaTimeSum = 0;
+
+			this._collidableManager.checkForCollidableAndRemove();
 		}
 
 		cancelAnimationFrame(this.animationFrameId as number);
@@ -573,31 +569,33 @@ export default abstract class Character extends BoardObject implements HasBoardO
 	/**
 	 * Determines if this character is colliding with another `BoardObject`.
 	 *
-	 * @param boardObject the board object this character might be colliding with
+	 * @param collidable the board object this character might be colliding with
 	 * @returns boolean indicating if the two are colliding
 	 */
-	protected isCollidingWithBoardObject(boardObject: BoardObject): boolean {
+	protected isCollidingWithCollidable(collidable: Collidable): boolean {
 		const thisPosition = this.getPosition()!;
 		const thisPositionX = thisPosition.x;
 		const thisPositionY = thisPosition.y;
-		const boardObjectPosition = boardObject.getPosition()!;
-		const boardObjectX = boardObjectPosition.x;
-		const boardObjectY = boardObjectPosition.y;
+		const collidablePosition = collidable.getPosition()!;
+		const collidableX = collidablePosition.x;
+		const collidableY = collidablePosition.y;
 		const currentDirection = this.currentDirection;
 
 		// don't bother testing against board objects that aren't in the same row/column as this character
 		if (
 			((currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.RIGHT) &&
-				boardObjectY !== thisPositionY) ||
+				Board.calcTileNumY(thisPositionY + this.height / 2) !==
+					Board.calcTileNumY(collidableY + collidable.getHeight()! / 2)) ||
 			((currentDirection === MovementDirection.UP || currentDirection === MovementDirection.DOWN) &&
-				boardObjectX !== thisPositionX)
+				Board.calcTileNumX(thisPositionX + this.width / 2) !==
+					Board.calcTileNumX(collidableX + collidable.getWidth()! / 2))
 		) {
 			return false;
 		}
 
 		return this.directionalCollisionHandlers[
 			currentDirection as keyof typeof this.directionalCollisionHandlers
-		].bind(this)(boardObject);
+		].bind(this)(collidable);
 	}
 
 	/**
@@ -679,25 +677,55 @@ export default abstract class Character extends BoardObject implements HasBoardO
 			}
 
 			// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
-			// will keep going, so make sure the character stops calls "move()" here
+			// will keep going, so make sure the character stops calling "move()" here
 			if (!this.moving) {
 				return;
 			}
 
-			// check for collisions between this character and other board objects
-			for (let i = 0; i < CHARACTERS.length; i++) {
-				const character = CHARACTERS[i]!;
+			const position = this.getPosition()!;
+			const tileX = Board.calcTileNumX(position.x + this.width / 2);
+			const tileY = Board.calcTileNumY(position.y + this.height / 2);
+			let positionCollidables = COLLIDABLES_MAP[`${tileX}-${tileY}`] || [];
 
-				// filter out the current character we're operating on
-				if (character.name === this.name) {
-					continue;
+			// index into the collidables map, and make sure that we also look to the "left/right" and "top/bottom" of
+			// this character. so, in total we look "three" tiles horizontally and vertically, depending on the direction
+			// this character is moving
+			if (direction === MovementDirection.LEFT || direction === MovementDirection.RIGHT) {
+				const positionCollidablesRight = COLLIDABLES_MAP[`${tileX + 1}-${tileY}`];
+				const positionCollidablesLeft = COLLIDABLES_MAP[`${tileX - 1}-${tileY}`];
+
+				if (positionCollidablesRight) {
+					positionCollidables = positionCollidables.concat(positionCollidablesRight);
 				}
 
-				if (this.isCollidingWithBoardObject(character)) {
-					console.log("COLLISION");
+				if (positionCollidablesLeft) {
+					positionCollidables = positionCollidables.concat(positionCollidablesLeft);
+				}
+			} else {
+				const positionCollidablesUp = COLLIDABLES_MAP[`${tileX}-${tileY + 1}`];
+				const positionCollidablesDown = COLLIDABLES_MAP[`${tileX}-${tileY - 1}`];
 
-					this.stopMoving();
-					return;
+				if (positionCollidablesUp) {
+					positionCollidables = positionCollidables.concat(positionCollidablesUp);
+				}
+
+				if (positionCollidablesDown) {
+					positionCollidables = positionCollidables.concat(positionCollidablesDown);
+				}
+			}
+
+			if (defined(positionCollidables) && (positionCollidables as Collidable[]).length) {
+				// check for collisions between this character and other collidables
+				for (let i = 0; i < (positionCollidables as Collidable[]).length; i++) {
+					const collidable = positionCollidables![i]! as Collidable;
+
+					// filter out the current board object we're operating on
+					if (collidable.getName() === this.name) {
+						continue;
+					}
+
+					if (this.isCollidingWithCollidable(collidable)) {
+					}
 				}
 			}
 

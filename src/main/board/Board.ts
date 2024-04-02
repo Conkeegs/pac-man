@@ -210,6 +210,26 @@ export default class Board {
 	}
 
 	/**
+	 * Calculates an integer tile number for a given horizontal offset on the board.
+	 *
+	 * @param x the horizontal offset
+	 * @returns integer tile number for a given horizontal offset
+	 */
+	static calcTileNumX(x: number): number {
+		return Math.floor((x + TILESIZE) / TILESIZE);
+	}
+
+	/**
+	 * Calculates an integer tile number for a given vertical offset on the board.
+	 *
+	 * @param y the vertical offset
+	 * @returns integer tile number for a given vertical offset
+	 */
+	static calcTileNumY(y: number): number {
+		return Math.floor((Board.calcTileOffset(ROWS) - (y + TILESIZE)) / TILESIZE);
+	}
+
+	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public createMainBoardObjects() {
