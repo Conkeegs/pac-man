@@ -3,7 +3,7 @@ import { create, px } from "../../../utils/Utils.js";
 import { BoardObject, type Position } from "../BoardObject.js";
 import type Collidable from "../Collidable.js";
 import CollidableManager from "../CollidableManager.js";
-import type HasBoardObjectProperties from "../HasBoardObjectProperties.js";
+import PacMan from "./character/PacMan.js";
 
 /**
  * Represents food that PacMan collects
@@ -11,6 +11,7 @@ import type HasBoardObjectProperties from "../HasBoardObjectProperties.js";
 export default class Food extends BoardObject implements Collidable {
 	_collidableManager: CollidableManager;
 
+	public canBeCollidedByTypes: string[] = [PacMan.name];
 	public override readonly width: number = TILESIZE / 4;
 	public override readonly height: number = TILESIZE / 4;
 	/**
@@ -82,5 +83,12 @@ export default class Food extends BoardObject implements Collidable {
 		this._collidableManager.checkForCollidableAndRemove();
 
 		super.delete();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	_onCollision(): void {
+		this.delete();
 	}
 }

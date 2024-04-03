@@ -1,10 +1,11 @@
 "use strict";
 
 import { defined, die, exists } from "../../../../utils/Utils.js";
+import type Collidable from "../../Collidable.js";
+import CollidableManager from "../../CollidableManager.js";
 import Character, { type StartMoveOptions, type TurnData } from "./Character.js";
+import Ghost from "./Ghost.js";
 import MovementDirection from "./MovementDirection.js";
-import type RunsFrameUpdate from "./RunsFrameUpdate.js";
-import type UpdatesAnimationState from "./UpdatesAnimationState.js";
 
 /**
  * Represents the forward direction of pacman's animation.
@@ -77,6 +78,9 @@ export default class PacMan extends Character {
 		FORWARDS: 0,
 		BACKWARDS: 1,
 	};
+	override readonly _collidableManager: CollidableManager;
+
+	public override canBeCollidedByTypes: string[] = [PacMan.name, Ghost.name];
 
 	/**
 	 * Creates PacMan.
@@ -87,6 +91,8 @@ export default class PacMan extends Character {
 	 */
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
+
+		this._collidableManager = new CollidableManager(this);
 
 		this.createMoveEventListeners();
 	}
@@ -307,4 +313,6 @@ export default class PacMan extends Character {
 
 		return false;
 	}
+
+	override _onCollision(withCollidable: Collidable): void {}
 }

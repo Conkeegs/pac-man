@@ -172,7 +172,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * The rough amount of milliseconds that should pass before a character updates on a frame.
 	 */
 	private static readonly MS_PER_FRAME: number = 1000 / Character.DESIRED_FPS;
-	readonly _collidableManager: CollidableManager;
+	abstract readonly _collidableManager: CollidableManager;
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -224,6 +224,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 		[MovementDirection.DOWN]: MovementDirection.UP,
 	};
 
+	public abstract canBeCollidedByTypes: string[];
 	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
 	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
 	/**
@@ -253,7 +254,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 		// their position might update "past" any colliders
 		this.collisionThreshold =
 			Math.ceil(speed * millisToSeconds(Character.MS_PER_FRAME)) + Character.COLLISION_PADDING;
-		this._collidableManager = new CollidableManager(this);
 
 		this.element.css({
 			width: px(this.width),
@@ -726,12 +726,17 @@ export default abstract class Character extends BoardObject implements Collidabl
 				for (let i = 0; i < (positionCollidables as Collidable[]).length; i++) {
 					const collidable = positionCollidables![i]! as Collidable;
 
-					// filter out the current board object we're operating on
-					if (collidable.getName() === this.name) {
+					if (
+						// filter out the current board object we're operating on
+						collidable.getName() === this.name ||
+						// if the collided-with boardobject doesn't allow this character to collide with it, skip
+						!collidable.canBeCollidedByTypes.includes(this.constructor.name)
+					) {
 						continue;
 					}
 
 					if (this.isCollidingWithCollidable(collidable)) {
+						collidable._onCollision(this);
 					}
 				}
 			}
@@ -806,6 +811,8 @@ export default abstract class Character extends BoardObject implements Collidabl
 			this.move(direction, lastAnimationTime, timeStampNew)
 		);
 	}
+
+	abstract _onCollision(withCollidable: Collidable): void;
 
 	/**
 	 * Animates this character upwards using by settings its CSS `transform` value, and also makes sure
