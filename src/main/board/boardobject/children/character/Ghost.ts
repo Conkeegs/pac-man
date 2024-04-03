@@ -6,7 +6,7 @@ import type UpdatesAnimationState from "./UpdatesAnimationState.js";
 /**
  * Represents any of the four ghosts on the board.
  */
-export default abstract class Ghost extends Character implements UpdatesAnimationState, RunsFrameUpdate {
+export default abstract class Ghost extends Character {
 	readonly _MAX_ANIMATION_FRAMES: 2 = 2;
 	_animationFrame: number = 0;
 	readonly _ANIMATION_STATE_MILLIS: 100 = 100;

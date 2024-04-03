@@ -26,7 +26,7 @@ type ANIMATION_DIRECTIONS = {
 /**
  * Represents the PacMan character on the board.
  */
-export default class PacMan extends Character implements UpdatesAnimationState {
+export default class PacMan extends Character {
 	/**
 	 * Whether or not PacMan is currently listening for movement inputs.
 	 */

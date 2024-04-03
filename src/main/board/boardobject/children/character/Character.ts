@@ -83,9 +83,17 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 */
 	private collisionThreshold: number;
 	/**
+	 * The maximum number of different animation states this character can be in.
+	 */
+	abstract readonly _MAX_ANIMATION_FRAMES: number;
+	/**
 	 * How long each animation state for this character lasts.
 	 */
 	abstract readonly _ANIMATION_STATE_MILLIS: number;
+	/**
+	 * The current animation frame this character is on.
+	 */
+	abstract _animationFrame: number;
 	/**
 	 * How many milliseconds have passed since the last time `Character.move()` was called.
 	 */
