@@ -4,12 +4,11 @@ import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
 import { BoardObject } from "../BoardObject.js";
-import type HasBoardObjectProperties from "../HasBoardObjectProperties.js";
 
 /**
  * Represents a circular node at each location on the board where characters can turn.
  */
-export default class PathNode extends BoardObject implements HasBoardObjectProperties {
+export default class PathNode extends BoardObject {
 	public override readonly width: number = TILESIZE;
 	public override readonly height: number = TILESIZE;
 

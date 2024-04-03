@@ -7,7 +7,6 @@ import { defined, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
-import type HasBoardObjectProperties from "../../HasBoardObjectProperties.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -62,7 +61,7 @@ export type StartMoveOptions = {
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default abstract class Character extends BoardObject implements HasBoardObjectProperties, Collidable {
+export default abstract class Character extends BoardObject implements Collidable {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */

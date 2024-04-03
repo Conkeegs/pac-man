@@ -8,7 +8,7 @@ import type HasBoardObjectProperties from "../HasBoardObjectProperties.js";
 /**
  * Represents food that PacMan collects
  */
-export default class Food extends BoardObject implements HasBoardObjectProperties, Collidable {
+export default class Food extends BoardObject implements Collidable {
 	_collidableManager: CollidableManager;
 
 	public override readonly width: number = TILESIZE / 4;
