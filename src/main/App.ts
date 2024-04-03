@@ -4,8 +4,8 @@ import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
-import { BOARD_OBJECT_Z_INDEX } from "./utils/Globals.js";
-import { create, fetchJSON, get, maybe, px } from "./utils/Utils.js";
+import { BOARD_OBJECT_Z_INDEX, CHARACTERS } from "./utils/Globals.js";
+import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
  * This class loads the game before initializing the board.
@@ -27,6 +27,26 @@ class App {
 
 			get("middle-cover")!.css({
 				backgroundColor: Board.BACKGROUND_COLOR,
+			});
+
+			// put the game in a "paused" state upon exiting the window
+			window.addEventListener("blur", () => (Board.GAME_PAUSED = true));
+
+			// put the game in a "unpaused" state upon opening the window
+			window.addEventListener("focus", () => {
+				Board.GAME_PAUSED = false;
+
+				// all characters freeze their animation frames upon pausing, but we can re-animate them again
+				// by referencing the last direction they've moved before they were paused
+				for (const character of CHARACTERS) {
+					const lastMoveCode = character.getLastMoveCode();
+
+					// want to make sure "lastMoveCode" is "defined" here, since moveCode "0" (left) is falsy
+					if (defined(lastMoveCode))
+						character.startMoving(lastMoveCode!, {
+							wasPaused: true,
+						});
+				}
 			});
 
 			// place BoardObject instances on board

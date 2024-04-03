@@ -3,8 +3,8 @@
 import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { BOARD_OBJECT_Z_INDEX, CHARACTERS, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, defined, fetchJSON, get, px } from "../utils/Utils.js";
+import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
+import { create, fetchJSON, get, px } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import Food from "./boardobject/children/Food.js";
@@ -150,26 +150,6 @@ export default class Board {
 		} else {
 			(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 		}
-
-		// put the game in a "paused" state upon exiting the window
-		window.addEventListener("blur", () => (Board.GAME_PAUSED = true));
-
-		// put the game in a "unpaused" state upon opening the window
-		window.addEventListener("focus", () => {
-			Board.GAME_PAUSED = false;
-
-			// all characters freeze their animation frames upon pausing, but we can re-animate them again
-			// by referencing the last direction they've moved before they were paused
-			for (const character of CHARACTERS) {
-				const lastMoveCode = character.getLastMoveCode();
-
-				// want to make sure "lastMoveCode" is "define" here, since moveCode "0" is falsy
-				if (defined(lastMoveCode))
-					character.startMoving(lastMoveCode!, {
-						wasPaused: true,
-					});
-			}
-		});
 
 		// debugging methods
 		this.createGrid();
