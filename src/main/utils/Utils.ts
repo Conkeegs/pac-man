@@ -312,6 +312,17 @@ export function getJsonSrc(name: string): string {
 }
 
 /**
+ * Creates a path to the audio directory, given an audio file's name.
+ *
+ * @param name the audio file's file name
+ * @param extension the extension of the audio file (default: `.mp3`)
+ * @returns a relative path to the audio file
+ */
+export function getAudioSrc(name: string, extension: string = "mp3"): string {
+	return `src/assets/audio/${name}.${extension}`;
+}
+
+/**
  * Gets a random integer between 0 and `max`.
  *
  * @param max the max integer that can be returned
