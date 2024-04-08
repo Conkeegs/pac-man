@@ -95,10 +95,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 */
 	abstract _animationFrame: number;
 	/**
-	 * How many milliseconds have passed since the last time `Character.move()` was called.
-	 */
-	private deltaTimeSum: number = 0;
-	/**
 	 * Determines if the characters is currently moving.
 	 */
 	private moving: boolean = false;
@@ -343,7 +339,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 		if (!paused) {
 			this.dequeueTurns();
 			this.lastMoveCode = undefined;
-			this.deltaTimeSum = 0;
 
 			this._collidableManager.checkForCollidableAndRemove();
 		}
@@ -644,14 +639,13 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param timeStamp the current number of milliseconds that represents current time
 	 */
 	private move(direction: MovementDirection, lastAnimationTime: number, timeStamp: number) {
-		const deltaTime = timeStamp - lastAnimationTime;
+		let deltaTime = timeStamp - lastAnimationTime;
 
-		this.deltaTimeSum += deltaTime;
-
-		// prevents "deltaTimeSum" from being very large at the start of this character's movement, and therefore
+		// prevents "deltaTime" from being very large at the start of this character's movement, and therefore
 		// moving the character a very large distance (even through walls) when it first starts moving
 		if (!lastAnimationTime) {
-			this.deltaTimeSum = 0;
+			deltaTime = 0;
+			lastAnimationTime = timeStamp;
 		}
 
 		// if (this.frameCount === 0) {
@@ -665,10 +659,10 @@ export default abstract class Character extends BoardObject implements Collidabl
 		// 	this.frameCountTimeStamp = timeStamp;
 		// }
 
-		const deltaTimeSum = this.deltaTimeSum;
+		const MS_PER_FRAME = Character.MS_PER_FRAME;
 
 		// we only want to update this character at about "Character.MS_PER_FRAME" milliseconds
-		if (deltaTimeSum >= Character.MS_PER_FRAME) {
+		if (deltaTime >= MS_PER_FRAME - 0.1) {
 			if (direction === MovementDirection.STOP) {
 				this.stopMoving();
 
@@ -797,15 +791,14 @@ export default abstract class Character extends BoardObject implements Collidabl
 			}
 
 			this.movementMethods[direction as keyof MovementMethods].bind(this)(
-				this.speed! * millisToSeconds(Character.MS_PER_FRAME)
+				this.speed! * millisToSeconds(deltaTime)
 			);
 
 			this.frameCount++;
 			// this.framesCounted++;
-			this.deltaTimeSum = 0;
+			// find remainder to account for differences in "deltaTime" on different systems
+			lastAnimationTime = timeStamp - (deltaTime % MS_PER_FRAME);
 		}
-
-		lastAnimationTime = timeStamp;
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
