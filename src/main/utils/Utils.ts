@@ -1,7 +1,7 @@
 "use strict";
 
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { BOARD_OBJECT_Z_INDEX } from "./Globals.js";
+import { BOARD_OBJECT_Z_INDEX, ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
 
 declare global {
 	interface HTMLElement {
@@ -353,4 +353,16 @@ export function insertDivAtPosition(x: number, y: number): void {
 			width: px(10),
 		}) as HTMLElement
 	);
+}
+
+/**
+ * Converts a given speed into a speed that will visually match the original arcade game, since
+ * we're running on a higher pixel count.
+ *
+ * @param speed a given (pixels-per-second) speed from the original arcade game
+ * @returns
+ */
+export function originalPacManSpeedToNewSpeed(speed: number): number {
+	// TILESIZE will always be a multiple of 8 (the original game's tile size)
+	return speed * (TILESIZE / ORIGINAL_TILE_SIZE);
 }

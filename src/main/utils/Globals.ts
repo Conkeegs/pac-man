@@ -28,6 +28,7 @@ export const BOARDOBJECTS: BoardObject[] = [];
  * An array of classes that extends the `Character` class so we can add/remove them when needed.
  */
 export const CHARACTERS: Character[] = [];
+
 /**
  * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
  * and make sure collision detection for characters is optimized into "groups".
@@ -54,3 +55,8 @@ export const TILESIZE: number = WIDTH / COLUMNS;
  * `z-index` CSS property of all `BoardObject` instances on the board.
  */
 export const BOARD_OBJECT_Z_INDEX: 0 = 0;
+
+/**
+ * The original arcade game's tile size in pixels.
+ */
+export const ORIGINAL_TILE_SIZE: 8 = 8;
