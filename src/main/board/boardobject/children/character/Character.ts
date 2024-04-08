@@ -800,7 +800,8 @@ export default abstract class Character extends BoardObject implements Collidabl
 			this.frameCount++;
 			// this.framesCounted++;
 			// find remainder to account for differences in "deltaTime" on different systems
-			lastAnimationTime = timeStamp - (deltaTime % MS_PER_FRAME);
+			// lastAnimationTime = timeStamp - (deltaTime % MS_PER_FRAME);
+			lastAnimationTime = timeStamp;
 		}
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
