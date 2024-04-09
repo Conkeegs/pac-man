@@ -1,3 +1,4 @@
+import AudioRegistry from "../../../assets/AudioRegistry.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import { BoardObject, type Position } from "../BoardObject.js";
@@ -10,6 +11,11 @@ import PacMan from "./character/PacMan.js";
  */
 export default class Food extends BoardObject implements Collidable {
 	_collidableManager: CollidableManager;
+	/**
+	 * Indicates which half of the "food-eat" sound the game is playing at a given moment in time. `true` for the first half,
+	 * `false` for the second.
+	 */
+	private static audioFlag: true | false = false;
 
 	public canBeCollidedByTypes: string[] = [PacMan.name];
 	public override readonly width: number = TILESIZE / 4;
@@ -90,5 +96,16 @@ export default class Food extends BoardObject implements Collidable {
 	 */
 	_onCollision(): void {
 		this.delete();
+
+		// each time food is eaten, play the opposite half of the "foot-eat" sound
+		const audioFlag = Food.audioFlag;
+		const currentAudioElement =
+			AudioRegistry.AUDIO_LIST[`food-eat-${Number(audioFlag)}` as "food-eat-0" | "food-eat-1"];
+
+		// play the current sound and then flip back to the opposite half
+		currentAudioElement.play().then(() => {
+			Food.audioFlag = !audioFlag;
+			currentAudioElement.currentTime = 0;
+		});
 	}
 }
