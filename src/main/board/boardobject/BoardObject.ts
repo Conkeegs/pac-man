@@ -235,7 +235,7 @@ export abstract class BoardObject {
 	}
 
 	/**
-	 * Deleted this boardobject off of the game's board.
+	 * Deletes this boardobject off of the game's board.
 	 */
 	public delete(): void {
 		this.element.remove();
