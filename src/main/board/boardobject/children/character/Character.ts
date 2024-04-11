@@ -168,7 +168,29 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * The rough amount of milliseconds that should pass before a character updates on a frame.
 	 */
 	private static readonly MS_PER_FRAME: number = 1000 / Character.DESIRED_FPS;
+	/**
+	 * Increments by the number of milliseconds it takes to render each frame, every frame.
+	 */
+	private deltaTimeAccumulator: number = 0;
 	abstract readonly _collidableManager: CollidableManager;
+	/**
+	 * The key used to index into a given `Position` object, given the direction this character is moving.
+	 */
+	private directionalPositionKeys = {
+		[MovementDirection.LEFT]: "x",
+		[MovementDirection.RIGHT]: "x",
+		[MovementDirection.UP]: "y",
+		[MovementDirection.DOWN]: "y",
+	};
+	/**
+	 * The proper method to set this character's position, based on the direction it is moving.
+	 */
+	private directionalPositionSetters = {
+		[MovementDirection.LEFT]: this.setPositionX,
+		[MovementDirection.RIGHT]: this.setPositionX,
+		[MovementDirection.UP]: this.setPositionY,
+		[MovementDirection.DOWN]: this.setPositionY,
+	};
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -339,6 +361,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 		if (!paused) {
 			this.dequeueTurns();
 			this.lastMoveCode = undefined;
+			this.deltaTimeAccumulator = 0;
 
 			this._collidableManager.checkForCollidableAndRemove();
 		}
@@ -644,12 +667,19 @@ export default abstract class Character extends BoardObject implements Collidabl
 	private move(direction: MovementDirection, lastAnimationTime: number, timeStamp: number) {
 		let deltaTime = timeStamp - lastAnimationTime;
 
+		// prevent spiral of death
+		if (deltaTime > 250) {
+			deltaTime = 250;
+		}
+
 		// prevents "deltaTime" from being very large at the start of this character's movement, and therefore
 		// moving the character a very large distance (even through walls) when it first starts moving
 		if (!lastAnimationTime) {
 			deltaTime = 0;
 			lastAnimationTime = timeStamp;
 		}
+
+		this.deltaTimeAccumulator += deltaTime;
 
 		// if (this.frameCount === 0) {
 		// 	this.frameCountTimeStamp = timeStamp;
@@ -662,10 +692,11 @@ export default abstract class Character extends BoardObject implements Collidabl
 		// 	this.frameCountTimeStamp = timeStamp;
 		// }
 
+		const position = this.getPosition()!;
 		const MS_PER_FRAME = Character.MS_PER_FRAME;
 
-		// we only want to update this character at about "Character.MS_PER_FRAME" milliseconds
-		if (deltaTime >= MS_PER_FRAME - 0.1) {
+		// this will make sure the character updates at about 30 frames-per-second
+		while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
 			if (direction === MovementDirection.STOP) {
 				this.stopMoving();
 
@@ -686,7 +717,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 				return;
 			}
 
-			const position = this.getPosition()!;
 			const tileX = Board.calcTileNumX(position.x + this.width / 2);
 			const tileY = Board.calcTileNumY(position.y + this.height / 2);
 			let positionCollidables = COLLIDABLES_MAP[`${tileX}-${tileY}`] || [];
@@ -794,15 +824,31 @@ export default abstract class Character extends BoardObject implements Collidabl
 			}
 
 			this.movementMethods[direction as keyof MovementMethods].bind(this)(
-				this.speed! * millisToSeconds(deltaTime)
+				this.speed! * millisToSeconds(MS_PER_FRAME)
 			);
 
 			this.frameCount++;
+			this.deltaTimeAccumulator -= MS_PER_FRAME;
+
 			// this.framesCounted++;
-			// find remainder to account for differences in "deltaTime" on different systems
-			// lastAnimationTime = timeStamp - (deltaTime % MS_PER_FRAME);
-			lastAnimationTime = timeStamp;
 		}
+
+		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
+		const directionalPositionKey = this.directionalPositionKeys[
+			direction as keyof typeof this.directionalPositionKeys
+		] as "x" | "y";
+
+		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
+		// exceeded "MS_PER_FRAME"
+		this.directionalPositionSetters[direction as keyof typeof this.directionalPositionSetters].bind(this)(
+			this.getPosition()![directionalPositionKey] * alpha + position[directionalPositionKey] * (1.0 - alpha),
+			{
+				modifyCss: false,
+				modifyTransform: true,
+			}
+		);
+
+		lastAnimationTime = timeStamp;
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.move(direction, lastAnimationTime, timeStampNew)
