@@ -482,7 +482,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
 		const position = this.getPosition()!;
 
-		return this.distanceWithinThreshold(position.x, teleporterPosition.x) && position.y === teleporterPosition.y;
+		return position.y === teleporterPosition.y && this.distanceWithinThreshold(position.x, teleporterPosition.x);
 	}
 
 	/**
