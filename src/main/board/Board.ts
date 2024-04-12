@@ -113,10 +113,6 @@ export default class Board {
 		id: "board",
 	}) as HTMLDivElement;
 	/**
-	 * Whether or not the game is currently paused.
-	 */
-	public static GAME_PAUSED: boolean = false;
-	/**
 	 * The default background color of the board.
 	 */
 	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
