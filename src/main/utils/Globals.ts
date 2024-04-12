@@ -14,11 +14,6 @@ export const COLUMNS: 28 = 28;
 export const ROWS: 36 = 36;
 
 /**
- * Whether the game is in debug mode or not.
- */
-export const DEBUG: boolean = false;
-
-/**
  * An array of classes that extends the `BoardObject` class so we can add/remove them when needed,
  * and also check for duplicates since each of them have unique `name` properties.
  */

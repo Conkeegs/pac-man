@@ -1,6 +1,6 @@
 "use strict";
 
-import { DEBUG } from "../utils/Globals.js";
+import { App } from "../App.js";
 import { get } from "../utils/Utils.js";
 
 // positionSum = 0;
@@ -20,7 +20,7 @@ import { get } from "../utils/Utils.js";
 // };
 
 /**
- * Represents the debug window that shows up next to the board when the `DEBUG` global flag is set.
+ * Represents the debug window that shows up next to the board when the `DEBUG` app flag is set.
  * It logs important information about the game.
  */
 export default class DebugWindow {
@@ -33,7 +33,7 @@ export default class DebugWindow {
 	 * @param reason
 	 */
 	static error(filename: string, method: string, reason: string) {
-		if (DEBUG) {
+		if (App.DEBUG) {
 			console.error(`Error in ${filename} -- ${method}(): ${reason}`);
 
 			get("game")!.innerHTML = "";

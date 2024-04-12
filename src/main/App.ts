@@ -20,8 +20,17 @@ export class App {
 	 * Whether or not the game is currently paused.
 	 */
 	public static GAME_PAUSED: boolean = false;
+	/**
+	 * Whether the game is in debug mode or not.
+	 */
+	public static DEBUG: boolean = true;
 
-	constructor() {
+	/**
+	 * Creates an instance of the game.
+	 *
+	 * @param debug whether the game is in debug mode or not (default `false`)
+	 */
+	constructor(debug: boolean = false) {
 		App.loadGame().then(() => {
 			const board = new Board();
 
