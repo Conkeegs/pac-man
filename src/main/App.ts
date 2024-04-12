@@ -10,11 +10,16 @@ import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 /**
  * This class loads the game before initializing the board.
  */
-class App {
+export class App {
 	/**
 	 * The walls to display in the game.
 	 */
 	private static readonly loadedWallData: HTMLElement[] = [];
+
+	/**
+	 * Whether or not the game is currently paused.
+	 */
+	public static GAME_PAUSED: boolean = false;
 
 	constructor() {
 		App.loadGame().then(() => {
@@ -30,11 +35,11 @@ class App {
 			});
 
 			// put the game in a "paused" state upon exiting the window
-			window.addEventListener("blur", () => (Board.GAME_PAUSED = true));
+			window.addEventListener("blur", () => (App.GAME_PAUSED = true));
 
 			// put the game in a "unpaused" state upon opening the window
 			window.addEventListener("focus", () => {
-				Board.GAME_PAUSED = false;
+				App.GAME_PAUSED = false;
 
 				// all characters freeze their animation frames upon pausing, but we can re-animate them again
 				// by referencing the last direction they've moved before they were paused

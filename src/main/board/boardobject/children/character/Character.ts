@@ -1,5 +1,6 @@
 "use strict";
 
+import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
 import { CHARACTERS, COLLIDABLES_MAP, TILESIZE } from "../../../../utils/Globals.js";
@@ -705,7 +706,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 
 			// if the game pauses, we want this character to stop moving, but preserve data that is important for unpausing
 			// this character
-			if (Board.GAME_PAUSED) {
+			if (App.GAME_PAUSED) {
 				this.stopMoving(true);
 
 				return;
