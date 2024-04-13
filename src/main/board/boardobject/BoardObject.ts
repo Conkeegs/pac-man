@@ -74,7 +74,7 @@ export abstract class BoardObject {
 	constructor(name: string) {
 		if (!name) {
 			DebugWindow.error("BoardObject.js", "constructor", "BoardObject must have a name.");
-		} else if (BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === "name")) {
+		} else if (BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === name) !== -1) {
 			DebugWindow.error("BoardObject.js", "constructor", `A BoardObject with the name '${name}' already exists.`);
 		}
 
