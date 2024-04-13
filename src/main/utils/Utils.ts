@@ -366,3 +366,15 @@ export function originalPacManSpeedToNewSpeed(speed: number): number {
 	// TILESIZE will always be a multiple of 8 (the original game's tile size)
 	return speed * (TILESIZE / ORIGINAL_TILE_SIZE);
 }
+
+/**
+ * Generates an _almost_ random string. Good enough for creating unique `BoardObject` names.
+ *
+ * @returns
+ */
+export function uniqueId(): string {
+	const dateString = Date.now().toString(36);
+	const randomness = Math.random().toString(36).substr(2);
+
+	return dateString + randomness;
+}

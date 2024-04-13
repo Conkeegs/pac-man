@@ -1,10 +1,11 @@
 "use strict";
 
+import { App } from "../App.js";
 import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, fetchJSON, get, px } from "../utils/Utils.js";
+import { create, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import Food from "./boardobject/children/Food.js";
@@ -221,7 +222,7 @@ export default class Board {
 				for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
-						this.placeBoardObject(new Food(`food-horiz-${i}`), x, i);
+						this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i);
 
 						foodPositions.push({
 							x,
@@ -236,7 +237,7 @@ export default class Board {
 				for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
-						this.placeBoardObject(new Food(`food-vert-${i}`), i, y);
+						this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y);
 
 						foodPositions.push({
 							x: i,
