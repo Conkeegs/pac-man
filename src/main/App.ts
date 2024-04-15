@@ -28,9 +28,8 @@ export class App {
 	/**
 	 * Creates an instance of the game.
 	 *
-	 * @param debug whether the game is in debug mode or not (default `false`)
 	 */
-	constructor(debug: boolean = false) {
+	constructor() {
 		App.loadGame().then(() => {
 			const board = new Board();
 
