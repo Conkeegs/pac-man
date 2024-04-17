@@ -69,7 +69,7 @@ export default class BoardText extends BoardObject {
 		this.color = data.color || "white";
 		this.vertical = data.vertical ?? false;
 
-		this.setText(data.text.reverse());
+		this.setText(data.text);
 	}
 
 	/**
