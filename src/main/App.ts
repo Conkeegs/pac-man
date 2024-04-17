@@ -195,8 +195,6 @@ export class App {
 			if (App.DEBUG) {
 				this.debug_framesCounted++;
 			}
-
-			// this.framesCounted++;
 		}
 
 		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
