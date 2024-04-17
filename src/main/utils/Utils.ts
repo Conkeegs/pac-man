@@ -239,7 +239,7 @@ export function exists(value: unknown): boolean {
  * @param value any valid JavaScript type
  * @returns boolean indicating whether `value` is `undefined`
  */
-export function defined(value: unknown): value is typeof undefined {
+export function defined(value: unknown): value is "undefined" {
 	return typeof value !== "undefined";
 }
 
