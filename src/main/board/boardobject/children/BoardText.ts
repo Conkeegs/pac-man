@@ -9,6 +9,19 @@ import { BoardObject } from "../BoardObject.js";
  * Represents text on the board.
  */
 export default class BoardText extends BoardObject {
+	/**
+	 * The current text being displayed.
+	 */
+	private text: string = "";
+	/**
+	 * The color of the text being displayed.
+	 */
+	private color: string;
+	/**
+	 * Whether or not the displayed text should be displayed vertically (defaults to `false`).
+	 */
+	private vertical: boolean;
+
 	public override readonly width: number = TILESIZE;
 	public override readonly height: number = TILESIZE;
 
@@ -53,29 +66,47 @@ export default class BoardText extends BoardObject {
 			zIndex: BOARD_OBJECT_Z_INDEX + 2,
 		});
 
-		const color = data.color || "white";
-		const vertical = data.vertical ?? false;
+		this.color = data.color || "white";
+		this.vertical = data.vertical ?? false;
 
-		for (const [index, character] of Object.entries(data.text)) {
+		this.setText(data.text.reverse());
+	}
+
+	/**
+	 * Sets the text that is visually displayed in this boardtext object and also in-memory. "Grows" to the left the
+	 * more characters are added.
+	 *
+	 * @param newText the text to visually display
+	 */
+	public setText(newText: string): void {
+		if (this.element.hasChildNodes()) {
+			this.element.removeAllChildren();
+		}
+
+		// we want to reverse the text first, since pacman text "grows" to the left, the more characters
+		// are added
+		for (const [index, character] of Object.entries(newText.reverse())) {
 			// create a tile-sized container for each character in the text, so each character appears to
 			// display in a different tile
 			const container = create({
 				name: "div",
 				classes: ["board-text-container"],
 			}).css({
-				color,
+				color: this.color,
 				width: px(TILESIZE),
 				height: px(TILESIZE),
 			}) as HTMLElement;
 
 			// judge whether or not to display text vertically
 			container.css({
-				[!vertical ? "left" : "top"]: px(TILESIZE * Number(index)),
+				[!this.vertical ? "left" : "top"]: px(-(TILESIZE * Number(index))),
 			});
 
 			container.textContent = character;
 
 			(this.element as HTMLElement).appendChild(container);
 		}
+
+		this.text += newText;
 	}
 }

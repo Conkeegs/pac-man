@@ -121,6 +121,10 @@ export default class Board {
 	 * Information about locations of PacMan food on the board.
 	 */
 	public static foodData: FoodData[] | undefined = [];
+	/**
+	 * Displays the current frames-per-second count of the app, in debug mode.
+	 */
+	public debug_fpsCounter: BoardText | undefined;
 
 	/**
 	 * Creates the board.s
@@ -285,6 +289,16 @@ export default class Board {
 			Board.PACMAN_SPAWN_X,
 			Board.BLINKY_SPAWN_Y
 		);
+
+		// display fps counter if in debug mode
+		if (App.DEBUG) {
+			this.debug_fpsCounter = new BoardText({
+				name: "fps-counter",
+				text: "FPS",
+			});
+
+			this.placeBoardObject(this.debug_fpsCounter, -5, 31);
+		}
 	}
 
 	/**

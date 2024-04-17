@@ -28,6 +28,18 @@ export class App {
 	 * The walls to display in the game.
 	 */
 	private static readonly loadedWallData: HTMLElement[] = [];
+	/**
+	 * The last timestamp in the game's animation frame that the fps was displayed.
+	 */
+	private debug_frameCountTimeStamp: number = 0;
+	/**
+	 * The number of frames that have passed in about one second.
+	 */
+	private debug_framesCounted: number = 0;
+	/**
+	 * The board that the game displays on.
+	 */
+	private board: Board | undefined;
 
 	/**
 	 * The rough amount of milliseconds that should pass before the game updates each frame.
@@ -48,7 +60,8 @@ export class App {
 	 */
 	constructor() {
 		App.loadGame().then(() => {
-			const board = new Board();
+			this.board = new Board();
+			const board = this.board;
 
 			// display the walls of the game
 			for (const wall of App.loadedWallData) {
@@ -99,6 +112,12 @@ export class App {
 			this.deltaTimeAccumulator = 0;
 		}
 
+		// reset fpscounter variables
+		if (App.DEBUG) {
+			this.debug_frameCountTimeStamp = 0;
+			this.debug_framesCounted = 0;
+		}
+
 		cancelAnimationFrame(this.animationFrameId!);
 	}
 
@@ -125,16 +144,20 @@ export class App {
 
 		this.deltaTimeAccumulator += deltaTime;
 
-		// if (this.frameCount === 0) {
-		// 	this.frameCountTimeStamp = timeStamp;
-		// }
+		// update fps counter
+		if (App.DEBUG) {
+			if (frameCount === 0) {
+				this.debug_frameCountTimeStamp = timeStamp;
+			}
 
-		// if (timeStamp >= this.frameCountTimeStamp + 1000) {
-		// 	// Update every second
-		// 	console.log({ fps: this.framesCounted });
-		// 	this.framesCounted = 0;
-		// 	this.frameCountTimeStamp = timeStamp;
-		// }
+			if (timeStamp >= this.debug_frameCountTimeStamp + 1000) {
+				// Update every second
+				this.board!.debug_fpsCounter!.setText(`FPS:${this.debug_framesCounted}`);
+
+				this.debug_framesCounted = 0;
+				this.debug_frameCountTimeStamp = timeStamp;
+			}
+		}
 
 		const MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
 		// keep track of each character's position so we can properly interpolate it every frame
@@ -168,6 +191,10 @@ export class App {
 
 			frameCount++;
 			this.deltaTimeAccumulator -= MS_PER_FRAME;
+
+			if (App.DEBUG) {
+				this.debug_framesCounted++;
+			}
 
 			// this.framesCounted++;
 		}

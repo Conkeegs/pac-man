@@ -16,6 +16,10 @@ declare global {
 		 * or `string` is supplied.
 		 */
 		css(style: string | CSSStyleDeclaration | object): HTMLElement | string | undefined;
+		/**
+		 * Removes all children from this element.
+		 */
+		removeAllChildren(): void;
 	}
 
 	interface HTMLCollectionBase {
@@ -27,6 +31,13 @@ declare global {
 		 * @returns `true` if an `object` or `CSSStyleDeclaration` if given. `false` otherwise.
 		 */
 		css(style: CSSStyleDeclaration | object): boolean;
+	}
+
+	interface String {
+		/**
+		 * Mutates this string by reversing its characters and returns it.
+		 */
+		reverse(): string;
 	}
 }
 
@@ -56,6 +67,12 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | obje
 	return;
 };
 
+HTMLElement.prototype.removeAllChildren = function (): void {
+	while (this.firstChild) {
+		this.firstChild.remove();
+	}
+};
+
 HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): boolean {
 	if (isObject(style) || style instanceof CSSStyleDeclaration) {
 		const length = this.length;
@@ -74,6 +91,10 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
 	} else {
 		return false;
 	}
+};
+
+String.prototype.reverse = function (): string {
+	return this.split("").reverse().join("");
 };
 
 /**

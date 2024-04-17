@@ -229,9 +229,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 */
 	public static turnData: TurnData[] | undefined;
 
-	// frameCountTimeStamp = 0;
-	// framesCounted = 0;
-
 	/**
 	 * Creates a character.
 	 *
@@ -343,9 +340,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 
 		this.moving = false;
 		this.currentDirection = undefined;
-
-		// this.frameCountTimeStamp = 0;
-		// this.framesCounted = 0;
 
 		return false;
 	}
