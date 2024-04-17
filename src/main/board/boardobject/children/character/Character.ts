@@ -8,6 +8,7 @@ import { defined, millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
+import type Tickable from "../../Tickable.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -53,16 +54,12 @@ export type StartMoveOptions = {
 	 * where it is currently heading, and not making a 90 degree turn.
 	 */
 	fromTurn?: TurnData;
-	/**
-	 * Whether or not this character will start moving after having been in a "paused" state.
-	 */
-	wasPaused?: boolean;
 };
 
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default abstract class Character extends BoardObject implements Collidable {
+export default abstract class Character extends BoardObject implements Collidable, Tickable {
 	/**
 	 * The speed of the character (in pixels-per-second)
 	 */
@@ -71,10 +68,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * The path to the character's picture file.
 	 */
 	private readonly source: string;
-	/**
-	 * The current animation frame requested by the DOM for this character.
-	 */
-	private animationFrameId: number | undefined;
 	/**
 	 * The id of the `setInterval()` call made for animating this character.
 	 */
@@ -161,18 +154,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 			return this.distanceWithinThreshold(this.getPosition()!.y + this.height / 2, collidable.getPosition()!.y);
 		},
 	};
-	/**
-	 * The desired frames-per-second that a character should update at.
-	 */
-	private static readonly DESIRED_FPS: 30 = 30;
-	/**
-	 * The rough amount of milliseconds that should pass before a character updates on a frame.
-	 */
-	private static readonly MS_PER_FRAME: number = 1000 / Character.DESIRED_FPS;
-	/**
-	 * Increments by the number of milliseconds it takes to render each frame, every frame.
-	 */
-	private deltaTimeAccumulator: number = 0;
 	abstract readonly _collidableManager: CollidableManager;
 	/**
 	 * The key used to index into a given `Position` object, given the direction this character is moving.
@@ -192,6 +173,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 		[MovementDirection.UP]: this.setPositionY,
 		[MovementDirection.DOWN]: this.setPositionY,
 	};
+	_frameCount: number = 0;
 
 	/**
 	 * A queue of turns that a character wants to make in the future. This suggests that the character isn't
@@ -203,10 +185,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * The current direction this character is currently moving in.
 	 */
 	protected currentDirection: MovementDirection | undefined;
-	/**
-	 * The current frame iteration that this character's animation frame is on.
-	 */
-	protected frameCount: number = 0;
 	/**
 	 * The last direction the user moved in.
 	 */
@@ -272,7 +250,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 		// faster character need larger collision thresholds, otherwise, their collision may never be detected since
 		// their position might update "past" any colliders
 		this.collisionThreshold =
-			Math.ceil(speed * millisToSeconds(Character.MS_PER_FRAME)) + Character.COLLISION_PADDING;
+			Math.ceil(speed * millisToSeconds(App.DESIRED_MS_PER_FRAME)) + Character.COLLISION_PADDING;
 
 		this.element.css({
 			width: px(this.width),
@@ -353,27 +331,17 @@ export default abstract class Character extends BoardObject implements Collidabl
 	/**
 	 * Cancels this character's current animation frame so that `this.move()` isn't called anymore.
 	 *
-	 * @param paused whether or not this character is stopping due to the game pausing
-	 * @returns
 	 */
-	public stopMoving(paused: boolean = false) {
-		// only forget this data if this character didn't just "stop" because the game paused. otherwise, we
-		// can't re-animate them after unpausing/know where they were heading, etc.
-		if (!paused) {
-			this.dequeueTurns();
-			this.lastMoveCode = undefined;
-			this.deltaTimeAccumulator = 0;
+	public stopMoving(): boolean {
+		this.dequeueTurns();
+		this.lastMoveCode = undefined;
+		this._frameCount = 0;
 
-			this._collidableManager.checkForCollidableAndRemove();
-		}
+		this._collidableManager.checkForCollidableAndRemove();
 
-		cancelAnimationFrame(this.animationFrameId as number);
 		clearInterval(this.animationIntervalId);
 
 		this.moving = false;
-		// make sure we reset the frame count and nearest turn every time this character stops so that we can
-		// accurately track characters colliding with walls down the movement pipeline
-		this.frameCount = 0;
 		this.currentDirection = undefined;
 
 		// this.frameCountTimeStamp = 0;
@@ -383,24 +351,19 @@ export default abstract class Character extends BoardObject implements Collidabl
 	}
 
 	/**
-	 * Sets up initial request for animation frame and then starts recursively calling `Character.move()` method to move this character.
+	 * Marks this character as "moving", and will start moving in the given `MovementDirection`.
 	 *
 	 * @param direction the direction the character is currently trying to move in
 	 * @param options options that modify the way that this character starts moving
 	 */
 	public startMoving(direction: MovementDirection, options?: StartMoveOptions) {
-		const wasPaused = options?.wasPaused;
+		if (this.turnQueue.length) {
+			// reset turn queue each time we head in a new direction
+			this.dequeueTurns();
+		}
 
-		if (!wasPaused) {
-			if (this.turnQueue.length) {
-				// reset turn queue each time we head in a new direction
-				this.dequeueTurns();
-			}
-
-			if (this.moving) {
-				// call this so we can reset the animation frame id every time a character moves
-				this.stopMoving();
-			}
+		if (this.moving) {
+			this.stopMoving();
 		}
 
 		const fromTurn = options?.fromTurn;
@@ -419,10 +382,164 @@ export default abstract class Character extends BoardObject implements Collidabl
 			this._ANIMATION_STATE_MILLIS
 		);
 
-		this.animationFrameId = requestAnimationFrame((timeStamp) => this.move(direction, 0, timeStamp));
-
 		this.moving = true;
 		this.lastMoveCode = direction;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public tick() {
+		const position = this.getPosition()!;
+		const direction = this.currentDirection;
+
+		// this will make sure the character updates at about 30 frames-per-second
+		// while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
+		if (direction === MovementDirection.STOP) {
+			this.stopMoving();
+
+			return;
+		}
+
+		if (App.GAME_PAUSED) {
+			this.stopMoving();
+
+			return;
+		}
+
+		// sanity check
+		if (!this.moving) {
+			return;
+		}
+
+		const tileX = Board.calcTileNumX(position.x + this.width / 2);
+		const tileY = Board.calcTileNumY(position.y + this.height / 2);
+		let positionCollidables = COLLIDABLES_MAP[`${tileX}-${tileY}`] || [];
+
+		// index into the collidables map, and make sure that we also look to the "left/right" and "top/bottom" of
+		// this character. so, in total we look "three" tiles horizontally and vertically, depending on the direction
+		// this character is moving
+		if (direction === MovementDirection.LEFT || direction === MovementDirection.RIGHT) {
+			const positionCollidablesRight = COLLIDABLES_MAP[`${tileX + 1}-${tileY}`];
+			const positionCollidablesLeft = COLLIDABLES_MAP[`${tileX - 1}-${tileY}`];
+
+			if (positionCollidablesRight) {
+				positionCollidables = positionCollidables.concat(positionCollidablesRight);
+			}
+
+			if (positionCollidablesLeft) {
+				positionCollidables = positionCollidables.concat(positionCollidablesLeft);
+			}
+		} else {
+			const positionCollidablesUp = COLLIDABLES_MAP[`${tileX}-${tileY + 1}`];
+			const positionCollidablesDown = COLLIDABLES_MAP[`${tileX}-${tileY - 1}`];
+
+			if (positionCollidablesUp) {
+				positionCollidables = positionCollidables.concat(positionCollidablesUp);
+			}
+
+			if (positionCollidablesDown) {
+				positionCollidables = positionCollidables.concat(positionCollidablesDown);
+			}
+		}
+
+		if (defined(positionCollidables) && (positionCollidables as Collidable[]).length) {
+			// check for collisions between this character and other collidables
+			for (let i = 0; i < (positionCollidables as Collidable[]).length; i++) {
+				const collidable = positionCollidables![i]! as Collidable;
+
+				if (
+					// filter out the current board object we're operating on
+					collidable.getName() === this.name ||
+					// if the collided-with boardobject doesn't allow this character to collide with it, skip
+					!collidable.canBeCollidedByTypes.includes(this.constructor.name)
+				) {
+					continue;
+				}
+
+				if (this.isCollidingWithCollidable(collidable)) {
+					collidable._onCollision(this);
+				}
+			}
+		}
+
+		// check the turn queue for any queued turns
+		if (this.turnQueue.length) {
+			const queuedTurnInfo = this.turnQueue[0]!;
+			const turn = queuedTurnInfo.turn;
+
+			// every frame, check if the character is within the queued-turn's threshold, and turn
+			// the character in that direction when it is
+			if (this.isWithinTurnDistance(turn)) {
+				this.startMoving(queuedTurnInfo.direction, {
+					fromTurn: turn,
+				});
+
+				return;
+			}
+		}
+
+		// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
+		// update returns "true", so we can optionally break out of the tick() call
+		if (this._runFrameUpdate(this._frameCount)) {
+			return;
+		}
+
+		const teleporterPositions = this.TELEPORTER_POSITIONS;
+		const currentDirection = this.currentDirection!;
+
+		// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
+		// of one, and teleport them when they are
+		if (
+			this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
+			this.isWithinTeleporterDistance(teleporterPositions[currentDirection as keyof typeof teleporterPositions])
+		) {
+			// set character's position to the opposite teleporter
+			this.setPositionX(
+				teleporterPositions[
+					Character.directionOpposites[
+						currentDirection as keyof typeof Character.directionOpposites
+					] as keyof typeof teleporterPositions
+				].x,
+				{
+					modifyCss: false,
+					modifyTransform: true,
+				}
+			);
+
+			// start moving character in the same direction, again, because if we don't, the character will still have "stale" data tied to it.
+			// for example, an "old" queued-turn, which was valid before the character teleported, but invalid afterwards. it could also
+			// give pacman an invalid "nearestStoppingTurn", etc.
+			this.startMoving(currentDirection);
+
+			return;
+		}
+
+		this.movementMethods[direction as keyof MovementMethods].bind(this)(
+			this.speed! * millisToSeconds(App.DESIRED_MS_PER_FRAME)
+		);
+
+		this._frameCount++;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public interpolate(alpha: number, oldPosition: Position): void {
+		const direction = this.currentDirection;
+		const directionalPositionKey = this.directionalPositionKeys[
+			direction as keyof typeof this.directionalPositionKeys
+		] as "x" | "y";
+
+		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
+		// exceeded "MS_PER_FRAME"
+		this.directionalPositionSetters[direction as keyof typeof this.directionalPositionSetters].bind(this)(
+			this.getPosition()![directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha),
+			{
+				modifyCss: false,
+				modifyTransform: true,
+			}
+		);
 	}
 
 	/**
@@ -431,10 +548,11 @@ export default abstract class Character extends BoardObject implements Collidabl
 	abstract _getAnimationImage(): string;
 
 	/**
-	 * Updates the character in a given frame. Returning `true` will break a character out of
-	 * recursive `Character.move()` method calls.
+	 * Updates the character in a given frame.
+	 *
+	 * @param frameCount the number of frames this boardobject has been updating
 	 */
-	abstract _runFrameUpdate(): boolean;
+	abstract _runFrameUpdate(frameCount: number): boolean;
 
 	/**
 	 * Queues a turn for a future point in time so that when the character reaches the threshold of the turn,
@@ -656,204 +774,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 */
 	private dequeueTurns(): void {
 		this.turnQueue = [];
-	}
-
-	/**
-	 * Recursively calls itself to update the character's position every frame.
-	 *
-	 * @param direction the direction the character is currently trying to move in
-	 * @param lastAnimationTime the number of milliseconds between this animation frame and the last one
-	 * @param timeStamp the current number of milliseconds that represents current time
-	 */
-	private move(direction: MovementDirection, lastAnimationTime: number, timeStamp: number) {
-		let deltaTime = timeStamp - lastAnimationTime;
-
-		// prevent spiral of death
-		if (deltaTime > 250) {
-			deltaTime = 250;
-		}
-
-		// prevents "deltaTime" from being very large at the start of this character's movement, and therefore
-		// moving the character a very large distance (even through walls) when it first starts moving
-		if (!lastAnimationTime) {
-			deltaTime = 0;
-			lastAnimationTime = timeStamp;
-		}
-
-		this.deltaTimeAccumulator += deltaTime;
-
-		// if (this.frameCount === 0) {
-		// 	this.frameCountTimeStamp = timeStamp;
-		// }
-
-		// if (timeStamp >= this.frameCountTimeStamp + 1000) {
-		// 	// Update every second
-		// 	console.log({ fps: this.framesCounted });
-		// 	this.framesCounted = 0;
-		// 	this.frameCountTimeStamp = timeStamp;
-		// }
-
-		const position = this.getPosition()!;
-		const MS_PER_FRAME = Character.MS_PER_FRAME;
-
-		// this will make sure the character updates at about 30 frames-per-second
-		while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
-			if (direction === MovementDirection.STOP) {
-				this.stopMoving();
-
-				return;
-			}
-
-			// if the game pauses, we want this character to stop moving, but preserve data that is important for unpausing
-			// this character
-			if (App.GAME_PAUSED) {
-				this.stopMoving(true);
-
-				return;
-			}
-
-			// it's possible that the character has called "stopMoving()", but the animation frame's recursive calls
-			// will keep going, so make sure the character stops calling "move()" here
-			if (!this.moving) {
-				return;
-			}
-
-			const tileX = Board.calcTileNumX(position.x + this.width / 2);
-			const tileY = Board.calcTileNumY(position.y + this.height / 2);
-			let positionCollidables = COLLIDABLES_MAP[`${tileX}-${tileY}`] || [];
-
-			// index into the collidables map, and make sure that we also look to the "left/right" and "top/bottom" of
-			// this character. so, in total we look "three" tiles horizontally and vertically, depending on the direction
-			// this character is moving
-			if (direction === MovementDirection.LEFT || direction === MovementDirection.RIGHT) {
-				const positionCollidablesRight = COLLIDABLES_MAP[`${tileX + 1}-${tileY}`];
-				const positionCollidablesLeft = COLLIDABLES_MAP[`${tileX - 1}-${tileY}`];
-
-				if (positionCollidablesRight) {
-					positionCollidables = positionCollidables.concat(positionCollidablesRight);
-				}
-
-				if (positionCollidablesLeft) {
-					positionCollidables = positionCollidables.concat(positionCollidablesLeft);
-				}
-			} else {
-				const positionCollidablesUp = COLLIDABLES_MAP[`${tileX}-${tileY + 1}`];
-				const positionCollidablesDown = COLLIDABLES_MAP[`${tileX}-${tileY - 1}`];
-
-				if (positionCollidablesUp) {
-					positionCollidables = positionCollidables.concat(positionCollidablesUp);
-				}
-
-				if (positionCollidablesDown) {
-					positionCollidables = positionCollidables.concat(positionCollidablesDown);
-				}
-			}
-
-			if (defined(positionCollidables) && (positionCollidables as Collidable[]).length) {
-				// check for collisions between this character and other collidables
-				for (let i = 0; i < (positionCollidables as Collidable[]).length; i++) {
-					const collidable = positionCollidables![i]! as Collidable;
-
-					if (
-						// filter out the current board object we're operating on
-						collidable.getName() === this.name ||
-						// if the collided-with boardobject doesn't allow this character to collide with it, skip
-						!collidable.canBeCollidedByTypes.includes(this.constructor.name)
-					) {
-						continue;
-					}
-
-					if (this.isCollidingWithCollidable(collidable)) {
-						collidable._onCollision(this);
-					}
-				}
-			}
-
-			// check the turn queue for any queued turns
-			if (this.turnQueue.length) {
-				const queuedTurnInfo = this.turnQueue[0]!;
-				const turn = queuedTurnInfo.turn;
-
-				// every frame, check if the character is within the queued-turn's threshold, and turn
-				// the character in that direction when it is
-				if (this.isWithinTurnDistance(turn)) {
-					this.startMoving(queuedTurnInfo.direction, {
-						fromTurn: turn,
-					});
-
-					// break out of the recursive animation frame calls so we can start moving in another direction
-					return;
-				}
-			}
-
-			// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
-			// update returns "true", so we can optionally break out of the recursive "move()" calls
-			if (this._runFrameUpdate()) {
-				return;
-			}
-
-			const teleporterPositions = this.TELEPORTER_POSITIONS;
-			const currentDirection = this.currentDirection!;
-
-			// if this character is moving in any direction that leads to a teleporter, keep checking if it's within range
-			// of one, and teleport them when they are
-			if (
-				this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
-				this.isWithinTeleporterDistance(
-					teleporterPositions[currentDirection as keyof typeof teleporterPositions]
-				)
-			) {
-				// set character's position to the opposite teleporter
-				this.setPositionX(
-					teleporterPositions[
-						Character.directionOpposites[
-							currentDirection as keyof typeof Character.directionOpposites
-						] as keyof typeof teleporterPositions
-					].x,
-					{
-						modifyCss: false,
-						modifyTransform: true,
-					}
-				);
-
-				// start moving character in the same direction, again, because if we don't, the character will still have "stale" data tied to it.
-				// for example, an "old" queued-turn, which was valid before the character teleported, but invalid afterwards. it could also
-				// give pacman an invalid "nearestStoppingTurn", etc.
-				this.startMoving(currentDirection);
-
-				return;
-			}
-
-			this.movementMethods[direction as keyof MovementMethods].bind(this)(
-				this.speed! * millisToSeconds(MS_PER_FRAME)
-			);
-
-			this.frameCount++;
-			this.deltaTimeAccumulator -= MS_PER_FRAME;
-
-			// this.framesCounted++;
-		}
-
-		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
-		const directionalPositionKey = this.directionalPositionKeys[
-			direction as keyof typeof this.directionalPositionKeys
-		] as "x" | "y";
-
-		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
-		// exceeded "MS_PER_FRAME"
-		this.directionalPositionSetters[direction as keyof typeof this.directionalPositionSetters].bind(this)(
-			this.getPosition()![directionalPositionKey] * alpha + position[directionalPositionKey] * (1.0 - alpha),
-			{
-				modifyCss: false,
-				modifyTransform: true,
-			}
-		);
-
-		lastAnimationTime = timeStamp;
-
-		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
-			this.move(direction, lastAnimationTime, timeStampNew)
-		);
 	}
 
 	abstract _onCollision(withCollidable: Collidable): void;

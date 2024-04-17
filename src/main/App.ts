@@ -2,6 +2,7 @@
 
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
+import type { Position } from "./board/boardobject/BoardObject.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
 import { BOARD_OBJECT_Z_INDEX, CHARACTERS } from "./utils/Globals.js";
@@ -12,10 +13,26 @@ import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
  */
 export class App {
 	/**
+	 * The current animation frame requested by the DOM for the game's loop.
+	 */
+	private animationFrameId: number | undefined;
+	/**
+	 * Increments by the number of milliseconds it takes to render each frame, every frame.
+	 */
+	private deltaTimeAccumulator: number = 0;
+	/**
+	 * The desired frames-per-second that the game should update at.
+	 */
+	private static readonly DESIRED_FPS: 30 = 30;
+	/**
 	 * The walls to display in the game.
 	 */
 	private static readonly loadedWallData: HTMLElement[] = [];
 
+	/**
+	 * The rough amount of milliseconds that should pass before the game updates each frame.
+	 */
+	public static readonly DESIRED_MS_PER_FRAME: number = 1000 / App.DESIRED_FPS;
 	/**
 	 * Whether or not the game is currently paused.
 	 */
@@ -42,29 +59,136 @@ export class App {
 				backgroundColor: Board.BACKGROUND_COLOR,
 			});
 
+			// place BoardObject instances on board
+			board.createMainBoardObjects();
+
+			// initial start of the game
+			this.animationFrameId = this.startGame();
+
 			// put the game in a "paused" state upon exiting the window
-			window.addEventListener("blur", () => (App.GAME_PAUSED = true));
+			window.addEventListener("blur", () => {
+				App.GAME_PAUSED = true;
+
+				this.stopGame(true);
+			});
 
 			// put the game in a "unpaused" state upon opening the window
 			window.addEventListener("focus", () => {
 				App.GAME_PAUSED = false;
 
-				// all characters freeze their animation frames upon pausing, but we can re-animate them again
-				// by referencing the last direction they've moved before they were paused
-				for (const character of CHARACTERS) {
-					const lastMoveCode = character.getLastMoveCode();
+				this.startGame();
+			});
+		});
+	}
 
-					// want to make sure "lastMoveCode" is "defined" here, since moveCode "0" (left) is falsy
-					if (defined(lastMoveCode))
-						character.startMoving(lastMoveCode!, {
-							wasPaused: true,
-						});
-				}
+	/**
+	 * Starts the main gameloop.
+	 */
+	private startGame(): number {
+		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0));
+	}
+
+	/**
+	 *
+	 * @param paused whether or not the game stopped because it paused (defaults to `false`)
+	 */
+	private stopGame(paused: boolean = false): void {
+		// don't reset these variables on pause so the game can properly be un-paused without
+		// losing state
+		if (!paused) {
+			this.deltaTimeAccumulator = 0;
+		}
+
+		cancelAnimationFrame(this.animationFrameId!);
+	}
+
+	/**
+	 *
+	 * @param lastAnimationTime the last `timeStamp` value
+	 * @param timeStamp the current timestamp of the game in milliseconds
+	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_FPS` frames)
+	 */
+	private gameLoop(lastAnimationTime: number, timeStamp: number, frameCount: number): void {
+		let deltaTime = timeStamp - lastAnimationTime;
+
+		// prevent spiral of death
+		if (deltaTime > 250) {
+			deltaTime = 250;
+		}
+
+		// prevents "deltaTime" from being very large at the start, and therefore
+		// being very large distance and causing unexpected game behaviors
+		if (!lastAnimationTime) {
+			deltaTime = 0;
+			lastAnimationTime = timeStamp;
+		}
+
+		this.deltaTimeAccumulator += deltaTime;
+
+		// if (this.frameCount === 0) {
+		// 	this.frameCountTimeStamp = timeStamp;
+		// }
+
+		// if (timeStamp >= this.frameCountTimeStamp + 1000) {
+		// 	// Update every second
+		// 	console.log({ fps: this.framesCounted });
+		// 	this.framesCounted = 0;
+		// 	this.frameCountTimeStamp = timeStamp;
+		// }
+
+		const MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
+		// keep track of each character's position so we can properly interpolate it every frame
+		let oldCharacterPositions: { [key: string]: Position } = {};
+
+		/**
+		 * Find an array of characters who are currently moving.
+		 */
+		const findMovingCharacters = (): Character[] =>
+			CHARACTERS.filter((character) => {
+				oldCharacterPositions[character.getName()] = character.getPosition()!;
+
+				return character.isMoving();
 			});
 
-			// place BoardObject instances on board
-			board.createMainBoardObjects();
-		});
+		let movingCharacters: Character[] | undefined;
+
+		while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
+			// only want to loop through characters once per-render
+			if (!defined(movingCharacters)) {
+				movingCharacters = findMovingCharacters();
+			}
+
+			for (let i = 0; i < movingCharacters.length; i++) {
+				const character = movingCharacters[i]!;
+				// update the position of each character for interpolation
+				oldCharacterPositions[character.getName()] = character.getPosition()!;
+
+				character.tick();
+			}
+
+			frameCount++;
+			this.deltaTimeAccumulator -= MS_PER_FRAME;
+
+			// this.framesCounted++;
+		}
+
+		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
+		// some characters may have stopped/started moving after rendering, so refresh this array
+		movingCharacters = findMovingCharacters();
+
+		if (defined(movingCharacters) && movingCharacters.length) {
+			for (let i = 0; i < movingCharacters.length; i++) {
+				const character = movingCharacters[i]!;
+
+				character.interpolate(alpha, oldCharacterPositions[character.getName()]!);
+			}
+		}
+
+		lastAnimationTime = timeStamp;
+
+		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
+			this.gameLoop(lastAnimationTime, timeStampNew, frameCount)
+		);
 	}
 
 	/**

@@ -278,7 +278,7 @@ export default class PacMan extends Character {
 	/**
 	 * @inheritdoc
 	 */
-	override _runFrameUpdate(): boolean {
+	override _runFrameUpdate(frameCount: number): boolean {
 		const currentDirection = this.currentDirection!;
 
 		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
@@ -286,7 +286,7 @@ export default class PacMan extends Character {
 		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
 		// track when pacman arrives at its "nearestTurn" and stop pacman if he hits a wall. this will also prevent
 		// pacman from ever executing a queued-turn when he is technically "behind" a wall
-		if (this.frameCount === 0) {
+		if (frameCount === 0) {
 			this.nearestStoppingTurn = this.findNearestTurnWhere(
 				(turn) =>
 					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
@@ -307,7 +307,7 @@ export default class PacMan extends Character {
 			// snap pacman to "stop" location to keep collision detection consistent
 			this.offsetPositionToTurn(nearestStoppingTurn);
 
-			// break out of the recursive animation frame calls so we can stop at pacman's nearest turn
+			// break out of "tick()" method
 			return true;
 		}
 
