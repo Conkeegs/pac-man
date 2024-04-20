@@ -91,7 +91,7 @@ export type FoodData = {
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board {
-	private static readonly PACMAN_SPEED: 88 = 88;
+	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
 	private static readonly BLINKY_SPEED: 88 = 88;
@@ -159,7 +159,7 @@ export default class Board {
 
 		// debugging methods
 		this.createGrid();
-		this.createPaths();
+		// this.createPaths();
 	}
 
 	/**
@@ -258,7 +258,7 @@ export default class Board {
 		}
 
 		this.placeBoardObject(
-			new PacMan("pacman", Board.PACMAN_SPEED, ImageRegistry.getImage("pacman-0")),
+			new PacMan("pacman", Board.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0")),
 			Board.PACMAN_SPAWN_X,
 			Board.PACMAN_SPAWN_Y
 		);
@@ -318,15 +318,15 @@ export default class Board {
 	 * @param tileY the vertical offset of the board object
 	 */
 	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
-		if (tileX > 28) {
-			DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
-		} else if (tileX < -1) {
-			DebugWindow.error("Board.js", "placeBoardObject", "tileX value is below -1.");
-		} else if (tileY > 36) {
-			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is above 36.");
-		} else if (tileY < 0) {
-			DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
-		}
+		// if (tileX > 28) {
+		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
+		// } else if (tileX < -1) {
+		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileX value is below -1.");
+		// } else if (tileY > 36) {
+		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is above 36.");
+		// } else if (tileY < 0) {
+		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
+		// }
 
 		const left = Board.calcTileX(tileX);
 		const top = Board.calcTileY(tileY);
