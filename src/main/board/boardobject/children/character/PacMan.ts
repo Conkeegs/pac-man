@@ -1,5 +1,6 @@
 "use strict";
 
+import { App } from "../../../../App.js";
 import { defined, die, exists } from "../../../../utils/Utils.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
@@ -153,8 +154,9 @@ export default class PacMan extends Character {
 
 		// listen for movement keys for PacMan
 		documentBody.addEventListener("keydown", (event) => {
-			// make sure we are currently listening for movement inputs before continuing
-			if (this.listenForKeydown === false) {
+			// make sure we are currently listening for movement inputs before continuing and that
+			// the game is not paused
+			if (this.listenForKeydown === false || App.GAME_PAUSED) {
 				return;
 			}
 

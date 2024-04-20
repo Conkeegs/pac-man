@@ -3,6 +3,7 @@
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
 import type { Position } from "./board/boardobject/BoardObject.js";
+import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
 import { BOARD_OBJECT_Z_INDEX, CHARACTERS } from "./utils/Globals.js";
@@ -75,29 +76,60 @@ export class App {
 			// place BoardObject instances on board
 			board.createMainBoardObjects();
 
-			// initial start of the game
-			this.animationFrameId = this.startGame();
-
 			// put the game in a "paused" state upon exiting the window
 			window.addEventListener("blur", () => {
-				App.GAME_PAUSED = true;
-
-				this.stopGame(true);
+				// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
+				if (!App.GAME_PAUSED) {
+					this.stopGame(true);
+				}
 			});
+
+			const pausePlayButton = board.debug_pausePlayButton!;
 
 			// put the game in a "unpaused" state upon opening the window
 			window.addEventListener("focus", () => {
-				App.GAME_PAUSED = false;
-
-				this.startGame();
+				// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
+				if (!(pausePlayButton.getState() === State.PAUSED)) {
+					this.startGame(true);
+				}
 			});
+
+			if (App.DEBUG) {
+				pausePlayButton.onClick(() => {
+					App.GAME_PAUSED = !App.GAME_PAUSED;
+
+					if (App.GAME_PAUSED) {
+						this.stopGame(true);
+						pausePlayButton.setText("Play");
+						pausePlayButton.setPaused();
+					} else {
+						this.startGame(true);
+						pausePlayButton.setText("Pause");
+						pausePlayButton.setPlaying();
+					}
+				});
+			}
+
+			// initial start of the game
+			this.animationFrameId = this.startGame();
 		});
 	}
 
 	/**
 	 * Starts the main gameloop.
 	 */
-	private startGame(): number {
+	private startGame(fromPause: boolean = false): number {
+		App.GAME_PAUSED = false;
+
+		if (fromPause) {
+			const movingCharacters = App.findMovingCharacters();
+
+			// play every (moving) character's animations again upon starting the game from a paused state
+			for (let i = 0; i < movingCharacters.length; i++) {
+				movingCharacters[i]!.playAnimation();
+			}
+		}
+
 		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0));
 	}
 
@@ -110,6 +142,14 @@ export class App {
 		// losing state
 		if (!paused) {
 			this.deltaTimeAccumulator = 0;
+		} else {
+			App.GAME_PAUSED = true;
+		}
+
+		const movingCharacters = App.findMovingCharacters();
+
+		for (let i = 0; i < movingCharacters.length; i++) {
+			movingCharacters[i]!.stopAnimation();
 		}
 
 		// reset fpscounter variables
@@ -128,6 +168,10 @@ export class App {
 	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_FPS` frames)
 	 */
 	private gameLoop(lastAnimationTime: number, timeStamp: number, frameCount: number): void {
+		if (App.GAME_PAUSED) {
+			return;
+		}
+
 		let deltaTime = timeStamp - lastAnimationTime;
 
 		// prevent spiral of death
@@ -164,9 +208,9 @@ export class App {
 		let oldCharacterPositions: { [key: string]: Position } = {};
 
 		/**
-		 * Find an array of characters who are currently moving.
+		 * Find an array of characters who are currently moving, and save their current positions in memory.
 		 */
-		const findMovingCharacters = (): Character[] =>
+		const findMovingCharactersAndMapPosition = (): Character[] =>
 			CHARACTERS.filter((character) => {
 				oldCharacterPositions[character.getName()] = character.getPosition()!;
 
@@ -176,17 +220,10 @@ export class App {
 		let movingCharacters: Character[] | undefined;
 
 		while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
-			// only want to loop through characters once per-render
-			if (!defined(movingCharacters)) {
-				movingCharacters = findMovingCharacters();
-			}
+			movingCharacters = findMovingCharactersAndMapPosition();
 
 			for (let i = 0; i < movingCharacters.length; i++) {
-				const character = movingCharacters[i]!;
-				// update the position of each character for interpolation
-				oldCharacterPositions[character.getName()] = character.getPosition()!;
-
-				character.tick();
+				movingCharacters[i]!.tick();
 			}
 
 			frameCount++;
@@ -199,11 +236,21 @@ export class App {
 
 		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
 		// some characters may have stopped/started moving after rendering, so refresh this array
-		movingCharacters = findMovingCharacters();
+		movingCharacters = App.findMovingCharacters();
 
-		if (defined(movingCharacters) && movingCharacters.length) {
+		if (movingCharacters.length) {
 			for (let i = 0; i < movingCharacters.length; i++) {
-				const character = movingCharacters[i]!;
+				const character = movingCharacters[i];
+
+				if (!defined(character)) {
+					continue;
+				}
+
+				const oldCharacterPosition = oldCharacterPositions[character.getName()]!;
+
+				if (!defined(oldCharacterPosition)) {
+					continue;
+				}
 
 				character.interpolate(alpha, oldCharacterPositions[character.getName()]!);
 			}
@@ -269,6 +316,15 @@ export class App {
 				Board.foodData = foodData;
 			}),
 		]);
+	}
+
+	/**
+	 * Finds the current moving characters in the game.
+	 *
+	 * @returns array of moving characters in the game at the current moment
+	 */
+	private static findMovingCharacters(): Character[] {
+		return CHARACTERS.filter((character) => character.isMoving());
 	}
 }
 

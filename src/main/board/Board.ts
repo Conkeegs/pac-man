@@ -8,6 +8,7 @@ import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "..
 import { create, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
+import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 import Food from "./boardobject/children/Food.js";
 import PathNode from "./boardobject/children/PathNode.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
@@ -125,6 +126,10 @@ export default class Board {
 	 * Displays the current frames-per-second count of the app, in debug mode.
 	 */
 	public debug_fpsCounter: BoardText | undefined;
+	/**
+	 * Button used for playing/pausing the game in debug mode.
+	 */
+	public debug_pausePlayButton: PausePlayButton | undefined;
 
 	/**
 	 * Creates the board.s
@@ -298,6 +303,10 @@ export default class Board {
 			});
 
 			this.placeBoardObject(this.debug_fpsCounter, -5, 31);
+
+			this.debug_pausePlayButton = new PausePlayButton("pause-play-button", "Pause");
+
+			this.placeBoardObject(this.debug_pausePlayButton, 37, 31);
 		}
 	}
 
@@ -358,13 +367,7 @@ export default class Board {
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
 			// store as variable so we can use it to offset the text, based on the number of characters
-			const numString = i.toString();
-
-			this.placeBoardObject(
-				new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }),
-				0 - (numString.length - 1),
-				i
-			);
+			this.placeBoardObject(new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
 
 			this.boardDiv.appendChild(
 				create({ name: "div", classes: ["grid-horiz"] }).css({

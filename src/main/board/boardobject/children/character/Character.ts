@@ -336,7 +336,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 
 		this._collidableManager.checkForCollidableAndRemove();
 
-		clearInterval(this.animationIntervalId);
+		this.stopAnimation();
 
 		this.moving = false;
 		this.currentDirection = undefined;
@@ -371,10 +371,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 		this.currentDirection = direction;
 
 		// start playing this character's animations as they move.
-		this.animationIntervalId = window.setInterval(
-			this.updateAnimationImage.bind(this),
-			this._ANIMATION_STATE_MILLIS
-		);
+		this.playAnimation();
 
 		this.moving = true;
 		this.lastMoveCode = direction;
@@ -390,12 +387,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 		// this will make sure the character updates at about 30 frames-per-second
 		// while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
 		if (direction === MovementDirection.STOP) {
-			this.stopMoving();
-
-			return;
-		}
-
-		if (App.GAME_PAUSED) {
 			this.stopMoving();
 
 			return;
@@ -534,6 +525,24 @@ export default abstract class Character extends BoardObject implements Collidabl
 				modifyTransform: true,
 			}
 		);
+	}
+
+	/**
+	 * Sets an interval that starts playing this character's animations by referencing its different
+	 * animation images.
+	 */
+	public playAnimation(): void {
+		this.animationIntervalId = window.setInterval(
+			this.updateAnimationImage.bind(this),
+			this._ANIMATION_STATE_MILLIS
+		);
+	}
+
+	/**
+	 * Cancels the interval that changes this character's animation images.
+	 */
+	public stopAnimation(): void {
+		clearInterval(this.animationIntervalId);
 	}
 
 	/**

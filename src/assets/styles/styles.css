@@ -6,6 +6,7 @@
 :root {
     --bodyBackgroundColor: #070200;
     --defaultFont: pacmanFont;
+    --defaultTransitionTime: 0.3s;
 }
 
 * {
@@ -37,6 +38,61 @@ body {
     justify-content: center;
     align-content: center;
     text-align: center;
+}
+
+.board-object {
+    &.button {
+        border: 1px solid white;
+        transition: color var(--defaultTransitionTime);
+        cursor: pointer;
+        border-radius: 8px;
+        align-items: center;
+        /* clip-path: polygon(0px calc(100% - 20px),
+                4px calc(100% - 20px),
+                4px calc(100% - 12px),
+                8px calc(100% - 12px),
+                8px calc(100% - 8px),
+                12px calc(100% - 8px),
+                12px calc(100% - 4px),
+                20px calc(100% - 4px),
+                20px 100%,
+                calc(100% - 20px) 100%,
+                calc(100% - 20px) calc(100% - 4px),
+                calc(100% - 12px) calc(100% - 4px),
+                calc(100% - 12px) calc(100% - 8px),
+                calc(100% - 8px) calc(100% - 8px),
+                calc(100% - 8px) calc(100% - 12px),
+                calc(100% - 4px) calc(100% - 12px),
+                calc(100% - 4px) calc(100% - 20px),
+                100% calc(100% - 20px),
+                100% 20px,
+                calc(100% - 4px) 20px,
+                calc(100% - 4px) 12px,
+                calc(100% - 8px) 12px,
+                calc(100% - 8px) 8px,
+                calc(100% - 12px) 8px,
+                calc(100% - 12px) 4px,
+                calc(100% - 20px) 4px,
+                calc(100% - 20px) 0px,
+                20px 0px,
+                20px 4px,
+                12px 4px,
+                12px 8px,
+                8px 8px,
+                8px 12px,
+                4px 12px,
+                4px 20px,
+                0px 20px); */
+
+        &:hover {
+            background-color: white;
+            color: var(--bodyBackgroundColor) !important;
+        }
+    }
+}
+
+.board-text-container {
+    transition: var(--defaultTransitionTime);
 }
 
 .main-square {

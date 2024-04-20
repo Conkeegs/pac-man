@@ -14,6 +14,10 @@ export default class BoardText extends BoardObject {
 	 */
 	private text: string = "";
 	/**
+	 * The fontsize in pixels of the text to be displayed.
+	 */
+	private fontSize: number;
+	/**
 	 * The color of the text being displayed.
 	 */
 	private color: string;
@@ -22,8 +26,8 @@ export default class BoardText extends BoardObject {
 	 */
 	private vertical: boolean;
 
-	public override readonly width: number = TILESIZE;
-	public override readonly height: number = TILESIZE;
+	public override width: number = TILESIZE;
+	public override height: number = TILESIZE;
 
 	/**
 	 * Creates a board text object.
@@ -51,9 +55,9 @@ export default class BoardText extends BoardObject {
 	}) {
 		super(data.name);
 
-		const fontSize = data.fontsize || TILESIZE;
+		this.fontSize = data.fontsize || TILESIZE;
 
-		if (fontSize > 24) {
+		if (this.fontSize > 24) {
 			DebugWindow.error(
 				"BoardText.js",
 				"constructor",
@@ -64,12 +68,32 @@ export default class BoardText extends BoardObject {
 		// display text above board objects
 		this.element.css({
 			zIndex: BOARD_OBJECT_Z_INDEX + 2,
+			width: px(this.width),
+			height: px(this.height),
 		});
 
 		this.color = data.color || "white";
 		this.vertical = data.vertical ?? false;
 
 		this.setText(data.text);
+	}
+
+	/**
+	 * Get the color of the text displayed.
+	 *
+	 * @returns the color of the text displayed
+	 */
+	public getColor(): string {
+		return this.color;
+	}
+
+	/**
+	 * Get the fontsize of the text displayed.
+	 *
+	 * @returns the fontsize of the text displayed in pixels
+	 */
+	public getFontSize(): number {
+		return this.fontSize;
 	}
 
 	/**
@@ -83,9 +107,17 @@ export default class BoardText extends BoardObject {
 			this.element.removeAllChildren();
 		}
 
+		const notVertical = !this.vertical;
+
+		// reset width/height variable depending on display of text. we need to do this because
+		// the width of the element will change when more characters are added/removed
+		notVertical ? (this.width = 0) : (this.height = 0);
+
 		// we want to reverse the text first, since pacman text "grows" to the left, the more characters
 		// are added
 		for (const [index, character] of Object.entries(newText.reverse())) {
+			notVertical ? (this.width += TILESIZE) : (this.height += TILESIZE);
+
 			// create a tile-sized container for each character in the text, so each character appears to
 			// display in a different tile
 			const container = create({
@@ -99,13 +131,17 @@ export default class BoardText extends BoardObject {
 
 			// judge whether or not to display text vertically
 			container.css({
-				[!this.vertical ? "left" : "top"]: px(-(TILESIZE * Number(index))),
+				[notVertical ? "left" : "top"]: px(-(TILESIZE * Number(index))),
 			});
 
 			container.textContent = character;
 
 			(this.element as HTMLElement).appendChild(container);
 		}
+
+		this.element.css({
+			[notVertical ? "width" : "height"]: px(notVertical ? this.width : this.height),
+		});
 
 		this.text += newText;
 	}
