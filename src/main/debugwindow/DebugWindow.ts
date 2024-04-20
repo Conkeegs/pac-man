@@ -34,11 +34,9 @@ export default class DebugWindow {
 	 */
 	static error(filename: string, method: string, reason: string) {
 		if (App.DEBUG) {
-			console.error(`Error in ${filename} -- ${method}(): ${reason}`);
-
 			get("game")!.innerHTML = "";
 
-			stop();
+			throw new Error(`Error in ${filename} -- ${method}(): ${reason}`);
 		}
 	}
 }
