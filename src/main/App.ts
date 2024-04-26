@@ -162,6 +162,7 @@ export class App {
 	}
 
 	/**
+	 * The main gameloop of the game. Runs logic every frame and interpolates between updates.
 	 *
 	 * @param lastAnimationTime the last `timeStamp` value
 	 * @param timeStamp the current timestamp of the game in milliseconds
