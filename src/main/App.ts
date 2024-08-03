@@ -10,7 +10,7 @@ import { BOARD_OBJECT_Z_INDEX, CHARACTERS } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
- * This class loads the game before initializing the board.
+ * This class loads the game's UI before initializing the board.
  */
 export class App {
 	/**
@@ -56,7 +56,7 @@ export class App {
 	public static DEBUG: boolean = true;
 
 	/**
-	 * Creates an instance of the game.
+	 * Creates an instance of the app.
 	 *
 	 */
 	constructor() {

@@ -1,4 +1,4 @@
-import { create } from "../utils/Utils";
+import { create } from "../utils/Utils.js";
 
 /**
  * Represents a base `UiElement` object.
