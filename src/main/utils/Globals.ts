@@ -55,3 +55,7 @@ export const BOARD_OBJECT_Z_INDEX: 0 = 0;
  * The original arcade game's tile size in pixels.
  */
 export const ORIGINAL_TILE_SIZE: 8 = 8;
+
+export const CLIP_PATH_PIXEL_PADDING: 4 = 4;
+
+export const PACMAN_COLOR: "#ffeb3b" = "#ffeb3b";

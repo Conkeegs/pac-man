@@ -7,6 +7,27 @@
     --bodyBackgroundColor: #070200;
     --defaultFont: pacmanFont;
     --defaultTransitionTime: 0.3s;
+    --defaultClipPathPolygon: polygon(0px calc(100% - 6px),
+            3px calc(100% - 6px),
+            3px calc(100% - 3px),
+            6px calc(100% - 3px),
+            6px 100%,
+            calc(100% - 6px) 100%,
+            calc(100% - 6px) calc(100% - 3px),
+            calc(100% - 3px) calc(100% - 3px),
+            calc(100% - 3px) calc(100% - 6px),
+            100% calc(100% - 6px),
+            100% 6px,
+            calc(100% - 3px) 6px,
+            calc(100% - 3px) 3px,
+            calc(100% - 6px) 3px,
+            calc(100% - 6px) 0px,
+            6px 0px,
+            6px 3px,
+            3px 3px,
+            3px 6px,
+            0px 6px);
+    --pacmanColor: #ffeb3b;
 }
 
 * {
@@ -42,51 +63,20 @@ body {
 
 .board-object {
     &.button {
-        border: 1px solid white;
+        /* border: 1px solid white; */
         transition: color var(--defaultTransitionTime);
         cursor: pointer;
-        border-radius: 8px;
+        /* border-radius: 8px; */
         align-items: center;
-        /* clip-path: polygon(0px calc(100% - 20px),
-                4px calc(100% - 20px),
-                4px calc(100% - 12px),
-                8px calc(100% - 12px),
-                8px calc(100% - 8px),
-                12px calc(100% - 8px),
-                12px calc(100% - 4px),
-                20px calc(100% - 4px),
-                20px 100%,
-                calc(100% - 20px) 100%,
-                calc(100% - 20px) calc(100% - 4px),
-                calc(100% - 12px) calc(100% - 4px),
-                calc(100% - 12px) calc(100% - 8px),
-                calc(100% - 8px) calc(100% - 8px),
-                calc(100% - 8px) calc(100% - 12px),
-                calc(100% - 4px) calc(100% - 12px),
-                calc(100% - 4px) calc(100% - 20px),
-                100% calc(100% - 20px),
-                100% 20px,
-                calc(100% - 4px) 20px,
-                calc(100% - 4px) 12px,
-                calc(100% - 8px) 12px,
-                calc(100% - 8px) 8px,
-                calc(100% - 12px) 8px,
-                calc(100% - 12px) 4px,
-                calc(100% - 20px) 4px,
-                calc(100% - 20px) 0px,
-                20px 0px,
-                20px 4px,
-                12px 4px,
-                12px 8px,
-                8px 8px,
-                8px 12px,
-                4px 12px,
-                4px 20px,
-                0px 20px); */
+        clip-path: var(--defaultClipPathPolygon);
 
         &:hover {
             background-color: white;
             color: var(--bodyBackgroundColor) !important;
+        }
+
+        .button-inner {
+            clip-path: var(--defaultClipPathPolygon);
         }
     }
 }

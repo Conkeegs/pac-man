@@ -1,6 +1,6 @@
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
-import { TILESIZE } from "../../../../utils/Globals.js";
-import { px } from "../../../../utils/Utils.js";
+import { CLIP_PATH_PIXEL_PADDING, TILESIZE } from "../../../../utils/Globals.js";
+import { create, px } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
 import BoardText from "../BoardText.js";
@@ -47,29 +47,33 @@ export default class Button extends BoardObject {
 
 		const boardText = this.boardText;
 		const boardTextElement = boardText.getElement();
+		const height = this.height;
 
 		// add "BoardText" as child of this button
 		element.appendChild(boardTextElement);
 
 		element.css({
-			height: px(this.height),
+			height: px(height),
+			backgroundColor: "white",
 		});
+
+		const boardBackgroundColor = Board.BACKGROUND_COLOR;
 
 		// change how button looks when hovered
 		element.addEventListener("mouseenter", () => {
-			element.css({
+			(element.lastChild as HTMLDivElement).css({
 				backgroundColor: "white",
 			});
 
 			boardTextElement.children.css({
-				color: Board.BACKGROUND_COLOR,
+				color: boardBackgroundColor,
 			});
 		});
 
 		// change how button looks when un-hovered
 		element.addEventListener("mouseleave", () => {
-			element.css({
-				backgroundColor: "transparent",
+			(element.lastChild as HTMLDivElement).css({
+				backgroundColor: boardBackgroundColor,
 			});
 
 			boardTextElement.children.css({
@@ -78,6 +82,17 @@ export default class Button extends BoardObject {
 		});
 
 		this.setText(text, true);
+
+		element.appendChild(
+			create({
+				name: "div",
+				classes: ["button-inner"],
+			}).css({
+				height: px(height - CLIP_PATH_PIXEL_PADDING),
+				width: px(this.width - CLIP_PATH_PIXEL_PADDING),
+				backgroundColor: boardBackgroundColor,
+			}) as HTMLDivElement
+		);
 	}
 
 	/**
@@ -113,13 +128,18 @@ export default class Button extends BoardObject {
 		const boardTextFontSize = boardText.getFontSize();
 
 		this.width = boardText.getWidth()! + boardTextFontSize;
+		const width = this.width;
+		const element = this.element;
 
-		this.element.css({
-			width: px(this.width),
+		element.css({
+			width: px(width),
+		});
+		(element.lastChild as HTMLDivElement).css({
+			width: px(width - CLIP_PATH_PIXEL_PADDING),
 		});
 
 		boardText.getElement().css({
-			left: px(this.width - boardText.getFontSize() * 2 + boardText.getFontSize() / 2),
+			left: px(width - boardText.getFontSize() * 2 + boardText.getFontSize() / 2),
 		});
 	}
 }
