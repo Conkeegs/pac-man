@@ -266,12 +266,12 @@ body {
 .ui-element {
     clip-path: var(--defaultClipPathPolygon);
     background-color: var(--pacmanColor);
+    display: grid;
+    justify-content: center;
+    align-content: center;
 
     .ui-element-inner {
-        --dimensions: calc(100% - 1px);
-
-        width: var(--dimensions);
-        height: var(--dimensions);
         background-color: var(--bodyBackgroundColor);
+        clip-path: var(--defaultClipPathPolygon);
     }
 }
