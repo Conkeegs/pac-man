@@ -244,7 +244,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 
 		this.speed = speed;
 		this.source = source;
-		// faster character need larger collision thresholds, otherwise, their collision may never be detected since
+		// faster characters need larger collision thresholds, otherwise, their collision may never be detected since
 		// their position might update "past" any colliders
 		this.collisionThreshold =
 			Math.ceil(speed * millisToSeconds(App.DESIRED_MS_PER_FRAME)) + Character.COLLISION_PADDING;
@@ -443,6 +443,9 @@ export default abstract class Character extends BoardObject implements Collidabl
 				}
 
 				if (this.isCollidingWithCollidable(collidable)) {
+					// want to make sure to call the collision-handling function for the collided-with object,
+					// since not all Collidables call the "tick()" method and therefore will not run their
+					// "_onCollision()" logic if we do not explicity call it here
 					collidable._onCollision(this);
 				}
 			}
