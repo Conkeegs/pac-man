@@ -118,8 +118,8 @@ export default class PacMan extends Character {
 			this._animationFrame--;
 		}
 
-		// // if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
-		// // now
+		// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
+		// now
 		if (this._animationFrame === -1 && animationDirection === backwards) {
 			this.animationDirection = forwards;
 			this._animationFrame++;
