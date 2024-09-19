@@ -4,7 +4,7 @@ import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
 import { CHARACTERS, COLLIDABLES_MAP, TILESIZE } from "../../../../utils/Globals.js";
-import { defined, millisToSeconds, px } from "../../../../utils/Utils.js";
+import { millisToSeconds, px } from "../../../../utils/Utils.js";
 import { BoardObject, type Position } from "../../BoardObject.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
@@ -384,8 +384,6 @@ export default abstract class Character extends BoardObject implements Collidabl
 		const position = this.getPosition()!;
 		const direction = this.currentDirection;
 
-		// this will make sure the character updates at about 30 frames-per-second
-		// while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
 		if (direction === MovementDirection.STOP) {
 			this.stopMoving();
 
@@ -428,9 +426,11 @@ export default abstract class Character extends BoardObject implements Collidabl
 			}
 		}
 
-		if (defined(positionCollidables) && (positionCollidables as Collidable[]).length) {
+		const numPositionCollidables = positionCollidables.length;
+
+		if (numPositionCollidables) {
 			// check for collisions between this character and other collidables
-			for (let i = 0; i < (positionCollidables as Collidable[]).length; i++) {
+			for (let i = 0; i < numPositionCollidables; i++) {
 				const collidable = positionCollidables![i]! as Collidable;
 
 				if (

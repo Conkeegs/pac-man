@@ -253,7 +253,7 @@ export class App {
 					continue;
 				}
 
-				character.interpolate(alpha, oldCharacterPositions[character.getName()]!);
+				character.interpolate(alpha, oldCharacterPosition);
 			}
 		}
 
