@@ -31,6 +31,7 @@
     "typescript-eslint-language-service": "^5.0.5"
   },
   "dependencies": {
+    "pac-man": "file:",
     "tslib": "^2.6.2"
   }
 }
