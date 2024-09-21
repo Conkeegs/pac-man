@@ -40,6 +40,8 @@ const getAllTestFiles = function (dirPath: string, files: string[] = []) {
 };
 
 const testFiles = getAllTestFiles(__dirname);
+const testFilesCount = testFiles.length;
+let runTestsCount = 0;
 
 // run through each testing file and run their test functions
 testFiles.forEach(async (file) => {
@@ -56,7 +58,14 @@ testFiles.forEach(async (file) => {
 			(testClass[functionName as keyof Test] as () => void)();
 		}
 
-		Logger.logSuccess(`All ${testFiles.length} tests have passed.`);
+		runTestsCount++;
+
+		// if we've reached last test, log that all passed
+		if (runTestsCount === testFilesCount) {
+			Logger.logSuccess(`All ${testFilesCount} tests have passed.`);
+
+			return;
+		}
 	} catch (error: unknown) {
 		if (error instanceof TestException) {
 			testClass.fail(error.message, error.stack);
