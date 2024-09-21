@@ -1,1 +1,0 @@
-class AudioRegistryTest extends Test {}
