@@ -7,7 +7,8 @@
     "build": "swc src --out-dir dist --config-file .swcrc --log-watch-compilation",
     "watch": "swc src --config-file .swcrc --watch src --out-dir dist --log-watch-compilation",
     "dev": "concurrently --kill-others --max-processes 1 \"npm run clean\" \"npm run build\"",
-    "clean": "rimraf watch dist"
+    "clean": "rimraf watch dist",
+    "test": "npx tsx tests/runTests.ts"
   },
   "repository": {
     "type": "git",
