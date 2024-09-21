@@ -1,11 +1,13 @@
 import { readdirSync, statSync } from "fs";
 import path from "path";
-import type Test from "./base/Base";
+import Test from "./base/Base";
+import Logger from "./base/Logger.ts";
+import TestException from "./base/TestException";
 
 /**
  * Files that do not count as "test" files/directories.
  */
-const EXCLUDE_FILES: string[] = ["index.ts", "base"];
+const EXCLUDE_FILES: string[] = ["runTests.ts", "base"];
 
 /**
  * Gets a list of each of the test files to run.
@@ -14,7 +16,7 @@ const EXCLUDE_FILES: string[] = ["index.ts", "base"];
  * @param files list of files in each directory
  * @returns list of test files (excluding those in `EXCLUDE_FILES`)
  */
-const getAllFiles = function (dirPath: string, files: string[] = []) {
+const getAllTestFiles = function (dirPath: string, files: string[] = []) {
 	readdirSync(dirPath).forEach(function (file) {
 		if (EXCLUDE_FILES.includes(file)) {
 			return;
@@ -23,7 +25,7 @@ const getAllFiles = function (dirPath: string, files: string[] = []) {
 		const filePath = path.join(dirPath, "/", file);
 
 		if (statSync(filePath).isDirectory()) {
-			files = getAllFiles(filePath, files);
+			files = getAllTestFiles(filePath, files);
 
 			return;
 		}
@@ -37,17 +39,32 @@ const getAllFiles = function (dirPath: string, files: string[] = []) {
 	return files;
 };
 
+const testFiles = getAllTestFiles(__dirname);
+
 // run through each testing file and run their test functions
-getAllFiles(__dirname).forEach(async (file) => {
+testFiles.forEach(async (file) => {
 	const testFile = await import(file);
 	const testClass: Test = new testFile.default();
 	/// only search for testing functions ending in the word "Test" for convenience
 	const testFunctionNames = Object.getOwnPropertyNames(Object.getPrototypeOf(testClass)).filter((functionName) => {
-		return functionName.endsWith("Test") && functionName !== "constructor";
+		return functionName.endsWith("Test");
 	});
 
-	// run each testing function
-	for (const functionName of testFunctionNames) {
-		testClass[functionName as keyof Test]();
+	try {
+		// run each testing function
+		for (const functionName of testFunctionNames) {
+			(testClass[functionName as keyof Test] as () => void)();
+		}
+
+		Logger.logSuccess(`All ${testFiles.length} tests have passed.`);
+	} catch (error: unknown) {
+		if (error instanceof TestException) {
+			testClass.fail(error.message, error.stack);
+
+			return;
+		}
+
+		Logger.logFailure("Unknown error occurred while running tests:");
+		Logger.log(error);
 	}
 });
