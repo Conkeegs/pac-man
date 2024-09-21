@@ -20,7 +20,7 @@
         "baseUrl": ".",
         "rootDir": ".",
         "module": "ES2015",
-        "moduleResolution": "Classic",
+        "moduleResolution": "Node",
         // "resolveJsonModule": true,
         "composite": true,
         "outDir": "dist",
