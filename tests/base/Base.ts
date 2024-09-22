@@ -16,7 +16,7 @@ export default abstract class Test {
 	 * @param message description of the testing failure
 	 */
 	public fail(message: string, stack?: string): void {
-		Logger.log(`${message} in ${chalk.bold(this.getName())}\n`, {
+		Logger.log(`${message} in ${chalk.underline(this.getName())}\n`, {
 			severity: "failure",
 			withSymbol: true,
 		});

@@ -4,6 +4,7 @@ import path from "path";
 import Test from "./base/Base";
 import Logger from "./base/Logger.ts";
 import TestException from "./base/TestException";
+import { pluralize } from "./base/Utils.ts";
 
 /**
  * Files that do not count as "test" files/directories.
@@ -54,9 +55,10 @@ testFiles.forEach(async (file) => {
 	const testFunctionNames = Object.getOwnPropertyNames(Object.getPrototypeOf(testClass)).filter((functionName) => {
 		return functionName.endsWith("Test");
 	});
+	let testFunctionCount = 0;
 
 	try {
-		Logger.log(`Running ${chalk.bold(testClassName)}:\n`);
+		Logger.log(`Running ${chalk.underline(testClassName)}:\n`);
 
 		// run each testing function
 		for (const functionName of testFunctionNames) {
@@ -64,7 +66,7 @@ testFiles.forEach(async (file) => {
 
 			(testClass[functionName as keyof Test] as () => void)();
 
-			Logger.log(`${chalk.bold(functionName)} successful`, {
+			Logger.log(`${chalk.white(++testFunctionCount + ")")} ${chalk.underline(functionName)} successful`, {
 				severity: "success",
 				tabbed: true,
 			});
@@ -74,7 +76,7 @@ testFiles.forEach(async (file) => {
 
 		Logger.log("\n");
 		Logger.log(
-			`${chalk.bold(testClassName)} passed: ${chalk.bold(
+			`${chalk.underline(testClassName)} passed: ${chalk.italic(
 				Math.ceil((runTestsCount / testFilesCount) * 100)
 			)}% complete`,
 			{
@@ -85,7 +87,7 @@ testFiles.forEach(async (file) => {
 
 		// if we've reached last test, log that all passed
 		if (runTestsCount === testFilesCount) {
-			Logger.log(`\nAll ${chalk.bold(testFilesCount)} tests have passed.`, {
+			Logger.log(`\n${chalk.italic(testFilesCount)} ${pluralize("test", testFilesCount)} passed.`, {
 				severity: "success",
 			});
 
@@ -93,7 +95,7 @@ testFiles.forEach(async (file) => {
 		}
 	} catch (error: unknown) {
 		if (error instanceof TestException) {
-			testClass.fail(`${chalk.bold(currentTestFunction)}: ${error.message}`, error.stack);
+			testClass.fail(`${chalk.underline(currentTestFunction)}: ${error.message}`, error.stack);
 
 			return;
 		}
