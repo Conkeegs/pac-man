@@ -16,7 +16,10 @@ export default abstract class Test {
 	 * @param message description of the testing failure
 	 */
 	public fail(message: string, stack?: string): void {
-		Logger.logFailure(`${message} in ${chalk.bold(this.getName())}`);
+		Logger.log(`${message} in ${chalk.bold(this.getName())}\n`, {
+			severity: "failure",
+			withSymbol: true,
+		});
 
 		if (stack) {
 			Logger.log(stack);
@@ -28,7 +31,7 @@ export default abstract class Test {
 	 *
 	 * @returns the name of the test
 	 */
-	private getName(): string {
+	public getName(): string {
 		return this.name;
 	}
 }
