@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { readdirSync, statSync } from "fs";
 import path from "path";
 import Test from "./base/Base";
