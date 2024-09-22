@@ -407,7 +407,7 @@ export function uniqueId(): string {
  * @param count the number to base the pluralization on
  */
 export function pluralize(word: string, count: number): string {
-	if (count !== 0 && !(count > 1)) {
+	if (count === 0 || count > 1) {
 		return `${word}s`;
 	}
 
