@@ -1,6 +1,6 @@
 "use strict";
 
-import RunTests from "../../tests/runTests.js";
+import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
 import type { Position } from "./board/boardobject/BoardObject.js";
