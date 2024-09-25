@@ -56,6 +56,17 @@ export const BOARD_OBJECT_Z_INDEX: 0 = 0;
  */
 export const ORIGINAL_TILE_SIZE: 8 = 8;
 
+/**
+ * Padding of the clip-path used on UI elements.
+ */
 export const CLIP_PATH_PIXEL_PADDING: 4 = 4;
 
+/**
+ * Pacman's default yellow color.
+ */
 export const PACMAN_COLOR: "#ffeb3b" = "#ffeb3b";
+
+/**
+ * Whether or not the app is in testing mode.
+ */
+export const TESTING: boolean = true;

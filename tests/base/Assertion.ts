@@ -1,11 +1,12 @@
-import TestException from "./TestException.ts";
+import TestException from "./TestException.js";
 
 /**
  * Turns JavaScript operators into their english-sentence equivalents for test logging
  * readability.
  */
 enum OperatorsEnglish {
-	"===" = "strictly equal",
+	"===" = "strictly equal to",
+	"instanceof" = "an instance of",
 }
 
 /**
@@ -26,6 +27,18 @@ export default abstract class Assertion {
 	}
 
 	/**
+	 * Asserts that `expected` in strictly equal to `true`.
+	 *
+	 * @param expected any Javascript object
+	 * @param actual any Javascript object
+	 */
+	public static assertInstanceOf(expected: unknown, actual: any): void {
+		if (!(expected instanceof actual)) {
+			Assertion.formMessageAndThrow(expected, "instanceof", actual);
+		}
+	}
+
+	/**
 	 * Forms a user-friendly assertion-failure message to log to the console when the
 	 * thrown `TestException` is caught.
 	 *
@@ -39,6 +52,6 @@ export default abstract class Assertion {
 		operator: keyof typeof OperatorsEnglish,
 		actual: unknown
 	): void {
-		throw new TestException(`Failed asserting that ${expected} is ${OperatorsEnglish[operator]} to ${actual}`);
+		throw new TestException(`Failed asserting that ${expected} is ${OperatorsEnglish[operator]} ${actual}`);
 	}
 }

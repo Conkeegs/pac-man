@@ -1,13 +1,7 @@
-import chalk, { type ChalkInstance } from "chalk";
-
 /**
  * Used to log testing messages to the node.js console.
  */
 export default abstract class Logger {
-	/**
-	 * Orange hex color for coloring warning-logs.
-	 */
-	private static readonly ORANGE: string = "#FFA500";
 	/**
 	 * Unicode space character for console.
 	 */
@@ -20,15 +14,15 @@ export default abstract class Logger {
 	 * Map of logging severities to their respective colors.
 	 */
 	private static readonly SEVERITY_COLOR_MAP: {
-		success: ChalkInstance;
-		failure: ChalkInstance;
-		warning: ChalkInstance;
-		none: ChalkInstance;
+		success: "green";
+		failure: "red";
+		warning: "orange";
+		none: "white";
 	} = {
-		success: chalk.green,
-		failure: chalk.red,
-		warning: chalk.hex(Logger.ORANGE),
-		none: chalk.white,
+		success: "green",
+		failure: "red",
+		warning: "orange",
+		none: "white",
 	};
 	/**
 	 * Map of logging severities to their respective unicode symbols.
@@ -67,13 +61,13 @@ export default abstract class Logger {
 		const severity = options.severity || "none";
 
 		if (options.withSymbol && severity !== "none") {
-			message = `${chalk.bold(Logger.SEVERITY_UNICODE_MAP[severity])}${Logger.SPACE_UNICODE} ${message}`;
+			message = `${Logger.SEVERITY_UNICODE_MAP[severity]}${Logger.SPACE_UNICODE} ${message}`;
 		}
 
 		if (options.tabbed) {
 			message = `${Logger.TAB_UNICODE}${message}`;
 		}
 
-		console.log(Logger.SEVERITY_COLOR_MAP[severity](message));
+		console.log(`%c ${message}`, `color: ${Logger.SEVERITY_COLOR_MAP[severity]}`);
 	}
 }

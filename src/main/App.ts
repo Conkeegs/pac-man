@@ -1,12 +1,13 @@
 "use strict";
 
+import RunTests from "../../tests/runTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
 import type { Position } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
-import { BOARD_OBJECT_Z_INDEX, CHARACTERS } from "./utils/Globals.js";
+import { BOARD_OBJECT_Z_INDEX, CHARACTERS, TESTING } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
@@ -329,5 +330,9 @@ export class App {
 	}
 }
 
-// run the game
-new App();
+// run the game if not in testing mode
+if (!TESTING) {
+	new App();
+} else {
+	new RunTests();
+}

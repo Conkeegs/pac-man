@@ -1,5 +1,5 @@
-import chalk from "chalk";
-import Logger from "./Logger.ts";
+import Logger from "./Logger.js";
+import type TestException from "./TestException.js";
 
 /**
  * The base test class.
@@ -13,17 +13,17 @@ export default abstract class Test {
 	/**
 	 * Logic to call when this test fails.
 	 *
-	 * @param message description of the testing failure
+	 * @param message the message to display in the console
+	 * @param error the testing error thrown
 	 */
-	public fail(message: string, stack?: string): void {
-		Logger.log(`${message} in ${chalk.underline(this.getName())}\n`, {
+	public fail(message: string, error: TestException): void {
+		Logger.log(`${message} in ${this.getName()}\n`, {
 			severity: "failure",
 			withSymbol: true,
 		});
 
-		if (stack) {
-			Logger.log(stack);
-		}
+		// raw console log since browser allows expanding/collapsing of errors
+		console.log(error);
 	}
 
 	/**
