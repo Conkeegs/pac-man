@@ -175,7 +175,9 @@ export default class Board {
 
 	/**
 	 * Takes a horizontal (x) tile number and calculates the offset in pixels so that items
-	 * can be positioned horizontally on the board correctly.
+	 * can be positioned horizontally on the board correctly. Items get positioned against the
+	 * left-most side of the destination tile, so for example, going to the second tile horizontally would look
+	 * like: [][| ] where the "|" is the item to be placed.
 	 *
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
@@ -186,7 +188,8 @@ export default class Board {
 
 	/**
 	 * Takes a vertical (y) tile number and calculates the offset in pixels so that items
-	 * can be positioned vertically on the board correctly.
+	 * can be positioned vertically on the board correctly. Items get positioned against the
+	 * top-most side of the destination tile.
 	 *
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
@@ -196,23 +199,27 @@ export default class Board {
 	}
 
 	/**
-	 * Calculates an integer tile number for a given horizontal offset on the board.
+	 * Calculates an integer tile number for a given horizontal offset on the board. Add `TILESIZE` to
+	 * `xPixels` since each object on the board's x-position is marked by their left-most side, so for example,
+	 * "5" tiles from the left would = 6th tile horizontally.
 	 *
-	 * @param x the horizontal offset
+	 * @param xPixels the horizontal offset
 	 * @returns integer tile number for a given horizontal offset
 	 */
-	static calcTileNumX(x: number): number {
-		return Math.floor((x + TILESIZE) / TILESIZE);
+	static calcTileNumX(xPixels: number): number {
+		return Math.floor((xPixels + TILESIZE) / TILESIZE);
 	}
 
 	/**
-	 * Calculates an integer tile number for a given vertical offset on the board.
+	 * Calculates an integer tile number for a given vertical offset on the board. Add `TILESIZE` to
+	 * `yPixels` since each object on the board's y-position is marked by their top-most side, so for example,
+	 * "5" tiles from the top would = 6the tile vertically.
 	 *
-	 * @param y the vertical offset
+	 * @param yPixels the vertical offset
 	 * @returns integer tile number for a given vertical offset
 	 */
-	static calcTileNumY(y: number): number {
-		return Math.floor((Board.calcTileOffset(ROWS) - (y + TILESIZE)) / TILESIZE);
+	static calcTileNumY(yPixels: number): number {
+		return Math.floor((Board.calcTileOffset(ROWS) - (yPixels + TILESIZE)) / TILESIZE);
 	}
 
 	/**
