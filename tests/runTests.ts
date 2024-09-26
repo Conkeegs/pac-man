@@ -1,9 +1,9 @@
+import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import AudioRegistryTest from "./assets/AudioRegistryTest.js";
 import ImageRegistryTest from "./assets/ImageRegistryTest.js";
 import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
-import Logger from "./base/Logger.js";
 import TestException from "./base/TestException.js";
 import BoardTest from "./board/BoardTest.js";
 

@@ -1,5 +1,5 @@
 /**
- * Used to log testing messages to the node.js console.
+ * Used to log customized messages to the console.
  */
 export default abstract class Logger {
 	/**
@@ -38,10 +38,10 @@ export default abstract class Logger {
 	};
 
 	/**
-	 * Logs a testing message.
+	 * Logs a message.
 	 *
 	 * @param message the message to log
-	 * @param options options to specify the severity of the testing log, whether or not to log
+	 * @param options options to specify the severity of the log, whether or not to log
 	 * it with a unicode symbol, and whether or not to indent/tab the message
 	 */
 	public static log(

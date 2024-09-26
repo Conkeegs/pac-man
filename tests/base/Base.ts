@@ -1,4 +1,4 @@
-import Logger from "./Logger.js";
+import Logger from "../../src/main/Logger.js";
 import type TestException from "./TestException.js";
 
 /**
