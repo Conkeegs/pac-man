@@ -9,8 +9,6 @@ import { tests } from "../base/Decorators.js";
  */
 @tests(AudioRegistry)
 export default class AudioRegistryTest extends Test {
-	protected override name: string = AudioRegistryTest.name;
-
 	/**
 	 * Test that each audio is of type `HTMLAudioElement` in the audio registry.
 	 */

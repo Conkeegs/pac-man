@@ -8,12 +8,10 @@ import { tests } from "../base/Decorators.js";
  */
 @tests(ImageRegistry)
 export default class ImageRegistryTest extends Test {
-	protected override name: string = ImageRegistryTest.name;
-
 	/**
 	 * Test that each image is of type `HTMLImageElement` in the image registry.
 	 */
-	public imageListTypesTest() {
+	public imageListTest() {
 		for (const image of Object.values(ImageRegistry.IMAGE_LIST)) {
 			Assertion.assertTrue(image instanceof HTMLImageElement);
 		}

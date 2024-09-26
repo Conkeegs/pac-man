@@ -8,12 +8,10 @@ import { tests } from "../base/Decorators.js";
  */
 @tests(JsonRegistry)
 export default class JsonRegistryTest extends Test {
-	protected override name: string = JsonRegistryTest.name;
-
 	/**
 	 * Test that each JSON is of type `string` in the JSON registry.
 	 */
-	public jsonListTypesTest() {
+	public jsonListTest() {
 		for (const json of Object.values(JsonRegistry.JSON_LIST)) {
 			Assertion.assertOfType("string", json);
 		}

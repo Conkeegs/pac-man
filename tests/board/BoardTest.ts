@@ -10,8 +10,6 @@ import { tests } from "../base/Decorators.js";
  */
 @tests(Board)
 export default class BoardTest extends Test {
-	protected override name: string = BoardTest.name;
-
 	/**
 	 * Test that the game's board can be created successfully.
 	 */

@@ -8,7 +8,14 @@ export default abstract class Test {
 	/**
 	 * The name of this test class.
 	 */
-	protected abstract name: string;
+	private name: string;
+
+	/**
+	 * Creates a `Test` instance.
+	 */
+	constructor() {
+		this.name = Object.getPrototypeOf(this).constructor.name;
+	}
 
 	/**
 	 * Logic to call when this test fails.
