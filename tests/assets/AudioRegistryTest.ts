@@ -12,7 +12,7 @@ export default class AudioRegistryTest extends Test {
 	/**
 	 * Test that each audio is of type `HTMLAudioElement` in the audio registry.
 	 */
-	public audioListTypesTest() {
+	public audioListTest() {
 		for (const audio of Object.values(AudioRegistry.AUDIO_LIST)) {
 			Assertion.assertTrue(audio instanceof HTMLAudioElement);
 		}
