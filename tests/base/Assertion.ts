@@ -1,3 +1,4 @@
+import { exists } from "../../src/main/utils/Utils.js";
 import TestException from "./TestException.js";
 
 /**
@@ -6,7 +7,9 @@ import TestException from "./TestException.js";
  */
 enum OperatorsEnglish {
 	"===" = "strictly equal to",
-	"instanceof" = "an instance of",
+	"typeof" = "of type",
+	"exists" = "existing",
+	"contains" = "contained in",
 }
 
 /**
@@ -14,27 +17,65 @@ enum OperatorsEnglish {
  */
 export default abstract class Assertion {
 	/**
-	 * Asserts that `expected` in strictly equal to `true`.
+	 * Asserts that `expected` is strictly equal to `true`.
 	 *
 	 * @param expected any Javascript object
 	 */
 	public static assertTrue(expected: unknown): void {
 		const actual = true;
 
-		if (!expected === actual) {
+		if (expected !== actual) {
 			Assertion.formMessageAndThrow(expected, "===", actual);
 		}
 	}
 
 	/**
-	 * Asserts that `expected` in strictly equal to `true`.
+	 * Asserts that `expected` is of a certain JavaScript type.
+	 *
+	 * @param expected the expected JavaScript type
+	 * @param actual any Javascript object
+	 */
+	public static assertOfType(
+		expected: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function",
+		actual: unknown
+	): void {
+		if (expected !== typeof actual) {
+			Assertion.formMessageAndThrow(expected, "typeof", actual);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is strictly equal to `actual`.
 	 *
 	 * @param expected any Javascript object
 	 * @param actual any Javascript object
 	 */
-	public static assertInstanceOf(expected: unknown, actual: any): void {
-		if (!(expected instanceof actual)) {
-			Assertion.formMessageAndThrow(expected, "instanceof", actual);
+	public static assertStrictlyEqual(expected: unknown, actual: unknown): void {
+		if (expected !== actual) {
+			Assertion.formMessageAndThrow(expected, "===", actual);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` exists.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertExists(expected: unknown): void {
+		if (exists(expected) !== true) {
+			Assertion.formMessageAndThrow(expected, "exists");
+		}
+	}
+
+	/**
+	 * Asserts that `expected` exists.
+	 *
+	 * @param expected any Javascript object
+	 * @param array array to search for `expected` in
+	 */
+	public static assertArrayContains(expected: unknown, array: unknown[]): void {
+		if (array.includes(expected) !== true) {
+			Assertion.formMessageAndThrow(expected, "contains", array);
 		}
 	}
 
@@ -50,8 +91,14 @@ export default abstract class Assertion {
 	private static formMessageAndThrow(
 		expected: unknown,
 		operator: keyof typeof OperatorsEnglish,
-		actual: unknown
+		actual?: unknown
 	): void {
-		throw new TestException(`Failed asserting that ${expected} is ${OperatorsEnglish[operator]} ${actual}`);
+		let message = `Failed asserting that ${expected} is ${OperatorsEnglish[operator]}`;
+
+		if (actual) {
+			message = `${message} ${actual}`;
+		}
+
+		throw new TestException(message);
 	}
 }
