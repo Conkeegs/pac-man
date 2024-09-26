@@ -1,14 +1,22 @@
+import { pluralize } from "../src/main/utils/Utils.js";
 import AudioRegistryTest from "./assets/AudioRegistryTest.js";
+import ImageRegistryTest from "./assets/ImageRegistryTest.js";
+import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
 import Logger from "./base/Logger.js";
 import TestException from "./base/TestException.js";
-import { pluralize } from "./base/Utils.js";
+import BoardTest from "./board/BoardTest.js";
 
 /**
  * Class used to run tests for the game.
  */
 export default class RunTests {
-	private static readonly TEST_CLASSES: Test[] = [new AudioRegistryTest()];
+	private static readonly TEST_CLASSES: Test[] = [
+		new AudioRegistryTest(),
+		new ImageRegistryTest(),
+		new JsonRegistryTest(),
+		new BoardTest(),
+	];
 
 	/**
 	 * Creates a `RunTest` instance.

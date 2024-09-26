@@ -70,3 +70,8 @@ export const PACMAN_COLOR: "#ffeb3b" = "#ffeb3b";
  * Whether or not the app is in testing mode.
  */
 export const TESTING: boolean = true;
+
+/**
+ * Default background-color of the game.
+ */
+export const BODY_BACKGROUND_COLOR: "#070200" = "#070200";
