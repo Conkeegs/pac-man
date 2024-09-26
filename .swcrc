@@ -19,7 +19,7 @@
             "syntax": "typescript",
             "tsx": false,
             "dynamicImport": false,
-            "decorators": false
+            "decorators": true
         },
         "target": "es2015",
         "loose": true,
