@@ -1,5 +1,5 @@
-import Logger from "./Logger.ts";
-import { millisToSeconds } from "./utils/Utils.ts";
+import Logger from "./Logger.js";
+import { millisToSeconds } from "./utils/Utils.js";
 
 /**
  * Decorator that will time any function it is applied to in milliseconds and seconds.
@@ -32,6 +32,7 @@ export function timed(
 			{
 				withSymbol: true,
 				severity: "warning",
+				tabbed: true,
 			}
 		);
 	};
