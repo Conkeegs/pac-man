@@ -46,7 +46,8 @@
         "lib": [
             "DOM",
             "ES6"
-        ]
+        ],
+        "experimentalDecorators": true
     },
     "include": [
         "src/**/*",
