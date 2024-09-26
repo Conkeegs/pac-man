@@ -25,30 +25,42 @@ export function tests(testedClassConstructor: Function): (testClassConstructor: 
 			);
 		}
 
-		const constructorPrototype = testClassConstructor.prototype;
+		const testClassConstructorPrototype = testClassConstructor.prototype;
 
-		// loop through test class' method names and make sure they match the naming of the class' methods it is testing. filter
-		// out constructor since it shouldn't count as a "testing" method
-		for (const propertyName of Object.getOwnPropertyNames(constructorPrototype).filter(
-			(propertyName) => propertyName !== "constructor"
-		)) {
+		// loop through test class' method names and make sure they match the naming of the class' properties it is testing. filter
+		// out constructor since it shouldn't count as a "testing" method. we also filter out testing methods starting with "create"
+		// as these signify a testing method that creates an instance of a class
+		for (const propertyName of Object.getOwnPropertyNames(testClassConstructorPrototype).filter((propertyName) => {
+			if (propertyName === "constructor") {
+				return false;
+			}
+
+			return (
+				typeof testClassConstructorPrototype[propertyName] === "function" && !propertyName.startsWith("create")
+			);
+		})) {
 			// make sure each testing method ends with "test"
-			if (typeof constructorPrototype[propertyName] === "function" && !propertyName.endsWith("Test")) {
+			if (!propertyName.endsWith("Test")) {
 				throw new Error(
-					`${testClassConstructorName} implements invalid method ${propertyName}: ${propertyName} does not end with the word "Test"`
+					`${testClassConstructorName} implements invalid method ${propertyName}: method ${propertyName} does not end with the word "Test"`
 				);
 			}
 
-			const testMethodTargetMethod = propertyName.slice(0, propertyName.indexOf("Test"));
+			const testMethodTargetProperty = propertyName.slice(0, propertyName.indexOf("Test"));
 
-			// make sure each testing method matches naming convention of class methods they are testing
+			// make sure each testing method matches naming convention of class properties they are testing.filter out constructor since
+			// it shouldn't be tested against (at least directly)
 			if (
-				Object.getOwnPropertyNames(testedClassConstructor.prototype).findIndex((propertyName) => {
-					return propertyName === testMethodTargetMethod;
+				Object.getOwnPropertyNames(testedClassConstructor).findIndex((propertyName) => {
+					if (propertyName === "constructor") {
+						return false;
+					}
+
+					return propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase();
 				}) === -1
 			) {
 				throw new Error(
-					`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement method ${testMethodTargetMethod}`
+					`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement property or method with naming convention "${testMethodTargetProperty}"`
 				);
 			}
 		}
