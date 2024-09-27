@@ -102,7 +102,7 @@ export default class RunTests {
 	 *
 	 * @param mapping an object containing a testing class and its methods
 	 */
-	private runTestMapping(mapping: TestMapping): void {
+	private async runTestMapping(mapping: TestMapping): Promise<void> {
 		let testFunctionCount = 0;
 		const testClass = mapping.test;
 		const testClassName = testClass.getName();
