@@ -24,6 +24,7 @@
         // "resolveJsonModule": true,
         "composite": true,
         "outDir": "dist",
+        "noImplicitThis": false,
         "target": "ES2015",
         "declarationDir": "types",
         "removeComments": true,
