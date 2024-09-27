@@ -1,6 +1,17 @@
+import ImageRegistry from "../../src/main/assets/ImageRegistry.js";
 import Board from "../../src/main/board/Board.js";
-import { BOARDOBJECTS, FOOD_COUNT, HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
-import { get, px } from "../../src/main/utils/Utils.js";
+import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
+import {
+	BOARDOBJECTS,
+	CHARACTERS,
+	COLLIDABLES_MAP,
+	FOOD_COUNT,
+	HEIGHT,
+	ROWS,
+	TILESIZE,
+	WIDTH,
+} from "../../src/main/utils/Globals.js";
+import { get, originalPacManSpeedToNewSpeed, px } from "../../src/main/utils/Utils.js";
 import Assertion from "../base/Assertion.js";
 import Test from "../base/Base.js";
 import { tests } from "../base/Decorators.js";
@@ -26,6 +37,9 @@ export default class BoardTest extends Test {
 		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
 		Assertion.assertStrictlyEqual(boardColor, boardDiv.css("backgroundColor"));
+		Assertion.assertEmpty(COLLIDABLES_MAP);
+		Assertion.assertEmpty(BOARDOBJECTS);
+		Assertion.assertEmpty(CHARACTERS);
 	}
 
 	/**
@@ -89,5 +103,67 @@ export default class BoardTest extends Test {
 			FOOD_COUNT,
 			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
 		);
+		Assertion.assertArrayLength(
+			1,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "PacMan")
+		);
+		Assertion.assertArrayLength(
+			1,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Blinky")
+		);
+		Assertion.assertArrayLength(
+			1,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Inky")
+		);
+		Assertion.assertArrayLength(
+			1,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Pinky")
+		);
+		Assertion.assertArrayLength(
+			1,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Clyde")
+		);
+	}
+
+	/**
+	 * Test that the game's board can place `BoardObject` instances on it.
+	 */
+	public placeBoardObjectTest(): void {
+		const board = new Board();
+		const pacman = new PacMan("test-pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
+		const numTiles = 5;
+
+		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
+
+		const pacmanPosition = pacman.getPosition()!;
+
+		Assertion.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
+		Assertion.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
+		Assertion.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
+	}
+
+	/**
+	 * Test that the game's board can delete references to dependent globals.
+	 */
+	public deleteDependentGlobalsTest(): void {
+		const board = new Board();
+
+		Assertion.assertEmpty(COLLIDABLES_MAP);
+		Assertion.assertEmpty(BOARDOBJECTS);
+		Assertion.assertEmpty(CHARACTERS);
+
+		const pacman = new PacMan("test-pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
+
+		Reflect.apply(board["placeBoardObject"], board, [pacman, 5, 5]);
+
+		Assertion.assertNotEmpty(COLLIDABLES_MAP);
+		Assertion.assertNotEmpty(BOARDOBJECTS);
+		Assertion.assertNotEmpty(CHARACTERS);
+
+		Reflect.apply(board["deleteDependentGlobals"], board, []);
+
+		Assertion.assertEmpty(COLLIDABLES_MAP);
+		Assertion.assertEmpty(BOARDOBJECTS);
+		Assertion.assertEmpty(CHARACTERS);
 	}
 }
