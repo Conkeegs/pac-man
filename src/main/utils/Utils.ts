@@ -440,3 +440,33 @@ export function empty(value: object | unknown[]): boolean {
 
 	return (value as unknown[]).length === 0;
 }
+
+/**
+ * Replaces circular references in objects so that `JSON.stringify()` can be called
+ * upon them without error. Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value#circular_references
+ *
+ * @returns object to stringify
+ */
+export function getCircularReplacer() {
+	const ancestors: any[] = [];
+
+	return function (key: any, value: any) {
+		if (typeof value !== "object" || value === null) {
+			return value;
+		}
+
+		// "this" is the object that "value" is contained in,
+		// i.e., its direct parent.
+		while (ancestors.length > 0 && ancestors.at(-1) !== this) {
+			ancestors.pop();
+		}
+
+		if (ancestors.includes(value)) {
+			return "[Circular]";
+		}
+
+		ancestors.push(value);
+
+		return value;
+	};
+}
