@@ -276,8 +276,8 @@ export class App {
 			// tell all characters where it can turn
 			fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
 				for (let turn of turnData) {
-					turn.x = Board.calcTileX(turn.x + 0.5);
-					turn.y = Board.calcTileY(turn.y - 0.5);
+					turn.x = Board.calcTileOffsetX(turn.x + 0.5);
+					turn.y = Board.calcTileOffsetY(turn.y - 0.5);
 				}
 
 				Character.turnData = turnData;

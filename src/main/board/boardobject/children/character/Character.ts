@@ -108,12 +108,12 @@ export default abstract class Character extends BoardObject implements Collidabl
 		[MovementDirection.LEFT]: {
 			// subtract by character's width. otherwise, when character is teleported to this left teleporter's position,
 			// it will have its left-hand side placed at the start of the entrance, instead of emerging from it
-			x: Board.calcTileX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
-			y: Board.calcTileY(18.25),
+			x: Board.calcTileOffsetX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
+			y: Board.calcTileOffsetY(18.25),
 		},
 		[MovementDirection.RIGHT]: {
-			x: Board.calcTileX(29),
-			y: Board.calcTileY(18.25),
+			x: Board.calcTileOffsetX(29),
+			y: Board.calcTileOffsetY(18.25),
 		},
 	};
 	/**

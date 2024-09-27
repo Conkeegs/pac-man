@@ -186,27 +186,28 @@ export default class Board {
 	}
 
 	/**
-	 * Takes a horizontal (x) tile number and calculates the offset in pixels so that items
+	 * Takes a horizontal (x) tile number and calculates the offset in pixels (from the left) so that items
 	 * can be positioned horizontally on the board correctly. Items get positioned against the
-	 * left-most side of the destination tile, so for example, going to the second tile horizontally would look
-	 * like: [][| ] where the "|" is the item to be placed.
+	 * left-most side of the destination tile, so we subtract the tile size from the total offset.
+	 * For example, going to the second tile horizontally would look like: [][| ] where the "|" is
+	 * the item to be placed.
 	 *
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
 	 */
-	static calcTileX(tileX: number): number {
+	static calcTileOffsetX(tileX: number): number {
 		return Board.calcTileOffset(tileX) - TILESIZE;
 	}
 
 	/**
 	 * Takes a vertical (y) tile number and calculates the offset in pixels so that items
 	 * can be positioned vertically on the board correctly. Items get positioned against the
-	 * top-most side of the destination tile.
+	 * top-most side of the destination tile, so we subtract the tile size from the total offset.
 	 *
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
 	 */
-	static calcTileY(tileY: number): number {
+	static calcTileOffsetY(tileY: number): number {
 		return Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY) - TILESIZE;
 	}
 
@@ -348,8 +349,8 @@ export default class Board {
 		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		// }
 
-		const left = Board.calcTileX(tileX);
-		const top = Board.calcTileY(tileY);
+		const left = Board.calcTileOffsetX(tileX);
+		const top = Board.calcTileOffsetY(tileY);
 
 		boardObject.setPosition(
 			{

@@ -40,7 +40,7 @@ export default class BoardTest extends Test {
 	 * Test that the game's board can calc horizontal offsets.
 	 */
 	public calcTileXTest(): void {
-		Assertion.assertStrictlyEqual(TILESIZE * 3 - TILESIZE, Board.calcTileX(3));
+		Assertion.assertStrictlyEqual(TILESIZE * 3 - TILESIZE, Board.calcTileOffsetX(3));
 	}
 
 	/**
@@ -50,7 +50,7 @@ export default class BoardTest extends Test {
 		const totalTileWidth = TILESIZE * ROWS;
 		const tripleTileSize = TILESIZE * 3;
 
-		Assertion.assertStrictlyEqual(totalTileWidth - tripleTileSize - TILESIZE, Board.calcTileY(3));
+		Assertion.assertStrictlyEqual(totalTileWidth - tripleTileSize - TILESIZE, Board.calcTileOffsetY(3));
 	}
 
 	/**
