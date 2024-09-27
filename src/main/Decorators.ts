@@ -16,10 +16,10 @@ export function timed(
 ): TypedPropertyDescriptor<any> {
 	const originalMethod: Function = descriptor.value;
 
-	descriptor.value = function () {
+	descriptor.value = async function () {
 		const start = performance.now();
 
-		originalMethod.call(this);
+		await originalMethod.call(this);
 
 		const end = performance.now();
 		const milliseconds = end - start;
