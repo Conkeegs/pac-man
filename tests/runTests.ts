@@ -53,43 +53,59 @@ export default class RunTests {
 	 * Creates a `RunTest` instance.
 	 *
 	 * @param specificClassAndFunction optional param for a single test class to run. Can use "::" separator to also
-	 * specify a specific function name in the class to run.
+	 * specify a specific function name in the class to run on the right-hand side.
 	 */
 	constructor(specificClassAndFunction?: string) {
 		const testClasses = RunTests.TEST_CLASSES;
-		this.testClassesLength = testClasses.length;
 		this.testFunctionCountTotal = 0;
 		this.testFunctionCountCurrent = 0;
 		const specificClassAndFunctionSplit = specificClassAndFunction?.split("::");
-		let testClassesMap: { readonly testFunctionNames: string[]; readonly test: Test }[] = testClasses
-			.filter((test) => {
-				if (specificClassAndFunctionSplit) {
-					return test.getName() === specificClassAndFunctionSplit[0];
+		const specifiedClass: string | undefined = specificClassAndFunctionSplit && specificClassAndFunctionSplit[0];
+		const testClassesFiltered: Test[] = testClasses.filter((test) => {
+			if (specifiedClass) {
+				return test.getName() === specifiedClass;
+			}
+
+			return true;
+		});
+
+		if (!testClassesFiltered.length && specifiedClass) {
+			throw new Error(`Specified test class ${specifiedClass} does not exist or was not initialized`);
+		}
+
+		const testClassesMap: TestMapping[] = testClassesFiltered.map((test: Test): TestMapping => {
+			const specifiedMethod: string | boolean | undefined =
+				specificClassAndFunctionSplit &&
+				specificClassAndFunctionSplit.length > 1 &&
+				specificClassAndFunctionSplit[1];
+			// only search for testing functions ending in the word "Test" for convenience
+			const testFunctionNames = Object.getOwnPropertyNames(Object.getPrototypeOf(test)).filter((functionName) => {
+				let constraint = functionName.endsWith("Test");
+
+				if (specifiedMethod) {
+					constraint = constraint && functionName === specifiedMethod;
 				}
 
-				return true;
-			})
-			.map((test: Test): TestMapping => {
-				// only search for testing functions ending in the word "Test" for convenience
-				const testFunctionNames = Object.getOwnPropertyNames(Object.getPrototypeOf(test)).filter(
-					(functionName) => {
-						let constraint = functionName.endsWith("Test");
-
-						if (specificClassAndFunctionSplit && specificClassAndFunctionSplit.length > 1) {
-							constraint = constraint && functionName === specificClassAndFunctionSplit[1];
-						}
-
-						return constraint;
-					}
-				);
-
-				this.testFunctionCountTotal += testFunctionNames.length;
-
-				return {
-					testFunctionNames,
-					test,
-				} as const;
+				return constraint;
 			});
+
+			if (!testFunctionNames.length && specifiedMethod) {
+				throw new Error(
+					`Specified test method ${
+						specificClassAndFunctionSplit![1]
+					} does not exist on testing class: ${test.getName()}`
+				);
+			}
+
+			this.testFunctionCountTotal += testFunctionNames.length;
+
+			return {
+				testFunctionNames,
+				test,
+			} as const;
+		});
+
+		this.testClassesLength = testClassesMap.length;
 
 		// run through each testing file and run their test functions
 		for (const mapping of testClassesMap) {
@@ -113,7 +129,8 @@ export default class RunTests {
 				Logger.log("\n");
 			}
 
-			Logger.log(`Running ${testClassName}:\n`);
+			Logger.log(`Running ${testClassName}...:`);
+			Logger.log("\n");
 
 			// run each testing function
 			for (const functionName of mapping.testFunctionNames) {
