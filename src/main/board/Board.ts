@@ -190,7 +190,7 @@ export default class Board {
 	 * can be positioned horizontally on the board correctly. Items get positioned against the
 	 * left-most side of the destination tile, so we subtract the tile size from the total offset.
 	 * For example, going to the second tile horizontally would look like: [][| ] where the "|" is
-	 * the item to be placed.
+	 * the item to be placed and "[]" is a tile.
 	 *
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
