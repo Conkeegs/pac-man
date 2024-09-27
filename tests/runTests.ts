@@ -5,6 +5,7 @@ import ImageRegistryTest from "./assets/ImageRegistryTest.js";
 import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
+import BoardObjectTest from "./board/boardobject/BoardObjectTest.js";
 import BoardTest from "./board/BoardTest.js";
 
 /**
@@ -47,6 +48,7 @@ export default class RunTests {
 		new ImageRegistryTest(),
 		new JsonRegistryTest(),
 		new BoardTest(),
+		new BoardObjectTest(),
 	];
 
 	/**
