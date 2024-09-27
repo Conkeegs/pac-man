@@ -51,13 +51,15 @@ export function tests(testedClassConstructor: Function): (testClassConstructor: 
 			// make sure each testing method matches naming convention of class properties they are testing.filter out constructor since
 			// it shouldn't be tested against (at least directly)
 			if (
-				Object.getOwnPropertyNames(testedClassConstructor).findIndex((propertyName) => {
-					if (propertyName === "constructor") {
-						return false;
-					}
+				Object.getOwnPropertyNames(testedClassConstructor)
+					.concat(Object.getOwnPropertyNames(testedClassConstructor.prototype))
+					.findIndex((propertyName) => {
+						if (propertyName === "constructor") {
+							return false;
+						}
 
-					return propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase();
-				}) === -1
+						return propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase();
+					}) === -1
 			) {
 				throw new Error(
 					`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement property or method with naming convention "${testMethodTargetProperty}"`
