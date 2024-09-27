@@ -62,6 +62,7 @@ export class App {
 	 */
 	constructor() {
 		App.loadGame().then(() => {
+		App.loadGame().then(async () => {
 			this.board = new Board();
 			const board = this.board;
 
