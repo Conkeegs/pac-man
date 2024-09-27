@@ -110,8 +110,17 @@ export default class RunTests {
 		this.testClassesLength = testClassesMap.length;
 
 		// run through each testing file and run their test functions
-		for (const mapping of testClassesMap) {
-			this.runTestMapping(mapping);
+		this.runAllTests(testClassesMap);
+	}
+
+	/**
+	 * Runs all tests.
+	 *
+	 * @param mappings array of testing classes and their methods
+	 */
+	private async runAllTests(mappings: TestMapping[]): Promise<void> {
+		for (const mapping of mappings) {
+			await this.runTestMapping(mapping);
 		}
 	}
 
