@@ -1,5 +1,5 @@
 import Board from "../../src/main/board/Board.js";
-import { BODY_BACKGROUND_COLOR, HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
+import { BOARDOBJECTS, FOOD_COUNT, HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
 import { get, px } from "../../src/main/utils/Utils.js";
 import Assertion from "../base/Assertion.js";
 import Test from "../base/Base.js";
@@ -26,11 +26,6 @@ export default class BoardTest extends Test {
 		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
 		Assertion.assertStrictlyEqual(boardColor, boardDiv.css("backgroundColor"));
-
-		game!.removeAllChildren();
-		game!.css({
-			backgroundColor: BODY_BACKGROUND_COLOR,
-		});
 	}
 
 	/**
@@ -73,12 +68,26 @@ export default class BoardTest extends Test {
 	/**
 	 * Test that the game's board can calc vertical offsets.
 	 */
-	public calcTileNumYTest(): void {
+	public async calcTileNumYTest(): Promise<void> {
 		const numTiles = 5;
 		const pixelOffset = TILESIZE * numTiles;
 
 		// 5 tiles-sizes in means the edge of the object would be at the start of the 6th tile, so we
 		// add 1 to "numTiles". also, subtract from "ROWS" since vertical offsets come from the top-down
 		Assertion.assertStrictlyEqual(ROWS - (numTiles + 1), Board.calcTileNumY(pixelOffset));
+	}
+
+	/**
+	 * Test that the game's board can create & place the main board objects on itself.
+	 */
+	public async createMainBoardObjectsTest(): Promise<void> {
+		const board = new Board();
+
+		await board.createMainBoardObjects();
+
+		Assertion.assertArrayLength(
+			FOOD_COUNT,
+			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
+		);
 	}
 }

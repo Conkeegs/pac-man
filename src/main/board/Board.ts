@@ -4,8 +4,18 @@ import { App } from "../App.js";
 import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
+import {
+	BOARD_OBJECT_Z_INDEX,
+	BOARDOBJECTS,
+	CHARACTERS,
+	COLLIDABLES_MAP,
+	COLUMNS,
+	HEIGHT,
+	ROWS,
+	TILESIZE,
+	WIDTH,
+} from "../utils/Globals.js";
+import { create, exists, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
@@ -119,10 +129,6 @@ export default class Board {
 	 */
 	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
 	/**
-	 * Information about locations of PacMan food on the board.
-	 */
-	public static foodData: FoodData[] | undefined = [];
-	/**
 	 * Displays the current frames-per-second count of the app, in debug mode.
 	 */
 	public debug_fpsCounter: BoardText | undefined;
@@ -137,6 +143,18 @@ export default class Board {
 	 * @param color the background color of the board
 	 */
 	constructor(color = "#070200") {
+		this.deleteDependentGlobals();
+
+		let game: HTMLElement | null = get("game");
+
+		if (!exists(game)) {
+			DebugWindow.error("Board.js", "constructor", "No #game element found.");
+		}
+
+		game = game!;
+
+		game.removeAllChildren();
+
 		if (WIDTH % COLUMNS !== 0) {
 			DebugWindow.error("Board.js", "constructor", "Board width not divisible by 28.");
 		} else if (HEIGHT % ROWS !== 0) {
@@ -149,13 +167,7 @@ export default class Board {
 			backgroundColor: color,
 		});
 
-		let game: HTMLElement | null = get("game");
-
-		if (!game) {
-			DebugWindow.error("Board.js", "constructor", "No #game element found.");
-		} else {
-			(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
-		}
+		(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 
 		// debugging methods
 		this.createGrid();
@@ -225,11 +237,12 @@ export default class Board {
 	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
-	public createMainBoardObjects() {
+	public async createMainBoardObjects(): Promise<void> {
 		const foodPositions: Position[] = [];
+		const foodData: FoodData[] = await fetchJSON(JsonRegistry.getJson("food"));
 
 		// place all food on the board
-		for (const data of Board.foodData!) {
+		for (const data of foodData) {
 			const x = data.x;
 
 			if (!Array.isArray(x)) {
@@ -350,6 +363,17 @@ export default class Board {
 		);
 
 		this.boardDiv.appendChild(boardObject.getElement());
+	}
+
+	/**
+	 * Removed values from globals that are modified by the Board's creation. Deletes
+	 * all references in the `COLLIDABLES_MAP`, all `BoardObject`s, and all `Character`s.
+	 */
+	private deleteDependentGlobals(): void {
+		Object.removeAllKeys(COLLIDABLES_MAP);
+
+		BOARDOBJECTS.length = 0;
+		CHARACTERS.length = 0;
 	}
 
 	/**

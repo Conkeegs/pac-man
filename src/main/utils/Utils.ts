@@ -39,6 +39,13 @@ declare global {
 		 */
 		reverse(): string;
 	}
+
+	interface ObjectConstructor {
+		/**
+		 * Mutates an object by removing all of its keys.
+		 */
+		removeAllKeys(object: any): void;
+	}
 }
 
 HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | object): HTMLElement | string | undefined {
@@ -95,6 +102,10 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
 
 String.prototype.reverse = function (): string {
 	return this.split("").reverse().join("");
+};
+
+Object.removeAllKeys = function (object: any): void {
+	Object.keys(object).forEach((key) => delete object[key as keyof Object]);
 };
 
 /**
@@ -412,4 +423,20 @@ export function pluralize(word: string, count: number): string {
 	}
 
 	return word;
+}
+
+/**
+ * Determines if an array or object is empty. Arrays are considered empty when they have
+ * a `length` of `0`, and object when they do not have keys.
+ *
+ * @export
+ * @param value any valid JavaScript value
+ * @returns boolean if `value` is empty or not
+ */
+export function empty(value: object | unknown[]): boolean {
+	if (isObject(value)) {
+		return Object.keys(value as Object).length === 0;
+	}
+
+	return (value as unknown[]).length === 0;
 }

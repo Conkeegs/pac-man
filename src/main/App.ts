@@ -2,7 +2,7 @@
 
 import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
-import Board, { type FoodData, type WallDataElement } from "./board/Board.js";
+import Board, { type WallDataElement } from "./board/Board.js";
 import type { Position } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
@@ -75,7 +75,7 @@ export class App {
 			});
 
 			// place BoardObject instances on board
-			board.createMainBoardObjects();
+			await board.createMainBoardObjects();
 
 			// put the game in a "paused" state upon exiting the window
 			window.addEventListener("blur", () => {
@@ -270,7 +270,7 @@ export class App {
 	 *
 	 * @returns promise which loads all game resources
 	 */
-	private static loadGame(): Promise<[void, void, void]> {
+	private static loadGame(): Promise<[void, void]> {
 		return Promise.all([
 			// tell all characters where it can turn
 			fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
@@ -313,9 +313,6 @@ export class App {
 
 					App.loadedWallData.push(wall);
 				}
-			}),
-			fetchJSON(JsonRegistry.getJson("food")).then((foodData: FoodData[]) => {
-				Board.foodData = foodData;
 			}),
 		]);
 	}

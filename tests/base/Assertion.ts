@@ -1,4 +1,4 @@
-import { exists } from "../../src/main/utils/Utils.js";
+import { defined, empty, exists } from "../../src/main/utils/Utils.js";
 import TestException from "./TestException.js";
 
 /**
@@ -10,6 +10,9 @@ enum OperatorsEnglish {
 	"typeof" = "of type",
 	"exists" = "existing",
 	"contains" = "contained in",
+	"length" = "the same length as",
+	"empty" = "empty",
+	"notEmpty" = "not empty",
 }
 
 /**
@@ -23,6 +26,19 @@ export default abstract class Assertion {
 	 */
 	public static assertTrue(expected: unknown): void {
 		const actual = true;
+
+		if (expected !== actual) {
+			Assertion.formMessageAndThrow(expected, "===", actual);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is strictly equal to `false`.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertFalse(expected: unknown): void {
+		const actual = false;
 
 		if (expected !== actual) {
 			Assertion.formMessageAndThrow(expected, "===", actual);
@@ -68,7 +84,7 @@ export default abstract class Assertion {
 	}
 
 	/**
-	 * Asserts that `expected` exists.
+	 * Asserts that `array` contains `expected`.
 	 *
 	 * @param expected any Javascript object
 	 * @param array array to search for `expected` in
@@ -76,6 +92,42 @@ export default abstract class Assertion {
 	public static assertArrayContains(expected: unknown, array: unknown[]): void {
 		if (array.includes(expected) !== true) {
 			Assertion.formMessageAndThrow(expected, "contains", array);
+		}
+	}
+
+	/**
+	 * Asserts that `array` contains `expected` number of items.
+	 *
+	 * @param expected expected number of items
+	 * @param array array to get count from
+	 */
+	public static assertArrayLength(expected: number, array: unknown[]): void {
+		const arrayLength = array.length;
+
+		if (arrayLength !== expected) {
+			Assertion.formMessageAndThrow(expected, "length", arrayLength);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is empty.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertEmpty(expected: object | unknown[]): void {
+		if (!empty(expected)) {
+			Assertion.formMessageAndThrow(expected, "empty");
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is _not_ empty.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertNotEmpty(expected: object | unknown[]): void {
+		if (empty(expected)) {
+			Assertion.formMessageAndThrow(expected, "notEmpty");
 		}
 	}
 
@@ -93,10 +145,10 @@ export default abstract class Assertion {
 		operator: keyof typeof OperatorsEnglish,
 		actual?: unknown
 	): void {
-		let message = `Failed asserting that ${expected} is ${OperatorsEnglish[operator]}`;
+		let message = `Failed asserting that '${JSON.stringify(expected)}' is ${OperatorsEnglish[operator]}`;
 
-		if (actual) {
-			message = `${message} ${actual}`;
+		if (defined(actual)) {
+			message = `${message} '${JSON.stringify(actual)}'`;
 		}
 
 		throw new TestException(message);

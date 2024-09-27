@@ -75,3 +75,8 @@ export const TESTING: boolean = true;
  * Default background-color of the game.
  */
 export const BODY_BACKGROUND_COLOR: "#070200" = "#070200";
+
+/**
+ * Total amount of food on the board.
+ */
+export const FOOD_COUNT: 244 = 244;
