@@ -1,4 +1,4 @@
-import { defined, empty, exists } from "../../src/main/utils/Utils.js";
+import { defined, empty, exists, getCircularReplacer } from "../../src/main/utils/Utils.js";
 import TestException from "./TestException.js";
 
 /**
@@ -145,10 +145,12 @@ export default abstract class Assertion {
 		operator: keyof typeof OperatorsEnglish,
 		actual?: unknown
 	): void {
-		let message = `Failed asserting that '${JSON.stringify(expected)}' is ${OperatorsEnglish[operator]}`;
+		let message = `Failed asserting that '${JSON.stringify(expected, getCircularReplacer())}' is ${
+			OperatorsEnglish[operator]
+		}`;
 
 		if (defined(actual)) {
-			message = `${message} '${JSON.stringify(actual)}'`;
+			message = `${message} '${JSON.stringify(actual, getCircularReplacer())}'`;
 		}
 
 		throw new TestException(message);
