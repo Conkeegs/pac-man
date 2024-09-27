@@ -39,14 +39,14 @@ export default class BoardTest extends Test {
 	/**
 	 * Test that the game's board can calc horizontal offsets.
 	 */
-	public calcTileXTest(): void {
+	public calcTileOffsetXTest(): void {
 		Assertion.assertStrictlyEqual(TILESIZE * 3 - TILESIZE, Board.calcTileOffsetX(3));
 	}
 
 	/**
 	 * Test that the game's board can calc vertical offsets.
 	 */
-	public calcTileYTest(): void {
+	public calcTileOffsetYTest(): void {
 		const totalTileWidth = TILESIZE * ROWS;
 		const tripleTileSize = TILESIZE * 3;
 
