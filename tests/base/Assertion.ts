@@ -13,6 +13,7 @@ enum OperatorsEnglish {
 	"length" = "the same length as",
 	"empty" = "empty",
 	"notEmpty" = "not empty",
+	"throws" = "a function that throws",
 }
 
 /**
@@ -128,6 +129,25 @@ export default abstract class Assertion {
 	public static assertNotEmpty(expected: object | unknown[]): void {
 		if (empty(expected)) {
 			Assertion.formMessageAndThrow(expected, "notEmpty");
+		}
+	}
+
+	/**
+	 * Asserts that `thrower` throws an error with name `errorName` (defaults to "Error").
+	 *
+	 * @param errorName the name of the error that should be thrown
+	 * @param throwerName the actual name of the function that should throw
+	 * @param thrower a wrapper-function around the actual function to call
+	 */
+	public static assertThrows(errorName: string, throwerName: string, thrower: () => void): void {
+		try {
+			thrower.call(undefined);
+
+			Assertion.formMessageAndThrow(throwerName, "throws", "an error");
+		} catch (error: any) {
+			if (error.constructor.name !== errorName) {
+				Assertion.formMessageAndThrow(throwerName, "throws", errorName);
+			}
 		}
 	}
 
