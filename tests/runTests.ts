@@ -119,7 +119,7 @@ export default class RunTests {
 			for (const functionName of mapping.testFunctionNames) {
 				this.currentTestFunction = functionName;
 
-				(testClass[functionName as keyof Test] as () => void)();
+				await (testClass[functionName as keyof Test] as () => void | Promise<void>)();
 
 				Logger.log(
 					`${++testFunctionCount + ")"} ${functionName} successful - ${++this
