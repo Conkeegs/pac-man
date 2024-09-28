@@ -236,7 +236,7 @@ export default class PacMan extends Character {
 				(turn) =>
 					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
 						turn,
-						this.getPosition()!
+						this.getPosition()
 					) && Character.canTurnWithMoveDirection(moveCode, turn),
 				(turn) => {
 					if (this.isWithinTurnDistance(turn)) {
@@ -293,7 +293,7 @@ export default class PacMan extends Character {
 				(turn) =>
 					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
 						turn,
-						this.getPosition()!
+						this.getPosition()
 					) && !Character.canTurnWithMoveDirection(currentDirection, turn)
 			);
 		}

@@ -229,7 +229,7 @@ export class App {
 		 */
 		const findMovingCharactersAndMapPosition = (): Character[] =>
 			CHARACTERS.filter((character) => {
-				oldCharacterPositions[character.getName()] = character.getPosition()!;
+				oldCharacterPositions[character.getName()] = character.getPosition();
 
 				return character.isMoving();
 			});

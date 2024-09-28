@@ -59,7 +59,7 @@ export default class CollidableManager {
 	 */
 	public checkForCollidableAndRemove(): void {
 		const collidable = this.collidable;
-		const currentCollidablePositionKey = this.getCollidablePositionKey(collidable.getPosition()!);
+		const currentCollidablePositionKey = this.getCollidablePositionKey(collidable.getPosition());
 		let positionCollidables = COLLIDABLES_MAP[currentCollidablePositionKey];
 
 		if (defined(positionCollidables) && positionCollidables!.includes(collidable)) {

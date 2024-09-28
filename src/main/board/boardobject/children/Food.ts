@@ -67,7 +67,7 @@ export default class Food extends BoardObject implements Collidable {
 	public override setPositionX(x: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
 		this._collidableManager.updateTileKeys({
 			x,
-			y: this.getPosition()!.y,
+			y: this.getPosition().y,
 		});
 
 		super.setPositionX(x, options);
@@ -75,7 +75,7 @@ export default class Food extends BoardObject implements Collidable {
 
 	public override setPositionY(y: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
 		this._collidableManager.updateTileKeys({
-			x: this.getPosition()!.x,
+			x: this.getPosition().x,
 			y,
 		});
 

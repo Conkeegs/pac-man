@@ -64,7 +64,10 @@ export abstract class BoardObject {
 	/**
 	 * The board object's position on the board.
 	 */
-	private position: Position | undefined;
+	private position: Position = {
+		x: 0,
+		y: 0,
+	};
 
 	/**
 	 * Creates a board object.
@@ -93,9 +96,9 @@ export abstract class BoardObject {
 	/**
 	 * Gets this board object's position on the board.
 	 *
-	 * @returns the board objects `Position` or `undefined`
+	 * @returns the board objects `Position`
 	 */
-	public getPosition(): Position | undefined {
+	public getPosition(): Position {
 		return this.position;
 	}
 
@@ -164,7 +167,7 @@ export abstract class BoardObject {
 			});
 		}
 
-		const oldPosition = this.position!;
+		const oldPosition = this.position;
 
 		this.position = position;
 
@@ -200,9 +203,9 @@ export abstract class BoardObject {
 			});
 		}
 
-		const oldPositionX = this.position!.x;
+		const oldPositionX = this.position.x;
 
-		this.position!.x = x;
+		this.position.x = x;
 
 		if (options.modifyTransform) {
 			// get the board object's new position in order to compare it to its old one
@@ -232,9 +235,9 @@ export abstract class BoardObject {
 			});
 		}
 
-		const oldPositionY = this.position!.y;
+		const oldPositionY = this.position.y;
 
-		this.position!.y = y;
+		this.position.y = y;
 
 		if (options.modifyTransform) {
 			// get the board object's new position in order to compare it to its old one

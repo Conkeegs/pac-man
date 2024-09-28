@@ -310,7 +310,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	public override setPositionX(x: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
 		this._collidableManager.updateTileKeys({
 			x,
-			y: this.getPosition()!.y,
+			y: this.getPosition().y,
 		});
 
 		super.setPositionX(x, options);
@@ -318,7 +318,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 
 	public override setPositionY(y: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
 		this._collidableManager.updateTileKeys({
-			x: this.getPosition()!.x,
+			x: this.getPosition().x,
 			y,
 		});
 
@@ -381,7 +381,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @inheritdoc
 	 */
 	public tick() {
-		const position = this.getPosition()!;
+		const position = this.getPosition();
 		const direction = this.currentDirection;
 
 		if (direction === MovementDirection.STOP) {
@@ -586,7 +586,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @returns boolean indicating if the character is within the pixel threshold of this turn
 	 */
 	protected isWithinTurnDistance(turn: TurnData): boolean {
-		const position = this.getPosition()!;
+		const position = this.getPosition();
 
 		// add half of the character's width/height to the turn's x & y position so that
 		// our threshold takes effect when the character is about "half" way over the turn's
@@ -604,7 +604,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @returns boolean indicating if the character is within the pixel threshold of the teleporter
 	 */
 	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
-		const position = this.getPosition()!;
+		const position = this.getPosition();
 
 		return position.y === teleporterPosition.y && this.distanceWithinThreshold(position.x, teleporterPosition.x);
 	}
@@ -629,7 +629,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param turn the turn to snap this `Character`'s physical to
 	 */
 	protected offsetPositionToTurn(turn: TurnData): void {
-		const oldPosition = this.getPosition()!;
+		const oldPosition = this.getPosition();
 		// find the "true" position x & y that the Character should be placed at when performing a turn (since
 		// it could be within the turn's threshold, but not perfectly placed at the turn position)
 		const characterTurnX = turn.x - this.getWidth()! / 2;
@@ -659,7 +659,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	protected findNearestTurn(): TurnData | undefined {
 		// find turns "ahead" of character
 		const filteredTurnData = Character.turnData!.filter((turn) =>
-			this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn, this.getPosition()!)
+			this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn, this.getPosition())
 		);
 
 		const currentDirection = this.currentDirection;
@@ -691,7 +691,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 			if (
 				this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](
 					turn,
-					this.getPosition()!
+					this.getPosition()
 				) &&
 				filter(turn)
 			) {
@@ -726,10 +726,10 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @returns boolean indicating if the two are colliding
 	 */
 	protected isCollidingWithCollidable(collidable: Collidable): boolean {
-		const thisPosition = this.getPosition()!;
+		const thisPosition = this.getPosition();
 		const thisPositionX = thisPosition.x;
 		const thisPositionY = thisPosition.y;
-		const collidablePosition = collidable.getPosition()!;
+		const collidablePosition = collidable.getPosition();
 		const collidableX = collidablePosition.x;
 		const collidableY = collidablePosition.y;
 		const currentDirection = this.currentDirection;
@@ -791,7 +791,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param amount the amount of pixels to move the character up
 	 */
 	private moveUp(amount: number): void {
-		this.setPositionY(this.getPosition()!.y - amount, {
+		this.setPositionY(this.getPosition().y - amount, {
 			modifyCss: false,
 			modifyTransform: true,
 		});
@@ -804,7 +804,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param amount the amount of pixels to move the character down
 	 */
 	private moveDown(amount: number): void {
-		this.setPositionY(this.getPosition()!.y + amount, {
+		this.setPositionY(this.getPosition().y + amount, {
 			modifyCss: false,
 			modifyTransform: true,
 		});
@@ -817,7 +817,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param amount the amount of pixels to move the character left
 	 */
 	private moveLeft(amount: number): void {
-		this.setPositionX(this.getPosition()!.x - amount, {
+		this.setPositionX(this.getPosition().x - amount, {
 			modifyCss: false,
 			modifyTransform: true,
 		});
@@ -830,7 +830,7 @@ export default abstract class Character extends BoardObject implements Collidabl
 	 * @param amount the amount of pixels to move the character right
 	 */
 	private moveRight(amount: number): void {
-		this.setPositionX(this.getPosition()!.x + amount, {
+		this.setPositionX(this.getPosition().x + amount, {
 			modifyCss: false,
 			modifyTransform: true,
 		});

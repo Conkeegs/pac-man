@@ -135,7 +135,7 @@ export default class BoardTest extends Test {
 
 		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
 
-		const pacmanPosition = pacman.getPosition()!;
+		const pacmanPosition = pacman.getPosition();
 
 		Assertion.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
 		Assertion.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
