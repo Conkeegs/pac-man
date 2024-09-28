@@ -28,10 +28,12 @@ export default class PathNode extends BoardObject {
 			height: px(this.height),
 		});
 
+		const childDimensionsPixels = px(Board.calcTileOffset(0.5));
+
 		element.appendChild(
 			create({ name: "div", id: `${name}-node-element`, classes: ["node"] }).css({
-				width: px(Board.calcTileOffset(0.5)),
-				height: px(Board.calcTileOffset(0.5)),
+				width: childDimensionsPixels,
+				height: childDimensionsPixels,
 				backgroundColor: color,
 			}) as HTMLElement
 		);
