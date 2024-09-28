@@ -100,6 +100,15 @@ export abstract class BoardObject {
 	}
 
 	/**
+	 * Gets this board object's css `transform`.
+	 *
+	 * @returns the board objects css  or `undefined`
+	 */
+	public getTransform(): Transform {
+		return this.transform;
+	}
+
+	/**
 	 * Gets the HTML element that contains this board object.
 	 *
 	 * @returns the HTML element that contains this board object
