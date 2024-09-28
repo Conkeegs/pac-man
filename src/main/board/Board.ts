@@ -1,11 +1,10 @@
 "use strict";
 
 import { App } from "../App.js";
-import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, exists, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
+import { create, exists, fetchJSON, get, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
@@ -91,19 +90,14 @@ export type FoodData = {
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board {
-	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
-	private static readonly BLINKY_SPEED: 88 = 88;
 	private static readonly BLINKY_SPAWN_X: 14.25 = 14.25;
 	private static readonly BLINKY_SPAWN_Y: 21.25 = 21.25;
-	private static readonly INKY_SPEED: 88 = 88;
 	private static readonly INKY_SPAWN_X: 12.25 = 12.25;
 	private static readonly INKY_SPAWN_Y: 18.25 = 18.25;
-	private static readonly PINKY_SPEED: 88 = 88;
 	private static readonly PINKY_SPAWN_X: 14.25 = 14.25;
 	private static readonly PINKY_SPAWN_Y: 18.25 = 18.25;
-	private static readonly CLYDE_SPEED: 88 = 88;
 	private static readonly CLYDE_SPAWN_X: 16.25 = 16.25;
 	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
 
@@ -268,14 +262,10 @@ export default class Board {
 			}
 		}
 
-		this.placeBoardObject(
-			new PacMan("pacman", Board.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0")),
-			Board.PACMAN_SPAWN_X,
-			Board.PACMAN_SPAWN_Y
-		);
+		this.placeBoardObject(new PacMan(), Board.PACMAN_SPAWN_X, Board.PACMAN_SPAWN_Y);
 
 		this.placeBoardObject(
-			new Blinky("blinky", Board.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0")),
+			new Blinky(),
 			// Board.BLINKY_SPAWN_X,
 			// Board.BLINKY_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
@@ -283,27 +273,27 @@ export default class Board {
 		);
 
 		this.placeBoardObject(
-			new Inky("inky", Board.INKY_SPEED, ImageRegistry.getImage("inky-0-2")),
+			new Inky(),
 			// Board.INKY_SPAWN_X,
 			// Board.INKY_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.BLINKY_SPAWN_Y
+			Board.INKY_SPAWN_Y
 		);
 
 		this.placeBoardObject(
-			new Pinky("pinky", Board.PINKY_SPEED, ImageRegistry.getImage("pinky-0-3")),
+			new Pinky(),
 			// Board.PINKY_SPAWN_X,
 			// Board.PINKY_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.BLINKY_SPAWN_Y
+			Board.PINKY_SPAWN_Y
 		);
 
 		this.placeBoardObject(
-			new Clyde("clyde", Board.CLYDE_SPEED, ImageRegistry.getImage("clyde-0-2")),
+			new Clyde(),
 			// Board.CLYDE_SPAWN_X,
 			// Board.CLYDE_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.BLINKY_SPAWN_Y
+			Board.CLYDE_SPAWN_Y
 		);
 
 		// display fps counter if in debug mode

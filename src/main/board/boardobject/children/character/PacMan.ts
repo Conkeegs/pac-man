@@ -1,7 +1,8 @@
 "use strict";
 
 import { App } from "../../../../App.js";
-import { defined, die, exists } from "../../../../utils/Utils.js";
+import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
 import Character, { type StartMoveOptions, type TurnData } from "./Character.js";
@@ -80,18 +81,19 @@ export default class PacMan extends Character {
 		BACKWARDS: 1,
 	};
 	override readonly _collidableManager: CollidableManager;
+	/**
+	 * Default speed of Pacman.
+	 */
+	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name, Ghost.name];
 
 	/**
 	 * Creates PacMan.
 	 *
-	 * @param name
-	 * @param speed
-	 * @param source
 	 */
-	constructor(name: string, speed: number, source: string) {
-		super(name, speed, source);
+	constructor() {
+		super("pacman", PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
 
 		this._collidableManager = new CollidableManager(this);
 

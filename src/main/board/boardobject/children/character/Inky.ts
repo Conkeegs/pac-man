@@ -1,3 +1,4 @@
+import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**
@@ -5,13 +6,15 @@ import Ghost from "./Ghost.js";
  */
 export default class Inky extends Ghost {
 	/**
+	 * Default speed of Inky.
+	 */
+	private static readonly INKY_SPEED: 88 = 88;
+
+	/**
 	 * Creates `Inky`.
 	 *
-	 * @param name
-	 * @param speed
-	 * @param source
 	 */
-	constructor(name: string, speed: number, source: string) {
-		super(name, speed, source);
+	constructor() {
+		super("inky", Inky.INKY_SPEED, ImageRegistry.getImage("inky-0-2"));
 	}
 }

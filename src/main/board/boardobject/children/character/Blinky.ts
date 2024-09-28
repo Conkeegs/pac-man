@@ -1,3 +1,4 @@
+import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**
@@ -5,13 +6,15 @@ import Ghost from "./Ghost.js";
  */
 export default class Blinky extends Ghost {
 	/**
+	 * Default speed of Blinky.
+	 */
+	private static readonly BLINKY_SPEED: 88 = 88;
+
+	/**
 	 * Creates `Blinky`.
 	 *
-	 * @param name
-	 * @param speed
-	 * @param source
 	 */
-	constructor(name: string, speed: number, source: string) {
-		super(name, speed, source);
+	constructor() {
+		super("blinky", Blinky.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0"));
 	}
 }
