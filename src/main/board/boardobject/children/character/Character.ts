@@ -549,6 +549,15 @@ export default abstract class Character extends BoardObject implements Collidabl
 	}
 
 	/**
+	 * Deletes this character off of the game's board.
+	 */
+	public override delete(): void {
+		CHARACTERS.splice(CHARACTERS.indexOf(this), 1);
+
+		super.delete();
+	}
+
+	/**
 	 * Returns the name of an animation-related image for the character.
 	 */
 	abstract _getAnimationImage(): string;
