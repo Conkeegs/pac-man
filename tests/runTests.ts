@@ -1,3 +1,4 @@
+import { App } from "../src/main/App.js";
 import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import AudioRegistryTest from "./assets/AudioRegistryTest.js";
@@ -148,6 +149,9 @@ export default class RunTests {
 				this.currentTestFunction = functionName;
 
 				await (testClass[functionName as keyof Test] as () => void | Promise<void>)();
+
+				// clear globals after each test
+				App.destroy();
 
 				Logger.log(
 					`${++testFunctionCount + ")"} ${functionName} successful - ${++this

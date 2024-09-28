@@ -4,17 +4,7 @@ import { App } from "../App.js";
 import ImageRegistry from "../assets/ImageRegistry.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import {
-	BOARD_OBJECT_Z_INDEX,
-	BOARDOBJECTS,
-	CHARACTERS,
-	COLLIDABLES_MAP,
-	COLUMNS,
-	HEIGHT,
-	ROWS,
-	TILESIZE,
-	WIDTH,
-} from "../utils/Globals.js";
+import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, originalPacManSpeedToNewSpeed, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject, type Position } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
@@ -143,7 +133,7 @@ export default class Board {
 	 * @param color the background color of the board
 	 */
 	constructor(color = "#070200") {
-		this.deleteDependentGlobals();
+		App.destroy();
 
 		let game: HTMLElement | null = get("game");
 
@@ -364,17 +354,6 @@ export default class Board {
 		);
 
 		this.boardDiv.appendChild(boardObject.getElement());
-	}
-
-	/**
-	 * Removed values from globals that are modified by the Board's creation. Deletes
-	 * all references in the `COLLIDABLES_MAP`, all `BoardObject`s, and all `Character`s.
-	 */
-	private deleteDependentGlobals(): void {
-		Object.removeAllKeys(COLLIDABLES_MAP);
-
-		BOARDOBJECTS.length = 0;
-		CHARACTERS.length = 0;
 	}
 
 	/**

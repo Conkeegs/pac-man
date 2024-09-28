@@ -7,7 +7,7 @@ import type { Position } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
-import { BOARD_OBJECT_Z_INDEX, CHARACTERS, TESTING } from "./utils/Globals.js";
+import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, CHARACTERS, COLLIDABLES_MAP, TESTING } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
@@ -115,6 +115,20 @@ export class App {
 			// initial start of the game
 			this.animationFrameId = this.startGame();
 		});
+	}
+
+	/**
+	 * Removes values from globals that are modified throughout the app. Deletes
+	 * all references in the `COLLIDABLES_MAP`, all `BoardObject`s, and all `Character`s, and then
+	 * deleted the app's elements.
+	 */
+	public static destroy(): void {
+		Object.removeAllKeys(COLLIDABLES_MAP);
+
+		BOARDOBJECTS.length = 0;
+		CHARACTERS.length = 0;
+
+		get("game")!.innerHTML = "";
 	}
 
 	/**

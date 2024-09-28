@@ -1,7 +1,6 @@
 "use strict";
 
 import { App } from "../App.js";
-import { get } from "../utils/Utils.js";
 
 // positionSum = 0;
 // positionCount = 0;
@@ -34,7 +33,7 @@ export default class DebugWindow {
 	 */
 	static error(filename: string, method: string, reason: string) {
 		if (App.DEBUG) {
-			get("game")!.innerHTML = "";
+			App.destroy();
 
 			throw new Error(`Error in ${filename} -- ${method}(): ${reason}`);
 		}
