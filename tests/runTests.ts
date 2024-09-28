@@ -7,6 +7,7 @@ import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
 import BoardObjectTest from "./board/boardobject/BoardObjectTest.js";
+import CollidableManagerTest from "./board/boardobject/CollidableManagerTest.js";
 import BoardTest from "./board/BoardTest.js";
 
 /**
@@ -50,6 +51,7 @@ export default class RunTests {
 		new JsonRegistryTest(),
 		new BoardTest(),
 		new BoardObjectTest(),
+		new CollidableManagerTest(),
 	];
 
 	/**
