@@ -91,9 +91,10 @@ export default class PacMan extends Character {
 	/**
 	 * Creates PacMan.
 	 *
+	 * @param name unique name of pacman instance, defaults to just "pacman"
 	 */
-	constructor() {
-		super("pacman", PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
+	constructor(name: string = "pacman") {
+		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
 
 		this._collidableManager = new CollidableManager(this);
 

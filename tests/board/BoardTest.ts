@@ -1,4 +1,3 @@
-import ImageRegistry from "../../src/main/assets/ImageRegistry.js";
 import Board from "../../src/main/board/Board.js";
 import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
 import {
@@ -11,7 +10,7 @@ import {
 	TILESIZE,
 	WIDTH,
 } from "../../src/main/utils/Globals.js";
-import { get, originalPacManSpeedToNewSpeed, px } from "../../src/main/utils/Utils.js";
+import { get, px } from "../../src/main/utils/Utils.js";
 import Assertion from "../base/Assertion.js";
 import Test from "../base/Base.js";
 import { tests } from "../base/Decorators.js";
@@ -130,7 +129,7 @@ export default class BoardTest extends Test {
 	 */
 	public placeBoardObjectTest(): void {
 		const board = new Board();
-		const pacman = new PacMan("test-pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
+		const pacman = new PacMan();
 		const numTiles = 5;
 
 		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);

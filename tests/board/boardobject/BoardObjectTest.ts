@@ -1,4 +1,3 @@
-import ImageRegistry from "../../../src/main/assets/ImageRegistry.js";
 import Board from "../../../src/main/board/Board.js";
 import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.js";
 import Clyde from "../../../src/main/board/boardobject/children/character/Clyde.js";
@@ -7,7 +6,7 @@ import PacMan from "../../../src/main/board/boardobject/children/character/PacMa
 import Pinky from "../../../src/main/board/boardobject/children/character/Pinky.js";
 import Food from "../../../src/main/board/boardobject/children/Food.js";
 import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, ROWS, TILESIZE } from "../../../src/main/utils/Globals.js";
-import { get, originalPacManSpeedToNewSpeed, px } from "../../../src/main/utils/Utils.js";
+import { get, px } from "../../../src/main/utils/Utils.js";
 import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
@@ -21,18 +20,16 @@ export default class BoardObjectTest extends Test {
 	 * Tests that a `BoardObject` instances are created correctly.
 	 */
 	public createBoardObjectTest(): void {
-		const pacmanSpeed = originalPacManSpeedToNewSpeed(55);
-		const pacmanImageSrc = ImageRegistry.getImage("pacman-0");
 		let pacmanName = "";
 
 		// no empty names
 		Assertion.assertThrows(Error.name, "PacMan.constructor()", () => {
-			new PacMan(pacmanName, pacmanSpeed, pacmanImageSrc);
+			new PacMan(pacmanName);
 		});
 
 		// no empty names
 		try {
-			new PacMan(pacmanName, pacmanSpeed, pacmanImageSrc);
+			new PacMan(pacmanName);
 		} catch (error: any) {
 			Assertion.assertStrictlyEqual(
 				"Error in BoardObject.js -- constructor(): BoardObject must have a name",
@@ -41,16 +38,16 @@ export default class BoardObjectTest extends Test {
 		}
 
 		pacmanName = "pacman1";
-		const pacman1 = new PacMan(pacmanName, pacmanSpeed, pacmanImageSrc);
+		const pacman1 = new PacMan(pacmanName);
 
 		// no duplicate names
 		Assertion.assertThrows(Error.name, "PacMan.constructor()", () => {
-			new PacMan(pacmanName, pacmanSpeed, pacmanImageSrc);
+			new PacMan(pacmanName);
 		});
 
 		// no duplicate names
 		try {
-			new PacMan(pacmanName, pacmanSpeed, pacmanImageSrc);
+			new PacMan(pacmanName);
 		} catch (error: any) {
 			Assertion.assertStrictlyEqual(
 				`Error in BoardObject.js -- constructor(): A BoardObject with the name '${pacmanName}' already exists`,
@@ -73,7 +70,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their positions retrieved.
 	 */
 	public getPositionTest(): void {
-		const pacman = new PacMan("pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
+		const pacman = new PacMan();
 		let position = pacman.getPosition();
 
 		// haven't placed on board yet so position should be default
@@ -99,7 +96,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their css transforms retrieved.
 	 */
 	public getTransformTest(): void {
-		const pacman = new PacMan("pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
+		const pacman = new PacMan();
 
 		// haven't moved on board yet so transform should be 0
 		Assertion.assertStrictlyEqual(0, pacman.getTransform().x);
@@ -138,7 +135,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their width set.
 	 */
 	public getWidthTest(): void {
-		const inky = new Inky("inky", 88, ImageRegistry.getImage("inky-0-3"));
+		const inky = new Inky();
 
 		// haven't placed on board yet so width should be undefined
 		Assertion.assertOfType("number", inky.getWidth());
@@ -148,7 +145,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their height set.
 	 */
 	public getHeightTest(): void {
-		const inky = new Inky("inky", 88, ImageRegistry.getImage("inky-0-3"));
+		const inky = new Inky();
 
 		// haven't placed on board yet so height should be undefined
 		Assertion.assertOfType("number", inky.getHeight());
@@ -158,7 +155,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their positions set.
 	 */
 	public setPositionTest(): void {
-		const pinky = new Pinky("pinky", 88, ImageRegistry.getImage("pinky-0-3"));
+		const pinky = new Pinky();
 		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
@@ -261,7 +258,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their x positions set.
 	 */
 	public setPositionXTest(): void {
-		const pinky = new Pinky("pinky", 88, ImageRegistry.getImage("pinky-0-3"));
+		const pinky = new Pinky();
 		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
@@ -342,7 +339,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects correctly have their y positions set.
 	 */
 	public setPositionYTest(): void {
-		const pinky = new Pinky("pinky", 88, ImageRegistry.getImage("pinky-0-3"));
+		const pinky = new Pinky();
 		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
@@ -424,7 +421,7 @@ export default class BoardObjectTest extends Test {
 	 */
 	public deleteTest(): void {
 		const name = "clyde";
-		const clyde = new Clyde(name, 88, ImageRegistry.getImage("clyde-0-3"));
+		const clyde = new Clyde();
 
 		get("game")!.appendChild(clyde.getElement());
 
@@ -441,7 +438,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects can set their css transforms properly.
 	 */
 	public setTransformTest(): void {
-		const clyde = new Clyde("clyde", 88, ImageRegistry.getImage("clyde-0-3"));
+		const clyde = new Clyde();
 		let transform = clyde.getTransform();
 
 		Assertion.assertStrictlyEqual(0, transform.x);
@@ -470,7 +467,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects can set their css transform x values properly.
 	 */
 	public setTransformXTest(): void {
-		const clyde = new Clyde("clyde", 88, ImageRegistry.getImage("clyde-0-3"));
+		const clyde = new Clyde();
 		const newTransformY = 600;
 		let transform = clyde.getTransform();
 
@@ -500,7 +497,7 @@ export default class BoardObjectTest extends Test {
 	 * Test that board objects can set their css transform y values properly.
 	 */
 	public setTransformYTest(): void {
-		const clyde = new Clyde("clyde", 88, ImageRegistry.getImage("clyde-0-3"));
+		const clyde = new Clyde();
 		const newTransformX = 600;
 		let transform = clyde.getTransform();
 
