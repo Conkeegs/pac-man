@@ -433,12 +433,12 @@ export function pluralize(word: string, count: number): string {
  * @param value any valid JavaScript value
  * @returns boolean if `value` is empty or not
  */
-export function empty(value: object | unknown[]): boolean {
+export function empty(value: object | unknown[] | string): boolean {
 	if (isObject(value)) {
 		return Object.keys(value as Object).length === 0;
 	}
 
-	return (value as unknown[]).length === 0;
+	return (value as unknown[] | string).length === 0;
 }
 
 /**
