@@ -7,9 +7,13 @@ import TestException from "./TestException.js";
  */
 enum OperatorsEnglish {
 	"===" = "strictly equal to",
+	"==" = "loosely equal to",
+	"!==" = "not strictly equal to",
 	"typeof" = "of type",
 	"exists" = "existing",
+	"doesntExist" = "not existing",
 	"contains" = "contained in",
+	"doesntContain" = "not contained in",
 	"length" = "the same length as",
 	"empty" = "empty",
 	"notEmpty" = "not empty",
@@ -74,6 +78,30 @@ export default abstract class Assertion {
 	}
 
 	/**
+	 * Asserts that `expected` is _not_ strictly equal to `actual`.
+	 *
+	 * @param expected any Javascript object
+	 * @param actual any Javascript object
+	 */
+	public static assertNotStrictlyEqual(expected: unknown, actual: unknown): void {
+		if (expected === actual) {
+			Assertion.formMessageAndThrow(expected, "!==", actual);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is loosely equal to `actual`.
+	 *
+	 * @param expected any Javascript object
+	 * @param actual any Javascript object
+	 */
+	public static assertLooselyEqual(expected: unknown, actual: unknown): void {
+		if (expected != actual) {
+			Assertion.formMessageAndThrow(expected, "==", actual);
+		}
+	}
+
+	/**
 	 * Asserts that `expected` exists.
 	 *
 	 * @param expected any Javascript object
@@ -81,6 +109,17 @@ export default abstract class Assertion {
 	public static assertExists(expected: unknown): void {
 		if (exists(expected) !== true) {
 			Assertion.formMessageAndThrow(expected, "exists");
+		}
+	}
+
+	/**
+	 * Asserts that `expected` doesn't exist.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertDoesntExist(expected: unknown): void {
+		if (exists(expected) === true) {
+			Assertion.formMessageAndThrow(expected, "doesntExist");
 		}
 	}
 
@@ -93,6 +132,18 @@ export default abstract class Assertion {
 	public static assertArrayContains(expected: unknown, array: unknown[]): void {
 		if (array.includes(expected) !== true) {
 			Assertion.formMessageAndThrow(expected, "contains", array);
+		}
+	}
+
+	/**
+	 * Asserts that `array` doesn't contain `expected`.
+	 *
+	 * @param expected any Javascript object
+	 * @param array array to search for `expected` in
+	 */
+	public static assertArrayDoesntContain(expected: unknown, array: unknown[]): void {
+		if (array.includes(expected) === true) {
+			Assertion.formMessageAndThrow(expected, "doesntContain", array);
 		}
 	}
 
@@ -126,7 +177,7 @@ export default abstract class Assertion {
 	 *
 	 * @param expected any Javascript object
 	 */
-	public static assertNotEmpty(expected: object | unknown[]): void {
+	public static assertNotEmpty(expected: object | unknown[] | string): void {
 		if (empty(expected)) {
 			Assertion.formMessageAndThrow(expected, "notEmpty");
 		}
@@ -148,6 +199,32 @@ export default abstract class Assertion {
 			if (error.constructor.name !== errorName) {
 				Assertion.formMessageAndThrow(throwerName, "throws", errorName);
 			}
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is strictly equal to `null`.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertNull(expected: unknown): void {
+		const actual = null;
+
+		if (expected !== actual) {
+			Assertion.formMessageAndThrow(expected, "===", actual);
+		}
+	}
+
+	/**
+	 * Asserts that `expected` is _not_ strictly equal to `null`.
+	 *
+	 * @param expected any Javascript object
+	 */
+	public static assertNotNull(expected: unknown): void {
+		const actual = null;
+
+		if (expected === actual) {
+			Assertion.formMessageAndThrow(expected, "!==", actual);
 		}
 	}
 
