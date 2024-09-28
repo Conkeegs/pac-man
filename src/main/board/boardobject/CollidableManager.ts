@@ -35,20 +35,18 @@ export default class CollidableManager {
 			COLLIDABLES_MAP[newCollidablePositionKey] = [];
 		}
 
-		if (currentPosition) {
-			const currentTileX = Board.calcTileNumX(currentPosition.x);
-			const currentTileY = Board.calcTileNumY(currentPosition.y);
-			const newTileX = Board.calcTileNumX(newPosition.x);
-			const newTileY = Board.calcTileNumY(newPosition.y);
+		const halfCollidableWidth = collidable.getWidth()! / 2;
+		const halfCollidableHeight = collidable.getHeight()! / 2;
+		const currentTileX = Board.calcTileNumX(currentPosition.x + halfCollidableWidth);
+		const currentTileY = Board.calcTileNumY(currentPosition.y + halfCollidableHeight);
+		const newTileX = Board.calcTileNumX(newPosition.x + halfCollidableWidth);
+		const newTileY = Board.calcTileNumY(newPosition.y + halfCollidableHeight);
 
-			if (currentTileX !== newTileX || currentTileY !== newTileY) {
-				// make sure we remove any existing references to "collidable" in the map, if it already exists
-				this.checkForCollidableAndRemove();
+		if (currentTileX !== newTileX || currentTileY !== newTileY) {
+			// make sure we remove any existing references to "collidable" in the map, if it already exists,
+			// since it's now moving to a different location in the map
+			this.checkForCollidableAndRemove();
 
-				// push "collidable" into its own position-based group
-				COLLIDABLES_MAP[newCollidablePositionKey]!.push(collidable);
-			}
-		} else {
 			// push "collidable" into its own position-based group
 			COLLIDABLES_MAP[newCollidablePositionKey]!.push(collidable);
 		}
