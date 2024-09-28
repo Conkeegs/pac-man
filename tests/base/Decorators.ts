@@ -1,3 +1,5 @@
+import Logger from "../../src/main/Logger.js";
+
 /**
  * Decorator for test classes. Makes sure that a test class follows proper naming conventions for
  * its class name and method names.
@@ -26,19 +28,23 @@ export function tests(testedClassConstructor: Function): (testClassConstructor: 
 		}
 
 		const testClassConstructorPrototype = testClassConstructor.prototype;
+		const testClassProperties = Object.getOwnPropertyNames(testClassConstructorPrototype).filter(
+			(propertyName) => propertyName !== "constructor"
+		);
+		const testedClassConstructorPrototype = testedClassConstructor.prototype;
+		const testedClassProperties = Object.getOwnPropertyNames(testedClassConstructor).concat(
+			Object.getOwnPropertyNames(testedClassConstructorPrototype).filter(
+				(propertyName) => propertyName !== "constructor"
+			)
+		);
 
 		// loop through test class' method names and make sure they match the naming of the class' properties it is testing. filter
 		// out constructor since it shouldn't count as a "testing" method. we also filter out testing methods starting with "create"
 		// as these signify a testing method that creates an instance of a class
-		for (const propertyName of Object.getOwnPropertyNames(testClassConstructorPrototype).filter((propertyName) => {
-			if (propertyName === "constructor") {
-				return false;
-			}
-
-			return (
+		for (const propertyName of testClassProperties.filter(
+			(propertyName) =>
 				typeof testClassConstructorPrototype[propertyName] === "function" && !propertyName.startsWith("create")
-			);
-		})) {
+		)) {
 			// make sure each testing method ends with "test"
 			if (!propertyName.endsWith("Test")) {
 				throw new Error(
@@ -51,18 +57,37 @@ export function tests(testedClassConstructor: Function): (testClassConstructor: 
 			// make sure each testing method matches naming convention of class properties they are testing.filter out constructor since
 			// it shouldn't be tested against (at least directly)
 			if (
-				Object.getOwnPropertyNames(testedClassConstructor)
-					.concat(Object.getOwnPropertyNames(testedClassConstructor.prototype))
-					.findIndex((propertyName) => {
-						if (propertyName === "constructor") {
-							return false;
-						}
-
-						return propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase();
-					}) === -1
+				testedClassProperties.findIndex(
+					(propertyName) =>
+						propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase()
+				) === -1
 			) {
 				throw new Error(
 					`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement property or method with naming convention "${testMethodTargetProperty}"`
+				);
+			}
+		}
+
+		// look for methods defined on tested class that do not have a test written for them. make sure to
+		// only look for "function" types in the tested class, and do not count debug methods
+		for (const testedPropertyName of testedClassProperties.filter(
+			(propertyName) =>
+				typeof testedClassConstructorPrototype[propertyName] === "function" &&
+				!propertyName.startsWith("debug_")
+		)) {
+			if (
+				testClassProperties.findIndex(
+					(propertyName) =>
+						propertyName.slice(0, propertyName.indexOf("Test")).toLowerCase() ===
+						testedPropertyName.replace("_", "").toLowerCase()
+				) === -1
+			) {
+				Logger.log(
+					`${testedClassConstructorName} has method "${testedPropertyName}" that is not tested inside of: ${testClassConstructorName}`,
+					{
+						severity: "warning",
+						withSymbol: true,
+					}
 				);
 			}
 		}
