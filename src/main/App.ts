@@ -346,5 +346,9 @@ export class App {
 if (!TESTING) {
 	new App();
 } else {
-	new RunTests();
+	const button = create({ name: "button", html: "Run Tests" });
+
+	button.onclick = () => new RunTests();
+
+	document.body.prepend(button);
 }
