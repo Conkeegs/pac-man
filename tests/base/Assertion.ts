@@ -18,6 +18,7 @@ enum OperatorsEnglish {
 	"empty" = "empty",
 	"notEmpty" = "not empty",
 	"throws" = "a function that throws",
+	"changes" = "the changed-to value from",
 }
 
 /**
@@ -226,6 +227,41 @@ export default abstract class Assertion {
 		if (expected === actual) {
 			Assertion.formMessageAndThrow(expected, "!==", actual);
 		}
+	}
+
+	/**
+	 * Asserts that a property on an object changes value at a future point in time.
+	 *
+	 * @param expected the expected value that `owner[propertyName]` should change t
+	 * @param owner the object which owns the property `propertyName`
+	 * @param propertyName the name of the property that should change at some future point in time
+	 * @param executionTime the max execution time of this assertion
+	 */
+	public static async assertPropertyChanges(
+		expected: unknown,
+		owner: any,
+		propertyName: string,
+		executionTime: number = 3000
+	): Promise<void> {
+		const ownerName = owner.name ?? owner.constructor.name;
+		const retryTime = 100;
+		let timeElapsed = 0;
+
+		return new Promise((resolve) => {
+			const interval = setInterval(() => {
+				timeElapsed += retryTime;
+
+				if (owner[propertyName as keyof typeof owner] === expected) {
+					resolve();
+					clearInterval(interval);
+				}
+
+				if (timeElapsed >= executionTime) {
+					clearInterval(interval);
+					Assertion.formMessageAndThrow(expected, "changes", `${ownerName}['${propertyName}']`);
+				}
+			}, retryTime);
+		});
 	}
 
 	/**

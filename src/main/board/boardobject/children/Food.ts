@@ -7,7 +7,7 @@ import CollidableManager from "../CollidableManager.js";
 import PacMan from "./character/PacMan.js";
 
 /**
- * Represents food that PacMan collects
+ * Represents food that PacMan collects.
  */
 export default class Food extends BoardObject implements Collidable {
 	_collidableManager: CollidableManager;

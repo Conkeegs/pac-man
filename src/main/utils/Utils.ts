@@ -470,3 +470,21 @@ export function getCircularReplacer() {
 		return value;
 	};
 }
+
+/**
+ * Convert css hex values to RGB values. Source: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb.
+ *
+ * @param hex the hex string to convert to RGB
+ * @returns RBG string, formatted for CSS
+ */
+export function hexToRgb(hex: string): string {
+	let result: string[] | null = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+	if (result === null) {
+		DebugWindow.error("Utils.ts", "hexToRgb", "Improper hex argument provided");
+	}
+
+	result = result as string[];
+
+	return `rgb(${parseInt(result[1]!, 16)}, ${parseInt(result[2]!, 16)}, ${parseInt(result[3]!, 16)})`;
+}
