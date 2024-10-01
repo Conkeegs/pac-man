@@ -349,7 +349,7 @@ export default class Board {
 	/**
 	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
 	 */
-	private createGrid() {
+	private debug_createGrid() {
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
 			this.placeBoardObject(
 				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
@@ -384,7 +384,7 @@ export default class Board {
 	/**
 	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
 	 */
-	private async createPaths() {
+	private async debug_createPaths() {
 		const pathData: PathData = await fetchJSON(JsonRegistry.getJson("paths"));
 
 		const nodePositions: [number, number][] = [];
