@@ -3,6 +3,7 @@
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
+import Board from "../../Board.js";
 import { BoardObject } from "../BoardObject.js";
 
 /**
@@ -43,7 +44,7 @@ export default class BoardText extends BoardObject {
 		/**
 		 * Font size of `text`. Defaults to `TILESIZE`.
 		 */
-		fontsize?: number;
+		fontSize?: number;
 		/**
 		 * Color of `text`. Defaults to `white`.
 		 */
@@ -55,9 +56,9 @@ export default class BoardText extends BoardObject {
 	}) {
 		super(data.name);
 
-		this.fontSize = data.fontsize || TILESIZE;
+		this.fontSize = data.fontSize || TILESIZE;
 
-		if (this.fontSize > 24) {
+		if (this.fontSize > TILESIZE) {
 			DebugWindow.error(
 				"BoardText.js",
 				"constructor",
@@ -97,6 +98,22 @@ export default class BoardText extends BoardObject {
 	}
 
 	/**
+	 * Whether or not the text displayed is vertical.
+	 *
+	 * @returns the fontsize of the text displayed in pixels
+	 */
+	public isVertical(): boolean {
+		return this.vertical;
+	}
+
+	/**
+	 * Get the text displayed.
+	 */
+	public getText(): string {
+		return this.text;
+	}
+
+	/**
 	 * Sets the text that is visually displayed in this boardtext object and also in-memory. "Grows" to the left the
 	 * more characters are added.
 	 *
@@ -110,14 +127,12 @@ export default class BoardText extends BoardObject {
 		const notVertical = !this.vertical;
 
 		// reset width/height variable depending on display of text. we need to do this because
-		// the width of the element will change when more characters are added/removed
+		// the width/height of the element will change when more characters are added/removed
 		notVertical ? (this.width = 0) : (this.height = 0);
 
 		// we want to reverse the text first, since pacman text "grows" to the left, the more characters
 		// are added
 		for (const [index, character] of Object.entries(newText.reverse())) {
-			notVertical ? (this.width += TILESIZE) : (this.height += TILESIZE);
-
 			// create a tile-sized container for each character in the text, so each character appears to
 			// display in a different tile
 			const container = create({
@@ -127,22 +142,22 @@ export default class BoardText extends BoardObject {
 				color: this.color,
 				width: px(TILESIZE),
 				height: px(TILESIZE),
-			}) as HTMLElement;
-
-			// judge whether or not to display text vertically
-			container.css({
+				// judge whether or not to display text vertically
 				[notVertical ? "left" : "top"]: px(-(TILESIZE * Number(index))),
-			});
+			}) as HTMLElement;
 
 			container.textContent = character;
 
 			(this.element as HTMLElement).appendChild(container);
 		}
 
+		const pixelDimensions = Board.calcTileOffset(newText.length);
+		notVertical ? (this.width = pixelDimensions) : (this.height = pixelDimensions);
+
 		this.element.css({
 			[notVertical ? "width" : "height"]: px(notVertical ? this.width : this.height),
 		});
 
-		this.text += newText;
+		this.text = newText;
 	}
 }
