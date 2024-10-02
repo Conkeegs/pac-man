@@ -8,6 +8,7 @@ import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
 import BoardObjectTest from "./board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./board/boardobject/children/BoardTextTest.js";
+import CharacterTest from "./board/boardobject/children/character/CharacterTest.js";
 import FoodTest from "./board/boardobject/children/FoodTest.js";
 import PathNodeTest from "./board/boardobject/children/PathNodeTest.js";
 import CollidableManagerTest from "./board/boardobject/CollidableManagerTest.js";
@@ -58,6 +59,7 @@ export default class RunTests {
 		new PathNodeTest(),
 		new FoodTest(),
 		new BoardTextTest(),
+		new CharacterTest(),
 	];
 
 	/**
