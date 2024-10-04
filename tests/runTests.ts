@@ -160,7 +160,7 @@ export default class RunTests {
 
 				await (testClass[functionName as keyof Test] as () => void | Promise<void>)();
 
-				// clear globals after each test
+				// destroy app resources after each test
 				App.destroy();
 
 				Logger.log(
