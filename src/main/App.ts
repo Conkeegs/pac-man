@@ -2,10 +2,9 @@
 
 import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
-import Board, { type WallDataElement } from "./board/Board.js";
+import Board, { type TurnData, type WallDataElement } from "./board/Board.js";
 import type { Position } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
-import type { TurnData } from "./board/boardobject/children/character/Character.js";
 import Character from "./board/boardobject/children/character/Character.js";
 import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, CHARACTERS, COLLIDABLES_MAP, TESTING } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
@@ -63,6 +62,7 @@ export class App {
 	constructor() {
 		App.loadGame().then(() => {
 		App.loadGame().then(async () => {
+		App.loadResources().then(async () => {
 			this.board = new Board();
 			const board = this.board;
 
@@ -286,51 +286,61 @@ export class App {
 	 *
 	 * @returns promise which loads all game resources
 	 */
-	private static loadGame(): Promise<[void, void]> {
-		return Promise.all([
-			// tell all characters where it can turn
-			fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
-				for (let turn of turnData) {
-					turn.x = Board.calcTileOffsetX(turn.x + 0.5);
-					turn.y = Board.calcTileOffsetY(turn.y - 0.5);
+	private static loadResources(): Promise<[void, void]> {
+		return Promise.all([App.loadTurnData(), App.loadWallData()]);
+	}
+
+	/**
+	 * Load all board's turns into memory.
+	 */
+	private static async loadTurnData(): Promise<void> {
+		// tell all characters where they can turn
+		return fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
+			for (let turn of turnData) {
+				turn.x = Board.calcTileOffsetX(turn.x + 0.5);
+				turn.y = Board.calcTileOffsetY(turn.y - 0.5);
+			}
+
+			Board.turnData = turnData;
+		});
+	}
+
+	/**
+	 * Load all board's walls into memory.
+	 */
+	private static async loadWallData(): Promise<void> {
+		return fetchJSON(JsonRegistry.getJson("walls")).then((wallData: WallDataElement[]) => {
+			for (let element of wallData) {
+				const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
+					width: px(Board.calcTileOffset(element.styles.width)),
+					height: px(Board.calcTileOffset(element.styles.height)),
+					top: px(Board.calcTileOffset(element.styles.top)),
+					left: px(Board.calcTileOffset(element.styles.left || 0)),
+					borderTopLeftRadius: px(
+						maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderTopRightRadius: px(
+						maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderBottomRightRadius: px(
+						maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderBottomLeftRadius: px(
+						maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
+					),
+				}) as HTMLElement;
+
+				// make sure invisible walls that are outside of teleports display over characters so that it looks
+				// like the character's "disappear" through them
+				if (wall.classList.contains("teleport-cover")) {
+					wall.css({
+						zIndex: BOARD_OBJECT_Z_INDEX + 1,
+					});
 				}
 
-				Character.turnData = turnData;
-			}),
-			// setup walls
-			fetchJSON(JsonRegistry.getJson("walls")).then((wallData: WallDataElement[]) => {
-				for (let element of wallData) {
-					const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
-						width: px(Board.calcTileOffset(element.styles.width)),
-						height: px(Board.calcTileOffset(element.styles.height)),
-						top: px(Board.calcTileOffset(element.styles.top)),
-						left: px(Board.calcTileOffset(element.styles.left || 0)),
-						borderTopLeftRadius: px(
-							maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderTopRightRadius: px(
-							maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderBottomRightRadius: px(
-							maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
-						),
-						borderBottomLeftRadius: px(
-							maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
-						),
-					}) as HTMLElement;
-
-					// make sure invisible walls that are outside of teleports display over characters so that it looks
-					// like the character's "disappear" through them
-					if (wall.classList.contains("teleport-cover")) {
-						wall.css({
-							zIndex: BOARD_OBJECT_Z_INDEX + 1,
-						});
-					}
-
-					App.loadedWallData.push(wall);
-				}
-			}),
-		]);
+				App.loadedWallData.push(wall);
+			}
+		});
 	}
 
 	/**
