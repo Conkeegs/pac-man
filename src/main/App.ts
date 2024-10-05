@@ -151,6 +151,7 @@ export class App {
 	}
 
 	/**
+	 * Stop the game loop from running.
 	 *
 	 * @param paused whether or not the game stopped because it paused (defaults to `false`)
 	 */
@@ -181,16 +182,16 @@ export class App {
 	/**
 	 * The main gameloop of the game. Runs logic every frame and interpolates between updates.
 	 *
-	 * @param lastAnimationTime the last `timeStamp` value
-	 * @param timeStamp the current timestamp of the game in milliseconds
+	 * @param lastTimestamp the last `timeStamp` value
+	 * @param currentTimestamp the current timestamp of the game in milliseconds
 	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_FPS` frames)
 	 */
-	private gameLoop(lastAnimationTime: number, timeStamp: number, frameCount: number): void {
+	private gameLoop(lastTimestamp: number, currentTimestamp: number, frameCount: number): void {
 		if (App.GAME_PAUSED) {
 			return;
 		}
 
-		let deltaTime = timeStamp - lastAnimationTime;
+		let deltaTime = currentTimestamp - lastTimestamp;
 
 		// prevent spiral of death
 		if (deltaTime > 250) {
@@ -199,9 +200,9 @@ export class App {
 
 		// prevents "deltaTime" from being very large at the start, and therefore
 		// being very large distance and causing unexpected game behaviors
-		if (!lastAnimationTime) {
+		if (!lastTimestamp) {
 			deltaTime = 0;
-			lastAnimationTime = timeStamp;
+			lastTimestamp = currentTimestamp;
 		}
 
 		this.deltaTimeAccumulator += deltaTime;
@@ -209,19 +210,19 @@ export class App {
 		// update fps counter
 		if (App.DEBUG) {
 			if (frameCount === 0) {
-				this.debug_frameCountTimeStamp = timeStamp;
+				this.debug_frameCountTimeStamp = currentTimestamp;
 			}
 
-			if (timeStamp >= this.debug_frameCountTimeStamp + 1000) {
+			if (currentTimestamp >= this.debug_frameCountTimeStamp + 1000) {
 				// Update every second
 				this.board!.debug_fpsCounter!.setText(`FPS:${this.debug_framesCounted}`);
 
 				this.debug_framesCounted = 0;
-				this.debug_frameCountTimeStamp = timeStamp;
+				this.debug_frameCountTimeStamp = currentTimestamp;
 			}
 		}
 
-		const MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
+		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
 		// keep track of each character's position so we can properly interpolate it every frame
 		let oldCharacterPositions: { [key: string]: Position } = {};
 
@@ -237,7 +238,7 @@ export class App {
 
 		let movingCharacters: Character[] | undefined;
 
-		while (this.deltaTimeAccumulator >= MS_PER_FRAME) {
+		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			movingCharacters = findMovingCharactersAndMapPosition();
 
 			for (let i = 0; i < movingCharacters.length; i++) {
@@ -245,14 +246,14 @@ export class App {
 			}
 
 			frameCount++;
-			this.deltaTimeAccumulator -= MS_PER_FRAME;
+			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 
 			if (App.DEBUG) {
 				this.debug_framesCounted++;
 			}
 		}
 
-		const alpha = this.deltaTimeAccumulator / MS_PER_FRAME;
+		const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 		// some characters may have stopped/started moving after rendering, so refresh this array
 		movingCharacters = App.findMovingCharacters();
 
@@ -274,10 +275,10 @@ export class App {
 			}
 		}
 
-		lastAnimationTime = timeStamp;
+		lastTimestamp = currentTimestamp;
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
-			this.gameLoop(lastAnimationTime, timeStampNew, frameCount)
+			this.gameLoop(lastTimestamp, timeStampNew, frameCount)
 		);
 	}
 
