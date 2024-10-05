@@ -1,5 +1,5 @@
 /**
- * Indicates that a `BoardObject` will "tick" each frame of the game and update therefore itself every frame.
+ * Indicates that a `BoardObject` will "tick" each frame of the game and therefore update itself every frame.
  */
 export default interface Tickable {
 	/**
