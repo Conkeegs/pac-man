@@ -29,7 +29,7 @@ export class App {
 	/**
 	 * The walls to display in the game.
 	 */
-	private static readonly loadedWallData: HTMLElement[] = [];
+	private static loadedWallData: HTMLElement[] = [];
 	/**
 	 * The last timestamp in the game's animation frame that the fps was displayed.
 	 */
