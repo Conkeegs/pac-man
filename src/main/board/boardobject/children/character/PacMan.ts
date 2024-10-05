@@ -3,9 +3,10 @@
 import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
+import type { TurnData } from "../../../Board.js";
 import type Collidable from "../../Collidable.js";
 import CollidableManager from "../../CollidableManager.js";
-import Character, { type StartMoveOptions, type TurnData } from "./Character.js";
+import Character, { type StartMoveOptions } from "./Character.js";
 import Ghost from "./Ghost.js";
 import MovementDirection from "./MovementDirection.js";
 
@@ -231,35 +232,24 @@ export default class PacMan extends Character {
 				return;
 			}
 
-			let thresholdTurn: TurnData | undefined;
-
 			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
 			// turn threshold
-			const nearestTurnableTurn = this.findNearestTurnWhere(
-				(turn) =>
-					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
-						turn,
-						this.getPosition()
-					) && Character.canTurnWithMoveDirection(moveCode, turn),
-				(turn) => {
-					if (this.isWithinTurnDistance(turn)) {
-						thresholdTurn = turn;
-					}
-				}
+			const nearestTurnableTurn = this.findNearestTurnWhere((turn) =>
+				Character.canTurnWithMoveDirection(moveCode, turn)
 			);
-
-			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-			if (thresholdTurn) {
-				this.startMoving(moveCode, {
-					fromTurn: thresholdTurn,
-				});
-
-				return;
-			}
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 			// PacMan hasn't arrived in its threshold yet
 			if (nearestTurnableTurn) {
+				// if there is a turnable turn at this moment, just immediately move PacMan in that direction
+				if (this.isWithinTurnDistance(nearestTurnableTurn)) {
+					this.startMoving(moveCode, {
+						fromTurn: nearestTurnableTurn,
+					});
+
+					return;
+				}
+
 				// PacMan is going to move, so set his last move code
 				this.lastMoveCode = moveCode;
 
@@ -293,11 +283,7 @@ export default class PacMan extends Character {
 		// pacman from ever executing a queued-turn when he is technically "behind" a wall
 		if (frameCount === 0) {
 			this.nearestStoppingTurn = this.findNearestTurnWhere(
-				(turn) =>
-					this.turnValidators[currentDirection as keyof typeof this.turnValidators](
-						turn,
-						this.getPosition()
-					) && !Character.canTurnWithMoveDirection(currentDirection, turn)
+				(turn) => !Character.canTurnWithMoveDirection(currentDirection, turn)
 			);
 		}
 
