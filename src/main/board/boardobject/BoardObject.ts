@@ -48,11 +48,11 @@ export abstract class BoardObject {
 	/**
 	 * The board object's width in pixels.
 	 */
-	protected abstract readonly width: number | undefined;
+	protected abstract readonly width: number;
 	/**
 	 * The board object's height in pixels.
 	 */
-	protected abstract readonly height: number | undefined;
+	protected abstract readonly height: number;
 	/**
 	 * This board objet's CSS `transform` value, holding both its `translateX` and `translateY` values.
 	 */
@@ -134,7 +134,7 @@ export abstract class BoardObject {
 	 *
 	 * @returns board object's width in pixels
 	 */
-	public getWidth(): number | undefined {
+	public getWidth(): number {
 		return this.width;
 	}
 
@@ -143,7 +143,7 @@ export abstract class BoardObject {
 	 *
 	 * @returns this board object's width in pixels
 	 */
-	public getHeight(): number | undefined {
+	public getHeight(): number {
 		return this.height;
 	}
 
