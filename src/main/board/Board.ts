@@ -13,6 +13,7 @@ import PathNode from "./boardobject/children/PathNode.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
 import Clyde from "./boardobject/children/character/Clyde.js";
 import Inky from "./boardobject/children/character/Inky.js";
+import type MovementDirection from "./boardobject/children/character/MovementDirection.js";
 import PacMan from "./boardobject/children/character/PacMan.js";
 import Pinky from "./boardobject/children/character/Pinky.js";
 
@@ -52,6 +53,26 @@ interface PathData {
 			to: number[];
 		}
 	];
+}
+
+/**
+ * Represents a position on the board where a character is allowed to turn,
+ * and also includes an array of `MovementDirection` values to tell the character
+ * what directions it can turn when it reaches the given turn coordinates.
+ */
+export interface TurnData extends Position {
+	/**
+	 * The `x` position of the turn.
+	 */
+	x: number;
+	/**
+	 * The `y` position of the turn.
+	 */
+	y: number;
+	/**
+	 * The allowed `MovementDirection`s of the turn.
+	 */
+	directions: MovementDirection[];
 }
 
 /**
@@ -120,6 +141,10 @@ export default class Board {
 	 * Button used for playing/pausing the game in debug mode.
 	 */
 	public debug_pausePlayButton: PausePlayButton | undefined;
+	/**
+	 * Data telling characters where they are allowed to turn.
+	 */
+	public static turnData: TurnData[] | undefined;
 
 	/**
 	 * Creates the board.s
