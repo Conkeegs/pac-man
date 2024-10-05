@@ -118,15 +118,16 @@ export class App {
 	}
 
 	/**
-	 * Removes values from globals that are modified throughout the app. Deletes
-	 * all references in the `COLLIDABLES_MAP`, all `BoardObject`s, and all `Character`s, and then
-	 * deleted the app's elements.
+	 * Destroys the application and the resources it's using.
 	 */
 	public static destroy(): void {
 		Object.removeAllKeys(COLLIDABLES_MAP);
 
 		BOARDOBJECTS.length = 0;
 		CHARACTERS.length = 0;
+
+		Board.turnData = undefined;
+		App.loadedWallData = [];
 
 		get("game")!.innerHTML = "";
 	}
