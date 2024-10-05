@@ -152,6 +152,19 @@ export default class BoardObjectTest extends Test {
 	}
 
 	/**
+	 * Test that board objects correctly have their center positions retrieved.
+	 */
+	public getCenterPositionTest(): void {
+		const pacman = new PacMan();
+		let centerPosition = pacman.getCenterPosition();
+
+		// haven't placed on board yet so position should be default
+		Assertion.assertOfType("object", pacman.getCenterPosition());
+		Assertion.assertStrictlyEqual(0 + pacman.getWidth() / 2, centerPosition.x);
+		Assertion.assertStrictlyEqual(0 + pacman.getHeight() / 2, centerPosition.y);
+	}
+
+	/**
 	 * Test that board objects correctly have their positions set.
 	 */
 	public setPositionTest(): void {

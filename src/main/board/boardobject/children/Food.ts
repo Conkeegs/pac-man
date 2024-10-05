@@ -59,27 +59,21 @@ export default class Food extends BoardObject implements Collidable {
 	}
 
 	public override setPosition(position: Position, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
-		this._collidableManager.updateTileKeys(position);
-
 		super.setPosition(position, options);
+
+		this._collidableManager.updateTileKeys();
 	}
 
 	public override setPositionX(x: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
-		this._collidableManager.updateTileKeys({
-			x,
-			y: this.getPosition().y,
-		});
-
 		super.setPositionX(x, options);
+
+		this._collidableManager.updateTileKeys();
 	}
 
 	public override setPositionY(y: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
-		this._collidableManager.updateTileKeys({
-			x: this.getPosition().x,
-			y,
-		});
-
 		super.setPositionY(y, options);
+
+		this._collidableManager.updateTileKeys();
 	}
 
 	/**

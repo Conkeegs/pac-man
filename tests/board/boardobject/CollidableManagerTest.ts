@@ -32,11 +32,10 @@ export default class CollidableManagerTest extends Test {
 		const collidableManager = inky._collidableManager;
 
 		// haven't updated position yet so no collidable mapping should be found
+		Assertion.assertDoesntExist(collidableManager["currentPositionKey"]);
 		Assertion.assertTrue(
 			!defined(
-				COLLIDABLES_MAP[
-					Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [inkyPosition])
-				]
+				COLLIDABLES_MAP[Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [])]
 			)
 		);
 
@@ -48,68 +47,65 @@ export default class CollidableManagerTest extends Test {
 		const newTileX = Board.calcTileNumX(newPosition.x);
 		const newTileY = Board.calcTileNumY(newPosition.y);
 
-		collidableManager["updateTileKeys"](newPosition);
+		collidableManager["updateTileKeys"]();
 
-		let positionKeyNewPosition = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-			newPosition,
-		]);
+		let positionKeyNewPosition = Reflect.apply(
+			collidableManager["getCollidablePositionKey"],
+			collidableManager,
+			[]
+		);
 		let positionCollidables = COLLIDABLES_MAP[positionKeyNewPosition]!;
 
-		// collidable mapping should be found for tile nums, but no reference to inky yet
+		// collidable mapping should be found for tile nums with reference to inky
 		Assertion.assertFalse(
 			!defined(
-				COLLIDABLES_MAP[
-					Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [inkyPosition])
-				]
+				COLLIDABLES_MAP[Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [])]
 			)
 		);
 		Assertion.assertFalse(!defined(COLLIDABLES_MAP[positionKeyNewPosition]));
-		Assertion.assertEmpty(COLLIDABLES_MAP[positionKeyNewPosition]!);
+		Assertion.assertNotEmpty(COLLIDABLES_MAP[positionKeyNewPosition]!);
 		Assertion.assertStrictlyEqual(currentTileX, newTileX);
 		Assertion.assertStrictlyEqual(currentTileY, newTileY);
-		Assertion.assertArrayDoesntContain(inky, positionCollidables);
+		Assertion.assertArrayContains(inky, positionCollidables);
+		Assertion.assertExists(collidableManager["currentPositionKey"]);
+		Assertion.assertStrictlyEqual(
+			collidableManager["currentPositionKey"],
+			collidableManager["getCollidablePositionKey"]()
+		);
 
 		newPosition = { x: inkyPositionX + TILESIZE, y: inkyPositionY };
 
 		inky.setPosition(newPosition);
 
-		positionKeyNewPosition = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-			newPosition,
-		]);
+		positionKeyNewPosition = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, []);
 		positionCollidables = COLLIDABLES_MAP[positionKeyNewPosition]!;
 
 		// position updated, so inky should be found in mapping
-		Assertion.assertEmpty(
-			COLLIDABLES_MAP[
-				Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-					{ x: inkyPositionX, y: inkyPositionY },
-				])
-			]!
-		);
 		Assertion.assertNotEmpty(positionCollidables);
 		Assertion.assertNotStrictlyEqual(Board.calcTileNumX(inkyPositionX), Board.calcTileNumX(newPosition.x));
 		Assertion.assertArrayContains(inky, positionCollidables);
+		Assertion.assertExists(collidableManager["currentPositionKey"]);
+		Assertion.assertStrictlyEqual(
+			collidableManager["currentPositionKey"],
+			collidableManager["getCollidablePositionKey"]()
+		);
 
 		newPosition = { x: inkyPositionX, y: inkyPositionY + TILESIZE };
 
 		inky.setPosition(newPosition);
 
-		positionKeyNewPosition = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-			newPosition,
-		]);
+		positionKeyNewPosition = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, []);
 		positionCollidables = COLLIDABLES_MAP[positionKeyNewPosition]!;
 
-		// position updated, so inky should be found in different mapping and old mapping should be empty now
-		Assertion.assertEmpty(
-			COLLIDABLES_MAP[
-				Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-					{ x: inkyPositionX + TILESIZE, y: inkyPositionY },
-				])
-			]!
-		);
+		// position updated, so inky should be found in different mapping
 		Assertion.assertNotEmpty(positionCollidables);
 		Assertion.assertNotStrictlyEqual(Board.calcTileNumX(inkyPositionY), Board.calcTileNumX(newPosition.y));
 		Assertion.assertArrayContains(inky, positionCollidables);
+		Assertion.assertExists(collidableManager["currentPositionKey"]);
+		Assertion.assertStrictlyEqual(
+			collidableManager["currentPositionKey"],
+			collidableManager["getCollidablePositionKey"]()
+		);
 	}
 
 	/**
@@ -117,12 +113,9 @@ export default class CollidableManagerTest extends Test {
 	 */
 	public checkForCollidableAndRemoveTest(): void {
 		const inky = new Inky();
-		const inkyPosition = inky.getPosition();
 		const collidableManager = inky._collidableManager;
 		let positionCollidables =
-			COLLIDABLES_MAP[
-				Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [inkyPosition])
-			];
+			COLLIDABLES_MAP[Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [])];
 
 		Assertion.assertTrue(!defined(positionCollidables));
 
@@ -131,9 +124,7 @@ export default class CollidableManagerTest extends Test {
 		inky.setPosition(newPosition);
 
 		positionCollidables =
-			COLLIDABLES_MAP[
-				Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [newPosition])
-			];
+			COLLIDABLES_MAP[Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [])];
 
 		Assertion.assertFalse(!defined(positionCollidables));
 		Assertion.assertNotEmpty(positionCollidables!);
@@ -151,17 +142,12 @@ export default class CollidableManagerTest extends Test {
 	 */
 	public getCollidablePositionKeyTest(): void {
 		const inky = new Inky();
-		const inkyPosition = inky.getPosition();
 		const collidableManager = inky._collidableManager;
-
-		const positionKey = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, [
-			inkyPosition,
-		]);
+		const positionKey = Reflect.apply(collidableManager["getCollidablePositionKey"], collidableManager, []);
+		const centerPosition = inky.getCenterPosition();
 
 		Assertion.assertStrictlyEqual(
-			`${Board.calcTileNumX(inkyPosition.x + inky.getWidth()! / 2)}-${Board.calcTileNumY(
-				inkyPosition.y + inky.getHeight()! / 2
-			)}`,
+			`${Board.calcTileNumX(centerPosition.x)}-${Board.calcTileNumY(centerPosition.y)}`,
 			positionKey
 		);
 	}

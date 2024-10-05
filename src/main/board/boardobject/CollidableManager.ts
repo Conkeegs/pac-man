@@ -1,7 +1,6 @@
 import { COLLIDABLES_MAP } from "../../utils/Globals.js";
 import { defined } from "../../utils/Utils.js";
 import Board from "../Board.js";
-import { type Position } from "./BoardObject.js";
 import type Collidable from "./Collidable.js";
 
 /**
@@ -12,6 +11,10 @@ export default class CollidableManager {
 	 * The `Collidable` `BoardObject` class.
 	 */
 	private collidable: Collidable;
+	/**
+	 * The current key into the `COLLIDABLES_MAP` that this collidable is under.
+	 */
+	private currentPositionKey: string | undefined;
 
 	constructor(collidable: Collidable) {
 		this.collidable = collidable;
@@ -23,59 +26,50 @@ export default class CollidableManager {
 	 * based on its current x and y position. This reduces the number of `BoardObject`s we need to run collision detection
 	 * against.
 	 *
-	 * @param newPosition the new position of `collidable`
 	 */
-	public updateTileKeys(newPosition: Position): void {
+	public updateTileKeys(): void {
 		const collidable = this.collidable;
-		const currentPosition = collidable.getPosition();
-		const newCollidablePositionKey = this.getCollidablePositionKey(newPosition);
+		const newCollidablePositionKey = this.getCollidablePositionKey();
+		this.currentPositionKey = newCollidablePositionKey;
 
 		// create a new mapping for the new position, if there isn't one yet
 		if (!defined(COLLIDABLES_MAP[newCollidablePositionKey])) {
 			COLLIDABLES_MAP[newCollidablePositionKey] = [];
 		}
 
-		const halfCollidableWidth = collidable.getWidth()! / 2;
-		const halfCollidableHeight = collidable.getHeight()! / 2;
-		const currentTileX = Board.calcTileNumX(currentPosition.x + halfCollidableWidth);
-		const currentTileY = Board.calcTileNumY(currentPosition.y + halfCollidableHeight);
-		const newTileX = Board.calcTileNumX(newPosition.x + halfCollidableWidth);
-		const newTileY = Board.calcTileNumY(newPosition.y + halfCollidableHeight);
-
-		if (currentTileX !== newTileX || currentTileY !== newTileY) {
-			// make sure we remove any existing references to "collidable" in the map, if it already exists,
-			// since it's now moving to a different location in the map
-			this.checkForCollidableAndRemove();
-
-			// push "collidable" into its own position-based group
-			COLLIDABLES_MAP[newCollidablePositionKey]!.push(collidable);
-		}
+		// make sure we remove any existing references to "collidable" in the map,since it's
+		// now moving to a different location in the map
+		this.checkForCollidableAndRemove();
+		// push "collidable" into its own position-based group
+		COLLIDABLES_MAP[newCollidablePositionKey]!.push(collidable);
 	}
 
 	/**
 	 * Checks that `collidable` doesn't already have a mapping in the `COLLIDABLES_MAP`, and removes it if it does.
 	 */
 	public checkForCollidableAndRemove(): void {
+		const currentPositionKey = this.currentPositionKey;
+
+		if (!currentPositionKey) {
+			return;
+		}
+
 		const collidable = this.collidable;
-		const currentCollidablePositionKey = this.getCollidablePositionKey(collidable.getPosition());
-		let positionCollidables = COLLIDABLES_MAP[currentCollidablePositionKey];
+		let positionCollidables = COLLIDABLES_MAP[currentPositionKey];
 
 		if (defined(positionCollidables) && positionCollidables!.includes(collidable)) {
-			COLLIDABLES_MAP[currentCollidablePositionKey]!.splice(positionCollidables!.indexOf(collidable), 1);
+			COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(collidable), 1);
 		}
 	}
 
 	/**
-	 * Given a `Position`, this will create a properly-formatted key into the `COLLIDABLES_MAP`.
+	 * This will create a properly-formatted key into the `COLLIDABLES_MAP` based on this collidable's `Position`.
 	 *
-	 * @param position the position to create the key out of
 	 * @returns a properly-formatted key into the `COLLIDABLES_MAP`
 	 */
-	private getCollidablePositionKey(position: Position): string {
-		const collidable = this.collidable;
+	private getCollidablePositionKey(): string {
+		const centerPosition = this.collidable.getCenterPosition();
 
-		return `${Board.calcTileNumX(position.x + collidable.getWidth()! / 2)}-${Board.calcTileNumY(
-			position.y + collidable.getHeight()! / 2
-		)}`;
+		return `${Board.calcTileNumX(centerPosition.x)}-${Board.calcTileNumY(centerPosition.y)}`;
 	}
 }

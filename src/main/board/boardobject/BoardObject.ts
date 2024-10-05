@@ -148,6 +148,21 @@ export abstract class BoardObject {
 	}
 
 	/**
+	 * Returns the center position of this board object by calculating its center with half
+	 * of its width and height.
+	 *
+	 * @returns the center position of this board object
+	 */
+	public getCenterPosition(): Position {
+		const position = this.position;
+
+		return {
+			x: position.x + this.getWidth() / 2,
+			y: position.y + this.getHeight() / 2,
+		};
+	}
+
+	/**
 	 * Sets this board object's position on the board and in memory.
 	 *
 	 * @param position the new position of the board object

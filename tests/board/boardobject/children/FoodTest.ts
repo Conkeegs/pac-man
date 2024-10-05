@@ -45,10 +45,7 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		Assertion.assertArrayContains(
-			food,
-			COLLIDABLES_MAP[food._collidableManager["getCollidablePositionKey"](position)]!
-		);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[food._collidableManager["getCollidablePositionKey"]()]!);
 
 		Assertion.assertStrictlyEqual(position, food.getPosition());
 	}
@@ -63,14 +60,14 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 		Assertion.assertStrictlyEqual(position, food.getPosition());
 
 		const newPositionX = 800;
 
 		food.setPositionX(newPositionX);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 		Assertion.assertStrictlyEqual(newPositionX, food.getPosition().x);
 	}
 
@@ -84,14 +81,14 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 		Assertion.assertStrictlyEqual(position, food.getPosition());
 
 		const newPositionY = 900;
 
 		food.setPositionY(newPositionY);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 		Assertion.assertStrictlyEqual(newPositionY, food.getPosition().y);
 	}
 
@@ -105,14 +102,11 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 
 		food.delete();
 
-		Assertion.assertArrayDoesntContain(
-			food,
-			COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!
-		);
+		Assertion.assertArrayDoesntContain(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 	}
 
 	/**
@@ -125,15 +119,12 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!);
+		Assertion.assertArrayContains(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 		Assertion.assertFalse(Food["audioFlag"]);
 
 		food._onCollision();
 
 		await Assertion.assertPropertyChanges(true, Food, "audioFlag");
-		Assertion.assertArrayDoesntContain(
-			food,
-			COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"](position)]!
-		);
+		Assertion.assertArrayDoesntContain(food, COLLIDABLES_MAP[collidableManager["getCollidablePositionKey"]()]!);
 	}
 }
