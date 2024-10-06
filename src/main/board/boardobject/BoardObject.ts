@@ -3,20 +3,7 @@
 import DebugWindow from "../../debugwindow/DebugWindow.js";
 import { BOARDOBJECTS, BOARD_OBJECT_Z_INDEX } from "../../utils/Globals.js";
 import { create, px } from "../../utils/Utils.js";
-
-/**
- * Represents a board object's horizontal and vertical offsets on the board.
- */
-export type Position = {
-	/**
-	 * The x position of this board object (offset from left side of board).
-	 */
-	x: number;
-	/**
-	 * The y position of this board object (offset from top of board)
-	 */
-	y: number;
-};
+import type { Position } from "../Board.js";
 
 /**
  * Represents this board object's CSS `transform` `x` and `y` values.

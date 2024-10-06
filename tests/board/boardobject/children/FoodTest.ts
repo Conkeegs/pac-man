@@ -1,4 +1,4 @@
-import type { Position } from "../../../../src/main/board/boardobject/BoardObject.js";
+import type { Position } from "../../../../src/main/board/Board.js";
 import Food from "../../../../src/main/board/boardobject/children/Food.js";
 import { COLLIDABLES_MAP, TILESIZE } from "../../../../src/main/utils/Globals.js";
 import { hexToRgb, px } from "../../../../src/main/utils/Utils.js";

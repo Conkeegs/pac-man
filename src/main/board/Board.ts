@@ -5,7 +5,7 @@ import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, px, uniqueId } from "../utils/Utils.js";
-import { BoardObject, type Position } from "./boardobject/BoardObject.js";
+import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 import Food from "./boardobject/children/Food.js";
@@ -105,6 +105,20 @@ export type FoodData = {
 	 * The vertical level of a column of food or the y-locations of multiple food dots.
 	 */
 	y: number | number[];
+};
+
+/**
+ * Represents a board object's horizontal and vertical offsets on the board.
+ */
+export type Position = {
+	/**
+	 * The x position of this board object (offset from left side of board).
+	 */
+	x: number;
+	/**
+	 * The y position of this board object (offset from top of board)
+	 */
+	y: number;
 };
 
 /**

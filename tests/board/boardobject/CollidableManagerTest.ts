@@ -1,5 +1,4 @@
-import Board from "../../../src/main/board/Board.js";
-import type { Position } from "../../../src/main/board/boardobject/BoardObject.js";
+import Board, { type Position } from "../../../src/main/board/Board.js";
 import Inky from "../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import CollidableManager from "../../../src/main/board/boardobject/CollidableManager.js";
