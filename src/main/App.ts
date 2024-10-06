@@ -2,11 +2,18 @@
 
 import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
-import Board, { type TurnData, type WallDataElement } from "./board/Board.js";
-import type { Position } from "./board/boardobject/BoardObject.js";
+import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
+import type { BoardObject } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import Character from "./board/boardobject/children/character/Character.js";
-import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, CHARACTERS, COLLIDABLES_MAP, TESTING } from "./utils/Globals.js";
+import {
+	BOARD_OBJECT_Z_INDEX,
+	BOARDOBJECTS,
+	BOARDOBJECTS_TO_RENDER,
+	CHARACTERS,
+	COLLIDABLES_MAP,
+	TESTING,
+} from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
@@ -280,6 +287,15 @@ export class App {
 
 				character.interpolate(alpha, oldCharacterPosition);
 				character.render();
+			}
+		}
+
+		const boardObjectsToRenderCount = BOARDOBJECTS_TO_RENDER.length;
+
+		if (boardObjectsToRenderCount) {
+			for (let i = 0; i < boardObjectsToRenderCount; i++) {
+				(BOARDOBJECTS_TO_RENDER[i] as BoardObject).render();
+				BOARDOBJECTS_TO_RENDER.splice(i, 1);
 			}
 		}
 

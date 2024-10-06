@@ -1,7 +1,8 @@
 import AudioRegistry from "../../../assets/AudioRegistry.js";
-import { TILESIZE } from "../../../utils/Globals.js";
+import { BOARDOBJECTS_TO_RENDER, TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
-import { BoardObject, type Position, type PositionSetOptions } from "../BoardObject.js";
+import type { Position } from "../../Board.js";
+import { BoardObject, type PositionSetOptions } from "../BoardObject.js";
 import type Collidable from "../Collidable.js";
 import CollidableManager from "../CollidableManager.js";
 import PacMan from "./character/PacMan.js";
@@ -89,6 +90,7 @@ export default class Food extends BoardObject implements Collidable {
 	 * @inheritdoc
 	 */
 	_onCollision(): void {
+		BOARDOBJECTS_TO_RENDER.push(this);
 		this.delete();
 
 		// each time food is eaten, play the opposite half of the "foot-eat" sound

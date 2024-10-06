@@ -18,11 +18,14 @@ export const ROWS: 36 = 36;
  * and also check for duplicates since each of them have unique `name` properties.
  */
 export const BOARDOBJECTS: BoardObject[] = [];
-
 /**
  * An array of classes that extends the `Character` class so we can add/remove them when needed.
  */
 export const CHARACTERS: Character[] = [];
+/**
+ * An array of `Food` objects considered "eaten".
+ */
+export const BOARDOBJECTS_TO_RENDER: BoardObject[] = [];
 
 /**
  * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,

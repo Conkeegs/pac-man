@@ -299,15 +299,6 @@ export abstract class BoardObject {
 	}
 
 	/**
-	 * Queues a render update for this board object that updates its CSS.
-	 *
-	 * @param updateCallback callback that will update this board object's CSS
-	 */
-	public queueRenderUpdate(updateCallback: () => void): void {
-		this.queuedRenderUpdates.push(updateCallback);
-	}
-
-	/**
 	 * Renders CSS changes of this board object to the screen.
 	 */
 	public render(): void {
@@ -319,6 +310,15 @@ export abstract class BoardObject {
 
 			renderUpdates.splice(i, 1);
 		}
+	}
+
+	/**
+	 * Queues a render update for this board object that updates its CSS.
+	 *
+	 * @param updateCallback callback that will update this board object's CSS
+	 */
+	private queueRenderUpdate(updateCallback: () => void): void {
+		this.queuedRenderUpdates.push(updateCallback);
 	}
 
 	/**
