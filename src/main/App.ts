@@ -41,6 +41,10 @@ export class App {
 	 * The board that the game displays on.
 	 */
 	private board: Board | undefined;
+	/**
+	 * Whether or not the app is currently running.
+	 */
+	private static running: boolean = false;
 
 	/**
 	 * The rough amount of milliseconds that should pass before the game updates each frame.
@@ -114,6 +118,7 @@ export class App {
 
 			// initial start of the game
 			this.animationFrameId = this.startGame();
+			App.running = true;
 		});
 	}
 
@@ -130,6 +135,8 @@ export class App {
 		App.loadedWallData = [];
 
 		get("game")!.innerHTML = "";
+
+		App.running = false;
 	}
 
 	/**
@@ -254,7 +261,7 @@ export class App {
 		}
 
 		const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
-		// some characters may have stopped/started moving after rendering, so refresh this array
+		// some characters may have stopped/started moving after ticking, so refresh this array
 		movingCharacters = App.findMovingCharacters();
 
 		if (movingCharacters.length) {
@@ -280,6 +287,15 @@ export class App {
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.gameLoop(lastTimestamp, timeStampNew, frameCount)
 		);
+	}
+
+	/**
+	 * Whether the app is currently running or not.
+	 *
+	 * @returns boolean if the app is running or not
+	 */
+	public static isRunning(): boolean {
+		return App.running;
 	}
 
 	/**

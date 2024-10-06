@@ -152,7 +152,9 @@ export default class Board {
 	 * @param color the background color of the board
 	 */
 	constructor(color = "#070200") {
-		App.destroy();
+		if (App.isRunning()) {
+			App.destroy();
+		}
 
 		let game: HTMLElement | null = get("game");
 
@@ -367,6 +369,7 @@ export default class Board {
 				modifyTransform: false,
 			}
 		);
+		boardObject.render();
 
 		this.boardDiv.appendChild(boardObject.getElement());
 	}
