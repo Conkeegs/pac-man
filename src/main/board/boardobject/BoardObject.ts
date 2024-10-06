@@ -33,6 +33,20 @@ type Transform = {
 };
 
 /**
+ * Options for setting character's position.
+ */
+type PositionSetOptions = {
+	/**
+	 * Whether or not to modify this character's physical CSS position.
+	 */
+	modifyCss?: boolean;
+	/**
+	 * Whether or not to modify this character's CSS transform offset.
+	 */
+	modifyTransform?: boolean;
+};
+
+/**
  * Represents characters/small, generally tile-sized objects on the board.
  */
 export abstract class BoardObject {
@@ -68,6 +82,10 @@ export abstract class BoardObject {
 		x: 0,
 		y: 0,
 	};
+	/**
+	 * CSS render updates for this board object that are queued for the future.
+	 */
+	private queuedRenderUpdates: (() => void)[] = [];
 
 	/**
 	 * Creates a board object.
@@ -166,19 +184,21 @@ export abstract class BoardObject {
 	 * Sets this board object's position on the board and in memory.
 	 *
 	 * @param position the new position of the board object
-	 * @param options whether or not to physically modify the board objects CSS `left` and `top` values
+	 * @param options options for customizing how character's position is set
 	 */
 	public setPosition(
 		position: Position,
-		options = {
+		options: PositionSetOptions | undefined = {
 			modifyCss: true,
 			modifyTransform: true,
 		}
 	): void {
 		if (options.modifyCss) {
-			this.element.css({
-				left: px(position.x),
-				top: px(position.y),
+			this.queueRenderUpdate(() => {
+				this.element.css({
+					left: px(position.x),
+					top: px(position.y),
+				});
 			});
 		}
 
@@ -203,18 +223,20 @@ export abstract class BoardObject {
 	 * Sets this board object's `x` position on the board and in memory.
 	 *
 	 * @param x the new `x` position of the board object
-	 * @param modifyCss whether or not to physically modify the board objects CSS `left` value
+	 * @param options  options for customizing how character's position is set
 	 */
 	public setPositionX(
 		x: number,
-		options = {
+		options: PositionSetOptions | undefined = {
 			modifyCss: true,
 			modifyTransform: true,
 		}
 	): void {
 		if (options.modifyCss) {
-			this.element.css({
-				left: px(x),
+			this.queueRenderUpdate(() => {
+				this.element.css({
+					left: px(x),
+				});
 			});
 		}
 
@@ -235,18 +257,20 @@ export abstract class BoardObject {
 	 * Sets this board object's `y` position on the board and in memory.
 	 *
 	 * @param y the new `y` position of the board object
-	 * @param modifyCss whether or not to physically modify the board objects CSS `top` value
+	 * @param options  options for customizing how character's position is set
 	 */
 	public setPositionY(
 		y: number,
-		options = {
+		options: PositionSetOptions | undefined = {
 			modifyCss: true,
 			modifyTransform: true,
 		}
 	): void {
 		if (options.modifyCss) {
-			this.element.css({
-				top: px(y),
+			this.queueRenderUpdate(() => {
+				this.element.css({
+					top: px(y),
+				});
 			});
 		}
 
@@ -267,8 +291,34 @@ export abstract class BoardObject {
 	 * Deletes this boardobject off of the game's board.
 	 */
 	public delete(): void {
-		this.element.remove();
+		this.queueRenderUpdate(() => {
+			this.element.remove();
+		});
+
 		BOARDOBJECTS.splice(BOARDOBJECTS.indexOf(this), 1);
+	}
+
+	/**
+	 * Queues a render update for this board object that updates its CSS.
+	 *
+	 * @param updateCallback callback that will update this board object's CSS
+	 */
+	public queueRenderUpdate(updateCallback: () => void): void {
+		this.queuedRenderUpdates.push(updateCallback);
+	}
+
+	/**
+	 * Renders CSS changes of this board object to the screen.
+	 */
+	public render(): void {
+		const renderUpdates = this.queuedRenderUpdates;
+
+		for (let i = 0; i < renderUpdates.length; i++) {
+			// render visual update
+			renderUpdates[i]!();
+
+			renderUpdates.splice(i, 1);
+		}
 	}
 
 	/**
@@ -277,8 +327,10 @@ export abstract class BoardObject {
 	 * @param transform the amounts to change the `translateX` and `translateY` values by
 	 */
 	private setTransform(transform: Transform): void {
-		this.element.css({
-			transform: `translate(${px(transform.x)}, ${px(transform.y)})`,
+		this.queueRenderUpdate(() => {
+			this.element.css({
+				transform: `translate(${px(transform.x)}, ${px(transform.y)})`,
+			});
 		});
 
 		this.transform = transform;
@@ -290,8 +342,10 @@ export abstract class BoardObject {
 	 * @param x the amount to change the `translateX` by
 	 */
 	private setTransformX(x: number): void {
-		this.element.css({
-			transform: `translate(${px(x)}, ${px(this.transform.y)})`,
+		this.queueRenderUpdate(() => {
+			this.element.css({
+				transform: `translate(${px(x)}, ${px(this.transform.y)})`,
+			});
 		});
 
 		this.transform.x = x;
@@ -303,8 +357,10 @@ export abstract class BoardObject {
 	 * @param y the amount to change the `translateY` by
 	 */
 	private setTransformY(y: number): void {
-		this.element.css({
-			transform: `translate(${px(this.transform.x)}, ${px(y)})`,
+		this.queueRenderUpdate(() => {
+			this.element.css({
+				transform: `translate(${px(this.transform.x)}, ${px(y)})`,
+			});
 		});
 
 		this.transform.y = y;

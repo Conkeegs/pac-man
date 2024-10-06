@@ -279,6 +279,7 @@ export class App {
 				}
 
 				character.interpolate(alpha, oldCharacterPosition);
+				character.render();
 			}
 		}
 
