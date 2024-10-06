@@ -167,7 +167,7 @@ export default abstract class Assertion {
 	 *
 	 * @param expected any Javascript object
 	 */
-	public static assertEmpty(expected: object | unknown[]): void {
+	public static assertEmpty(expected: object | string | unknown[]): void {
 		if (!empty(expected)) {
 			Assertion.formMessageAndThrow(expected, "empty");
 		}

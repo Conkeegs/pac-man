@@ -35,7 +35,7 @@ type Transform = {
 /**
  * Options for setting character's position.
  */
-type PositionSetOptions = {
+export type PositionSetOptions = {
 	/**
 	 * Whether or not to modify this character's physical CSS position.
 	 */

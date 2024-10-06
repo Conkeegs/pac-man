@@ -1,7 +1,7 @@
 import AudioRegistry from "../../../assets/AudioRegistry.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
-import { BoardObject, type Position } from "../BoardObject.js";
+import { BoardObject, type Position, type PositionSetOptions } from "../BoardObject.js";
 import type Collidable from "../Collidable.js";
 import CollidableManager from "../CollidableManager.js";
 import PacMan from "./character/PacMan.js";
@@ -58,19 +58,19 @@ export default class Food extends BoardObject implements Collidable {
 			});
 	}
 
-	public override setPosition(position: Position, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+	public override setPosition(position: Position, options?: PositionSetOptions): void {
 		super.setPosition(position, options);
 
 		this._collidableManager.updateTileKeys();
 	}
 
-	public override setPositionX(x: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+	public override setPositionX(x: number, options?: PositionSetOptions): void {
 		super.setPositionX(x, options);
 
 		this._collidableManager.updateTileKeys();
 	}
 
-	public override setPositionY(y: number, options?: { modifyCss: boolean; modifyTransform: boolean }): void {
+	public override setPositionY(y: number, options?: PositionSetOptions): void {
 		super.setPositionY(y, options);
 
 		this._collidableManager.updateTileKeys();

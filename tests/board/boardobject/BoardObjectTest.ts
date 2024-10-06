@@ -206,6 +206,7 @@ export default class BoardObjectTest extends Test {
 				modifyTransform: false,
 			}
 		);
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -230,6 +231,7 @@ export default class BoardObjectTest extends Test {
 				modifyTransform: true,
 			}
 		);
+		pinky.render();
 
 		position = pinky.getPosition();
 		const oldTransform = pinky.getTransform();
@@ -254,6 +256,7 @@ export default class BoardObjectTest extends Test {
 				modifyTransform: true,
 			}
 		);
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -297,6 +300,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: true,
 			modifyTransform: false,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -315,6 +319,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: false,
 			modifyTransform: true,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -335,6 +340,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: true,
 			modifyTransform: true,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -378,6 +384,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: true,
 			modifyTransform: false,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -396,6 +403,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: false,
 			modifyTransform: true,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -416,6 +424,7 @@ export default class BoardObjectTest extends Test {
 			modifyCss: true,
 			modifyTransform: true,
 		});
+		pinky.render();
 
 		position = pinky.getPosition();
 		transform = pinky.getTransform();
@@ -442,9 +451,51 @@ export default class BoardObjectTest extends Test {
 		Assertion.assertArrayContains(clyde, BOARDOBJECTS);
 
 		clyde.delete();
+		clyde.render();
 
 		Assertion.assertNull(get(name));
 		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS);
+	}
+
+	/**
+	 * Test that board objects can render CSS changes properly to the screen.
+	 */
+	public queueRenderUpdateTest(): void {
+		const name = "clyde";
+		const clyde = new Clyde();
+
+		Assertion.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+
+		const position = {
+			x: 900,
+			y: 700,
+		};
+
+		// modifying css positions only should only queue 1 update for CSS "left" and "top" values
+		// on the board object
+		clyde.setPosition(
+			{
+				x: position.x,
+				y: position.y,
+			},
+			{
+				modifyCss: true,
+			}
+		);
+
+		let clydeElement = clyde.getElement();
+
+		Assertion.assertArrayLength(1, clyde["queuedRenderUpdates"]);
+		Assertion.assertEmpty(clydeElement.css("left") as string);
+		Assertion.assertEmpty(clydeElement.css("top") as string);
+
+		clyde.render();
+
+		clydeElement = clyde.getElement();
+
+		Assertion.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		Assertion.assertStrictlyEqual(px(position.x), clydeElement.css("left"));
+		Assertion.assertStrictlyEqual(px(position.y), clydeElement.css("top"));
 	}
 
 	/**
@@ -461,6 +512,7 @@ export default class BoardObjectTest extends Test {
 		const newTransformY = 600;
 
 		Reflect.apply(clyde["setTransform"], clyde, [{ x: newTransformX, y: newTransformY }]);
+		clyde.render();
 
 		transform = clyde.getTransform();
 
@@ -492,6 +544,7 @@ export default class BoardObjectTest extends Test {
 		const newTransformX = 500;
 
 		Reflect.apply(clyde["setTransformX"], clyde, [newTransformX]);
+		clyde.render();
 
 		transform = clyde.getTransform();
 
@@ -522,6 +575,7 @@ export default class BoardObjectTest extends Test {
 		const newTransformY = 500;
 
 		Reflect.apply(clyde["setTransformY"], clyde, [newTransformY]);
+		clyde.render();
 
 		transform = clyde.getTransform();
 
