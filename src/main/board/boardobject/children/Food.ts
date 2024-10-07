@@ -19,8 +19,8 @@ export default class Food extends BoardObject implements Collidable {
 	private static audioFlag: true | false = false;
 
 	public canBeCollidedByTypes: string[] = [PacMan.name];
-	public override readonly width: number = TILESIZE / 4;
-	public override readonly height: number = TILESIZE / 4;
+	public override readonly width: number = TILESIZE;
+	public override readonly height: number = TILESIZE;
 	/**
 	 * The default background color of all food on the board.
 	 */
@@ -34,7 +34,7 @@ export default class Food extends BoardObject implements Collidable {
 	constructor(name: string) {
 		super(name);
 
-		this._collidableManager = new CollidableManager(this);
+		this._collidableManager = new CollidableManager(this, 100);
 
 		const element = this.element;
 
@@ -53,8 +53,8 @@ export default class Food extends BoardObject implements Collidable {
 				})
 			)
 			.css({
-				width: px(this.width),
-				height: px(this.height),
+				width: px(this.width / 4),
+				height: px(this.height / 4),
 				backgroundColor: Food.BACKGROUND_COLOR,
 			});
 	}
