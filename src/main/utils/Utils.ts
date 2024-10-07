@@ -370,7 +370,7 @@ export function getRandomInt(max: number): number {
  * @param x the horizontal position of the square
  * @param y the vertical position of the square
  */
-export function insertDivAtPosition(x: number, y: number): void {
+export function insertDivAtPosition(x: number, y: number, color: string | undefined = "purple"): void {
 	get("board")!.appendChild(
 		create({
 			name: "div",
@@ -380,7 +380,7 @@ export function insertDivAtPosition(x: number, y: number): void {
 			left: px(x),
 			top: px(y),
 			zIndex: BOARD_OBJECT_Z_INDEX + 1,
-			backgroundColor: "purple",
+			backgroundColor: color,
 			height: px(10),
 			width: px(10),
 		}) as HTMLElement
