@@ -56,6 +56,20 @@ interface PathData {
 }
 
 /**
+ * Represents a board object's horizontal and vertical offsets on the board.
+ */
+export type Position = {
+	/**
+	 * The x position of this board object (offset from left side of board).
+	 */
+	x: number;
+	/**
+	 * The y position of this board object (offset from top of board)
+	 */
+	y: number;
+};
+
+/**
  * Represents a position on the board where a character is allowed to turn,
  * and also includes an array of `MovementDirection` values to tell the character
  * what directions it can turn when it reaches the given turn coordinates.
@@ -105,20 +119,6 @@ export type FoodData = {
 	 * The vertical level of a column of food or the y-locations of multiple food dots.
 	 */
 	y: number | number[];
-};
-
-/**
- * Represents a board object's horizontal and vertical offsets on the board.
- */
-export type Position = {
-	/**
-	 * The x position of this board object (offset from left side of board).
-	 */
-	x: number;
-	/**
-	 * The y position of this board object (offset from top of board)
-	 */
-	y: number;
 };
 
 /**
