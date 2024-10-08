@@ -23,7 +23,7 @@ export const BOARDOBJECTS: BoardObject[] = [];
  */
 export const CHARACTERS: Character[] = [];
 /**
- * An array of `Food` objects considered "eaten".
+ * An array of `BoardObject`s objects to render CSS changes to the screen for.
  */
 export const BOARDOBJECTS_TO_RENDER: BoardObject[] = [];
 
