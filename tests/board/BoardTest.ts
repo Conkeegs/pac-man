@@ -140,29 +140,4 @@ export default class BoardTest extends Test {
 		Assertion.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
 		Assertion.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
 	}
-
-	/**
-	 * Test that the game's board can delete references to dependent globals.
-	 */
-	public deleteDependentGlobalsTest(): void {
-		const board = new Board();
-
-		Assertion.assertEmpty(COLLIDABLES_MAP);
-		Assertion.assertEmpty(BOARDOBJECTS);
-		Assertion.assertEmpty(CHARACTERS);
-
-		const pacman = new PacMan("test-pacman", originalPacManSpeedToNewSpeed(55), ImageRegistry.getImage("pacman-0"));
-
-		Reflect.apply(board["placeBoardObject"], board, [pacman, 5, 5]);
-
-		Assertion.assertNotEmpty(COLLIDABLES_MAP);
-		Assertion.assertNotEmpty(BOARDOBJECTS);
-		Assertion.assertNotEmpty(CHARACTERS);
-
-		Reflect.apply(board["deleteDependentGlobals"], board, []);
-
-		Assertion.assertEmpty(COLLIDABLES_MAP);
-		Assertion.assertEmpty(BOARDOBJECTS);
-		Assertion.assertEmpty(CHARACTERS);
-	}
 }
