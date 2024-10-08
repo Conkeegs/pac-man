@@ -4,6 +4,17 @@ import Board from "../Board.js";
 import type Collidable from "./Collidable.js";
 
 /**
+ * Represents the positions of the sides of a collision box for a
+ * `Collidable` instance.
+ */
+type CollisionBox = {
+	left: number;
+	right: number;
+	top: number;
+	bottom: number;
+};
+
+/**
  * Manages logic around the `COLLIDABLES_MAP` object for `Collidable` boardobjects.
  */
 export default class CollidableManager {
@@ -15,9 +26,21 @@ export default class CollidableManager {
 	 * The current key into the `COLLIDABLES_MAP` that this collidable is under.
 	 */
 	private currentPositionKey: string | undefined;
+	/**
+	 * The percent (out of 100) that the size of this collidable's collision
+	 * box will be, compared to its width and height.
+	 */
+	private collisionBoxPercentage: number;
 
-	constructor(collidable: Collidable) {
+	/**
+	 *
+	 * @param collidable the board object implementing `Collidable` to manage logic around
+	 * @param collisionBoxPercentage a percent (out of 100) that the size of this collidable's collision
+	 * box will be, compared to its width and height. defaults to `100` for 100% of the collidable's size
+	 */
+	constructor(collidable: Collidable, collisionBoxPercentage: number | undefined = 100) {
 		this.collidable = collidable;
+		this.collisionBoxPercentage = collisionBoxPercentage;
 	}
 
 	/**
@@ -60,6 +83,61 @@ export default class CollidableManager {
 		if (defined(positionCollidables) && positionCollidables!.includes(collidable)) {
 			COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(collidable), 1);
 		}
+	}
+
+	/**
+	 * Gets the current position of this collidable's collision box, based on the collidable's position.
+	 *
+	 * @returns positions of the collision box's sides
+	 */
+	public getCollisionBox(): CollisionBox {
+		const collidable = this.collidable;
+		const collisionSizeMultiplier = this.collisionBoxPercentage / 100;
+		const collidablePosition = collidable.getPosition();
+		const collidablePositionX = collidablePosition.x;
+		const collidableWidth = collidable.getWidth();
+		const collidableWidthFraction = collidableWidth * collisionSizeMultiplier;
+		const collidablePositionY = collidablePosition.y;
+		const collidableHeight = collidable.getHeight();
+		const collidableHeightFraction = collidableHeight * collisionSizeMultiplier;
+
+		return {
+			left: collidablePositionX + collidableWidthFraction,
+			right: collidablePositionX + collidableWidth - collidableWidthFraction,
+			top: collidablePositionY + collidableHeightFraction,
+			bottom: collidablePositionY + collidableHeight - collidableHeightFraction,
+		};
+	}
+
+	/**
+	 * Determines if this collidable is colliding with another `BoardObject`.
+	 *
+	 * @param collidable the `Collidable` this collidable might be colliding with
+	 * @returns boolean indicating if the two are colliding
+	 */
+	public isCollidingWithCollidable(collidable: Collidable): boolean {
+		const collisionBox = this.getCollisionBox();
+		const collidableCollisionBox = collidable._collidableManager.getCollisionBox();
+		const left = collisionBox.left;
+		const top = collisionBox.top;
+		const collidableLeft = collidableCollisionBox.left;
+		const collidableRight = collidableCollisionBox.right;
+		const collidableTop = collidableCollisionBox.top;
+
+		if (
+			// right side past left side
+			left + (collisionBox.right - left) >= collidableLeft &&
+			// left side past right side
+			left <= collidableLeft + (collidableRight - collidableLeft) &&
+			// top side past bottom side
+			top + (collisionBox.bottom - top) >= collidableTop &&
+			// bottom side past top side
+			top <= collidableTop + (collidableCollisionBox.bottom - collidableTop)
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

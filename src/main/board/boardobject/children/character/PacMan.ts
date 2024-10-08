@@ -2,10 +2,9 @@
 
 import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
-import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
+import { defined, die, exists } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
 import type Collidable from "../../Collidable.js";
-import CollidableManager from "../../CollidableManager.js";
 import Character, { type StartMoveOptions } from "./Character.js";
 import Ghost from "./Ghost.js";
 import MovementDirection from "./MovementDirection.js";
@@ -81,7 +80,6 @@ export default class PacMan extends Character {
 		FORWARDS: 0,
 		BACKWARDS: 1,
 	};
-	override readonly _collidableManager: CollidableManager;
 	/**
 	 * Default speed of Pacman.
 	 */
@@ -96,8 +94,6 @@ export default class PacMan extends Character {
 	 */
 	constructor(name: string = "pacman") {
 		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
-
-		this._collidableManager = new CollidableManager(this);
 
 		this.createMoveEventListeners();
 	}

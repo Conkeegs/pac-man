@@ -34,7 +34,7 @@ export default class Food extends BoardObject implements Collidable {
 	constructor(name: string) {
 		super(name);
 
-		this._collidableManager = new CollidableManager(this, 100);
+		this._collidableManager = new CollidableManager(this);
 
 		const element = this.element;
 

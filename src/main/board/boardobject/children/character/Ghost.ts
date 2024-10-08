@@ -1,7 +1,6 @@
 import { getRandomInt } from "../../../../utils/Utils.js";
-import type Collidable from "../../Collidable.js";
-import CollidableManager from "../../CollidableManager.js";
 import Character from "./Character.js";
+import MovementDirection from "./MovementDirection.js";
 import PacMan from "./PacMan.js";
 
 /**
@@ -11,7 +10,6 @@ export default abstract class Ghost extends Character {
 	readonly _MAX_ANIMATION_FRAMES: 2 = 2;
 	_animationFrame: number = 0;
 	readonly _ANIMATION_STATE_MILLIS: 100 = 100;
-	override readonly _collidableManager: CollidableManager;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name];
 
@@ -25,7 +23,6 @@ export default abstract class Ghost extends Character {
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
 
-		this._collidableManager = new CollidableManager(this);
 
 		this.element.classList.add("ghost");
 	}
