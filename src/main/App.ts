@@ -137,6 +137,7 @@ export class App {
 
 		BOARDOBJECTS.length = 0;
 		CHARACTERS.length = 0;
+		BOARDOBJECTS_TO_RENDER.length = 0;
 
 		Board.turnData = undefined;
 		App.loadedWallData = [];
@@ -300,7 +301,7 @@ export class App {
 					continue;
 				}
 
-				(BOARDOBJECTS_TO_RENDER[i] as BoardObject).render();
+				(boardObject as BoardObject).render();
 				BOARDOBJECTS_TO_RENDER.splice(i, 1);
 			}
 		}
