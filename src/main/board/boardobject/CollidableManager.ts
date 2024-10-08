@@ -92,20 +92,16 @@ export default class CollidableManager {
 	 */
 	public getCollisionBox(): CollisionBox {
 		const collidable = this.collidable;
-		const collisionSizeMultiplier = this.collisionBoxPercentage / 100;
+		const collisionBoxPadding = (1 - this.collisionBoxPercentage / 100) / 2;
 		const collidablePosition = collidable.getPosition();
 		const collidablePositionX = collidablePosition.x;
-		const collidableWidth = collidable.getWidth();
-		const collidableWidthFraction = collidableWidth * collisionSizeMultiplier;
 		const collidablePositionY = collidablePosition.y;
-		const collidableHeight = collidable.getHeight();
-		const collidableHeightFraction = collidableHeight * collisionSizeMultiplier;
 
 		return {
-			left: collidablePositionX + collidableWidthFraction,
-			right: collidablePositionX + collidableWidth - collidableWidthFraction,
-			top: collidablePositionY + collidableHeightFraction,
-			bottom: collidablePositionY + collidableHeight - collidableHeightFraction,
+			left: collidablePositionX + collisionBoxPadding,
+			right: collidablePositionX + collidable.getWidth() - collisionBoxPadding,
+			top: collidablePositionY + collisionBoxPadding,
+			bottom: collidablePositionY + collidable.getHeight() - collisionBoxPadding,
 		};
 	}
 
