@@ -294,6 +294,12 @@ export class App {
 
 		if (boardObjectsToRenderCount) {
 			for (let i = 0; i < boardObjectsToRenderCount; i++) {
+				const boardObject = BOARDOBJECTS_TO_RENDER[i];
+
+				if (!defined(boardObject)) {
+					continue;
+				}
+
 				(BOARDOBJECTS_TO_RENDER[i] as BoardObject).render();
 				BOARDOBJECTS_TO_RENDER.splice(i, 1);
 			}
