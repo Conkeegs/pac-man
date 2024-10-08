@@ -195,7 +195,7 @@ export default class Board {
 		(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 
 		// debugging methods
-		this.createGrid();
+		// this.debug_createGrid();
 		// this.createPaths();
 	}
 
