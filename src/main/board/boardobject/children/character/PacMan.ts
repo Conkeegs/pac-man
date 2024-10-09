@@ -4,10 +4,13 @@ import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import { defined, die, exists } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
-import type Collidable from "../../Collidable.js";
+import Blinky from "./Blinky.js";
 import Character, { type StartMoveOptions } from "./Character.js";
-import Ghost from "./Ghost.js";
+import Clyde from "./Clyde.js";
+import type Ghost from "./Ghost.js";
+import Inky from "./Inky.js";
 import MovementDirection from "./MovementDirection.js";
+import Pinky from "./Pinky.js";
 
 /**
  * Represents the forward direction of pacman's animation.
@@ -85,7 +88,7 @@ export default class PacMan extends Character {
 	 */
 	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
 
-	public override canBeCollidedByTypes: string[] = [PacMan.name, Ghost.name];
+	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];
 
 	/**
 	 * Creates PacMan.
