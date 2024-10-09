@@ -53,6 +53,11 @@ export default class CollidableManager {
 	public updateTileKeys(): void {
 		const collidable = this.collidable;
 		const newCollidablePositionKey = this.getCollidablePositionKey();
+
+		if (newCollidablePositionKey === this.currentPositionKey) {
+			return;
+		}
+
 		this.currentPositionKey = newCollidablePositionKey;
 
 		// create a new mapping for the new position, if there isn't one yet
