@@ -301,5 +301,10 @@ export default class PacMan extends Character {
 		return false;
 	}
 
-	override _onCollision(withCollidable: Collidable): void {}
+	override _onCollision(withCollidable: Ghost): boolean {
+		// withCollidable.stopMoving();
+		// this.stopMoving();
+		// console.log("DEAD!!!");
+		return false;
+	}
 }

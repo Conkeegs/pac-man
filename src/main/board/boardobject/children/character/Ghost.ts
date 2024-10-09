@@ -42,5 +42,25 @@ export default abstract class Ghost extends Character {
 		return `${this.name}-${this._animationFrame}-${this.currentDirection}`;
 	}
 
-	override _onCollision(withCollidable: Collidable): void {}
+	override _onCollision(withCollidable: PacMan): boolean {
+		withCollidable.stopMoving();
+
+		const position = this.getPosition();
+
+		withCollidable.setPosition(
+			{
+				x: position.x,
+				y: position.y,
+			},
+			{
+				modifyTransform: true,
+			}
+		);
+
+		console.log(`${withCollidable.getName()} has collided with ${this.getName()}`);
+
+		this.stopMoving();
+
+		return true;
+	}
 }

@@ -19,6 +19,8 @@ export default interface Collidable extends BoardObject {
 	 * Logic that executes when this collidable is collided with.
 	 *
 	 * @param withCollidable the `Collidable` that has collided with this collidable
+	 *
+	 * @returns boolean to optionally break out of `tick()`
 	 */
-	_onCollision(withCollidable: Collidable): void;
+	_onCollision(withCollidable: Collidable): boolean;
 }

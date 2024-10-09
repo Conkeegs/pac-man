@@ -89,7 +89,7 @@ export default class Food extends BoardObject implements Collidable {
 	/**
 	 * @inheritdoc
 	 */
-	_onCollision(): void {
+	_onCollision(): boolean {
 		this.delete();
 
 		// each time food is eaten, play the opposite half of the "foot-eat" sound
@@ -102,5 +102,7 @@ export default class Food extends BoardObject implements Collidable {
 			Food.audioFlag = !audioFlag;
 			currentAudioElement.currentTime = 0;
 		});
+
+		return false;
 	}
 }
