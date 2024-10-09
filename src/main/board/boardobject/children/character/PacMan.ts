@@ -2,7 +2,7 @@
 
 import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
-import { defined, die, exists } from "../../../../utils/Utils.js";
+import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
 import Blinky from "./Blinky.js";
 import Character, { type StartMoveOptions } from "./Character.js";
