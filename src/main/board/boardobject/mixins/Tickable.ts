@@ -1,0 +1,64 @@
+import type { AbstractConstructor } from "../../../types.js";
+import { TICKABLES } from "../../../utils/Globals.js";
+import { BoardObject } from "../BoardObject.js";
+
+/**
+ * Gives `BoardObject` instances functionality that allows them to properly "tick" each frame
+ * of the game.
+ */
+export type Tickable = InstanceType<ReturnType<typeof MakeTickable<typeof BoardObject>>>;
+
+/**
+ * Gives `BoardObject` instances functionality that allows it to properly "tick" each frame
+ * of the game.
+ *
+ * @param Base a `BoardObject` instance
+ * @returns a `BoardObject` that is considered "tickable" each frame
+ */
+export default function MakeTickable<TBase extends AbstractConstructor>(Base: TBase) {
+	abstract class TickableClass extends Base {
+		/**
+		 * The number of frames this board object has been updating (separate from the total frames that
+		 * the game has been running).
+		 */
+		_framesUpdating: number = 0;
+
+		/**
+		 * Creates a `TickableClass` instance.
+		 *
+		 * @param args arguments passed to the board object's constructor
+		 */
+		constructor(...args: any[]) {
+			super(...args);
+
+			TICKABLES.push(this as unknown as Tickable);
+		}
+
+		/**
+		 * Logic to call every frame for this board object.
+		 *
+		 * @param args 0 or more optional parameters to pass each tick
+		 */
+		public abstract tick(...args: any[]): void;
+
+		/**
+		 * Logic to call to make up for lost milliseconds each frame due to differing system deltaTimes.
+		 *
+		 * @param alpha used to perform a linear interpolation between this board object's last state and current
+		 * state to get the current state to render
+		 * @param extraParams 0 or more optional parameters to pass each interpolation
+		 */
+		public abstract interpolate(alpha: number, ...extraParams: any[]): void;
+
+		/**
+		 * Deletes this tickable and makes sure that it's also removed from the tickables array.
+		 */
+		public delete(): void {
+			(super["delete" as keyof {}] as BoardObject["delete"])();
+
+			TICKABLES.splice(TICKABLES.indexOf(this as unknown as Tickable), 1);
+		}
+	}
+
+	return TickableClass;
+}

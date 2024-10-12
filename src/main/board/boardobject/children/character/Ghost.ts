@@ -1,6 +1,6 @@
 import { getRandomInt } from "../../../../utils/Utils.js";
+import MovementDirection from "../moveable/MovementDirection.js";
 import Character from "./Character.js";
-import MovementDirection from "./MovementDirection.js";
 import PacMan from "./PacMan.js";
 
 /**
@@ -42,25 +42,11 @@ export default abstract class Ghost extends Character {
 		return `${this.name}-${this._animationFrame}-${this.currentDirection}`;
 	}
 
-	override _onCollision(withCollidable: PacMan): boolean {
+	override _onCollision(withCollidable: PacMan): void {
 		withCollidable.stopMoving();
-
-		const position = this.getPosition();
-
-		withCollidable.setPosition(
-			{
-				x: position.x,
-				y: position.y,
-			},
-			{
-				modifyTransform: true,
-			}
-		);
 
 		console.log(`${withCollidable.getName()} has collided with ${this.getName()}`);
 
 		this.stopMoving();
-
-		return true;
 	}
 }

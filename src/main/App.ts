@@ -1,18 +1,23 @@
 "use strict";
 
-import RunTests from "../../tests/RunTests.js";
+// import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
 import type { BoardObject } from "./board/boardobject/BoardObject.js";
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import Character from "./board/boardobject/children/character/Character.js";
+import type Moveable from "./board/boardobject/children/moveable/Moveable.js";
+import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
+import { makeCollidablePositionKey } from "./board/boardobject/mixins/Collidable.js";
 import {
 	BOARD_OBJECT_Z_INDEX,
 	BOARDOBJECTS,
 	BOARDOBJECTS_TO_RENDER,
 	CHARACTERS,
 	COLLIDABLES_MAP,
-	TESTING,
+	MOVEABLES,
+	TICKABLES,
+	TILESIZE,
 } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
@@ -137,6 +142,8 @@ export class App {
 
 		BOARDOBJECTS.length = 0;
 		CHARACTERS.length = 0;
+		MOVEABLES.length = 0;
+		TICKABLES.length = 0;
 		BOARDOBJECTS_TO_RENDER.length = 0;
 
 		Board.turnData = undefined;
@@ -238,26 +245,26 @@ export class App {
 		}
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
-		// keep track of each character's position so we can properly interpolate it every frame
-		let oldCharacterPositions: { [key: string]: Position } = {};
+		// keep track of each moveable's position so we can properly interpolate it every frame
+		let oldMoveablePositions: { [key: string]: Position } = {};
 
 		/**
-		 * Find an array of characters who are currently moving, and save their current positions in memory.
+		 * Find an array of moveables that are currently moving, and save their current positions in memory.
 		 */
-		const findMovingCharactersAndMapPosition = (): Character[] =>
-			CHARACTERS.filter((character) => {
-				oldCharacterPositions[character.getName()] = character.getPosition();
+		const getMoveablesAndMapPosition = (): Moveable[] =>
+			MOVEABLES.filter((moveable) => {
+				oldMoveablePositions[moveable.getName()] = moveable.getPosition();
 
-				return character.isMoving();
+				return moveable.isMoving();
 			});
 
-		let movingCharacters: Character[] | undefined;
+		let movingMoveables: Moveable[] | undefined;
 
 		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
-			movingCharacters = findMovingCharactersAndMapPosition();
+			movingMoveables = getMoveablesAndMapPosition();
 
-			for (let i = 0; i < movingCharacters.length; i++) {
-				movingCharacters[i]!.tick();
+			for (let i = 0; i < movingMoveables.length; i++) {
+				movingMoveables[i]!.tick();
 			}
 
 			frameCount++;
@@ -268,25 +275,35 @@ export class App {
 			}
 		}
 
+		if (movingMoveables) {
+			for (let i = 0; i < movingMoveables.length; i++) {
+				const moveable = movingMoveables[i]!;
+
+				if (typeof moveable["_onCollision" as keyof typeof moveable] === "function") {
+					App.checkForCollision(moveable as Moveable & Collidable);
+				}
+			}
+		}
+
 		const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
-		// some characters may have stopped/started moving after ticking, so refresh this array
-		movingCharacters = App.findMovingCharacters();
+		// some moveables may have stopped/started moving after ticking, so refresh this array
+		movingMoveables = MOVEABLES.filter((moveable) => moveable.isMoving());
 
-		if (movingCharacters.length) {
-			for (let i = 0; i < movingCharacters.length; i++) {
-				const character = movingCharacters[i];
+		if (movingMoveables.length) {
+			for (let i = 0; i < movingMoveables.length; i++) {
+				const moveable = movingMoveables[i];
 
-				if (!defined(character)) {
+				if (!defined(moveable)) {
 					continue;
 				}
 
-				const oldCharacterPosition = oldCharacterPositions[character.getName()]!;
+				const oldMoveablePosition = oldMoveablePositions[moveable.getName()]!;
 
-				if (!defined(oldCharacterPosition)) {
+				if (!defined(oldMoveablePosition)) {
 					continue;
 				}
 
-				character.interpolate(alpha, oldCharacterPosition);
+				moveable.interpolate(alpha, oldMoveablePosition);
 			}
 		}
 
@@ -384,12 +401,80 @@ export class App {
 	}
 
 	/**
-	 * Finds the current moving characters in the game.
+	 * Finds the current moving `Moveable`s in the game.
 	 *
-	 * @returns array of moving characters in the game at the current moment
+	 * @returns array of moving moveables in the game at the current moment
 	 */
 	private static findMovingCharacters(): Character[] {
 		return CHARACTERS.filter((character) => character.isMoving());
+	}
+
+	/**
+	 * Checks for collisions between a moving board object and any collidables around it.
+	 *
+	 * @param collidable a moveable, collidable board object
+	 */
+	private static checkForCollision(collidable: Moveable & Collidable): void {
+		const centerPosition = collidable.getCenterPosition();
+		const tileX = Board.calcTileNumX(centerPosition.x);
+		const tileY = Board.calcTileNumY(centerPosition.y);
+		const distancePerFrame = collidable.getDistancePerFrame();
+		const collisionBox = collidable.getCollisionBox();
+		let positionCollidables: Collidable[] = [];
+		let tileSearchCount = 1;
+
+		positionCollidables = positionCollidables.concat(COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+
+		if (distancePerFrame >= collisionBox.right - collisionBox.left) {
+			tileSearchCount = Math.ceil(distancePerFrame / TILESIZE);
+		}
+
+		// index into the collidables map, and make sure that we also look to the "left/right" and "top/bottom" of
+		// character
+		for (let i = 1; i <= tileSearchCount; i++) {
+			for (const entry of [
+				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX + i, y: tileY })],
+				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX - i, y: tileY })],
+				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX, y: tileY + i })],
+				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX, y: tileY - i })],
+			]) {
+				if (entry?.length) {
+					positionCollidables = positionCollidables.concat(entry);
+				}
+			}
+		}
+
+		const numPositionCollidables = positionCollidables.length;
+
+		if (numPositionCollidables) {
+			// check for collisions between collidable and other collidables
+			for (let i = 0; i < numPositionCollidables; i++) {
+				const collidedWith = positionCollidables![i]!;
+
+				if (
+					// filter out the current board object we're operating on
+					collidedWith.getName() === collidable.getName() ||
+					// if the collided-with boardobject doesn't allow collidable to collide with it, skip
+					!collidedWith.canBeCollidedByTypes.includes(collidable.constructor.name)
+				) {
+					continue;
+				}
+
+				// want to make sure to call the collision-handling function for the collided-with object,
+				// since not all Collidables call the "tick()" method and therefore will not run their
+				// "_onCollision()" logic if we do not explicity call it here
+				if (collidable.isCollidingWithCollidable(collidedWith)) {
+					console.log({
+						name: collidable.getName(),
+						distancePerFrame,
+						boxSize: collisionBox.right - collisionBox.left,
+						tileSearchCount,
+					});
+
+					collidedWith._onCollision(collidable);
+				}
+			}
+		}
 	}
 }
 

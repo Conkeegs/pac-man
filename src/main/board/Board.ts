@@ -13,9 +13,9 @@ import PathNode from "./boardobject/children/PathNode.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
 import Clyde from "./boardobject/children/character/Clyde.js";
 import Inky from "./boardobject/children/character/Inky.js";
-import type MovementDirection from "./boardobject/children/character/MovementDirection.js";
 import PacMan from "./boardobject/children/character/PacMan.js";
 import Pinky from "./boardobject/children/character/Pinky.js";
+import type MovementDirection from "./boardobject/children/moveable/MovementDirection.js";
 
 /**
  * Represents the white lines between each "turn" node when in debug mode.

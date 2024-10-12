@@ -1,8 +1,10 @@
 "use strict";
 
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
-import type Collidable from "../board/boardobject/Collidable.js";
 import type Character from "../board/boardobject/children/character/Character.js";
+import type Moveable from "../board/boardobject/children/moveable/Moveable.js";
+import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
+import type { Tickable } from "../board/boardobject/mixins/Tickable.js";
 
 /**
  * The number of square columns on the board.
@@ -22,6 +24,15 @@ export const BOARDOBJECTS: BoardObject[] = [];
  * An array of classes that extends the `Character` class so we can add/remove them when needed.
  */
 export const CHARACTERS: Character[] = [];
+
+/**
+ * An array of classe that extends the `Moveable` class so we can add/remove them when needed.
+ */
+export const MOVEABLES: Moveable[] = [];
+/**
+ * An array of classes that use the `Tickable` mixin..
+ */
+export const TICKABLES: Tickable[] = [];
 /**
  * An array of `BoardObject`s objects to render CSS changes to the screen for.
  */

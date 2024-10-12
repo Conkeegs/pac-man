@@ -4,12 +4,13 @@ import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
+import type { Collidable } from "../../mixins/Collidable.js";
+import type { StartMoveOptions } from "../moveable/Moveable.js";
+import MovementDirection from "../moveable/MovementDirection.js";
 import Blinky from "./Blinky.js";
-import Character, { type StartMoveOptions } from "./Character.js";
+import Character from "./Character.js";
 import Clyde from "./Clyde.js";
-import type Ghost from "./Ghost.js";
 import Inky from "./Inky.js";
-import MovementDirection from "./MovementDirection.js";
 import Pinky from "./Pinky.js";
 
 /**
@@ -304,10 +305,9 @@ export default class PacMan extends Character {
 		return false;
 	}
 
-	override _onCollision(withCollidable: Ghost): boolean {
+	override _onCollision(withCollidable: Collidable): void {
 		// withCollidable.stopMoving();
 		// this.stopMoving();
 		// console.log("DEAD!!!");
-		return false;
 	}
 }
