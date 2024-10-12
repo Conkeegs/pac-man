@@ -3,6 +3,7 @@
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
 import type Character from "../board/boardobject/children/character/Character.js";
 import type Moveable from "../board/boardobject/children/moveable/Moveable.js";
+import type { Animateable } from "../board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
 import type { Tickable } from "../board/boardobject/mixins/Tickable.js";
 
@@ -26,9 +27,13 @@ export const BOARDOBJECTS: BoardObject[] = [];
 export const CHARACTERS: Character[] = [];
 
 /**
- * An array of classe that extends the `Moveable` class so we can add/remove them when needed.
+ * An array of classes that extend the `Moveable` class so we can add/remove them when needed.
  */
 export const MOVEABLES: Moveable[] = [];
+/**
+ * An array of classes that extend the `Animateable` class so we can add/remove them when needed.
+ */
+export const ANIMATEABLES: Animateable[] = [];
 /**
  * An array of classes that use the `Tickable` mixin..
  */

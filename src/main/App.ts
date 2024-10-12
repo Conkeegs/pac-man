@@ -9,11 +9,11 @@ import type { BoardObject } from "./board/boardobject/BoardObject.js";
 // #!DEBUG
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 // #!END_DEBUG
-import Character from "./board/boardobject/children/character/Character.js";
-import type Moveable from "./board/boardobject/children/moveable/Moveable.js";
+import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import { makeCollidablePositionKey } from "./board/boardobject/mixins/Collidable.js";
 import {
+	ANIMATEABLES,
 	BOARD_OBJECT_Z_INDEX,
 	BOARDOBJECTS,
 	BOARDOBJECTS_TO_RENDER,
@@ -163,6 +163,7 @@ export class App {
 		MOVEABLES.length = 0;
 		TICKABLES.length = 0;
 		BOARDOBJECTS_TO_RENDER.length = 0;
+		ANIMATEABLES.length = 0;
 
 		Board.turnData = undefined;
 		App.loadedWallData = [];
@@ -179,11 +180,17 @@ export class App {
 		App.GAME_PAUSED = false;
 
 		if (fromPause) {
-			const movingCharacters = App.findMovingCharacters();
+			// play every animateable's animations again upon starting the game from a paused state
+			for (let i = 0; i < ANIMATEABLES.length; i++) {
+				const animateable = ANIMATEABLES[i]!;
 
-			// play every (moving) character's animations again upon starting the game from a paused state
-			for (let i = 0; i < movingCharacters.length; i++) {
-				movingCharacters[i]!.playAnimation();
+				// moveables base their animation states on their current direction, so errors
+				// will happen if we try and play their animations while they are "stopped"
+				if (animateable instanceof Moveable && !animateable.isMoving()) {
+					continue;
+				}
+
+				animateable.playAnimation();
 			}
 		}
 
@@ -204,10 +211,8 @@ export class App {
 			App.GAME_PAUSED = true;
 		}
 
-		const movingCharacters = App.findMovingCharacters();
-
-		for (let i = 0; i < movingCharacters.length; i++) {
-			movingCharacters[i]!.stopAnimation();
+		for (let i = 0; i < ANIMATEABLES.length; i++) {
+			ANIMATEABLES[i]!.stopAnimation();
 		}
 
 		// #!DEBUG
@@ -421,15 +426,6 @@ export class App {
 				App.loadedWallData.push(wall);
 			}
 		});
-	}
-
-	/**
-	 * Finds the current moving `Moveable`s in the game.
-	 *
-	 * @returns array of moving moveables in the game at the current moment
-	 */
-	private static findMovingCharacters(): Character[] {
-		return CHARACTERS.filter((character) => character.isMoving());
 	}
 
 	/**

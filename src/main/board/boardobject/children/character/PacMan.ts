@@ -1,9 +1,10 @@
 "use strict";
 
 import { App } from "../../../../App.js";
-import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
+import { ANIMATION_DIRECTION } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -14,23 +15,6 @@ import Inky from "./Inky.js";
 import Pinky from "./Pinky.js";
 
 /**
- * Represents the forward direction of pacman's animation.
- */
-type ANIMATION_DIRECTION_FORWARDS = 0;
-/**
- * Represents the backward direction of pacman's animation.
- */
-type ANIMATION_DIRECTION_BACKWARDS = 1;
-
-/**
- * The possible directions that pacman's animation can play in.
- */
-type ANIMATION_DIRECTIONS = {
-	FORWARDS: ANIMATION_DIRECTION_FORWARDS;
-	BACKWARDS: ANIMATION_DIRECTION_BACKWARDS;
-};
-
-/**
  * Represents the PacMan character on the board.
  */
 export default class PacMan extends Character {
@@ -39,10 +23,6 @@ export default class PacMan extends Character {
 	 */
 	private listenForKeydown: boolean = true;
 	/**
-	 * The direction (forwards or backwards) that pacman's animation is currently playing in.
-	 */
-	private animationDirection: ANIMATION_DIRECTION_FORWARDS | ANIMATION_DIRECTION_BACKWARDS = 0;
-	/**
 	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
 	 */
 	private nearestStoppingTurn: TurnData | undefined;
@@ -50,10 +30,6 @@ export default class PacMan extends Character {
 	 * Whether or not pacman is spawning.
 	 */
 	private spawning: boolean = true;
-	/**
-	 * The frame of animation that pacman is currently on.
-	 */
-	_animationFrame: number = 0;
 	/**
 	 * All supported keyboard keys for moving PacMan.
 	 */
@@ -69,21 +45,17 @@ export default class PacMan extends Character {
 		Space: MovementDirection.STOP,
 	};
 	/**
-	 * The max number of animation states pacman can be in.
+	 * @inheritdoc
 	 */
-	readonly _MAX_ANIMATION_FRAMES: 3 = 3;
-	readonly _ANIMATION_STATE_MILLIS: 30 = 30;
+	override readonly _NUM_ANIMATION_STATES: 3 = 3;
+	/**
+	 * @inheritdoc
+	 */
+	override readonly _ANIMATION_STATE_MILLIS: 30 = 30;
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
 	private static readonly SPAWN_MOVECODES: MovementDirection[] = [MovementDirection.RIGHT, MovementDirection.LEFT];
-	/**
-	 * The possible directions that pacman's animation can play in.
-	 */
-	private static readonly ANIMATION_DIRECTIONS: ANIMATION_DIRECTIONS = {
-		FORWARDS: 0,
-		BACKWARDS: 1,
-	};
 	/**
 	 * Default speed of Pacman.
 	 */
@@ -103,29 +75,27 @@ export default class PacMan extends Character {
 	}
 
 	/**
-	 * Gets the name of the image file relating to pacman's current animation frame and direction.
-	 *
-	 * @returns the name of the image file relating to pacman's current animation frame and direction
+	 * @inheritdoc
 	 */
-	override _getAnimationImage(): string {
-		const forwards = PacMan.ANIMATION_DIRECTIONS.FORWARDS;
-		const backwards = PacMan.ANIMATION_DIRECTIONS.BACKWARDS;
-		const animationDirection = this.animationDirection;
+	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
+		const forwards = ANIMATION_DIRECTION.FORWARDS;
+		const backwards = ANIMATION_DIRECTION.BACKWARDS;
+		const animationDirection = this._animationDirection;
 
 		// increment animation frame so character changes how it looks
-		this.animationDirection === forwards ? this._animationFrame++ : this._animationFrame--;
+		this._animationDirection === forwards ? this._animationFrame++ : this._animationFrame--;
 
 		// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
 		// now
-		if (this._animationFrame === this._MAX_ANIMATION_FRAMES && animationDirection === forwards) {
-			this.animationDirection = backwards;
+		if (this._animationFrame === this._NUM_ANIMATION_STATES && animationDirection === forwards) {
+			this._animationDirection = backwards;
 			this._animationFrame--;
 		}
 
 		// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
 		// now
 		if (this._animationFrame === -1 && animationDirection === backwards) {
-			this.animationDirection = forwards;
+			this._animationDirection = forwards;
 			this._animationFrame++;
 		}
 
@@ -135,7 +105,7 @@ export default class PacMan extends Character {
 			imageName += `-${this.currentDirection}`;
 		}
 
-		return imageName;
+		return imageName as keyof IMAGE_LIST;
 	}
 
 	/**

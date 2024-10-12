@@ -1,5 +1,5 @@
+import type { IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import { getRandomInt } from "../../../../utils/Utils.js";
-import MovementDirection from "../moveable/MovementDirection.js";
 import Character from "./Character.js";
 import PacMan from "./PacMan.js";
 
@@ -7,9 +7,14 @@ import PacMan from "./PacMan.js";
  * Represents any of the four ghosts on the board.
  */
 export default abstract class Ghost extends Character {
-	readonly _MAX_ANIMATION_FRAMES: 2 = 2;
-	_animationFrame: number = 0;
-	readonly _ANIMATION_STATE_MILLIS: 100 = 100;
+	/**
+	 * @inheritdoc
+	 */
+	override readonly _NUM_ANIMATION_STATES: 2 = 2;
+	/**
+	 * @inheritdoc
+	 */
+	override readonly _ANIMATION_STATE_MILLIS: 100 = 100;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name];
 
@@ -32,14 +37,14 @@ export default abstract class Ghost extends Character {
 	 *
 	 * @returns the name of the image file relating to this ghost's current animation frame and direction
 	 */
-	override _getAnimationImage(): string {
+	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
 		this._animationFrame++;
 
-		if (this._animationFrame === this._MAX_ANIMATION_FRAMES) {
+		if (this._animationFrame === this._NUM_ANIMATION_STATES) {
 			this._animationFrame = 0;
 		}
 
-		return `${this.name}-${this._animationFrame}-${this.currentDirection}`;
+		return `${this.name}-${this._animationFrame}-${this.currentDirection}` as keyof IMAGE_LIST;
 	}
 
 	override _onCollision(withCollidable: PacMan): void {

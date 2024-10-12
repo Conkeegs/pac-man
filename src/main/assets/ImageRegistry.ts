@@ -3,7 +3,7 @@ import { getImageSrc } from "../utils/Utils.js";
 /**
  * List of all image file paths.
  */
-type IMAGE_LIST = {
+export type IMAGE_LIST = {
 	"pacman-0": HTMLImageElement;
 	"pacman-1-0": HTMLImageElement;
 	"pacman-1-1": HTMLImageElement;

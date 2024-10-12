@@ -120,7 +120,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		}
 
 		/**
-		 * Deletes this food object and makes sure that it's also removed from the collidables map.
+		 * Deletes this board object and makes sure that it's also removed from the collidables map.
 		 */
 		public delete(): void {
 			this.checkForCollidableAndRemove();
