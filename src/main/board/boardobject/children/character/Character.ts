@@ -1,69 +1,18 @@
 "use strict";
 
-import { App } from "../../../../App.js";
 import ImageRegistry from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
-import { CHARACTERS, COLLIDABLES_MAP, TILESIZE } from "../../../../utils/Globals.js";
-import { millisToSeconds, px } from "../../../../utils/Utils.js";
-import { BoardObject, type Position } from "../../BoardObject.js";
-import type Collidable from "../../Collidable.js";
-import CollidableManager from "../../CollidableManager.js";
-import type Tickable from "../../Tickable.js";
-import MovementDirection from "./MovementDirection.js";
-
-/**
- * Represents a position on the board where a character is allowed to turn,
- * and also includes an array of `MovementDirection` values to tell the character
- * what directions it can turn when it reaches the given turn coordinates.
- */
-export interface TurnData extends Position {
-	/**
-	 * The `x` position of the turn.
-	 */
-	x: number;
-	/**
-	 * The `y` position of the turn.
-	 */
-	y: number;
-	/**
-	 * The allowed `MovementDirection`s of the turn.
-	 */
-	directions: MovementDirection[];
-}
-
-/**
- * Depending on which direction a character is moving in, this object holds methods which
- * will change the character's CSS `transform` value and also set it in memory.
- */
-type MovementMethods = {
-	[key in MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN]: (
-		/**
-		 * The amount of pixels to change the `translateX` or `translateY` value (negative or positive).
-		 */
-		amount: number
-	) => void;
-};
-
-/**
- * Options that modify the way that this character starts moving
- */
-export type StartMoveOptions = {
-	/**
-	 * Optional parameter which tells the location that the character is turning at. This might not
-	 * be provided because it's possible that this character is simply "turning around" in the opposite direction of
-	 * where it is currently heading, and not making a 90 degree turn.
-	 */
-	fromTurn?: TurnData;
-};
+import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
+import { px } from "../../../../utils/Utils.js";
+import type { Collidable } from "../../mixins/Collidable.js";
+import MakeCollidable from "../../mixins/Collidable.js";
+import Moveable, { type StartMoveOptions } from "../moveable/Moveable.js";
+import MovementDirection from "../moveable/MovementDirection.js";
 
 /**
  * A character is any of the AI or user-controlled objects on the board.
  */
-export default abstract class Character extends BoardObject implements Collidable, Tickable {
-	/**
-	 * The speed of the character (in pixels-per-second)
-	 */
-	private readonly speed: number;
+export default abstract class Character extends MakeCollidable(Moveable, 50) {
 	/**
 	 * The path to the character's picture file.
 	 */
