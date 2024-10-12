@@ -1,11 +1,11 @@
 import { App } from "../src/main/App.js";
 import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
-import AudioRegistryTest from "./assets/AudioRegistryTest.js";
-import ImageRegistryTest from "./assets/ImageRegistryTest.js";
-import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
+import AudioRegistryTest from "./main/assets/AudioRegistryTest.js";
+import ImageRegistryTest from "./main/assets/ImageRegistryTest.js";
+import JsonRegistryTest from "./main/assets/JsonRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
 import CharacterTest from "./main/board/boardobject/children/character/CharacterTest.js";
