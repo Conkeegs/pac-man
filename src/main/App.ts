@@ -1,6 +1,8 @@
 "use strict";
 
+// #!DEBUG
 import RunTests from "../../tests/RunTests.js";
+// #!END_DEBUG
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
 import type { BoardObject } from "./board/boardobject/BoardObject.js";
@@ -18,6 +20,9 @@ import {
 	CHARACTERS,
 	COLLIDABLES_MAP,
 	MOVEABLES,
+	// #!DEBUG
+	TESTING,
+	// #!END_DEBUG
 	TICKABLES,
 	TILESIZE,
 } from "./utils/Globals.js";
@@ -496,9 +501,12 @@ export class App {
 	}
 }
 
+// #!DEBUG
 // run the game if not in testing mode
 if (!TESTING) {
+	// #!END_DEBUG
 	new App();
+	// #!DEBUG
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
 
@@ -506,3 +514,4 @@ if (!TESTING) {
 
 	document.body.prepend(button);
 }
+// #!END_DEBUG

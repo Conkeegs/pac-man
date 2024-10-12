@@ -7,7 +7,7 @@
     "build": "swc src --out-dir dist --config-file .swcrc --log-watch-compilation",
     "build-test": "swc tests --out-dir dist --config-file .swcrc --log-watch-compilation",
     "watch": "swc src --config-file .swcrc --watch src --out-dir dist --log-watch-compilation",
-    "prod": "concurrently --kill-others --max-processes 1 \"npm run clean\" \"npm run build\" \"npm run remove-debug-code\"",
+    "prod": "concurrently --kill-others --max-processes 1 \"npm run clean\" \"npm run build\"",
     "dev": "concurrently --kill-others --max-processes 1 \"npm run clean\" \"npm run build\" \"npm run build-test\"",
     "clean": "rimraf watch dist",
     "remove-debug-code": "npx tsx scripts/remove-debug-code.ts"

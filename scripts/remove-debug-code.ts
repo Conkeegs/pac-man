@@ -3,7 +3,7 @@ import path from "path";
 
 const distDirectory: "dist" = "dist";
 const encoding: "utf-8" = "utf-8";
-const debugRegex: RegExp = /\/\/ #!DEBUG[\s\S]*?\/\/ #!END_DEBUG/gim;
+const debugRegex: RegExp = /\/\/ #!DEBUG[\s\S]*?\/\/ #!END_DEBUG/gm;
 
 /**
  * Replaces debug flags in an output-JavaScript file.
