@@ -1,7 +1,7 @@
-import ImageRegistry from "../../src/main/assets/ImageRegistry.js";
-import Assertion from "../base/Assertion.js";
-import Test from "../base/Base.js";
-import { tests } from "../base/Decorators.js";
+import ImageRegistry from "../../../src/main/assets/ImageRegistry.ts";
+import Assertion from "../../base/Assertion.ts";
+import Test from "../../base/Base.ts";
+import { tests } from "../../base/Decorators.ts";
 
 /**
  * Tests the `src\main\assets\ImageRegistry.ts` class.
