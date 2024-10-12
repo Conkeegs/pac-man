@@ -1,9 +1,18 @@
-import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { cpSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import path from "path";
 
-const distDirectory: "dist" = "dist";
+const srcDirectory: "src" = "src";
+const srcCopyDirectory: "src-copy" = "src-copy";
+const pathsJoined = path.join(srcCopyDirectory, srcDirectory);
 const encoding: "utf-8" = "utf-8";
 const debugRegex: RegExp = /\/\/ #!DEBUG[\s\S]*?\/\/ #!END_DEBUG/gm;
+
+// copy files since we don't want to run regex removal on actual src files
+cpSync(srcDirectory, pathsJoined, {
+	force: false,
+	errorOnExist: true,
+	recursive: true,
+});
 
 /**
  * Replaces debug flags in an output-JavaScript file.
@@ -22,16 +31,15 @@ function removeDebugCode(jsFile: string): void {
 }
 
 /**
- * Reads directories located inside of the output dist files and its output JavaScript
- * files and removes debug code.
+ * Reads directories located inside of the copied src files and removes debug code.
  *
- * @param directoryPath directory of the "dist" folder or its child-directories
+ * @param copiedSrcDirectory directory of the copied "src" folder or its child-directories
  */
-function readDistFiles(directoryPath: string): void {
-	const files = readdirSync(directoryPath);
+function readDistFiles(copiedSrcDirectory: string): void {
+	const files = readdirSync(copiedSrcDirectory);
 
 	for (const file of files) {
-		const filePath = path.join(directoryPath, file);
+		const filePath = path.join(copiedSrcDirectory, file);
 		const fileStats = statSync(filePath);
 
 		if (fileStats.isDirectory()) {
@@ -40,14 +48,14 @@ function readDistFiles(directoryPath: string): void {
 			continue;
 		}
 
-		if (file.endsWith(".js")) {
+		if (file.endsWith(".ts")) {
 			removeDebugCode(filePath);
 		}
 	}
 }
 
-console.log("\nRemoving debug flags in output JavaScript files...");
+console.log("\nRemoving debug flags in JavaScript files...");
 
-readDistFiles(distDirectory);
+readDistFiles(pathsJoined);
 
-console.log("Finished removing debug flags in output JavaScript files");
+console.log("Finished removing debug flags in JavaScript files");
