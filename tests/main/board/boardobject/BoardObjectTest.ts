@@ -5,7 +5,13 @@ import Inky from "../../../../src/main/board/boardobject/children/character/Inky
 import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.js";
 import Food from "../../../../src/main/board/boardobject/children/Food.js";
-import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, ROWS, TILESIZE } from "../../../../src/main/utils/Globals.js";
+import {
+	BOARD_OBJECT_Z_INDEX,
+	BOARDOBJECTS,
+	BOARDOBJECTS_TO_RENDER,
+	ROWS,
+	TILESIZE,
+} from "../../../../src/main/utils/Globals.js";
 import { get, px } from "../../../../src/main/utils/Utils.js";
 import Assertion from "../../../base/Assertion.js";
 import Test from "../../../base/Base.js";
@@ -455,6 +461,33 @@ export default class BoardObjectTest extends Test {
 
 		Assertion.assertNull(get(name));
 		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS);
+	}
+
+	/**
+	 * Test that board objects can be rendered properly.
+	 */
+	public renderTest(): void {
+		const clyde = new Clyde();
+
+		Assertion.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS_TO_RENDER);
+
+		clyde.setPosition(
+			{
+				x: 100,
+				y: 300,
+			},
+			{
+				modifyCss: true,
+			}
+		);
+
+		Assertion.assertArrayLength(1, clyde["queuedRenderUpdates"]);
+		Assertion.assertArrayContains(clyde, BOARDOBJECTS_TO_RENDER);
+
+		clyde.render();
+
+		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS_TO_RENDER);
 	}
 
 	/**
