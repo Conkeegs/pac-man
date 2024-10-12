@@ -9,6 +9,7 @@ import JsonRegistryTest from "./main/assets/JsonRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
 import CharacterTest from "./main/board/boardobject/children/character/CharacterTest.js";
+import PacManTest from "./main/board/boardobject/children/character/PacManTest.js";
 import FoodTest from "./main/board/boardobject/children/FoodTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import BoardTest from "./main/board/BoardTest.js";
@@ -58,6 +59,7 @@ export default class RunTests {
 		new FoodTest(),
 		new BoardTextTest(),
 		new CharacterTest(),
+		new PacManTest(),
 	];
 
 	/**
