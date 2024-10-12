@@ -1,6 +1,8 @@
 "use strict";
 
+// #!DEBUG
 import DebugWindow from "../../debugwindow/DebugWindow.js";
+// #!END_DEBUG
 import { BOARDOBJECTS, BOARDOBJECTS_TO_RENDER, BOARD_OBJECT_Z_INDEX } from "../../utils/Globals.js";
 import { create, px } from "../../utils/Utils.js";
 import type { Position } from "../Board.js";
@@ -80,6 +82,7 @@ export abstract class BoardObject {
 	 * @param name the name/HTML id of the board object
 	 */
 	constructor(name: string) {
+		// #!DEBUG
 		if (!name) {
 			DebugWindow.error("BoardObject.js", "constructor", "BoardObject must have a name");
 		}
@@ -87,6 +90,7 @@ export abstract class BoardObject {
 		if (BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === name) !== -1) {
 			DebugWindow.error("BoardObject.js", "constructor", `A BoardObject with the name '${name}' already exists`);
 		}
+		// #!END_DEBUG
 
 		this.name = name;
 

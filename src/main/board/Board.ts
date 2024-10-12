@@ -2,12 +2,16 @@
 
 import { App } from "../App.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
+// #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
+// #!END_DEBUG
 import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
+// #!DEBUG
 import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
+// #!END_DEBUG
 import Food from "./boardobject/children/Food.js";
 import PathNode from "./boardobject/children/PathNode.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
@@ -148,6 +152,12 @@ export default class Board {
 	 */
 	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
 	/**
+	 * Data telling characters where they are allowed to turn.
+	 */
+	public static turnData: TurnData[] | undefined;
+
+	// #!DEBUG
+	/**
 	 * Displays the current frames-per-second count of the app, in debug mode.
 	 */
 	public debug_fpsCounter: BoardText | undefined;
@@ -155,10 +165,7 @@ export default class Board {
 	 * Button used for playing/pausing the game in debug mode.
 	 */
 	public debug_pausePlayButton: PausePlayButton | undefined;
-	/**
-	 * Data telling characters where they are allowed to turn.
-	 */
-	public static turnData: TurnData[] | undefined;
+	// #!END_DEBUG
 
 	/**
 	 * Creates the board.s
@@ -172,19 +179,23 @@ export default class Board {
 
 		let game: HTMLElement | null = get("game");
 
+		// #!DEBUG
 		if (!exists(game)) {
 			DebugWindow.error("Board.js", "constructor", "No #game element found.");
 		}
+		// #!END_DEBUG
 
 		game = game!;
 
 		game.removeAllChildren();
 
+		// #!DEBUG
 		if (WIDTH % COLUMNS !== 0) {
 			DebugWindow.error("Board.js", "constructor", "Board width not divisible by 28.");
 		} else if (HEIGHT % ROWS !== 0) {
 			DebugWindow.error("Board.js", "constructor", "Board height not divisible by 36.");
 		}
+		// #!END_DEBUG
 
 		this.boardDiv.css({
 			width: px(WIDTH),
@@ -194,9 +205,11 @@ export default class Board {
 
 		(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
 
+		// #!DEBUG
 		// debugging methods
-		// this.debug_createGrid();
+		this.debug_createGrid();
 		// this.createPaths();
+		// #!END_DEBUG
 	}
 
 	/**
@@ -337,6 +350,7 @@ export default class Board {
 			Board.CLYDE_SPAWN_Y
 		);
 
+		// #!DEBUG
 		// display fps counter if in debug mode
 		if (App.DEBUG) {
 			this.debug_fpsCounter = new BoardText({
@@ -350,6 +364,7 @@ export default class Board {
 
 			this.placeBoardObject(this.debug_pausePlayButton, 37, 31);
 		}
+		// #!END_DEBUG
 	}
 
 	/**
@@ -388,6 +403,7 @@ export default class Board {
 		this.boardDiv.appendChild(boardObject.getElement());
 	}
 
+	// #!DEBUG
 	/**
 	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
 	 */
@@ -422,7 +438,9 @@ export default class Board {
 			);
 		}
 	}
+	// #!END_DEBUG
 
+	// #!DEBUG
 	/**
 	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
 	 */
@@ -465,4 +483,5 @@ export default class Board {
 			}
 		}
 	}
+	// #!END_DEBUG
 }

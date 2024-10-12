@@ -1,10 +1,12 @@
 "use strict";
 
-// import RunTests from "../../tests/RunTests.js";
+import RunTests from "../../tests/RunTests.js";
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
 import type { BoardObject } from "./board/boardobject/BoardObject.js";
+// #!DEBUG
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
+// #!END_DEBUG
 import Character from "./board/boardobject/children/character/Character.js";
 import type Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
@@ -42,14 +44,6 @@ export class App {
 	 */
 	private static loadedWallData: HTMLElement[] = [];
 	/**
-	 * The last timestamp in the game's animation frame that the fps was displayed.
-	 */
-	private debug_frameCountTimeStamp: number = 0;
-	/**
-	 * The number of frames that have passed in about one second.
-	 */
-	private debug_framesCounted: number = 0;
-	/**
 	 * The board that the game displays on.
 	 */
 	private board: Board | undefined;
@@ -70,6 +64,17 @@ export class App {
 	 * Whether the game is in debug mode or not.
 	 */
 	public static DEBUG: boolean = true;
+
+	// #!DEBUG
+	/**
+	 * The last timestamp in the game's animation frame that the fps was displayed.
+	 */
+	private debug_frameCountTimeStamp: number = 0;
+	/**
+	 * The number of frames that have passed in about one second.
+	 */
+	private debug_framesCounted: number = 0;
+	// #!END_DEBUG
 
 	/**
 	 * Creates an instance of the app.
@@ -102,16 +107,23 @@ export class App {
 				}
 			});
 
+			// #!DEBUG
 			const pausePlayButton = board.debug_pausePlayButton!;
+			// #!END_DEBUG
 
 			// put the game in a "unpaused" state upon opening the window
 			window.addEventListener("focus", () => {
+				// #!DEBUG
 				// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
 				if (!(pausePlayButton.getState() === State.PAUSED)) {
+					// #!END_DEBUG
 					this.startGame(true);
+					// #!DEBUG
 				}
+				// #!END_DEBUG
 			});
 
+			// #!DEBUG
 			if (App.DEBUG) {
 				pausePlayButton.onClick(() => {
 					App.GAME_PAUSED = !App.GAME_PAUSED;
@@ -127,6 +139,7 @@ export class App {
 					}
 				});
 			}
+			// #!END_DEBUG
 
 			// initial start of the game
 			this.animationFrameId = this.startGame();
@@ -192,11 +205,13 @@ export class App {
 			movingCharacters[i]!.stopAnimation();
 		}
 
+		// #!DEBUG
 		// reset fpscounter variables
 		if (App.DEBUG) {
 			this.debug_frameCountTimeStamp = 0;
 			this.debug_framesCounted = 0;
 		}
+		// #!END_DEBUG
 
 		cancelAnimationFrame(this.animationFrameId!);
 	}
@@ -229,6 +244,7 @@ export class App {
 
 		this.deltaTimeAccumulator += deltaTime;
 
+		// #!DEBUG
 		// update fps counter
 		if (App.DEBUG) {
 			if (frameCount === 0) {
@@ -243,6 +259,7 @@ export class App {
 				this.debug_frameCountTimeStamp = currentTimestamp;
 			}
 		}
+		// #!END_DEBUG
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
 		// keep track of each moveable's position so we can properly interpolate it every frame
@@ -270,9 +287,11 @@ export class App {
 			frameCount++;
 			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 
+			// #!DEBUG
 			if (App.DEBUG) {
 				this.debug_framesCounted++;
 			}
+			// #!END_DEBUG
 		}
 
 		if (movingMoveables) {

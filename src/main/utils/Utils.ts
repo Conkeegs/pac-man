@@ -1,6 +1,8 @@
 "use strict";
 
+// #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
+// #!END_DEBUG
 import { BOARD_OBJECT_Z_INDEX, ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
 
 declare global {
@@ -65,11 +67,13 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | obje
 		return (this.style as any)[style as string];
 	}
 
+	// #!DEBUG
 	DebugWindow.error(
 		"Utils.js",
 		"css()",
 		`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`
 	);
+	// #!END_DEBUG
 
 	return;
 };
@@ -89,9 +93,11 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
 
 			if (item instanceof HTMLElement) {
 				item.css(style);
-			} else {
+			} // #!DEBUG
+			else {
 				DebugWindow.error("Utils.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
 			}
+			// #!END_DEBUG
 		}
 
 		return true;
@@ -119,13 +125,17 @@ export async function fetchJSON(filename: string): Promise<any> {
 	try {
 		const body: Promise<any> = await (await fetch(filename)).json();
 
+		// #!DEBUG
 		if (!body) {
 			DebugWindow.error("Utils.js", "fetchJSON", "JSON response body is empty");
 		}
+		// #!END_DEBUG
 
 		return body;
 	} catch (error: any) {
+		// #!DEBUG
 		DebugWindow.error("Utils.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
+		// #!END_DEBUG
 
 		return;
 	}
@@ -480,9 +490,11 @@ export function getCircularReplacer() {
 export function hexToRgb(hex: string): string {
 	let result: string[] | null = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 
+	// #!DEBUG
 	if (result === null) {
 		DebugWindow.error("Utils.ts", "hexToRgb", "Improper hex argument provided");
 	}
+	// #!END_DEBUG
 
 	result = result as string[];
 

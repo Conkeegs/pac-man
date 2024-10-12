@@ -1,4 +1,6 @@
+// #!DEBUG
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
+// #!END_DEBUG
 import { CLIP_PATH_PIXEL_PADDING, TILESIZE } from "../../../../utils/Globals.js";
 import { create, px } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
@@ -103,9 +105,11 @@ export default class Button extends BoardObject {
 	public onClick(callback: (...params: any[]) => unknown): void {
 		this.clickListenerCount++;
 
+		// #!DEBUG
 		if (this.clickListenerCount > 1) {
 			DebugWindow.error("Button.ts", "onClick", "More than one click listener assigned.");
 		}
+		// #!END_DEBUG
 
 		this.element.addEventListener("click", callback);
 	}
