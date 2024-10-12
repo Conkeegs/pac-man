@@ -207,7 +207,7 @@ export default class Board {
 
 		// #!DEBUG
 		// debugging methods
-		this.debug_createGrid();
+		// this.debug_createGrid();
 		// this.createPaths();
 		// #!END_DEBUG
 	}
