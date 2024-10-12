@@ -1,9 +1,9 @@
-import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.ts";
-import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../../../src/main/utils/Globals.ts";
-import { px } from "../../../../../src/main/utils/Utils.ts";
-import Assertion from "../../../../base/Assertion.ts";
-import Test from "../../../../base/Base.ts";
-import { tests } from "../../../../base/Decorators.ts";
+import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.js";
+import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../../../src/main/utils/Globals.js";
+import { px } from "../../../../../src/main/utils/Utils.js";
+import Assertion from "../../../../base/Assertion.js";
+import Test from "../../../../base/Base.js";
+import { tests } from "../../../../base/Decorators.js";
 
 /**
  * Tests the functionality of `src\main\board\boardobject\children\BoardText.js`.

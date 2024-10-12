@@ -1,5 +1,5 @@
-import Board from "../../../src/main/board/Board.ts";
-import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.ts";
+import Board from "../../../src/main/board/Board.js";
+import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import {
 	BOARDOBJECTS,
 	CHARACTERS,
@@ -9,11 +9,11 @@ import {
 	ROWS,
 	TILESIZE,
 	WIDTH,
-} from "../../../src/main/utils/Globals.ts";
-import { get, px } from "../../../src/main/utils/Utils.ts";
-import Assertion from "../../base/Assertion.ts";
-import Test from "../../base/Base.ts";
-import { tests } from "../../base/Decorators.ts";
+} from "../../../src/main/utils/Globals.js";
+import { get, px } from "../../../src/main/utils/Utils.js";
+import Assertion from "../../base/Assertion.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests the `src\main\board\Board.ts` class.

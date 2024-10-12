@@ -1,15 +1,15 @@
-import Board from "../../../../src/main/board/Board.ts";
-import { BoardObject } from "../../../../src/main/board/boardobject/BoardObject.ts";
-import Clyde from "../../../../src/main/board/boardobject/children/character/Clyde.ts";
-import Inky from "../../../../src/main/board/boardobject/children/character/Inky.ts";
-import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.ts";
-import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.ts";
-import Food from "../../../../src/main/board/boardobject/children/Food.ts";
-import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, ROWS, TILESIZE } from "../../../../src/main/utils/Globals.ts";
-import { get, px } from "../../../../src/main/utils/Utils.ts";
-import Assertion from "../../../base/Assertion.ts";
-import Test from "../../../base/Base.ts";
-import { tests } from "../../../base/Decorators.ts";
+import Board from "../../../../src/main/board/Board.js";
+import { BoardObject } from "../../../../src/main/board/boardobject/BoardObject.js";
+import Clyde from "../../../../src/main/board/boardobject/children/character/Clyde.js";
+import Inky from "../../../../src/main/board/boardobject/children/character/Inky.js";
+import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.js";
+import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.js";
+import Food from "../../../../src/main/board/boardobject/children/Food.js";
+import { BOARD_OBJECT_Z_INDEX, BOARDOBJECTS, ROWS, TILESIZE } from "../../../../src/main/utils/Globals.js";
+import { get, px } from "../../../../src/main/utils/Utils.js";
+import Assertion from "../../../base/Assertion.js";
+import Test from "../../../base/Base.js";
+import { tests } from "../../../base/Decorators.js";
 
 /**
  * Tests the functionality of a `BoardObject` instance.

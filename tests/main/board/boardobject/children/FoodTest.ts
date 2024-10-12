@@ -1,10 +1,10 @@
-import type { Position } from "../../../../../src/main/board/Board.ts";
-import Food from "../../../../../src/main/board/boardobject/children/Food.ts";
-import { COLLIDABLES_MAP, TILESIZE } from "../../../../../src/main/utils/Globals.ts";
-import { hexToRgb, px } from "../../../../../src/main/utils/Utils.ts";
-import Assertion from "../../../../base/Assertion.ts";
-import Test from "../../../../base/Base.ts";
-import { tests } from "../../../../base/Decorators.ts";
+import type { Position } from "../../../../../src/main/board/Board.js";
+import Food from "../../../../../src/main/board/boardobject/children/Food.js";
+import { COLLIDABLES_MAP, TILESIZE } from "../../../../../src/main/utils/Globals.js";
+import { hexToRgb, px } from "../../../../../src/main/utils/Utils.js";
+import Assertion from "../../../../base/Assertion.js";
+import Test from "../../../../base/Base.js";
+import { tests } from "../../../../base/Decorators.js";
 
 /**
  * Tests functionality of `Food` instances.
