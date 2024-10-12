@@ -297,6 +297,8 @@ export abstract class BoardObject {
 
 			renderUpdates.splice(i, 1);
 		}
+
+		BOARDOBJECTS_TO_RENDER.splice(BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
 	}
 
 	/**

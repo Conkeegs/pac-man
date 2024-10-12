@@ -318,7 +318,6 @@ export class App {
 				}
 
 				(boardObject as BoardObject).render();
-				BOARDOBJECTS_TO_RENDER.splice(i, 1);
 			}
 		}
 
