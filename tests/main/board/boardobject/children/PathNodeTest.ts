@@ -1,10 +1,10 @@
-import Board from "../../../../src/main/board/Board.js";
-import PathNode from "../../../../src/main/board/boardobject/children/PathNode.js";
-import { TILESIZE } from "../../../../src/main/utils/Globals.js";
-import { px } from "../../../../src/main/utils/Utils.js";
-import Assertion from "../../../base/Assertion.js";
-import Test from "../../../base/Base.js";
-import { tests } from "../../../base/Decorators.js";
+import Board from "../../../../../src/main/board/Board.ts";
+import PathNode from "../../../../../src/main/board/boardobject/children/PathNode.ts";
+import { TILESIZE } from "../../../../../src/main/utils/Globals.ts";
+import { px } from "../../../../../src/main/utils/Utils.ts";
+import Assertion from "../../../../base/Assertion.ts";
+import Test from "../../../../base/Base.ts";
+import { tests } from "../../../../base/Decorators.ts";
 
 /**
  * Tests the functionality of a `PathNode` instance.

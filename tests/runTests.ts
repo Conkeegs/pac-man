@@ -6,13 +6,12 @@ import ImageRegistryTest from "./assets/ImageRegistryTest.js";
 import JsonRegistryTest from "./assets/JsonRegistryTest.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
-import BoardObjectTest from "./board/boardobject/BoardObjectTest.js";
-import BoardTextTest from "./board/boardobject/children/BoardTextTest.js";
-import CharacterTest from "./board/boardobject/children/character/CharacterTest.js";
-import FoodTest from "./board/boardobject/children/FoodTest.js";
-import PathNodeTest from "./board/boardobject/children/PathNodeTest.js";
-import CollidableManagerTest from "./board/boardobject/CollidableManagerTest.js";
-import BoardTest from "./board/BoardTest.js";
+import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
+import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
+import CharacterTest from "./main/board/boardobject/children/character/CharacterTest.js";
+import FoodTest from "./main/board/boardobject/children/FoodTest.js";
+import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
+import BoardTest from "./main/board/BoardTest.js";
 
 /**
  * Represents an object containing a testing class and its methods
@@ -55,7 +54,6 @@ export default class RunTests {
 		new JsonRegistryTest(),
 		new BoardTest(),
 		new BoardObjectTest(),
-		new CollidableManagerTest(),
 		new PathNodeTest(),
 		new FoodTest(),
 		new BoardTextTest(),
