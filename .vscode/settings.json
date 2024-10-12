@@ -11,6 +11,7 @@
         "PACMAN",
         "Teleporter",
         "Tickable",
+        "TICKABLES",
         "TILESIZE"
     ],
     "typescript.tsdk": "node_modules\\typescript\\lib"
