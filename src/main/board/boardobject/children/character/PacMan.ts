@@ -81,7 +81,7 @@ export default class PacMan extends Character {
 	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
 		let imageName = this.defaultAnimationImageName();
 
-		if (this._animationFrame !== 0) {
+		if (this._animationFrame !== 1) {
 			imageName += `-${this.currentDirection}`;
 		}
 
