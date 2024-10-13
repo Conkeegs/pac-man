@@ -283,12 +283,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			}
 		}
 
-		// run any custom frame-based logic that each child class implements, per-frame. make sure to check if the frame
-		// update returns "true", so we can optionally break out of the tick() call
-		if (this._runFrameUpdate(this._framesUpdating)) {
-			return;
-		}
-
 		const teleporterPositions = this.TELEPORTER_DIRECTION_MAP;
 		const currentDirection = this.currentDirection!;
 
@@ -319,7 +313,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		this.movementMethods[direction as keyof MovementMethods].bind(this)(this.distancePerFrame);
 
-		this._framesUpdating++;
+		super.tick();
 	}
 
 	/**
@@ -350,13 +344,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		MOVEABLES.splice(MOVEABLES.indexOf(this), 1);
 	}
-
-	/**
-	 * Updates the board object in a given frame.
-	 *
-	 * @param frameCount the number of frames this boardobject has been updating
-	 */
-	abstract _runFrameUpdate(frameCount: number): boolean;
 
 	/**
 	 * Queues a turn for a future point in time so that when the board object reaches the threshold of the turn,

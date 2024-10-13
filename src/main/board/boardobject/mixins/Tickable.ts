@@ -37,9 +37,10 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		/**
 		 * Logic to call every frame for this board object.
 		 *
-		 * @param args 0 or more optional parameters to pass each tick
 		 */
-		public abstract tick(...args: any[]): void;
+		public tick(): void {
+			this._framesUpdating++;
+		}
 
 		/**
 		 * Logic to call to make up for lost milliseconds each frame due to differing system deltaTimes.

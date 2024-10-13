@@ -5,7 +5,6 @@ import Board from "../../../../board/Board.js";
 import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
 import { px } from "../../../../utils/Utils.js";
 import MakeAnimateable from "../../mixins/Animateable.js";
-import type { Collidable } from "../../mixins/Collidable.js";
 import MakeCollidable from "../../mixins/Collidable.js";
 import Moveable, { type StartMoveOptions } from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -97,16 +96,4 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
 		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;
 	}
-
-	/**
-	 * Updates the character in a given frame.
-	 *
-	 * @param frameCount the number of frames this boardobject has been updating
-	 */
-	abstract override _runFrameUpdate(frameCount: number): boolean;
-
-	/**
-	 * @inheritdoc
-	 */
-	abstract override _onCollision(withCollidable: Collidable): void;
 }

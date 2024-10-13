@@ -101,6 +101,49 @@ export default class PacMan extends Character {
 	}
 
 	/**
+	 * @inheritdoc
+	 */
+	public override tick(): void {
+		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
+		// track when pacman arrives at its "nearestTurn" and stop pacman if he hits a wall. this will also prevent
+		// pacman from ever executing a queued-turn when he is technically "behind" a wall
+		if (this._framesUpdating === 0) {
+			this.nearestStoppingTurn = this.findNearestTurnWhere(
+				(turn) => !Character.canTurnWithMoveDirection(this.currentDirection!, turn)
+			);
+		}
+
+		const turnQueueLengthBeforeTick = this.turnQueue.length;
+
+		super.tick();
+
+		const turnQueueLengthAfterTick = this.turnQueue.length;
+
+		const nearestStoppingTurn = this.nearestStoppingTurn;
+
+		// if the turnqueue is full after ticking, or the turnqueue changes from 1
+		// to 0, we do not want to "stop" pacman
+		if (
+			(turnQueueLengthBeforeTick && turnQueueLengthAfterTick) ||
+			(turnQueueLengthBeforeTick === 1 && turnQueueLengthAfterTick === 0)
+		) {
+			return;
+		}
+
+		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
+		// pacman doesn't just stop and cancel valid queued-turns.
+		if (
+			nearestStoppingTurn &&
+			// check if pacman is within nearest turn's distance (e.g. technically hitting the wall)
+			this.isWithinTurnDistance(nearestStoppingTurn)
+		) {
+			this.stopMoving();
+			// snap pacman to "stop" location to keep collision detection consistent
+			this.offsetPositionToTurn(nearestStoppingTurn);
+		}
+	}
+
+	/**
 	 * DOM event listeners that allow the user to control PacMan.
 	 */
 	private createMoveEventListeners() {
@@ -218,41 +261,6 @@ export default class PacMan extends Character {
 				this.listenForKeydown = true;
 			}
 		});
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	override _runFrameUpdate(frameCount: number): boolean {
-		const currentDirection = this.currentDirection!;
-
-		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
-		// pacman doesn't just stop and cancel valid queued-turns.
-		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
-		// track when pacman arrives at its "nearestTurn" and stop pacman if he hits a wall. this will also prevent
-		// pacman from ever executing a queued-turn when he is technically "behind" a wall
-		if (frameCount === 0) {
-			this.nearestStoppingTurn = this.findNearestTurnWhere(
-				(turn) => !Character.canTurnWithMoveDirection(currentDirection, turn)
-			);
-		}
-
-		const nearestStoppingTurn = this.nearestStoppingTurn;
-
-		if (
-			nearestStoppingTurn &&
-			// check if pacman is within nearest turn's distance (e.g. technically hitting the wall)
-			this.isWithinTurnDistance(nearestStoppingTurn)
-		) {
-			this.stopMoving();
-			// snap pacman to "stop" location to keep collision detection consistent
-			this.offsetPositionToTurn(nearestStoppingTurn);
-
-			// break out of "tick()" method
-			return true;
-		}
-
-		return false;
 	}
 
 	override _onCollision(withCollidable: Collidable): void {
