@@ -91,10 +91,12 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(Base:
 		 * Returns this board object's image source-name, based on its current animation frame, and
 		 * and other factors in its implementation.
 		 */
-		abstract _getCurrentAnimationImageName(): keyof IMAGE_LIST;
+		_getCurrentAnimationImageName(): keyof IMAGE_LIST {
+			return this.defaultAnimationImageName();
+		}
 
 		/**
-		 * Updates this board object's animation state, based on its current animation image source.
+		 * Updates this board object's animation state, based on its current animation image name.
 		 */
 		_updateAnimationImage(): void {
 			let imageName = this._getCurrentAnimationImageName();
