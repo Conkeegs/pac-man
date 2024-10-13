@@ -1,6 +1,7 @@
 import ImageRegistry, { type IMAGE_LIST } from "../../../assets/ImageRegistry.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { ANIMATEABLES } from "../../../utils/Globals.js";
+import { defined } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 
 /**
@@ -95,8 +96,15 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(Base:
 		 * Updates this board object's animation state, based on its current animation image source.
 		 */
 		_updateAnimationImage(): void {
+			let imageName = this._getCurrentAnimationImageName();
+
+			// default to "not found" image if the image doesn't exist
+			if (!defined(ImageRegistry.IMAGE_LIST[imageName])) {
+				imageName = "not-found";
+			}
+
 			(this as unknown as BoardObject).getElement().css({
-				backgroundImage: `url(${ImageRegistry.getImage(this._getCurrentAnimationImageName())})`,
+				backgroundImage: `url(${ImageRegistry.getImage(imageName)})`,
 			});
 		}
 

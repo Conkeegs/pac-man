@@ -4,6 +4,7 @@ import { getImageSrc } from "../utils/Utils.js";
  * List of all image file paths.
  */
 export type IMAGE_LIST = {
+	"not-found": HTMLImageElement;
 	"pacman-0": HTMLImageElement;
 	"pacman-1-0": HTMLImageElement;
 	"pacman-1-1": HTMLImageElement;
@@ -55,6 +56,7 @@ export default class ImageRegistry {
 	 * List of all image file paths.
 	 */
 	public static readonly IMAGE_LIST: IMAGE_LIST = {
+		"not-found": ImageRegistry.createImage("not-found"),
 		"pacman-0": ImageRegistry.createImage("pacman-0"),
 		"pacman-1-0": ImageRegistry.createImage("pacman-1-0"),
 		"pacman-1-1": ImageRegistry.createImage("pacman-1-1"),
