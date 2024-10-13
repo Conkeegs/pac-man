@@ -158,12 +158,16 @@ export class App {
 	public static destroy(): void {
 		Object.removeAllKeys(COLLIDABLES_MAP);
 
+		for (let i = 0; i < ANIMATEABLES.length; i++) {
+			ANIMATEABLES[i]!.stopAnimation();
+		}
+
+		ANIMATEABLES.length = 0;
 		BOARDOBJECTS.length = 0;
 		CHARACTERS.length = 0;
 		MOVEABLES.length = 0;
 		TICKABLES.length = 0;
 		BOARDOBJECTS_TO_RENDER.length = 0;
-		ANIMATEABLES.length = 0;
 
 		Board.turnData = undefined;
 		App.loadedWallData = [];

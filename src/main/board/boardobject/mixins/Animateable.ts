@@ -149,6 +149,8 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		 * Deletes this board object and makes sure that it's also removed from the animateables array.
 		 */
 		public override delete(): void {
+			this.stopAnimation();
+
 			super.delete();
 
 			ANIMATEABLES.splice(ANIMATEABLES.indexOf(this as Animateable), 1);
