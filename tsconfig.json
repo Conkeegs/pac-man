@@ -1,6 +1,7 @@
 {
     "extends": "@tsconfig/node18/tsconfig.json",
     "compilerOptions": {
+        "declaration": false,
         "paths": {
             "tslib": [
                 "node_modules/tslib/tslib.d.ts"
@@ -22,11 +23,10 @@
         "module": "ES2015",
         "moduleResolution": "Node",
         // "resolveJsonModule": true,
-        "composite": true,
+        "composite": false,
         "outDir": "dist",
         "noImplicitThis": false,
         "target": "ES2015",
-        "declarationDir": "types",
         "removeComments": true,
         "sourceMap": true,
         "sourceRoot": "src",

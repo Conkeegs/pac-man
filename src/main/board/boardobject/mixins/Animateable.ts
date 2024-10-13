@@ -46,7 +46,7 @@ export enum ANIMATION_TYPE {
  * @param animationType style in which this board object will animate
  * @returns a `BoardObject` that is going to be animated
  */
-export default function MakeAnimateable<TBase extends AbstractConstructor>(
+export default function MakeAnimateable<TBase extends AbstractConstructor<BoardObject>>(
 	Base: TBase,
 	animationType: ANIMATION_TYPE = ANIMATION_TYPE.REPEAT
 ) {
@@ -118,7 +118,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(
 		constructor(...args: any[]) {
 			super(...args);
 
-			ANIMATEABLES.push(this as unknown as Animateable);
+			ANIMATEABLES.push(this as Animateable);
 		}
 
 		/**
@@ -148,10 +148,10 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(
 		/**
 		 * Deletes this board object and makes sure that it's also removed from the animateables array.
 		 */
-		public delete(): void {
-			(super["delete" as keyof {}] as BoardObject["delete"])();
+		public override delete(): void {
+			super.delete();
 
-			ANIMATEABLES.splice(ANIMATEABLES.indexOf(this as unknown as Animateable), 1);
+			ANIMATEABLES.splice(ANIMATEABLES.indexOf(this as Animateable), 1);
 		}
 
 		/**
@@ -161,7 +161,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(
 		 * @returns string that combines this board object's name and current animation frame
 		 */
 		public defaultAnimationImageName(): keyof IMAGE_LIST {
-			return `${(this as unknown as BoardObject).getName()}-${this._animationFrame}` as keyof IMAGE_LIST;
+			return `${this.getName()}-${this._animationFrame}` as keyof IMAGE_LIST;
 		}
 
 		/**
@@ -185,7 +185,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(
 				imageName = "not-found";
 			}
 
-			(this as unknown as BoardObject).getElement().css({
+			this.getElement().css({
 				backgroundImage: `url(${ImageRegistry.getImage(imageName)})`,
 			});
 		}

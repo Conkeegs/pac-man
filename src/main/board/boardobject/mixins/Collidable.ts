@@ -53,7 +53,7 @@ export function makeCollidablePositionKey(position: Position): string {
  * its collision box will be
  * @returns a `BoardObject` that is considered "collidable" in the game's physics
  */
-export default function MakeCollidable<TBase extends AbstractConstructor>(
+export default function MakeCollidable<TBase extends AbstractConstructor<BoardObject>>(
 	Base: TBase,
 	collisionBoxPercentage: number | undefined = 100
 ) {
@@ -97,8 +97,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		/**
 		 * @inheritdoc
 		 */
-		public setPosition(position: Position, options?: PositionSetOptions): void {
-			(super["setPosition" as keyof {}] as BoardObject["setPosition"])(position, options);
+		public override setPosition(position: Position, options?: PositionSetOptions): void {
+			super.setPosition(position, options);
 
 			this.updateTileKeys();
 		}
@@ -106,8 +106,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		/**
 		 * @inheritdoc
 		 */
-		public setPositionX(x: number, options?: PositionSetOptions): void {
-			(super["setPositionX" as keyof {}] as BoardObject["setPositionX"])(x, options);
+		public override setPositionX(x: number, options?: PositionSetOptions): void {
+			super.setPositionX(x, options);
 
 			this.updateTileKeys();
 		}
@@ -115,8 +115,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		/**
 		 * @inheritdoc
 		 */
-		public setPositionY(y: number, options?: PositionSetOptions): void {
-			(super["setPositionY" as keyof {}] as BoardObject["setPositionY"])(y, options);
+		public override setPositionY(y: number, options?: PositionSetOptions): void {
+			super.setPositionY(y, options);
 
 			this.updateTileKeys();
 		}
@@ -124,10 +124,10 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		/**
 		 * Deletes this board object and makes sure that it's also removed from the collidables map.
 		 */
-		public delete(): void {
+		public override delete(): void {
 			this.checkForCollidableAndRemove();
 
-			(super["delete" as keyof {}] as BoardObject["delete"])();
+			super.delete();
 		}
 
 		/**
@@ -155,7 +155,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 			// now moving to a different location in the map
 			this.checkForCollidableAndRemove();
 			// push "collidable" into its own position-based group
-			COLLIDABLES_MAP[newCollidablePositionKey]!.push(this as unknown as Collidable);
+			COLLIDABLES_MAP[newCollidablePositionKey]!.push(this as Collidable);
 		}
 
 		/**
@@ -169,7 +169,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 			}
 
 			let positionCollidables = COLLIDABLES_MAP[currentPositionKey];
-			const instance = this as unknown as Collidable;
+			const instance = this as Collidable;
 
 			if (defined(positionCollidables) && positionCollidables!.includes(instance)) {
 				COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(instance), 1);
@@ -183,12 +183,11 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		 */
 		public getCollisionBox(): CollisionBox {
 			const collisionBoxPercentage = this._collisionBoxPercentage;
-			const collidable = this as unknown as BoardObject;
-			const width = collidable.getWidth();
-			const height = collidable.getHeight();
+			const width = this.getWidth();
+			const height = this.getHeight();
 			const paddingHorizontal = (width - (width * collisionBoxPercentage) / 100) / 2;
 			const paddingVertical = (height - (height * collisionBoxPercentage) / 100) / 2;
-			const collidablePosition = collidable.getPosition();
+			const collidablePosition = this.getPosition();
 			const collidablePositionX = collidablePosition.x;
 			const collidablePositionY = collidablePosition.y;
 
@@ -237,7 +236,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor>(
 		 * @returns a properly-formatted key into the `COLLIDABLES_MAP`
 		 */
 		public getCollidablePositionKey(): string {
-			return makeCollidablePositionKey((this as unknown as BoardObject).getCenterPosition());
+			return makeCollidablePositionKey(this.getCenterPosition());
 		}
 	}
 

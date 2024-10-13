@@ -15,7 +15,7 @@ export type Tickable = InstanceType<ReturnType<typeof MakeTickable<typeof BoardO
  * @param Base a `BoardObject` instance
  * @returns a `BoardObject` that is considered "tickable" each frame
  */
-export default function MakeTickable<TBase extends AbstractConstructor>(Base: TBase) {
+export default function MakeTickable<TBase extends AbstractConstructor<BoardObject>>(Base: TBase) {
 	abstract class TickableClass extends Base {
 		/**
 		 * The number of frames this board object has been updating (separate from the total frames that
@@ -31,7 +31,7 @@ export default function MakeTickable<TBase extends AbstractConstructor>(Base: TB
 		constructor(...args: any[]) {
 			super(...args);
 
-			TICKABLES.push(this as unknown as Tickable);
+			TICKABLES.push(this as Tickable);
 		}
 
 		/**
@@ -53,8 +53,8 @@ export default function MakeTickable<TBase extends AbstractConstructor>(Base: TB
 		/**
 		 * Deletes this tickable and makes sure that it's also removed from the tickables array.
 		 */
-		public delete(): void {
-			(super["delete" as keyof {}] as BoardObject["delete"])();
+		public override delete(): void {
+			super.delete();
 
 			TICKABLES.splice(TICKABLES.indexOf(this as unknown as Tickable), 1);
 		}
