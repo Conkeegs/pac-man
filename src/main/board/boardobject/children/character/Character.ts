@@ -1,5 +1,6 @@
 "use strict";
 
+import type { IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
 import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
 import { px } from "../../../../utils/Utils.js";
@@ -88,6 +89,13 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		CHARACTERS.splice(CHARACTERS.indexOf(this), 1);
 
 		super.delete();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
+		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;
 	}
 
 	/**

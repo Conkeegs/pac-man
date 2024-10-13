@@ -4,7 +4,7 @@ import { App } from "../../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
-import { ANIMATION_DIRECTION } from "../../mixins/Animateable.js";
+import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -72,33 +72,13 @@ export default class PacMan extends Character {
 		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
 
 		this.createMoveEventListeners();
+		this._setAnimationType(ANIMATION_TYPE.LOOP);
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
-		const forwards = ANIMATION_DIRECTION.FORWARDS;
-		const backwards = ANIMATION_DIRECTION.BACKWARDS;
-		const animationDirection = this._animationDirection;
-
-		// increment animation frame so character changes how it looks
-		this._animationDirection === forwards ? this._animationFrame++ : this._animationFrame--;
-
-		// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
-		// now
-		if (this._animationFrame === this._NUM_ANIMATION_STATES && animationDirection === forwards) {
-			this._animationDirection = backwards;
-			this._animationFrame--;
-		}
-
-		// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
-		// now
-		if (this._animationFrame === -1 && animationDirection === backwards) {
-			this._animationDirection = forwards;
-			this._animationFrame++;
-		}
-
 		let imageName = this.defaultAnimationImageName();
 
 		if (this._animationFrame !== 0) {
