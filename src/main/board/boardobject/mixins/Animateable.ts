@@ -89,24 +89,26 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 
 				// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
 				// now
-				if (this._animationFrame === this._NUM_ANIMATION_STATES && animationDirection === forwards) {
+				if (this._animationFrame === this._NUM_ANIMATION_STATES + 1 && animationDirection === forwards) {
 					this._animationDirection = backwards;
-					this._animationFrame--;
+					this._animationFrame -= 2;
 				}
 
 				// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
 				// now
-				if (this._animationFrame === -1 && animationDirection === backwards) {
+				if (this._animationFrame === 0 && animationDirection === backwards) {
 					this._animationDirection = forwards;
-					this._animationFrame++;
+					this._animationFrame += 1;
 				}
 			},
 			[ANIMATION_TYPE.REPEAT]: () => {
-				this._animationFrame++;
-
 				if (this._animationFrame === this._NUM_ANIMATION_STATES) {
-					this._animationFrame = 0;
+					this._animationFrame = 1;
+
+					return;
 				}
+
+				this._animationFrame++;
 			},
 		};
 
