@@ -44,7 +44,7 @@ export default abstract class Ghost extends Character {
 			this._animationFrame = 0;
 		}
 
-		return `${this.name}-${this._animationFrame}-${this.currentDirection}` as keyof IMAGE_LIST;
+		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;
 	}
 
 	override _onCollision(withCollidable: PacMan): void {

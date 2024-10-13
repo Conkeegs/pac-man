@@ -99,7 +99,7 @@ export default class PacMan extends Character {
 			this._animationFrame++;
 		}
 
-		let imageName = `${this.name}-${this._animationFrame}`;
+		let imageName = this.defaultAnimationImageName();
 
 		if (this._animationFrame !== 0) {
 			imageName += `-${this.currentDirection}`;

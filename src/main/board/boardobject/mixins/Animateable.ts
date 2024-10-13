@@ -88,7 +88,8 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(Base:
 		}
 
 		/**
-		 * Returns this board object's image source-name, based on its current animation frame.
+		 * Returns this board object's image source-name, based on its current animation frame, and
+		 * and other factors in its implementation.
 		 */
 		abstract _getCurrentAnimationImageName(): keyof IMAGE_LIST;
 
@@ -115,6 +116,16 @@ export default function MakeAnimateable<TBase extends AbstractConstructor>(Base:
 			(super["delete" as keyof {}] as BoardObject["delete"])();
 
 			ANIMATEABLES.splice(ANIMATEABLES.indexOf(this as unknown as Animateable), 1);
+		}
+
+		/**
+		 * Returns a string that combines this board object's name and current animation frame so
+		 * we can properly access this animateable's image in the image registry.
+		 *
+		 * @returns string that combines this board object's name and current animation frame
+		 */
+		public defaultAnimationImageName(): keyof IMAGE_LIST {
+			return `${(this as unknown as BoardObject).getName()}-${this._animationFrame}` as keyof IMAGE_LIST;
 		}
 	}
 
