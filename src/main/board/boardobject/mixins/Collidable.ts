@@ -49,6 +49,8 @@ export function makeCollidablePositionKey(position: Position): string {
  * other board objects on the board.
  *
  * @param Base a `BoardObject` instance
+ * @param collisionBoxPercentage percent (out of 100) of board object's size that
+ * its collision box will be
  * @returns a `BoardObject` that is considered "collidable" in the game's physics
  */
 export default function MakeCollidable<TBase extends AbstractConstructor>(

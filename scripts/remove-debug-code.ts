@@ -15,17 +15,17 @@ cpSync(srcDirectory, pathsJoined, {
 });
 
 /**
- * Replaces debug flags in an output-JavaScript file.
+ * Replaces debug flags in typescript file.
  *
- * @param jsFile the JavaScript file to remove debug code in
+ * @param tsFile the TypeScript file to remove debug code in
  */
-function removeDebugCode(jsFile: string): void {
-	const jsFileContent = readFileSync(jsFile, {
+function removeDebugCode(tsFile: string): void {
+	const tsFileContent = readFileSync(tsFile, {
 		encoding,
 	});
 
 	// replace debug code instances
-	writeFileSync(jsFile, jsFileContent.replace(debugRegex, "").trim(), {
+	writeFileSync(tsFile, tsFileContent.replace(debugRegex, "").trim(), {
 		encoding,
 	});
 }
@@ -54,8 +54,8 @@ function readDistFiles(copiedSrcDirectory: string): void {
 	}
 }
 
-console.log("\nRemoving debug flags in JavaScript files...");
+console.log("\nRemoving debug flags in TypeScript files...");
 
 readDistFiles(pathsJoined);
 
-console.log("Finished removing debug flags in JavaScript files");
+console.log("Finished removing debug flags in TypeScript files");
