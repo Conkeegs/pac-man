@@ -15,6 +15,6 @@ export default class Pinky extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("pinky", Pinky.PINKY_SPEED, ImageRegistry.getImage("pinky-0-3"));
+		super("pinky", Pinky.PINKY_SPEED, ImageRegistry.getImage("pinky-1-3"));
 	}
 }

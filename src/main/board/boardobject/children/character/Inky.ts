@@ -15,6 +15,6 @@ export default class Inky extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("inky", Inky.INKY_SPEED, ImageRegistry.getImage("inky-0-2"));
+		super("inky", Inky.INKY_SPEED, ImageRegistry.getImage("inky-1-2"));
 	}
 }

@@ -15,6 +15,6 @@ export default class Clyde extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("clyde", Clyde.CLYDE_SPEED, ImageRegistry.getImage("clyde-0-2"));
+		super("clyde", Clyde.CLYDE_SPEED, ImageRegistry.getImage("clyde-1-2"));
 	}
 }

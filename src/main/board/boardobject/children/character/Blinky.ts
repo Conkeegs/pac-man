@@ -15,6 +15,6 @@ export default class Blinky extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("blinky", Blinky.BLINKY_SPEED, ImageRegistry.getImage("blinky-0-0"));
+		super("blinky", Blinky.BLINKY_SPEED, ImageRegistry.getImage("blinky-1-0"));
 	}
 }
