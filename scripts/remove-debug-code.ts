@@ -58,4 +58,4 @@ console.log("\nRemoving debug flags in TypeScript files...");
 
 readDistFiles(pathsJoined);
 
-console.log("Finished removing debug flags in TypeScript files");
+console.log("\nFinished removing debug flags in TypeScript files");
