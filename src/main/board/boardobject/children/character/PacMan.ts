@@ -7,6 +7,7 @@ import type { TurnData } from "../../../Board.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
+import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 import Blinky from "./Blinky.js";
 import Character from "./Character.js";
@@ -31,9 +32,9 @@ export default class PacMan extends Character {
 	 */
 	private spawning: boolean = true;
 	/**
-	 * All supported keyboard keys for moving PacMan.
+	 * All supported keyboard keys for moving PacMan, mapped to their respective movement directions.
 	 */
-	private moveCodes = {
+	private static keyEventDirectionMap = {
 		ArrowLeft: MovementDirection.LEFT,
 		KeyA: MovementDirection.LEFT,
 		ArrowRight: MovementDirection.RIGHT,
@@ -69,23 +70,19 @@ export default class PacMan extends Character {
 	 * @param name unique name of pacman instance, defaults to just "pacman"
 	 */
 	constructor(name: string = "pacman") {
-		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-0"));
+		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-1"));
 
 		this.createMoveEventListeners();
 		this._setAnimationType(ANIMATION_TYPE.LOOP);
 	}
 
 	/**
-	 * @inheritdoc
+	 * Whether or not pacman is spawning
+	 *
+	 * @returns boolean indicating whether or not pacman is spawning
 	 */
-	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
-		let imageName = this.defaultAnimationImageName();
-
-		if (this._animationFrame !== 1) {
-			imageName += `-${this.currentDirection}`;
-		}
-
-		return imageName as keyof IMAGE_LIST;
+	public isSpawning(): boolean {
+		return this.spawning;
 	}
 
 	/**
@@ -103,13 +100,25 @@ export default class PacMan extends Character {
 	/**
 	 * @inheritdoc
 	 */
+	public override delete(): void {
+		const documentBody = document.body;
+
+		documentBody.removeEventListener("keydown", this.handleKeyDown);
+		documentBody.removeEventListener("keyup", this.handleKeyUp);
+
+		super.delete();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
 	public override tick(): void {
 		// we only need to look for the nearest stopping position once, so we only check for frame "0" here, and we can accurately
 		// track when pacman arrives at its "nearestTurn" and stop pacman if he hits a wall. this will also prevent
 		// pacman from ever executing a queued-turn when he is technically "behind" a wall
 		if (this._framesUpdating === 0) {
 			this.nearestStoppingTurn = this.findNearestTurnWhere(
-				(turn) => !Character.canTurnWithMoveDirection(this.currentDirection!, turn)
+				(turn) => !Moveable.canTurnWithMoveDirection(this.currentDirection!, turn)
 			);
 		}
 
@@ -144,13 +153,12 @@ export default class PacMan extends Character {
 	}
 
 	/**
-	 * DOM event listeners that allow the user to control PacMan.
+	 * Handle any keys pressed to control pacman's movement.
+	 *
+	 * @param event keyboard event from user
 	 */
-	private createMoveEventListeners() {
-		const documentBody = document.body;
-
-		// listen for movement keys for PacMan
-		documentBody.addEventListener("keydown", (event) => {
+	private handleKeyDown(event: KeyboardEvent): void {
+		{
 			// make sure we are currently listening for movement inputs before continuing and that
 			// the game is not paused
 			if (this.listenForKeydown === false || App.GAME_PAUSED) {
@@ -159,7 +167,7 @@ export default class PacMan extends Character {
 
 			event.stopImmediatePropagation();
 
-			let moveCode = this.moveCodes[event.code as keyof typeof this.moveCodes];
+			let moveCode = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
 			const isMoving = this.isMoving();
 
 			const lastMoveCode = this.lastMoveCode;
@@ -248,19 +256,48 @@ export default class PacMan extends Character {
 
 				this.queueTurn(moveCode, nearestTurnableTurn);
 			}
-		});
+		}
+	}
 
+	/**
+	 * Handle user letting go of keyboard key so pacman can once again listen for movement keys.
+	 *
+	 * @param event keyboard event from user
+	 */
+	private handleKeyUp(event: KeyboardEvent): void {
+		let moveCode = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
+
+		// check for user releasing a valid movement key, and let PacMan class know that it can
+		// once again start listening for more movement inputs. this prevents user from mashing
+		// random movements keys and getting unexpected behavior from the movement listener above
+		if (exists(moveCode)) {
+			this.listenForKeydown = true;
+		}
+	}
+
+	/**
+	 * DOM event listeners that allow the user to control PacMan.
+	 */
+	private createMoveEventListeners() {
+		const documentBody = document.body;
+
+		// listen for movement keys for PacMan
+		documentBody.addEventListener("keydown", this.handleKeyDown);
 		// listen for user releasing a movement key
-		documentBody.addEventListener("keyup", (event) => {
-			let moveCode = this.moveCodes[event.code as keyof typeof this.moveCodes];
+		documentBody.addEventListener("keyup", this.handleKeyUp);
+	}
 
-			// check for user releasing a valid movement key, and let PacMan class know that it can
-			// once again start listening for more movement inputs. this prevents user from mashing
-			// random movements keys and getting unexpected behavior from the movement listener above
-			if (exists(moveCode)) {
-				this.listenForKeydown = true;
-			}
-		});
+	/**
+	 * @inheritdoc
+	 */
+	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
+		let imageName = this.defaultAnimationImageName();
+
+		if (this._animationFrame !== 1) {
+			imageName += `-${this.currentDirection}`;
+		}
+
+		return imageName as keyof IMAGE_LIST;
 	}
 
 	override _onCollision(withCollidable: Collidable): void {
