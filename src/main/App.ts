@@ -1,6 +1,7 @@
 "use strict";
 
 // #!DEBUG
+import RunTests from "../../tests/RunTests.js";
 // #!END_DEBUG
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
@@ -538,9 +539,9 @@ export class App {
 
 // #!DEBUG
 // run the game if not in testing mode
-if (!TESTING) {
+if (!App.TESTING) {
 	// #!END_DEBUG
-	new App();
+	App.getInstance();
 	// #!DEBUG
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
