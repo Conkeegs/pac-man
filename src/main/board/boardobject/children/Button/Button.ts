@@ -1,4 +1,5 @@
 // #!DEBUG
+import { App } from "../../../../App.js";
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 // #!END_DEBUG
@@ -66,7 +67,7 @@ export default class Button extends BoardObject {
 		const boardBackgroundColor = Board.BACKGROUND_COLOR;
 
 		// change how button looks when hovered
-		element.addEventListener("mouseenter", () => {
+		App.addEventListenerToElement("mouseenter", element, () => {
 			(element.lastChild as HTMLDivElement).css({
 				backgroundColor: "white",
 			});
@@ -77,7 +78,7 @@ export default class Button extends BoardObject {
 		});
 
 		// change how button looks when un-hovered
-		element.addEventListener("mouseleave", () => {
+		App.addEventListenerToElement("mouseleave", element, () => {
 			(element.lastChild as HTMLDivElement).css({
 				backgroundColor: boardBackgroundColor,
 			});
@@ -115,7 +116,7 @@ export default class Button extends BoardObject {
 		}
 		// #!END_DEBUG
 
-		this.element.addEventListener("click", callback);
+		App.addEventListenerToElement("click", this.element, callback);
 	}
 
 	/**

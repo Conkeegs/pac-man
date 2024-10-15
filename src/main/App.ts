@@ -85,6 +85,26 @@ export class App {
 	 */
 	public static BOARDOBJECTS_TO_RENDER: BoardObject[] = [];
 	/**
+	 * Event listeners registered in the app.
+	 */
+	public static EVENT_LISTENERS: {
+		/**
+		 * Name of the event.
+		 */
+		eventName: keyof HTMLElementEventMap;
+		/**
+		 * HTMLElement or window object that the event is registered on.
+		 */
+		element: HTMLElement | Window;
+		/**
+		 * Callback registered for the event.
+		 *
+		 * @param event DOM event to be fired
+		 * @returns
+		 */
+		callback: (event: Event) => void;
+	}[] = [];
+	/**
 	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
 	 * and make sure collision detection for characters is optimized into "groups".
 	 */
@@ -131,7 +151,7 @@ export class App {
 			await board.createMainBoardObjects();
 
 			// put the game in a "paused" state upon exiting the window
-			window.addEventListener("blur", () => {
+			App.addEventListenerToElement("blur", window, () => {
 				// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
 				if (!App.GAME_PAUSED) {
 					this.stopGame(true);
@@ -143,7 +163,7 @@ export class App {
 			// #!END_DEBUG
 
 			// put the game in a "unpaused" state upon opening the window
-			window.addEventListener("focus", () => {
+			App.addEventListenerToElement("focus", window, () => {
 				// #!DEBUG
 				// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
 				if (!(pausePlayButton.getState() === State.PAUSED)) {
@@ -195,6 +215,12 @@ export class App {
 
 		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
 			App.ANIMATEABLES[i]!.stopAnimation();
+		}
+
+		for (let i = 0; i < App.EVENT_LISTENERS.length; i++) {
+			const eventListenerInfo = App.EVENT_LISTENERS[i]!;
+
+			eventListenerInfo.element.removeEventListener(eventListenerInfo.eventName, eventListenerInfo.callback);
 		}
 
 		App.ANIMATEABLES.length = 0;
@@ -403,6 +429,28 @@ export class App {
 	 */
 	public static isRunning(): boolean {
 		return App.running;
+	}
+
+	/**
+	 * Register a DOM event listener in the app.
+	 *
+	 * @param eventName name of the event to register in the app
+	 * @param element HTMLElement or the window object, which will have the event registered on it
+	 * @param callback function to call when event is triggered
+	 */
+	public static addEventListenerToElement<K extends keyof HTMLElementEventMap>(
+		eventName: K,
+		element: HTMLElement | Window,
+		callback: (event: Event) => void
+	): void {
+		element.addEventListener(eventName, callback);
+
+		// add to listing so we can clean up event listeners upon app destruction
+		App.EVENT_LISTENERS.push({
+			eventName,
+			element,
+			callback,
+		});
 	}
 
 	/**
