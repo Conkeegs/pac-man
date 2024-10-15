@@ -1,3 +1,4 @@
+import { App } from "../../../../src/main/App.js";
 import Board from "../../../../src/main/board/Board.js";
 import { BoardObject } from "../../../../src/main/board/boardobject/BoardObject.js";
 import Clyde from "../../../../src/main/board/boardobject/children/character/Clyde.js";
@@ -5,13 +6,7 @@ import Inky from "../../../../src/main/board/boardobject/children/character/Inky
 import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.js";
 import Food from "../../../../src/main/board/boardobject/children/Food.js";
-import {
-	BOARD_OBJECT_Z_INDEX,
-	BOARDOBJECTS,
-	BOARDOBJECTS_TO_RENDER,
-	ROWS,
-	TILESIZE,
-} from "../../../../src/main/utils/Globals.js";
+import { ROWS, TILESIZE } from "../../../../src/main/utils/Globals.js";
 import { get, px } from "../../../../src/main/utils/Utils.js";
 import Assertion from "../../../base/Assertion.js";
 import Test from "../../../base/Base.js";
@@ -62,14 +57,14 @@ export default class BoardObjectTest extends Test {
 		}
 
 		Assertion.assertStrictlyEqual(pacmanName, pacman1.getName());
-		Assertion.assertNotEmpty(BOARDOBJECTS.filter((boardObject) => boardObject.getName() === pacmanName));
+		Assertion.assertNotEmpty(App.BOARDOBJECTS.filter((boardObject) => boardObject.getName() === pacmanName));
 
 		const boardObjectElement = pacman1.getElement();
 
 		Assertion.assertStrictlyEqual("DIV", boardObjectElement.tagName);
 		Assertion.assertStrictlyEqual(pacmanName, boardObjectElement.id);
 		Assertion.assertTrue(boardObjectElement.classList.contains("board-object"));
-		Assertion.assertStrictlyEqual(BOARD_OBJECT_Z_INDEX, Number(boardObjectElement.css("zIndex")));
+		Assertion.assertStrictlyEqual(BoardObject.BOARD_OBJECT_Z_INDEX, Number(boardObjectElement.css("zIndex")));
 	}
 
 	/**
@@ -84,7 +79,7 @@ export default class BoardObjectTest extends Test {
 		Assertion.assertStrictlyEqual(0, position.x);
 		Assertion.assertStrictlyEqual(0, position.y);
 
-		const board = new Board();
+		const board = Board.getInstance();
 		const numTiles = 5;
 
 		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
@@ -454,13 +449,13 @@ export default class BoardObjectTest extends Test {
 		get("game")!.appendChild(clyde.getElement());
 
 		Assertion.assertNotNull(get(name));
-		Assertion.assertArrayContains(clyde, BOARDOBJECTS);
+		Assertion.assertArrayContains(clyde, App.BOARDOBJECTS);
 
 		clyde.delete();
 		clyde.render();
 
 		Assertion.assertNull(get(name));
-		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS);
+		Assertion.assertArrayDoesntContain(clyde, App.BOARDOBJECTS);
 	}
 
 	/**
@@ -470,7 +465,7 @@ export default class BoardObjectTest extends Test {
 		const clyde = new Clyde();
 
 		Assertion.assertArrayLength(0, clyde["queuedRenderUpdates"]);
-		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS_TO_RENDER);
+		Assertion.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 
 		clyde.setPosition(
 			{
@@ -483,11 +478,11 @@ export default class BoardObjectTest extends Test {
 		);
 
 		Assertion.assertArrayLength(1, clyde["queuedRenderUpdates"]);
-		Assertion.assertArrayContains(clyde, BOARDOBJECTS_TO_RENDER);
+		Assertion.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
 
 		clyde.render();
 
-		Assertion.assertArrayDoesntContain(clyde, BOARDOBJECTS_TO_RENDER);
+		Assertion.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 	}
 
 	/**

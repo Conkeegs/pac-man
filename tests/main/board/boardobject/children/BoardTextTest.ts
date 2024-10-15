@@ -1,5 +1,6 @@
+import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObject.js";
 import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.js";
-import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../../../src/main/utils/Globals.js";
+import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
@@ -23,7 +24,7 @@ export default class BoardTextTest extends Test {
 		let boardTextElement = boardText.getElement();
 
 		Assertion.assertStrictlyEqual(TILESIZE, boardText.getFontSize());
-		Assertion.assertStrictlyEqual(String(BOARD_OBJECT_Z_INDEX + 2), boardTextElement.css("zIndex"));
+		Assertion.assertStrictlyEqual(String(BoardObject.BOARD_OBJECT_Z_INDEX + 2), boardTextElement.css("zIndex"));
 		Assertion.assertStrictlyEqual("white", boardText.getColor());
 		Assertion.assertFalse(boardText.isVertical());
 		Assertion.assertStrictlyEqual(text, boardText.getText());

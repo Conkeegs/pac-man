@@ -1,15 +1,7 @@
+import { App } from "../../../src/main/App.js";
 import Board from "../../../src/main/board/Board.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
-import {
-	BOARDOBJECTS,
-	CHARACTERS,
-	COLLIDABLES_MAP,
-	FOOD_COUNT,
-	HEIGHT,
-	ROWS,
-	TILESIZE,
-	WIDTH,
-} from "../../../src/main/utils/Globals.js";
+import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
 import { get, px } from "../../../src/main/utils/Utils.js";
 import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
@@ -24,21 +16,20 @@ export default class BoardTest extends Test {
 	 * Test that the game's board can be created successfully.
 	 */
 	public createBoardTest(): void {
-		const boardColor = "red";
-		const board = new Board(boardColor);
+		const board = Board.getInstance();
 		const boardDiv = board.boardDiv;
 		const game = get("game");
 
 		Assertion.assertExists(game);
-		Assertion.assertStrictlyEqual(boardColor, game!.css("backgroundColor"));
+		Assertion.assertStrictlyEqual("#070200", game!.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(game, boardDiv.parentElement);
-		Assertion.assertStrictlyEqual(boardColor, boardDiv.css("backgroundColor"));
+		Assertion.assertStrictlyEqual("#070200", boardDiv.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
-		Assertion.assertStrictlyEqual(boardColor, boardDiv.css("backgroundColor"));
-		Assertion.assertEmpty(COLLIDABLES_MAP);
-		Assertion.assertEmpty(BOARDOBJECTS);
-		Assertion.assertEmpty(CHARACTERS);
+		Assertion.assertStrictlyEqual("#070200", boardDiv.css("backgroundColor"));
+		Assertion.assertEmpty(App.COLLIDABLES_MAP);
+		Assertion.assertEmpty(App.BOARDOBJECTS);
+		Assertion.assertEmpty(App.CHARACTERS);
 	}
 
 	/**
@@ -94,33 +85,33 @@ export default class BoardTest extends Test {
 	 * Test that the game's board can create & place the main board objects on itself.
 	 */
 	public async createMainBoardObjectsTest(): Promise<void> {
-		const board = new Board();
+		const board = Board.getInstance();
 
 		await board.createMainBoardObjects();
 
 		Assertion.assertArrayLength(
-			FOOD_COUNT,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
+			Board.FOOD_COUNT,
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
 		);
 		Assertion.assertArrayLength(
 			1,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "PacMan")
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "PacMan")
 		);
 		Assertion.assertArrayLength(
 			1,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Blinky")
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Blinky")
 		);
 		Assertion.assertArrayLength(
 			1,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Inky")
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Inky")
 		);
 		Assertion.assertArrayLength(
 			1,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Pinky")
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Pinky")
 		);
 		Assertion.assertArrayLength(
 			1,
-			BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Clyde")
+			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Clyde")
 		);
 	}
 
@@ -128,7 +119,7 @@ export default class BoardTest extends Test {
 	 * Test that the game's board can place `BoardObject` instances on it.
 	 */
 	public placeBoardObjectTest(): void {
-		const board = new Board();
+		const board = Board.getInstance();
 		const pacman = new PacMan();
 		const numTiles = 5;
 

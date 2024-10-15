@@ -4,8 +4,8 @@ import { App } from "../App.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 // #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 // #!END_DEBUG
-import { BOARD_OBJECT_Z_INDEX, COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
@@ -129,6 +129,10 @@ export type FoodData = {
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board {
+	/**
+	 * The singleton-instance of the board.
+	 */
+	private static instance: Board | undefined;
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
 	private static readonly BLINKY_SPAWN_X: 14.25 = 14.25;
@@ -155,6 +159,10 @@ export default class Board {
 	 * Data telling characters where they are allowed to turn.
 	 */
 	public static turnData: TurnData[] | undefined;
+	/**
+	 * Total amount of food on the board.
+	 */
+	public static FOOD_COUNT: 244 = 244;
 
 	// #!DEBUG
 	/**
@@ -172,7 +180,7 @@ export default class Board {
 	 *
 	 * @param color the background color of the board
 	 */
-	constructor(color = "#070200") {
+	private constructor(color = "#070200") {
 		if (App.isRunning()) {
 			App.destroy();
 		}
@@ -210,6 +218,15 @@ export default class Board {
 		// this.debug_createGrid();
 		// this.createPaths();
 		// #!END_DEBUG
+	}
+
+	/**
+	 * Get the singleton board instance.
+	 *
+	 * @returns the singleton board instance
+	 */
+	public static getInstance(): Board {
+		return Board.instance || (Board.instance = new this());
 	}
 
 	/**
@@ -368,6 +385,14 @@ export default class Board {
 	}
 
 	/**
+	 * Destroys the application and the resources it's using.
+	 */
+	public static destroy(): void {
+		Board.turnData = undefined;
+		Board.instance = undefined;
+	}
+
+	/**
 	 * Places a board object (characters, items, or text) at the given `x` and `y` tile offset.
 	 *
 	 * @param boardObject the board object to place
@@ -419,7 +444,7 @@ export default class Board {
 				create({ name: "div", classes: ["grid-vert"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
-					zIndex: BOARD_OBJECT_Z_INDEX + 2,
+					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
 				}) as HTMLElement
 			);
 		}
@@ -433,7 +458,7 @@ export default class Board {
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
-					zIndex: BOARD_OBJECT_Z_INDEX + 2,
+					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
 				}) as HTMLElement
 			);
 		}

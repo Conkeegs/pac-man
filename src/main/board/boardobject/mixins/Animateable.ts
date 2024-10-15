@@ -1,6 +1,6 @@
+import { App } from "../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../assets/ImageRegistry.js";
 import type { AbstractConstructor } from "../../../types.js";
-import { ANIMATEABLES } from "../../../utils/Globals.js";
 import { defined } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 
@@ -120,7 +120,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		constructor(...args: any[]) {
 			super(...args);
 
-			ANIMATEABLES.push(this as Animateable);
+			App.ANIMATEABLES.push(this as Animateable);
 		}
 
 		/**
@@ -155,7 +155,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 
 			super.delete();
 
-			ANIMATEABLES.splice(ANIMATEABLES.indexOf(this as Animateable), 1);
+			App.ANIMATEABLES.splice(App.ANIMATEABLES.indexOf(this as Animateable), 1);
 		}
 
 		/**

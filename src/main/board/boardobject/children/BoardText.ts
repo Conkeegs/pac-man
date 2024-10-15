@@ -2,8 +2,8 @@
 
 // #!DEBUG
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
+import { TILESIZE } from "../../../utils/Globals.js";
 // #!END_DEBUG
-import { BOARD_OBJECT_Z_INDEX, TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
 import { BoardObject } from "../BoardObject.js";
@@ -72,7 +72,7 @@ export default class BoardText extends BoardObject {
 
 		// display text above board objects
 		this.element.css({
-			zIndex: BOARD_OBJECT_Z_INDEX + 2,
+			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
 			width: px(this.width),
 			height: px(this.height),
 		});

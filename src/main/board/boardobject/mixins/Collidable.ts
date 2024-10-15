@@ -1,5 +1,5 @@
+import { App } from "../../../App.js";
 import type { AbstractConstructor } from "../../../types.js";
-import { COLLIDABLES_MAP } from "../../../utils/Globals.js";
 import { defined } from "../../../utils/Utils.js";
 import type { Position } from "../../Board.js";
 import Board from "../../Board.js";
@@ -147,15 +147,15 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			this._currentPositionKey = newCollidablePositionKey;
 
 			// create a new mapping for the new position, if there isn't one yet
-			if (!defined(COLLIDABLES_MAP[newCollidablePositionKey])) {
-				COLLIDABLES_MAP[newCollidablePositionKey] = [];
+			if (!defined(App.COLLIDABLES_MAP[newCollidablePositionKey])) {
+				App.COLLIDABLES_MAP[newCollidablePositionKey] = [];
 			}
 
 			// make sure we remove any existing references to "collidable" in the map,since it's
 			// now moving to a different location in the map
 			this.checkForCollidableAndRemove();
 			// push "collidable" into its own position-based group
-			COLLIDABLES_MAP[newCollidablePositionKey]!.push(this as Collidable);
+			App.COLLIDABLES_MAP[newCollidablePositionKey]!.push(this as Collidable);
 		}
 
 		/**
@@ -168,11 +168,11 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 				return;
 			}
 
-			let positionCollidables = COLLIDABLES_MAP[currentPositionKey];
+			let positionCollidables = App.COLLIDABLES_MAP[currentPositionKey];
 			const instance = this as Collidable;
 
 			if (defined(positionCollidables) && positionCollidables!.includes(instance)) {
-				COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(instance), 1);
+				App.COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(instance), 1);
 			}
 		}
 

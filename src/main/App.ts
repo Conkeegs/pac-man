@@ -1,31 +1,20 @@
 "use strict";
 
 // #!DEBUG
-import RunTests from "../../tests/RunTests.js";
 // #!END_DEBUG
 import JsonRegistry from "./assets/JsonRegistry.js";
 import Board, { type Position, type TurnData, type WallDataElement } from "./board/Board.js";
-import type { BoardObject } from "./board/boardobject/BoardObject.js";
+import { BoardObject } from "./board/boardobject/BoardObject.js";
 // #!DEBUG
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
+import type Character from "./board/boardobject/children/character/Character.js";
 // #!END_DEBUG
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
+import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import { makeCollidablePositionKey } from "./board/boardobject/mixins/Collidable.js";
-import {
-	ANIMATEABLES,
-	BOARD_OBJECT_Z_INDEX,
-	BOARDOBJECTS,
-	BOARDOBJECTS_TO_RENDER,
-	CHARACTERS,
-	COLLIDABLES_MAP,
-	MOVEABLES,
-	// #!DEBUG
-	TESTING,
-	// #!END_DEBUG
-	TICKABLES,
-	TILESIZE,
-} from "./utils/Globals.js";
+import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
+import { TILESIZE } from "./utils/Globals.js";
 import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
 
 /**
@@ -33,13 +22,17 @@ import { create, defined, fetchJSON, get, maybe, px } from "./utils/Utils.js";
  */
 export class App {
 	/**
+	 * The singleton-instance of the app.
+	 */
+	private static instance: App | undefined;
+	/**
 	 * The current animation frame requested by the DOM for the game's loop.
 	 */
-	private animationFrameId: number | undefined;
+	private static animationFrameId: number | undefined;
 	/**
 	 * Increments by the number of milliseconds it takes to render each frame, every frame.
 	 */
-	private deltaTimeAccumulator: number = 0;
+	private static deltaTimeAccumulator: number = 0;
 	/**
 	 * The desired frames-per-second that the game should update at.
 	 */
@@ -51,7 +44,7 @@ export class App {
 	/**
 	 * The board that the game displays on.
 	 */
-	private board: Board | undefined;
+	private static board: Board | undefined;
 	/**
 	 * Whether or not the app is currently running.
 	 */
@@ -66,11 +59,45 @@ export class App {
 	 */
 	public static GAME_PAUSED: boolean = false;
 	/**
+	 * An array of classes that extends the `BoardObject` class so we can add/remove them when needed,
+	 * and also check for duplicates since each of them have unique `name` properties.
+	 */
+	public static BOARDOBJECTS: BoardObject[] = [];
+	/**
+	 * An array of classes that extends the `Character` class so we can add/remove them when needed.
+	 */
+	public static CHARACTERS: Character[] = [];
+	/**
+	 * An array of classes that extend the `Moveable` class so we can add/remove them when needed.
+	 */
+	public static MOVEABLES: Moveable[] = [];
+	/**
+	 * An array of classes that extend the `Animateable` class so we can add/remove them when needed.
+	 */
+	public static ANIMATEABLES: Animateable[] = [];
+	/**
+	 * An array of classes that use the `Tickable` mixin..
+	 */
+	public static TICKABLES: Tickable[] = [];
+	/**
+	 * An array of `BoardObject`s objects to render CSS changes to the screen for.
+	 */
+	public static BOARDOBJECTS_TO_RENDER: BoardObject[] = [];
+	/**
+	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
+	 * and make sure collision detection for characters is optimized into "groups".
+	 */
+	public static COLLIDABLES_MAP: { [key: string]: Collidable[] } = {};
+	/**
 	 * Whether the game is in debug mode or not.
 	 */
 	public static DEBUG: boolean = true;
 
 	// #!DEBUG
+	/**
+	 * Whether or not the app is in testing mode.
+	 */
+	public static TESTING: boolean = true;
 	/**
 	 * The last timestamp in the game's animation frame that the fps was displayed.
 	 */
@@ -85,10 +112,10 @@ export class App {
 	 * Creates an instance of the app.
 	 *
 	 */
-	constructor() {
+	private constructor() {
 		App.loadResources().then(async () => {
-			this.board = new Board();
-			const board = this.board;
+			App.board = Board.getInstance();
+			const board = App.board;
 
 			// display the walls of the game
 			for (const wall of App.loadedWallData) {
@@ -145,34 +172,43 @@ export class App {
 			// #!END_DEBUG
 
 			// initial start of the game
-			this.animationFrameId = this.startGame();
+			App.animationFrameId = this.startGame();
 			App.running = true;
 		});
+	}
+
+	/**
+	 * Get the singleton app instance.
+	 *
+	 * @returns the singleton app instance
+	 */
+	public static getInstance(): App {
+		return App.instance || (App.instance = new this());
 	}
 
 	/**
 	 * Destroys the application and the resources it's using.
 	 */
 	public static destroy(): void {
-		Object.removeAllKeys(COLLIDABLES_MAP);
+		Object.removeAllKeys(App.COLLIDABLES_MAP);
 
-		for (let i = 0; i < ANIMATEABLES.length; i++) {
-			ANIMATEABLES[i]!.stopAnimation();
+		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
+			App.ANIMATEABLES[i]!.stopAnimation();
 		}
 
-		ANIMATEABLES.length = 0;
-		BOARDOBJECTS.length = 0;
-		CHARACTERS.length = 0;
-		MOVEABLES.length = 0;
-		TICKABLES.length = 0;
-		BOARDOBJECTS_TO_RENDER.length = 0;
-
-		Board.turnData = undefined;
+		App.ANIMATEABLES.length = 0;
+		App.BOARDOBJECTS.length = 0;
+		App.CHARACTERS.length = 0;
+		App.MOVEABLES.length = 0;
+		App.TICKABLES.length = 0;
+		App.BOARDOBJECTS_TO_RENDER.length = 0;
 		App.loadedWallData = [];
+		App.running = false;
+		App.instance = undefined;
+
+		Board.destroy();
 
 		get("game")!.innerHTML = "";
-
-		App.running = false;
 	}
 
 	/**
@@ -183,8 +219,8 @@ export class App {
 
 		if (fromPause) {
 			// play every animateable's animations again upon starting the game from a paused state
-			for (let i = 0; i < ANIMATEABLES.length; i++) {
-				const animateable = ANIMATEABLES[i]!;
+			for (let i = 0; i < App.ANIMATEABLES.length; i++) {
+				const animateable = App.ANIMATEABLES[i]!;
 
 				// moveables base their animation states on their current direction, so errors
 				// will happen if we try and play their animations while they are "stopped"
@@ -208,13 +244,13 @@ export class App {
 		// don't reset these variables on pause so the game can properly be un-paused without
 		// losing state
 		if (!paused) {
-			this.deltaTimeAccumulator = 0;
+			App.deltaTimeAccumulator = 0;
 		} else {
 			App.GAME_PAUSED = true;
 		}
 
-		for (let i = 0; i < ANIMATEABLES.length; i++) {
-			ANIMATEABLES[i]!.stopAnimation();
+		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
+			App.ANIMATEABLES[i]!.stopAnimation();
 		}
 
 		// #!DEBUG
@@ -225,7 +261,7 @@ export class App {
 		}
 		// #!END_DEBUG
 
-		cancelAnimationFrame(this.animationFrameId!);
+		cancelAnimationFrame(App.animationFrameId!);
 	}
 
 	/**
@@ -254,7 +290,7 @@ export class App {
 			lastTimestamp = currentTimestamp;
 		}
 
-		this.deltaTimeAccumulator += deltaTime;
+		App.deltaTimeAccumulator += deltaTime;
 
 		// #!DEBUG
 		// update fps counter
@@ -265,7 +301,7 @@ export class App {
 
 			if (currentTimestamp >= this.debug_frameCountTimeStamp + 1000) {
 				// Update every second
-				this.board!.debug_fpsCounter!.setText(`FPS:${this.debug_framesCounted}`);
+				App.board!.debug_fpsCounter!.setText(`FPS:${this.debug_framesCounted}`);
 
 				this.debug_framesCounted = 0;
 				this.debug_frameCountTimeStamp = currentTimestamp;
@@ -281,7 +317,7 @@ export class App {
 		 * Find an array of moveables that are currently moving, and save their current positions in memory.
 		 */
 		const getMoveablesAndMapPosition = (): Moveable[] =>
-			MOVEABLES.filter((moveable) => {
+			App.MOVEABLES.filter((moveable) => {
 				oldMoveablePositions[moveable.getName()] = moveable.getPosition();
 
 				return moveable.isMoving();
@@ -289,7 +325,7 @@ export class App {
 
 		let movingMoveables: Moveable[] | undefined;
 
-		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
+		while (App.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			movingMoveables = getMoveablesAndMapPosition();
 
 			for (let i = 0; i < movingMoveables.length; i++) {
@@ -297,7 +333,7 @@ export class App {
 			}
 
 			frameCount++;
-			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
+			App.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 
 			// #!DEBUG
 			if (App.DEBUG) {
@@ -316,9 +352,9 @@ export class App {
 			}
 		}
 
-		const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
+		const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 		// some moveables may have stopped/started moving after ticking, so refresh this array
-		movingMoveables = MOVEABLES.filter((moveable) => moveable.isMoving());
+		movingMoveables = App.MOVEABLES.filter((moveable) => moveable.isMoving());
 
 		if (movingMoveables.length) {
 			for (let i = 0; i < movingMoveables.length; i++) {
@@ -338,11 +374,11 @@ export class App {
 			}
 		}
 
-		const boardObjectsToRenderCount = BOARDOBJECTS_TO_RENDER.length;
+		const boardObjectsToRenderCount = App.BOARDOBJECTS_TO_RENDER.length;
 
 		if (boardObjectsToRenderCount) {
 			for (let i = 0; i < boardObjectsToRenderCount; i++) {
-				const boardObject = BOARDOBJECTS_TO_RENDER[i];
+				const boardObject = App.BOARDOBJECTS_TO_RENDER[i];
 
 				if (!defined(boardObject)) {
 					continue;
@@ -354,7 +390,7 @@ export class App {
 
 		lastTimestamp = currentTimestamp;
 
-		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
+		App.animationFrameId = requestAnimationFrame((timeStampNew) =>
 			this.gameLoop(lastTimestamp, timeStampNew, frameCount)
 		);
 	}
@@ -421,7 +457,7 @@ export class App {
 				// like the character's "disappear" through them
 				if (wall.classList.contains("teleport-cover")) {
 					wall.css({
-						zIndex: BOARD_OBJECT_Z_INDEX + 1,
+						zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
 					});
 				}
 
@@ -441,10 +477,11 @@ export class App {
 		const tileY = Board.calcTileNumY(centerPosition.y);
 		const distancePerFrame = collidable.getDistancePerFrame();
 		const collisionBox = collidable.getCollisionBox();
+		const collidablesMap = App.COLLIDABLES_MAP;
 		let positionCollidables: Collidable[] = [];
 		let tileSearchCount = 1;
 
-		positionCollidables = positionCollidables.concat(COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		positionCollidables = positionCollidables.concat(collidablesMap[collidable.getCollidablePositionKey()]!);
 
 		if (distancePerFrame >= collisionBox.right - collisionBox.left) {
 			tileSearchCount = Math.ceil(distancePerFrame / TILESIZE);
@@ -454,10 +491,10 @@ export class App {
 		// character
 		for (let i = 1; i <= tileSearchCount; i++) {
 			for (const entry of [
-				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX + i, y: tileY })],
-				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX - i, y: tileY })],
-				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX, y: tileY + i })],
-				COLLIDABLES_MAP[makeCollidablePositionKey({ x: tileX, y: tileY - i })],
+				collidablesMap[makeCollidablePositionKey({ x: tileX + i, y: tileY })],
+				collidablesMap[makeCollidablePositionKey({ x: tileX - i, y: tileY })],
+				collidablesMap[makeCollidablePositionKey({ x: tileX, y: tileY + i })],
+				collidablesMap[makeCollidablePositionKey({ x: tileX, y: tileY - i })],
 			]) {
 				if (entry?.length) {
 					positionCollidables = positionCollidables.concat(entry);

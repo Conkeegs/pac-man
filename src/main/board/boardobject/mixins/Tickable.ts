@@ -1,5 +1,5 @@
+import { App } from "../../../App.js";
 import type { AbstractConstructor } from "../../../types.js";
-import { TICKABLES } from "../../../utils/Globals.js";
 import { BoardObject } from "../BoardObject.js";
 
 /**
@@ -31,7 +31,7 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		constructor(...args: any[]) {
 			super(...args);
 
-			TICKABLES.push(this as Tickable);
+			App.TICKABLES.push(this as Tickable);
 		}
 
 		/**
@@ -57,7 +57,7 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		public override delete(): void {
 			super.delete();
 
-			TICKABLES.splice(TICKABLES.indexOf(this as unknown as Tickable), 1);
+			App.TICKABLES.splice(App.TICKABLES.indexOf(this as unknown as Tickable), 1);
 		}
 	}
 

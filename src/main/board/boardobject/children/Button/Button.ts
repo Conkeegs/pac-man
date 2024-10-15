@@ -1,7 +1,7 @@
 // #!DEBUG
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
+import { TILESIZE } from "../../../../utils/Globals.js";
 // #!END_DEBUG
-import { CLIP_PATH_PIXEL_PADDING, TILESIZE } from "../../../../utils/Globals.js";
 import { create, px } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
@@ -27,6 +27,10 @@ export default class Button extends BoardObject {
 
 	public override width: number = 0;
 	public override readonly height: number = TILESIZE + TILESIZE / 2;
+	/**
+	 * Padding of the clip-path used on UI elements.
+	 */
+	public static CLIP_PATH_PIXEL_PADDING: 4 = 4;
 
 	/**
 	 * Creates a `Button`.
@@ -90,8 +94,8 @@ export default class Button extends BoardObject {
 				name: "div",
 				classes: ["button-inner"],
 			}).css({
-				height: px(height - CLIP_PATH_PIXEL_PADDING),
-				width: px(this.width - CLIP_PATH_PIXEL_PADDING),
+				height: px(height - Button.CLIP_PATH_PIXEL_PADDING),
+				width: px(this.width - Button.CLIP_PATH_PIXEL_PADDING),
 				backgroundColor: boardBackgroundColor,
 			}) as HTMLDivElement
 		);
@@ -139,7 +143,7 @@ export default class Button extends BoardObject {
 			width: px(width),
 		});
 		(element.lastChild as HTMLDivElement).css({
-			width: px(width - CLIP_PATH_PIXEL_PADDING),
+			width: px(width - Button.CLIP_PATH_PIXEL_PADDING),
 		});
 
 		boardText.getElement().css({

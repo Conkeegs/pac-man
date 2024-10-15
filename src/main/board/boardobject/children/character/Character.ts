@@ -1,8 +1,9 @@
 "use strict";
 
+import { App } from "../../../../App.js";
 import type { IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import Board from "../../../../board/Board.js";
-import { CHARACTERS, TILESIZE } from "../../../../utils/Globals.js";
+import { TILESIZE } from "../../../../utils/Globals.js";
 import { px } from "../../../../utils/Utils.js";
 import MakeAnimateable from "../../mixins/Animateable.js";
 import MakeCollidable from "../../mixins/Collidable.js";
@@ -41,7 +42,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		super(name, speed);
 
 		// keep track of every character created for convenience
-		CHARACTERS.push(this);
+		App.CHARACTERS.push(this);
 
 		this.source = source;
 
@@ -85,7 +86,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * Deletes this character off of the game's board.
 	 */
 	public override delete(): void {
-		CHARACTERS.splice(CHARACTERS.indexOf(this), 1);
+		App.CHARACTERS.splice(App.CHARACTERS.indexOf(this), 1);
 
 		super.delete();
 	}

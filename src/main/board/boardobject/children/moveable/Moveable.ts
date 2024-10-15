@@ -1,5 +1,5 @@
 import { App } from "../../../../App.js";
-import { MOVEABLES, TILESIZE } from "../../../../utils/Globals.js";
+import { TILESIZE } from "../../../../utils/Globals.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
 import type { Position, TurnData } from "../../../Board.js";
 import Board from "../../../Board.js";
@@ -162,7 +162,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		// faster board objects have larger distances per-frame
 		this.distancePerFrame = speed * millisToSeconds(App.DESIRED_MS_PER_FRAME);
 
-		MOVEABLES.push(this);
+		App.MOVEABLES.push(this);
 	}
 
 	/**
@@ -342,7 +342,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	public override delete(): void {
 		super.delete();
 
-		MOVEABLES.splice(MOVEABLES.indexOf(this), 1);
+		App.MOVEABLES.splice(App.MOVEABLES.indexOf(this), 1);
 	}
 
 	/**

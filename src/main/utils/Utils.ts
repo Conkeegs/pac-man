@@ -1,9 +1,10 @@
 "use strict";
 
+import { BoardObject } from "../board/boardobject/BoardObject.js";
 // #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
+import { ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
 // #!END_DEBUG
-import { BOARD_OBJECT_Z_INDEX, ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
 
 declare global {
 	interface HTMLElement {
@@ -389,7 +390,7 @@ export function insertDivAtPosition(x: number, y: number, color: string | undefi
 			position: "absolute",
 			left: px(x),
 			top: px(y),
-			zIndex: BOARD_OBJECT_Z_INDEX + 1,
+			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
 			backgroundColor: color,
 			height: px(10),
 			width: px(10),

@@ -1,9 +1,9 @@
 "use strict";
 
+import { App } from "../../App.js";
 // #!DEBUG
 import DebugWindow from "../../debugwindow/DebugWindow.js";
 // #!END_DEBUG
-import { BOARDOBJECTS, BOARDOBJECTS_TO_RENDER, BOARD_OBJECT_Z_INDEX } from "../../utils/Globals.js";
 import { create, px } from "../../utils/Utils.js";
 import type { Position } from "../Board.js";
 
@@ -77,6 +77,11 @@ export abstract class BoardObject {
 	private queuedRenderUpdates: (() => void)[] = [];
 
 	/**
+	 * `z-index` CSS property of all `BoardObject` instances on the board.
+	 */
+	public static BOARD_OBJECT_Z_INDEX: 0 = 0;
+
+	/**
 	 * Creates a board object.
 	 *
 	 * @param name the name/HTML id of the board object
@@ -87,7 +92,7 @@ export abstract class BoardObject {
 			DebugWindow.error("BoardObject.js", "constructor", "BoardObject must have a name");
 		}
 
-		if (BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === name) !== -1) {
+		if (App.BOARDOBJECTS.findIndex((gameObject) => gameObject.getName() === name) !== -1) {
 			DebugWindow.error("BoardObject.js", "constructor", `A BoardObject with the name '${name}' already exists`);
 		}
 		// #!END_DEBUG
@@ -95,10 +100,10 @@ export abstract class BoardObject {
 		this.name = name;
 
 		// keep track of this board object so we can clean it up later, if needed
-		BOARDOBJECTS.push(this);
+		App.BOARDOBJECTS.push(this);
 
 		this.element = create({ name: "div", id: name, classes: ["board-object"] }).css({
-			zIndex: BOARD_OBJECT_Z_INDEX,
+			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX,
 		}) as HTMLElement;
 	}
 
@@ -286,7 +291,7 @@ export abstract class BoardObject {
 			this.element.remove();
 		});
 
-		BOARDOBJECTS.splice(BOARDOBJECTS.indexOf(this), 1);
+		App.BOARDOBJECTS.splice(App.BOARDOBJECTS.indexOf(this), 1);
 	}
 
 	/**
@@ -302,7 +307,7 @@ export abstract class BoardObject {
 			renderUpdates.splice(i, 1);
 		}
 
-		BOARDOBJECTS_TO_RENDER.splice(BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
+		App.BOARDOBJECTS_TO_RENDER.splice(App.BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
 	}
 
 	/**
@@ -311,7 +316,7 @@ export abstract class BoardObject {
 	 * @param updateCallback callback that will update this board object's CSS
 	 */
 	private queueRenderUpdate(updateCallback: () => void): void {
-		BOARDOBJECTS_TO_RENDER.push(this);
+		App.BOARDOBJECTS_TO_RENDER.push(this);
 
 		this.queuedRenderUpdates.push(updateCallback);
 	}
