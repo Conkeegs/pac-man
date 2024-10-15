@@ -2,7 +2,7 @@ import { App } from "../../../src/main/App.js";
 import Board from "../../../src/main/board/Board.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
-import { get, px } from "../../../src/main/utils/Utils.js";
+import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";
 import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
@@ -21,12 +21,12 @@ export default class BoardTest extends Test {
 		const game = get("game");
 
 		Assertion.assertExists(game);
-		Assertion.assertStrictlyEqual("#070200", game!.css("backgroundColor"));
+		Assertion.assertStrictlyEqual(hexToRgb("#070200"), game!.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(game, boardDiv.parentElement);
-		Assertion.assertStrictlyEqual("#070200", boardDiv.css("backgroundColor"));
+		Assertion.assertStrictlyEqual(hexToRgb("#070200"), boardDiv.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
-		Assertion.assertStrictlyEqual("#070200", boardDiv.css("backgroundColor"));
+		Assertion.assertStrictlyEqual(hexToRgb("#070200"), boardDiv.css("backgroundColor"));
 		Assertion.assertEmpty(App.COLLIDABLES_MAP);
 		Assertion.assertEmpty(App.BOARDOBJECTS);
 		Assertion.assertEmpty(App.CHARACTERS);
