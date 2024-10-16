@@ -6,6 +6,7 @@ import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../..
 import type { TurnData } from "../../../Board.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
+import MakeListenable from "../../mixins/Listenable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -18,7 +19,7 @@ import Pinky from "./Pinky.js";
 /**
  * Represents the PacMan character on the board.
  */
-export default class PacMan extends Character {
+export default class PacMan extends MakeListenable(Character) {
 	/**
 	 * Whether or not PacMan is currently listening for movement inputs.
 	 */
@@ -95,18 +96,6 @@ export default class PacMan extends Character {
 		}
 
 		super.startMoving(direction, options);
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public override delete(): void {
-		const documentBody = document.body;
-
-		documentBody.removeEventListener("keydown", this.handleKeyDown);
-		documentBody.removeEventListener("keyup", this.handleKeyUp);
-
-		super.delete();
 	}
 
 	/**
