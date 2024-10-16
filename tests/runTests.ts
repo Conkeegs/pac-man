@@ -8,8 +8,13 @@ import ImageRegistryTest from "./main/assets/ImageRegistryTest.js";
 import JsonRegistryTest from "./main/assets/JsonRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
+import BlinkyTest from "./main/board/boardobject/children/character/BlinkyTest.js";
 import CharacterTest from "./main/board/boardobject/children/character/CharacterTest.js";
+import ClydeTest from "./main/board/boardobject/children/character/ClydeTest.js";
+import GhostTest from "./main/board/boardobject/children/character/GhostTest.js";
+import InkyTest from "./main/board/boardobject/children/character/InkyTest.js";
 import PacManTest from "./main/board/boardobject/children/character/PacManTest.js";
+import PinkyTest from "./main/board/boardobject/children/character/PinkyTest.js";
 import FoodTest from "./main/board/boardobject/children/FoodTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import BoardTest from "./main/board/BoardTest.js";
@@ -60,6 +65,11 @@ export default class RunTests {
 		new BoardTextTest(),
 		new CharacterTest(),
 		new PacManTest(),
+		new GhostTest(),
+		new BlinkyTest(),
+		new ClydeTest(),
+		new InkyTest(),
+		new PinkyTest(),
 	];
 
 	/**
