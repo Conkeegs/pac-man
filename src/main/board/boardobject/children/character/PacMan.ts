@@ -146,105 +146,104 @@ export default class PacMan extends MakeListenable(Character) {
 	 *
 	 * @param event keyboard event from user
 	 */
-	private handleKeyDown(event: KeyboardEvent): void {
-		{
-			// make sure we are currently listening for movement inputs before continuing and that
-			// the game is not paused
-			if (this.listenForKeydown === false || App.GAME_PAUSED) {
-				return;
+	private handleKeyDown(event: Event): void {
+		// make sure we are currently listening for movement inputs before continuing and that
+		// the game is not paused
+		if (this.listenForKeydown === false || App.GAME_PAUSED) {
+			return;
+		}
+
+		event.stopImmediatePropagation();
+
+		let moveCode =
+			PacMan.keyEventDirectionMap[(event as KeyboardEvent).code as keyof typeof PacMan.keyEventDirectionMap];
+		const isMoving = this.isMoving();
+
+		const lastMoveCode = this.lastMoveCode;
+		const currentDirection = this.getCurrentDirection();
+
+		// make sure the key pressed is a valid key that moves PacMan and that he isn't trying to move in the same direction
+		// as the one he was just traveling in
+		if (!exists(moveCode) || (isMoving && (lastMoveCode === moveCode || currentDirection === moveCode))) {
+			return;
+		}
+
+		// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
+		// if our movement key is valid
+		this.listenForKeydown = false;
+
+		if (moveCode === MovementDirection.STOP) {
+			if (isMoving) {
+				event.preventDefault();
+				this.stopMoving();
+
+				die("dead");
 			}
 
-			event.stopImmediatePropagation();
+			return;
+		}
 
-			let moveCode = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
-			const isMoving = this.isMoving();
-
-			const lastMoveCode = this.lastMoveCode;
-			const currentDirection = this.getCurrentDirection();
-
-			// make sure the key pressed is a valid key that moves PacMan and that he isn't trying to move in the same direction
-			// as the one he was just traveling in
-			if (!exists(moveCode) || (isMoving && (lastMoveCode === moveCode || currentDirection === moveCode))) {
-				return;
+		// let PacMan immediately start moving (left or right) if he has just spawned
+		if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
+			if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
+				this.startMoving(moveCode);
 			}
 
-			// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
-			// if our movement key is valid
-			this.listenForKeydown = false;
+			return;
+		}
 
-			if (moveCode === MovementDirection.STOP) {
-				if (isMoving) {
-					event.preventDefault();
-					this.stopMoving();
+		if (
+			// check if the character is considered "moving"
+			isMoving &&
+			// check if the new direction that PacMan is trying to move in is the opposite of the direction
+			// he is currently moving in
+			moveCode === Character.directionOpposites[currentDirection as keyof typeof Character.directionOpposites]
+		) {
+			// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
+			// in the opposite direction instead of a 90-degree angle
+			this.startMoving(moveCode);
 
-					die("dead");
-				}
+			return;
+		}
 
-				return;
-			}
+		const nearestStoppingTurn = this.nearestStoppingTurn;
 
-			// let PacMan immediately start moving (left or right) if he has just spawned
-			if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
-				if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
-					this.startMoving(moveCode);
-				}
-
-				return;
-			}
-
-			if (
-				// check if the character is considered "moving"
-				isMoving &&
-				// check if the new direction that PacMan is trying to move in is the opposite of the direction
-				// he is currently moving in
-				moveCode === Character.directionOpposites[currentDirection as keyof typeof Character.directionOpposites]
-			) {
-				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
-				// in the opposite direction instead of a 90-degree angle
+		if (
+			// if all of these are true, PacMan should be considered "stopped" against a wall
+			!isMoving &&
+			nearestStoppingTurn
+		) {
+			if (Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)) {
 				this.startMoving(moveCode);
 
 				return;
 			}
 
-			const nearestStoppingTurn = this.nearestStoppingTurn;
+			return;
+		}
 
-			if (
-				// if all of these are true, PacMan should be considered "stopped" against a wall
-				!isMoving &&
-				nearestStoppingTurn
-			) {
-				if (Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)) {
-					this.startMoving(moveCode);
+		// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
+		// turn threshold
+		const nearestTurnableTurn = this.findNearestTurnWhere((turn) =>
+			Moveable.canTurnWithMoveDirection(moveCode, turn)
+		);
 
-					return;
-				}
+		// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
+		// PacMan hasn't arrived in its threshold yet
+		if (nearestTurnableTurn) {
+			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
+			if (this.isWithinTurnDistance(nearestTurnableTurn)) {
+				this.startMoving(moveCode, {
+					fromTurn: nearestTurnableTurn,
+				});
 
 				return;
 			}
 
-			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
-			// turn threshold
-			const nearestTurnableTurn = this.findNearestTurnWhere((turn) =>
-				Character.canTurnWithMoveDirection(moveCode, turn)
-			);
+			// PacMan is going to move, so set his last move code
+			this.lastMoveCode = moveCode;
 
-			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
-			// PacMan hasn't arrived in its threshold yet
-			if (nearestTurnableTurn) {
-				// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-				if (this.isWithinTurnDistance(nearestTurnableTurn)) {
-					this.startMoving(moveCode, {
-						fromTurn: nearestTurnableTurn,
-					});
-
-					return;
-				}
-
-				// PacMan is going to move, so set his last move code
-				this.lastMoveCode = moveCode;
-
-				this.queueTurn(moveCode, nearestTurnableTurn);
-			}
+			this.queueTurn(moveCode, nearestTurnableTurn);
 		}
 	}
 
@@ -253,8 +252,9 @@ export default class PacMan extends MakeListenable(Character) {
 	 *
 	 * @param event keyboard event from user
 	 */
-	private handleKeyUp(event: KeyboardEvent): void {
-		let moveCode = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
+	private handleKeyUp(event: Event): void {
+		let moveCode =
+			PacMan.keyEventDirectionMap[(event as KeyboardEvent).code as keyof typeof PacMan.keyEventDirectionMap];
 
 		// check for user releasing a valid movement key, and let PacMan class know that it can
 		// once again start listening for more movement inputs. this prevents user from mashing
@@ -271,9 +271,9 @@ export default class PacMan extends MakeListenable(Character) {
 		const documentBody = document.body;
 
 		// listen for movement keys for PacMan
-		documentBody.addEventListener("keydown", this.handleKeyDown);
+		this._addEventListener("keydown", documentBody, this.handleKeyDown.bind(this));
 		// listen for user releasing a movement key
-		documentBody.addEventListener("keyup", this.handleKeyUp);
+		this._addEventListener("keyup", documentBody, this.handleKeyUp.bind(this));
 	}
 
 	/**
