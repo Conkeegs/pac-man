@@ -3,6 +3,7 @@ import Board from "../../../../../../src/main/board/Board.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import { ANIMATION_TYPE } from "../../../../../../src/main/board/boardobject/mixins/Animateable.js";
 import Assertion from "../../../../../base/Assertion.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
@@ -12,6 +13,15 @@ import { tests } from "../../../../../base/Decorators.js";
  */
 @tests(PacMan)
 export default class PacManTest extends Test {
+	/**
+	 * Test that pacman instances are created correctly.
+	 */
+	public createPacmanTest(): void {
+		const pacman = new PacMan();
+
+		Assertion.assertStrictlyEqual(ANIMATION_TYPE.LOOP, pacman._animationType);
+	}
+
 	/**
 	 * Test that pacman instances can tell whether they're spawning or not.
 	 */
