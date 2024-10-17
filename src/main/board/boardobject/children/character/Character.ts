@@ -69,6 +69,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	public override stopMoving(): boolean {
 		super.stopMoving();
 		this.stopAnimation();
+		this.checkForCollidableAndRemove();
 
 		return false;
 	}
