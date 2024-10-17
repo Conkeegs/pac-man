@@ -1,4 +1,3 @@
-import type { IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import { getRandomInt } from "../../../../utils/Utils.js";
 import Character from "./Character.js";
 import PacMan from "./PacMan.js";
@@ -28,23 +27,33 @@ export default abstract class Ghost extends Character {
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
 
-
 		this.element.classList.add("ghost");
+
+		setTimeout(() => {
+			// this.startMoving(MovementDirection.LEFT);
+			// this.lookForTurn();
+		}, 2000);
 	}
 
 	/**
-	 * Gets the name of the image file relating to this ghost's current animation frame and direction.
-	 *
-	 * @returns the name of the image file relating to this ghost's current animation frame and direction
+	 * @inheritdoc
 	 */
-	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
-		this._animationFrame++;
-
-		if (this._animationFrame === this._NUM_ANIMATION_STATES) {
-			this._animationFrame = 0;
+	public override tick(): void {
+		if (this._framesUpdating === 10) {
+			this.lookForTurn();
 		}
 
-		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;
+		super.tick();
+	}
+
+	private lookForTurn(): void {
+		const nearestTurn = this.findNearestTurn();
+
+		if (nearestTurn) {
+			const turnDirections = nearestTurn.directions;
+
+			this.queueTurn(turnDirections[getRandomInt(turnDirections.length - 1)]!, nearestTurn);
+		}
 	}
 
 	override _onCollision(withCollidable: PacMan): void {
