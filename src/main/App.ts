@@ -109,12 +109,12 @@ export class App {
 	 * and make sure collision detection for characters is optimized into "groups".
 	 */
 	public static COLLIDABLES_MAP: { [key: string]: Collidable[] } = {};
+
+	// #!DEBUG
 	/**
 	 * Whether the game is in debug mode or not.
 	 */
 	public static DEBUG: boolean = true;
-
-	// #!DEBUG
 	/**
 	 * Whether or not the app is in testing mode.
 	 */
