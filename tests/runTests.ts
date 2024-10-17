@@ -16,6 +16,7 @@ import InkyTest from "./main/board/boardobject/children/character/InkyTest.js";
 import PacManTest from "./main/board/boardobject/children/character/PacManTest.js";
 import PinkyTest from "./main/board/boardobject/children/character/PinkyTest.js";
 import FoodTest from "./main/board/boardobject/children/FoodTest.js";
+import MoveableTest from "./main/board/boardobject/children/moveable/MoveableTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import BoardTest from "./main/board/BoardTest.js";
 
@@ -70,6 +71,7 @@ export default class RunTests {
 		new ClydeTest(),
 		new InkyTest(),
 		new PinkyTest(),
+		new MoveableTest(),
 	];
 
 	/**
