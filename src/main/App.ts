@@ -345,9 +345,11 @@ export class App {
 		 */
 		const getMoveablesAndMapPosition = (): Moveable[] =>
 			App.MOVEABLES.filter((moveable) => {
-				oldMoveablePositions[moveable.getName()] = moveable.getPosition();
+				if (moveable.isMoving()) {
+					oldMoveablePositions[moveable.getName()] = moveable.getPosition();
 
-				return moveable.isMoving();
+					return true;
+				}
 			});
 
 		let movingMoveables: Moveable[] | undefined;
