@@ -193,6 +193,11 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		return this.lastMoveCode;
 	}
 
+	/**
+	 * Get the number of pixels this moveable moves per-frame.
+	 *
+	 * @returns number of pixels moved per-frame
+	 */
 	public getDistancePerFrame(): number {
 		return this.distancePerFrame;
 	}
@@ -254,14 +259,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @inheritdoc
 	 */
 	public override tick(): void {
-		const direction = this.currentDirection;
-
-		if (direction === MovementDirection.STOP) {
-			this.stopMoving();
-
-			return;
-		}
-
 		// sanity check
 		if (!this.moving) {
 			return;
@@ -311,7 +308,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			return;
 		}
 
-		this.movementMethods[direction as keyof MovementMethods].bind(this)(this.distancePerFrame);
+		this.movementMethods[currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
 
 		super.tick();
 	}
