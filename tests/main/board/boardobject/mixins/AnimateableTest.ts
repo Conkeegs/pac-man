@@ -7,7 +7,7 @@ import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
 
 /**
- * Tests functionality of `src\main\board\boardobject\children\character\Inky.ts` instances.
+ * Tests functionality of `Animateable` instances.
  */
 export default class AnimateableTest extends Test {
 	/**
