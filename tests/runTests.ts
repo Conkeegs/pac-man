@@ -19,6 +19,7 @@ import FoodTest from "./main/board/boardobject/children/FoodTest.js";
 import MoveableTest from "./main/board/boardobject/children/moveable/MoveableTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js";
+import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
 import BoardTest from "./main/board/BoardTest.js";
 
 /**
@@ -74,6 +75,7 @@ export default class RunTests {
 		new PinkyTest(),
 		new MoveableTest(),
 		new AnimateableTest(),
+		new CollidableTest(),
 	];
 
 	/**
