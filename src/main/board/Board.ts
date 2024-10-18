@@ -388,6 +388,10 @@ export default class Board {
 	 * Destroys the application and the resources it's using.
 	 */
 	public static destroy(): void {
+		if (Board.instance) {
+			Board.getInstance().boardDiv.removeAllChildren();
+		}
+
 		Board.turnData = undefined;
 		Board.instance = undefined;
 	}
