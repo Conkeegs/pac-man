@@ -20,6 +20,7 @@ import MoveableTest from "./main/board/boardobject/children/moveable/MoveableTes
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js";
 import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
+import TickableTest from "./main/board/boardobject/mixins/TickableTest.js";
 import BoardTest from "./main/board/BoardTest.js";
 
 /**
@@ -76,6 +77,7 @@ export default class RunTests {
 		new MoveableTest(),
 		new AnimateableTest(),
 		new CollidableTest(),
+		new TickableTest(),
 	];
 
 	/**
