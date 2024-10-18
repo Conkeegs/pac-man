@@ -3,6 +3,7 @@ import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
+import AppTest from "./main/AppTest.js";
 import AudioRegistryTest from "./main/assets/AudioRegistryTest.js";
 import ImageRegistryTest from "./main/assets/ImageRegistryTest.js";
 import JsonRegistryTest from "./main/assets/JsonRegistryTest.js";
@@ -78,6 +79,7 @@ export default class RunTests {
 		new AnimateableTest(),
 		new CollidableTest(),
 		new TickableTest(),
+		new AppTest(),
 	];
 
 	/**
