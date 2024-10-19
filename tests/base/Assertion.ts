@@ -62,7 +62,7 @@ export default abstract class Assertion {
 		actual: unknown
 	): void {
 		if (expected !== typeof actual) {
-			Assertion.formMessageAndThrow(expected, "typeof", actual);
+			Assertion.formMessageAndThrow(expected, "typeof", String(actual));
 		}
 	}
 
