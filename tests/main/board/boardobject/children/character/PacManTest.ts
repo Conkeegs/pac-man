@@ -55,7 +55,7 @@ export default class PacManTest extends Test {
 		const pacman = new PacMan();
 
 		pacman.startMoving(MovementDirection.RIGHT);
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
 		Assertion.assertArrayLength(0, pacman["turnQueue"]);
 
@@ -65,7 +65,7 @@ export default class PacManTest extends Test {
 		// should not "stop" at wall yet
 		Assertion.assertTrue(pacman.isMoving());
 
-		const turnWithRightDirection = Board.turnData!.find((turn) =>
+		const turnWithRightDirection = Board.getInstance().turnData!.find((turn) =>
 			turn.directions.includes(MovementDirection.RIGHT)
 		)!;
 
@@ -83,7 +83,7 @@ export default class PacManTest extends Test {
 		// should not "stop" at wall yet since queued turn exists
 		Assertion.assertTrue(pacman.isMoving());
 
-		const turnWithNoRightDirection = Board.turnData!.find(
+		const turnWithNoRightDirection = Board.getInstance().turnData!.find(
 			(turn) => !turn.directions.includes(MovementDirection.RIGHT)
 		)!;
 
@@ -159,9 +159,9 @@ export default class PacManTest extends Test {
 		Assertion.assertTrue(pacman.isMoving());
 		Assertion.assertStrictlyEqual(MovementDirection.UP, pacman.getCurrentDirection());
 
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
-		const turnWithLeftDirection = Board.turnData!.find((turn) =>
+		const turnWithLeftDirection = Board.getInstance().turnData!.find((turn) =>
 			Moveable["canTurnWithMoveDirection"](MovementDirection.LEFT, turn)
 		)!;
 
@@ -184,7 +184,7 @@ export default class PacManTest extends Test {
 		Assertion.assertTrue(pacman.isMoving());
 		Assertion.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
 
-		const turnWithDownDirection = Board.turnData!.find((turn) =>
+		const turnWithDownDirection = Board.getInstance().turnData!.find((turn) =>
 			Moveable["canTurnWithMoveDirection"](MovementDirection.DOWN, turn)
 		)!;
 

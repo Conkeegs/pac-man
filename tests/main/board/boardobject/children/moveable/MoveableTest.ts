@@ -175,10 +175,10 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can tick each frame correctly.
 	 */
 	public async tickTest(): Promise<void> {
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
 		const pacman = new PacMan();
-		const turn = Board.turnData![0]!;
+		const turn = Board.getInstance().turnData![0]!;
 		const turnFirstDirection = turn.directions[0]!;
 
 		pacman.setPosition({
@@ -367,13 +367,13 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can queue turns correctly.
 	 */
 	public async queueTurnTest(): Promise<void> {
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
 		const moveable = new PacMan();
 
 		Assertion.assertArrayLength(0, moveable["turnQueue"]);
 
-		const turn = Board.turnData![0]!;
+		const turn = Board.getInstance().turnData![0]!;
 
 		moveable["queueTurn"](turn.directions[0]!, turn);
 
@@ -412,10 +412,10 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can have their positions set to a turn's position correctly.
 	 */
 	public async offsetPositionToTurnTest(): Promise<void> {
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
 		const moveable = new PacMan();
-		const turnData = Board.turnData![0]!;
+		const turnData = Board.getInstance().turnData![0]!;
 
 		moveable["offsetPositionToTurn"](turnData);
 
@@ -439,7 +439,7 @@ export default class MoveableTest extends Test {
 		moveable.setPosition(moveablePosition);
 		moveable.startMoving(direction);
 
-		Board.turnData = [
+		Board.getInstance().turnData = [
 			{
 				x: moveablePosition.x + 40,
 				y: moveablePosition.y + moveable.getHeight() / 2,
@@ -455,14 +455,14 @@ export default class MoveableTest extends Test {
 		let nearestTurn = moveable["findNearestTurn"]()!;
 
 		// nearest turn should be one that is least pixels away horizontally
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.turnData[0]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.turnData[0]!.y);
+		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
+		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
 
 		direction = MovementDirection.UP;
 
 		moveable.startMoving(direction);
 
-		Board.turnData = [
+		Board.getInstance().turnData = [
 			{
 				x: moveablePosition.x + moveable.getWidth() / 2,
 				y: moveablePosition.y - 60,
@@ -478,8 +478,8 @@ export default class MoveableTest extends Test {
 		nearestTurn = moveable["findNearestTurn"]()!;
 
 		// nearest turn should be one that is least pixels away vertically
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.turnData[1]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.turnData[1]!.y);
+		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
+		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
 	}
 
 	/**
@@ -496,7 +496,7 @@ export default class MoveableTest extends Test {
 		moveable.setPosition(moveablePosition);
 		moveable.startMoving(direction);
 
-		Board.turnData = [
+		Board.getInstance().turnData = [
 			{
 				x: moveablePosition.x + 40,
 				y: moveablePosition.y + moveable.getHeight() / 2,
@@ -512,14 +512,14 @@ export default class MoveableTest extends Test {
 		let nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.x === moveablePosition.x + 40)!;
 
 		// nearest turn should be one that is least pixels away horizontally and fits filter
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.turnData[0]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.turnData[0]!.y);
+		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
+		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
 
 		direction = MovementDirection.UP;
 
 		moveable.startMoving(direction);
 
-		Board.turnData = [
+		Board.getInstance().turnData = [
 			{
 				x: moveablePosition.x + moveable.getWidth() / 2,
 				y: moveablePosition.y - 60,
@@ -535,8 +535,8 @@ export default class MoveableTest extends Test {
 		nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.y === moveablePosition.y - 40)!;
 
 		// nearest turn should be one that is least pixels away vertically and fits filter
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.turnData[1]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.turnData[1]!.y);
+		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
+		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
 	}
 
 	/**

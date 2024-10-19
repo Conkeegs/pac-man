@@ -1,4 +1,5 @@
 import { App } from "../../../../../src/main/App.js";
+import Board from "../../../../../src/main/board/Board.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import Assertion from "../../../../base/Assertion.js";
@@ -21,7 +22,7 @@ export default class TickableTest extends Test {
 	 * Test that tickables can tick each frame correctly.
 	 */
 	public async tickTest(): Promise<void> {
-		await App["loadTurnData"]();
+		await Board.getInstance()["loadTurnData"]();
 
 		const collidable = new PacMan();
 

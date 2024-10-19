@@ -442,7 +442,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	protected findNearestTurn(): TurnData | undefined {
 		// find turns "ahead" of board object
-		const filteredTurnData = Board.turnData!.filter((turn) =>
+		const filteredTurnData = Board.getInstance().turnData!.filter((turn) =>
 			this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn)
 		);
 
@@ -473,7 +473,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		callback?: ((turn: TurnData) => unknown) | undefined
 	): TurnData | undefined {
 		// find turns "ahead" of board object and that fit the "filter"
-		const filteredTurnData = Board.turnData!.filter((turn) => {
+		const filteredTurnData = Board.getInstance().turnData!.filter((turn) => {
 			if (this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) && filter(turn)) {
 				// run callback if our filter passes, and it's defined
 				if (callback) {
