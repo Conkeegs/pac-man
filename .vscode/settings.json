@@ -22,6 +22,13 @@
         "source.fixAll": "explicit",
         "source.sortImports": "explicit",
         "source.removeUnusedImports": "explicit",
+        "source.fixAll.eslint": "explicit"
     },
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "eslint.workingDirectories": [
+        {
+            "pattern": "./**"
+        }
+    ],
+    "eslint.format.enable": true
 }
