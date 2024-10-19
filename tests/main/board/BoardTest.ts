@@ -15,21 +15,27 @@ export default class BoardTest extends Test {
 	/**
 	 * Test that the game's board can be created successfully.
 	 */
-	public createBoardTest(): void {
+	public async createTest(): Promise<void> {
 		const board = Board.getInstance();
 		const boardDiv = board.boardDiv;
 		const game = get("game");
 
+		await board.create();
+
 		Assertion.assertExists(game);
-		Assertion.assertStrictlyEqual(hexToRgb("#070200"), game!.css("backgroundColor"));
+		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), game!.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(game, boardDiv.parentElement);
-		Assertion.assertStrictlyEqual(hexToRgb("#070200"), boardDiv.css("backgroundColor"));
+		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
 		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
-		Assertion.assertStrictlyEqual(hexToRgb("#070200"), boardDiv.css("backgroundColor"));
-		Assertion.assertEmpty(App.COLLIDABLES_MAP);
-		Assertion.assertEmpty(App.BOARDOBJECTS);
-		Assertion.assertEmpty(App.CHARACTERS);
+		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
+		Assertion.assertNotEmpty(App.COLLIDABLES_MAP);
+		Assertion.assertNotEmpty(App.BOARDOBJECTS);
+		Assertion.assertNotEmpty(App.CHARACTERS);
+		Assertion.assertNotEmpty(board.turnData);
+		Assertion.assertNotEmpty(board["wallElements"]);
+		Assertion.assertTrue(boardDiv.childElementCount > 0);
+		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
 	}
 
 	/**
@@ -116,6 +122,25 @@ export default class BoardTest extends Test {
 	}
 
 	/**
+	 * Test that the game's board can delete itself.
+	 */
+	public async destroyTest(): Promise<void> {
+		const board = Board.getInstance();
+
+		Assertion.assertFalse(board.boardDiv.childElementCount === 0);
+		Assertion.assertNotEmpty(board.turnData);
+		Assertion.assertNotEmpty(board["wallElements"]);
+		Assertion.assertTrue(Board["instance"] instanceof Board);
+
+		board.destroy();
+
+		Assertion.assertTrue(board.boardDiv.childElementCount === 0);
+		Assertion.assertEmpty(board.turnData);
+		Assertion.assertEmpty(board["wallElements"]);
+		Assertion.assertOfType("undefined", Board["instance"]);
+	}
+
+	/**
 	 * Test that the game's board can place `BoardObject` instances on it.
 	 */
 	public placeBoardObjectTest(): void {
@@ -130,5 +155,27 @@ export default class BoardTest extends Test {
 		Assertion.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
 		Assertion.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
 		Assertion.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
+	}
+
+	/**
+	 * Test that the game's board load its turn data correctly.
+	 */
+	public async loadTurnDataTest(): Promise<void> {
+		const board = Board.getInstance();
+
+		await board["loadTurnData"]();
+
+		Assertion.assertNotEmpty(board.turnData);
+	}
+
+	/**
+	 * Test that the game's board load its wall element correctly.
+	 */
+	public async loadWallElementsTest(): Promise<void> {
+		const board = Board.getInstance();
+
+		await board["loadWallElements"]();
+
+		Assertion.assertNotEmpty(board["wallElements"]);
 	}
 }

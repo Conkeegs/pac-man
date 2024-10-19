@@ -6,7 +6,7 @@ import JsonRegistry from "../assets/JsonRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 // #!END_DEBUG
-import { create, exists, fetchJSON, get, px, uniqueId } from "../utils/Utils.js";
+import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
 // #!DEBUG
@@ -133,6 +133,7 @@ export default class Board {
 	 * The singleton-instance of the board.
 	 */
 	private static instance: Board | undefined;
+	private static readonly DEFAULT_COLOR: "#070200" = "#070200";
 	private static readonly PACMAN_SPAWN_X: 14.25 = 14.25;
 	private static readonly PACMAN_SPAWN_Y: 9.25 = 9.25;
 	private static readonly BLINKY_SPAWN_X: 14.25 = 14.25;
@@ -143,6 +144,10 @@ export default class Board {
 	private static readonly PINKY_SPAWN_Y: 18.25 = 18.25;
 	private static readonly CLYDE_SPAWN_X: 16.25 = 16.25;
 	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
+	/**
+	 * The walls to display in the game.
+	 */
+	private wallElements: HTMLElement[] = [];
 
 	/**
 	 * The container of everything that the board holds.
@@ -158,7 +163,7 @@ export default class Board {
 	/**
 	 * Data telling characters where they are allowed to turn.
 	 */
-	public static turnData: TurnData[] | undefined;
+	public turnData: TurnData[] = [];
 	/**
 	 * Total amount of food on the board.
 	 */
@@ -176,15 +181,27 @@ export default class Board {
 	// #!END_DEBUG
 
 	/**
-	 * Creates the board.s
-	 *
-	 * @param color the background color of the board
+	 * Creates the singleton board instance.
 	 */
-	private constructor(color = "#070200") {
+	private constructor() {
 		if (App.isRunning()) {
 			App.destroy();
 		}
+	}
 
+	/**
+	 * Get the singleton board instance.
+	 *
+	 * @returns the singleton board instance
+	 */
+	public static getInstance(): Board {
+		return Board.instance || (Board.instance = new this());
+	}
+
+	/**
+	 * Creates the board and places the board's objects on it.
+	 */
+	public async create(): Promise<void> {
 		let game: HTMLElement | null = get("game");
 
 		// #!DEBUG
@@ -205,28 +222,35 @@ export default class Board {
 		}
 		// #!END_DEBUG
 
+		const DEFAULT_COLOR = Board.DEFAULT_COLOR;
+
 		this.boardDiv.css({
 			width: px(WIDTH),
 			height: px(HEIGHT),
-			backgroundColor: color,
+			backgroundColor: DEFAULT_COLOR,
 		});
 
-		(game.css({ backgroundColor: color }) as HTMLElement).appendChild(this.boardDiv);
+		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(this.boardDiv);
 
 		// #!DEBUG
 		// debugging methods
 		// this.debug_createGrid();
 		// this.createPaths();
 		// #!END_DEBUG
-	}
 
-	/**
-	 * Get the singleton board instance.
-	 *
-	 * @returns the singleton board instance
-	 */
-	public static getInstance(): Board {
-		return Board.instance || (Board.instance = new this());
+		await this.loadTurnData();
+		await this.loadWallElements();
+		// place BoardObject instances on board
+		await this.createMainBoardObjects();
+
+		// display the walls of the game
+		for (const wallElement of this.wallElements) {
+			this.boardDiv.appendChild(wallElement);
+		}
+
+		get("middle-cover")!.css({
+			backgroundColor: Board.BACKGROUND_COLOR,
+		});
 	}
 
 	/**
@@ -385,14 +409,15 @@ export default class Board {
 	}
 
 	/**
-	 * Destroys the application and the resources it's using.
+	 * Destroys the board and the resources it's using.
 	 */
-	public static destroy(): void {
+	public destroy(): void {
 		if (Board.instance) {
 			Board.getInstance().boardDiv.removeAllChildren();
 		}
 
-		Board.turnData = undefined;
+		this.turnData = [];
+		this.wallElements = [];
 		Board.instance = undefined;
 	}
 
@@ -430,6 +455,59 @@ export default class Board {
 		boardObject.render();
 
 		this.boardDiv.appendChild(boardObject.getElement());
+	}
+
+	/**
+	 * Load all board's turns into memory.
+	 */
+	private async loadTurnData(): Promise<void> {
+		// tell all characters where they can turn
+		return fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
+			for (let turn of turnData) {
+				turn.x = Board.calcTileOffsetX(turn.x + 0.5);
+				turn.y = Board.calcTileOffsetY(turn.y - 0.5);
+			}
+
+			this.turnData = turnData;
+		});
+	}
+
+	/**
+	 * Load all board's walls into memory.
+	 */
+	private async loadWallElements(): Promise<void> {
+		return fetchJSON(JsonRegistry.getJson("walls")).then((wallData: WallDataElement[]) => {
+			for (let element of wallData) {
+				const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
+					width: px(Board.calcTileOffset(element.styles.width)),
+					height: px(Board.calcTileOffset(element.styles.height)),
+					top: px(Board.calcTileOffset(element.styles.top)),
+					left: px(Board.calcTileOffset(element.styles.left || 0)),
+					borderTopLeftRadius: px(
+						maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderTopRightRadius: px(
+						maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderBottomRightRadius: px(
+						maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
+					),
+					borderBottomLeftRadius: px(
+						maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
+					),
+				}) as HTMLElement;
+
+				// make sure invisible walls that are outside of teleports display over characters so that it looks
+				// like the character's "disappear" through them
+				if (wall.classList.contains("teleport-cover")) {
+					wall.css({
+						zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
+					});
+				}
+
+				this.wallElements.push(wall);
+			}
+		});
 	}
 
 	// #!DEBUG
