@@ -224,6 +224,7 @@ export default class RunTests {
 			Logger.log("Unknown error occurred while running tests:", {
 				severity: "failure",
 			});
+			console.log(error);
 		}
 	}
 }
