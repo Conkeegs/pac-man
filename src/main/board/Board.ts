@@ -240,13 +240,14 @@ export default class Board {
 
 		await this.loadTurnData();
 		await this.loadWallElements();
-		// place BoardObject instances on board
-		await this.createMainBoardObjects();
 
 		// display the walls of the game
 		for (const wallElement of this.wallElements) {
 			this.boardDiv.appendChild(wallElement);
 		}
+
+		// place BoardObject instances on board
+		await this.createMainBoardObjects();
 
 		get("middle-cover")!.css({
 			backgroundColor: Board.BACKGROUND_COLOR,
