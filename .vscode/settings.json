@@ -16,5 +16,12 @@
         "TICKABLES",
         "TILESIZE"
     ],
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.sortImports": "explicit",
+        "source.removeUnusedImports": "explicit",
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
