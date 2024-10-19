@@ -2,7 +2,7 @@
 
 import { App } from "../../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
-import { defined, die, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
+import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
@@ -171,17 +171,6 @@ export default class PacMan extends MakeListenable(Character) {
 		// makes sure this event handler isn't unnecessarily fired more than once per-movement. only setting this to false
 		// if our movement key is valid
 		this.listenForKeydown = false;
-
-		if (moveCode === MovementDirection.STOP) {
-			if (isMoving) {
-				event.preventDefault();
-				this.stopMoving();
-
-				die("dead");
-			}
-
-			return;
-		}
 
 		// let PacMan immediately start moving (left or right) if he has just spawned
 		if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
