@@ -211,6 +211,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
+	 * Sets the current direction this character is moving.
+	 */
+	public setCurrentDirection(direction: MovementDirection): void {
+		this.currentDirection = direction;
+	}
+
+	/**
 	 * Stops this board object from moving.
 	 *
 	 */

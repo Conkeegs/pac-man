@@ -62,6 +62,10 @@ export default class PacMan extends MakeListenable(Character) {
 	 * Default speed of Pacman.
 	 */
 	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
+	/**
+	 * @inheritdoc
+	 */
+	override _animationFrame: 1 | 2 | 3 = 1;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];
 
@@ -135,6 +139,14 @@ export default class PacMan extends MakeListenable(Character) {
 			// check if pacman is within nearest turn's distance (e.g. technically hitting the wall)
 			this.isWithinTurnDistance(nearestStoppingTurn)
 		) {
+			// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
+			// when users are against walls does not make a visual change
+			if (this._animationFrame === 1) {
+				this._animationFrame++;
+
+				this._updateAnimationImage(this._getCurrentAnimationImageName());
+			}
+
 			this.stopMoving();
 			// snap pacman to "stop" location to keep collision detection consistent
 			this.offsetPositionToTurn(nearestStoppingTurn);
@@ -155,7 +167,7 @@ export default class PacMan extends MakeListenable(Character) {
 
 		event.stopImmediatePropagation();
 
-		let moveCode =
+		let inputDirection =
 			PacMan.keyEventDirectionMap[(event as KeyboardEvent).code as keyof typeof PacMan.keyEventDirectionMap];
 		const isMoving = this.isMoving();
 
@@ -164,7 +176,10 @@ export default class PacMan extends MakeListenable(Character) {
 
 		// make sure the key pressed is a valid key that moves PacMan and that he isn't trying to move in the same direction
 		// as the one he was just traveling in
-		if (!exists(moveCode) || (isMoving && (lastMoveCode === moveCode || currentDirection === moveCode))) {
+		if (
+			!exists(inputDirection) ||
+			(isMoving && (lastMoveCode === inputDirection || currentDirection === inputDirection))
+		) {
 			return;
 		}
 
@@ -174,8 +189,8 @@ export default class PacMan extends MakeListenable(Character) {
 
 		// let PacMan immediately start moving (left or right) if he has just spawned
 		if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
-			if (PacMan.SPAWN_MOVECODES.includes(moveCode)) {
-				this.startMoving(moveCode);
+			if (PacMan.SPAWN_MOVECODES.includes(inputDirection)) {
+				this.startMoving(inputDirection);
 			}
 
 			return;
@@ -186,11 +201,12 @@ export default class PacMan extends MakeListenable(Character) {
 			isMoving &&
 			// check if the new direction that PacMan is trying to move in is the opposite of the direction
 			// he is currently moving in
-			moveCode === Character.directionOpposites[currentDirection as keyof typeof Character.directionOpposites]
+			inputDirection ===
+				Character.directionOpposites[currentDirection as keyof typeof Character.directionOpposites]
 		) {
 			// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
 			// in the opposite direction instead of a 90-degree angle
-			this.startMoving(moveCode);
+			this.startMoving(inputDirection);
 
 			return;
 		}
@@ -202,11 +218,16 @@ export default class PacMan extends MakeListenable(Character) {
 			!isMoving &&
 			nearestStoppingTurn
 		) {
-			if (Character.canTurnWithMoveDirection(moveCode, nearestStoppingTurn)) {
-				this.startMoving(moveCode);
+			if (Character.canTurnWithMoveDirection(inputDirection, nearestStoppingTurn)) {
+				this.startMoving(inputDirection);
 
 				return;
 			}
+
+			// if stopped against a wall and user attempts to turn in another direction that also
+			// hits a wall, update the way pacman is facing for convenience
+			this.setCurrentDirection(inputDirection);
+			this._updateAnimationImage(this._getCurrentAnimationImageName());
 
 			return;
 		}
@@ -214,7 +235,7 @@ export default class PacMan extends MakeListenable(Character) {
 		// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
 		// turn threshold
 		const nearestTurnableTurn = this.findNearestTurnWhere((turn) =>
-			Moveable.canTurnWithMoveDirection(moveCode, turn)
+			Moveable.canTurnWithMoveDirection(inputDirection, turn)
 		);
 
 		// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
@@ -222,7 +243,7 @@ export default class PacMan extends MakeListenable(Character) {
 		if (nearestTurnableTurn) {
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
 			if (this.isWithinTurnDistance(nearestTurnableTurn)) {
-				this.startMoving(moveCode, {
+				this.startMoving(inputDirection, {
 					fromTurn: nearestTurnableTurn,
 				});
 
@@ -230,9 +251,9 @@ export default class PacMan extends MakeListenable(Character) {
 			}
 
 			// PacMan is going to move, so set his last move code
-			this.lastMoveCode = moveCode;
+			this.lastMoveCode = inputDirection;
 
-			this.queueTurn(moveCode, nearestTurnableTurn);
+			this.queueTurn(inputDirection, nearestTurnableTurn);
 		}
 	}
 

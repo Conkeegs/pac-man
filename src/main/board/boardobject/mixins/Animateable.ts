@@ -133,7 +133,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 			}
 
 			this._animationIntervalId = window.setInterval(
-				this._updateAnimationImage.bind(this),
+				this._updateAnimationState.bind(this),
 				this._ANIMATION_STATE_MILLIS
 			);
 		}
@@ -179,7 +179,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		/**
 		 * Updates this board object's animation state, based on its current animation image name.
 		 */
-		_updateAnimationImage(): void {
+		_updateAnimationState(): void {
 			this._animationTypeHandlers[this._animationType].bind(this)();
 
 			let imageName = this._getCurrentAnimationImageName();
@@ -189,6 +189,15 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 				imageName = "not-found";
 			}
 
+			this._updateAnimationImage(imageName);
+		}
+
+		/**
+		 * Sets this animateable's CSS `background-image`.
+		 *
+		 * @param imageName the image to set this animateable's CSS `background-image` to
+		 */
+		_updateAnimationImage(imageName: keyof IMAGE_LIST): void {
 			this.getElement().css({
 				backgroundImage: `url(${ImageRegistry.getImage(imageName)})`,
 			});

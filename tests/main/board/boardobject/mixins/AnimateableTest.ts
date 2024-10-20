@@ -108,7 +108,7 @@ export default class AnimateableTest extends Test {
 		const right = MovementDirection.RIGHT;
 
 		animateable["currentDirection"] = right;
-		animateable._updateAnimationImage();
+		animateable._updateAnimationState();
 
 		const newBackgroundImage = pacmanElement.css("backgroundImage");
 		const imageName = `${animateable.getName()}-${animateable._animationFrame}-${right}`;
