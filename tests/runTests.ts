@@ -193,6 +193,16 @@ export default class RunTests {
 						tabbed: true,
 					}
 				);
+
+				if (testClass.getCurrentAssertionCount() === 0) {
+					Logger.log(`${functionName} did not execute any assertions`, {
+						severity: "warning",
+						tabbed: true,
+					});
+				}
+
+				// reset assertion count since we want to count it on function-by-function basis
+				testClass.setCurrentAssertionCount(0);
 			}
 
 			const runTestsCount = ++this.runTestsCount;

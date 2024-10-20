@@ -3,7 +3,6 @@ import Board from "../../src/main/board/Board.js";
 import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { create, get } from "../../src/main/utils/Utils.js";
-import Assertion from "../base/Assertion.js";
 import Test from "../base/Base.js";
 
 /**
@@ -16,19 +15,19 @@ export default class AppTest extends Test {
 	public async runTest(): Promise<void> {
 		await App.run();
 
-		Assertion.assertTrue(App["board"] instanceof Board);
-		Assertion.assertFalse(App.GAME_PAUSED);
+		this.assertTrue(App["board"] instanceof Board);
+		this.assertFalse(App.GAME_PAUSED);
 
 		window.dispatchEvent(new FocusEvent("blur"));
 
-		Assertion.assertTrue(App.GAME_PAUSED);
+		this.assertTrue(App.GAME_PAUSED);
 
 		window.dispatchEvent(new FocusEvent("focus"));
 
-		Assertion.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(App.GAME_PAUSED);
 
-		Assertion.assertOfType("number", App["animationFrameId"]);
-		Assertion.assertTrue(App["running"]);
+		this.assertOfType("number", App["animationFrameId"]);
+		this.assertTrue(App["running"]);
 	}
 
 	/**
@@ -40,39 +39,39 @@ export default class AppTest extends Test {
 		// queue render update for a single board object so that render array is not empty
 		App.ANIMATEABLES[0]!["queueRenderUpdate"](() => {});
 
-		Assertion.assertNotEmpty(Object.keys(App.COLLIDABLES_MAP));
-		Assertion.assertNotEmpty(App.EVENT_LISTENERS);
-		Assertion.assertNotEmpty(App.ANIMATEABLES);
-		Assertion.assertNotEmpty(App.BOARDOBJECTS);
-		Assertion.assertNotEmpty(App.CHARACTERS);
-		Assertion.assertNotEmpty(App.MOVEABLES);
-		Assertion.assertNotEmpty(App.TICKABLES);
-		Assertion.assertNotEmpty(App.BOARDOBJECTS_TO_RENDER);
-		Assertion.assertTrue(App["running"]);
-		Assertion.assertTrue(App["board"] instanceof Board);
-		Assertion.assertNotEmpty(get("game")!.innerHTML);
-		Assertion.assertOfType("number", App["animationFrameId"]);
+		this.assertNotEmpty(Object.keys(App.COLLIDABLES_MAP));
+		this.assertNotEmpty(App.EVENT_LISTENERS);
+		this.assertNotEmpty(App.ANIMATEABLES);
+		this.assertNotEmpty(App.BOARDOBJECTS);
+		this.assertNotEmpty(App.CHARACTERS);
+		this.assertNotEmpty(App.MOVEABLES);
+		this.assertNotEmpty(App.TICKABLES);
+		this.assertNotEmpty(App.BOARDOBJECTS_TO_RENDER);
+		this.assertTrue(App["running"]);
+		this.assertTrue(App["board"] instanceof Board);
+		this.assertNotEmpty(get("game")!.innerHTML);
+		this.assertOfType("number", App["animationFrameId"]);
 
 		App.destroy();
 
 		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
-			Assertion.assertOfType("undefined", App.ANIMATEABLES[i]!._animationIntervalId);
+			this.assertOfType("undefined", App.ANIMATEABLES[i]!._animationIntervalId);
 		}
 
-		Assertion.assertEmpty(Object.keys(App.COLLIDABLES_MAP));
-		Assertion.assertEmpty(App.EVENT_LISTENERS);
-		Assertion.assertEmpty(App.ANIMATEABLES);
-		Assertion.assertEmpty(App.BOARDOBJECTS);
-		Assertion.assertEmpty(App.CHARACTERS);
-		Assertion.assertEmpty(App.MOVEABLES);
-		Assertion.assertEmpty(App.TICKABLES);
-		Assertion.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
-		Assertion.assertFalse(App["running"]);
-		Assertion.assertFalse(App["board"] instanceof Board);
-		Assertion.assertEmpty(get("game")!.innerHTML);
-		Assertion.assertOfType("undefined", App["animationFrameId"]);
-		Assertion.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
-		Assertion.assertFalse(App.GAME_PAUSED);
+		this.assertEmpty(Object.keys(App.COLLIDABLES_MAP));
+		this.assertEmpty(App.EVENT_LISTENERS);
+		this.assertEmpty(App.ANIMATEABLES);
+		this.assertEmpty(App.BOARDOBJECTS);
+		this.assertEmpty(App.CHARACTERS);
+		this.assertEmpty(App.MOVEABLES);
+		this.assertEmpty(App.TICKABLES);
+		this.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
+		this.assertFalse(App["running"]);
+		this.assertFalse(App["board"] instanceof Board);
+		this.assertEmpty(get("game")!.innerHTML);
+		this.assertOfType("undefined", App["animationFrameId"]);
+		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertFalse(App.GAME_PAUSED);
 	}
 
 	/**
@@ -85,18 +84,18 @@ export default class AppTest extends Test {
 
 		App["startGame"]();
 
-		Assertion.assertFalse(App.GAME_PAUSED);
-		Assertion.assertOfType("number", pacman._animationIntervalId);
+		this.assertFalse(App.GAME_PAUSED);
+		this.assertOfType("number", pacman._animationIntervalId);
 
 		App["stopGame"](true);
 
-		Assertion.assertTrue(App.GAME_PAUSED);
-		Assertion.assertOfType("undefined", pacman._animationIntervalId);
+		this.assertTrue(App.GAME_PAUSED);
+		this.assertOfType("undefined", pacman._animationIntervalId);
 
 		App["startGame"]();
 
-		Assertion.assertFalse(App.GAME_PAUSED);
-		Assertion.assertOfType("number", pacman._animationIntervalId);
+		this.assertFalse(App.GAME_PAUSED);
+		this.assertOfType("number", pacman._animationIntervalId);
 	}
 
 	/**
@@ -109,21 +108,21 @@ export default class AppTest extends Test {
 
 		App["startGame"]();
 
-		Assertion.assertFalse(App.GAME_PAUSED);
-		Assertion.assertOfType("number", pacman._animationIntervalId);
-		Assertion.assertOfType("number", App["deltaTimeAccumulator"]);
+		this.assertFalse(App.GAME_PAUSED);
+		this.assertOfType("number", pacman._animationIntervalId);
+		this.assertOfType("number", App["deltaTimeAccumulator"]);
 
 		App["stopGame"](true);
 
-		Assertion.assertTrue(App.GAME_PAUSED);
-		Assertion.assertOfType("undefined", pacman._animationIntervalId);
-		Assertion.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertTrue(App.GAME_PAUSED);
+		this.assertOfType("undefined", pacman._animationIntervalId);
+		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
 
 		App["startGame"]();
 
-		Assertion.assertFalse(App.GAME_PAUSED);
-		Assertion.assertOfType("number", pacman._animationIntervalId);
-		Assertion.assertOfType("number", App["deltaTimeAccumulator"]);
+		this.assertFalse(App.GAME_PAUSED);
+		this.assertOfType("number", pacman._animationIntervalId);
+		this.assertOfType("number", App["deltaTimeAccumulator"]);
 	}
 
 	/**
@@ -136,13 +135,13 @@ export default class AppTest extends Test {
 		const frameCount = 0;
 		let accumulatorValue = currentTimestamp - lastTimestamp;
 
-		Assertion.assertOfType("undefined", App["animationFrameId"]);
+		this.assertOfType("undefined", App["animationFrameId"]);
 
 		App["gameLoop"](lastTimestamp, currentTimestamp, frameCount);
 
 		// app not running so nothing should happen
-		Assertion.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
-		Assertion.assertOfType("undefined", App["animationFrameId"]);
+		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertOfType("undefined", App["animationFrameId"]);
 
 		App["running"] = true;
 		App.GAME_PAUSED = true;
@@ -150,15 +149,15 @@ export default class AppTest extends Test {
 		App["gameLoop"](lastTimestamp, currentTimestamp, frameCount);
 
 		// app paused so nothing should happen
-		Assertion.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
-		Assertion.assertOfType("undefined", App["animationFrameId"]);
+		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertOfType("undefined", App["animationFrameId"]);
 
 		App.GAME_PAUSED = false;
 		App["gameLoop"](lastTimestamp, currentTimestamp, frameCount);
 
 		// accumulator should be 0 since falsy "lastTimestamp"
-		Assertion.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
-		Assertion.assertOfType("number", App["animationFrameId"]);
+		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertOfType("number", App["animationFrameId"]);
 
 		lastTimestamp = 1;
 		accumulatorValue = currentTimestamp - lastTimestamp;
@@ -169,8 +168,8 @@ export default class AppTest extends Test {
 			accumulatorValue -= DESIRED_MS_PER_FRAME;
 		}
 
-		Assertion.assertStrictlyEqual(accumulatorValue, App["deltaTimeAccumulator"]);
-		Assertion.assertOfType("number", App["animationFrameId"]);
+		this.assertStrictlyEqual(accumulatorValue, App["deltaTimeAccumulator"]);
+		this.assertOfType("number", App["animationFrameId"]);
 	}
 
 	/**
@@ -182,14 +181,14 @@ export default class AppTest extends Test {
 		});
 		let changedVariable = 0;
 
-		Assertion.assertArrayLength(0, App.EVENT_LISTENERS);
+		this.assertArrayLength(0, App.EVENT_LISTENERS);
 
 		App.addEventListenerToElement("keydown", element, () => {
 			changedVariable++;
 		});
 
-		Assertion.assertArrayLength(1, App.EVENT_LISTENERS);
-		Assertion.assertStrictlyEqual(0, changedVariable);
+		this.assertArrayLength(1, App.EVENT_LISTENERS);
+		this.assertStrictlyEqual(0, changedVariable);
 
 		element.dispatchEvent(
 			new KeyboardEvent("keydown", {
@@ -197,6 +196,6 @@ export default class AppTest extends Test {
 			})
 		);
 
-		Assertion.assertStrictlyEqual(1, changedVariable);
+		this.assertStrictlyEqual(1, changedVariable);
 	}
 }

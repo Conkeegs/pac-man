@@ -3,7 +3,6 @@ import PacMan from "../../../../../src/main/board/boardobject/children/character
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { ANIMATION_TYPE } from "../../../../../src/main/board/boardobject/mixins/Animateable.js";
 import { getImageSrc } from "../../../../../src/main/utils/Utils.js";
-import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
 
 /**
@@ -16,7 +15,7 @@ export default class AnimateableTest extends Test {
 	public createAnimateableTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertArrayContains(animateable, App.ANIMATEABLES);
+		this.assertArrayContains(animateable, App.ANIMATEABLES);
 	}
 
 	/**
@@ -25,11 +24,11 @@ export default class AnimateableTest extends Test {
 	public playAnimationTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertOfType("undefined", animateable["_animationIntervalId"]);
 
 		animateable.playAnimation();
 
-		Assertion.assertOfType("number", animateable["_animationIntervalId"]);
+		this.assertOfType("number", animateable["_animationIntervalId"]);
 
 		animateable.stopAnimation();
 	}
@@ -40,15 +39,15 @@ export default class AnimateableTest extends Test {
 	public stopAnimationTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertOfType("undefined", animateable["_animationIntervalId"]);
 
 		animateable.playAnimation();
 
-		Assertion.assertOfType("number", animateable["_animationIntervalId"]);
+		this.assertOfType("number", animateable["_animationIntervalId"]);
 
 		animateable.stopAnimation();
 
-		Assertion.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertOfType("undefined", animateable["_animationIntervalId"]);
 	}
 
 	/**
@@ -57,17 +56,17 @@ export default class AnimateableTest extends Test {
 	public deleteTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertArrayContains(animateable, App.ANIMATEABLES);
-		Assertion.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertArrayContains(animateable, App.ANIMATEABLES);
+		this.assertOfType("undefined", animateable["_animationIntervalId"]);
 
 		animateable.playAnimation();
 
-		Assertion.assertOfType("number", animateable["_animationIntervalId"]);
+		this.assertOfType("number", animateable["_animationIntervalId"]);
 
 		animateable.delete();
 
-		Assertion.assertOfType("undefined", animateable["_animationIntervalId"]);
-		Assertion.assertArrayDoesntContain(animateable, App.ANIMATEABLES);
+		this.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertArrayDoesntContain(animateable, App.ANIMATEABLES);
 	}
 
 	/**
@@ -76,7 +75,7 @@ export default class AnimateableTest extends Test {
 	public defaultAnimationImageNameTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			`${animateable.getName()}-${animateable._animationFrame}`,
 			animateable.defaultAnimationImageName()
 		);
@@ -92,7 +91,7 @@ export default class AnimateableTest extends Test {
 		animateable._animationFrame++;
 		animateable["currentDirection"] = direction;
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			`${animateable.getName()}-${animateable._animationFrame}-${direction}`,
 			animateable._getCurrentAnimationImageName()
 		);
@@ -113,8 +112,8 @@ export default class AnimateableTest extends Test {
 		const newBackgroundImage = pacmanElement.css("backgroundImage");
 		const imageName = `${animateable.getName()}-${animateable._animationFrame}-${right}`;
 
-		Assertion.assertNotStrictlyEqual(newBackgroundImage, originalBackgroundImage);
-		Assertion.assertStrictlyEqual(
+		this.assertNotStrictlyEqual(newBackgroundImage, originalBackgroundImage);
+		this.assertStrictlyEqual(
 			`url("https://localhost/projects/pac-man/${getImageSrc(imageName)}")`,
 			newBackgroundImage
 		);
@@ -126,10 +125,10 @@ export default class AnimateableTest extends Test {
 	public setAnimationTypeTest(): void {
 		const animateable = new PacMan();
 
-		Assertion.assertStrictlyEqual(ANIMATION_TYPE.LOOP, animateable._animationType);
+		this.assertStrictlyEqual(ANIMATION_TYPE.LOOP, animateable._animationType);
 
 		animateable._setAnimationType(ANIMATION_TYPE.REPEAT);
 
-		Assertion.assertStrictlyEqual(ANIMATION_TYPE.REPEAT, animateable._animationType);
+		this.assertStrictlyEqual(ANIMATION_TYPE.REPEAT, animateable._animationType);
 	}
 }

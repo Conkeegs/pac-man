@@ -1,5 +1,4 @@
 import ImageRegistry from "../../../src/main/assets/ImageRegistry.js";
-import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
 
@@ -13,7 +12,7 @@ export default class ImageRegistryTest extends Test {
 	 */
 	public imageListTest() {
 		for (const image of Object.values(ImageRegistry.IMAGE_LIST)) {
-			Assertion.assertTrue(image instanceof HTMLImageElement);
+			this.assertTrue(image instanceof HTMLImageElement);
 		}
 	}
 
@@ -22,7 +21,7 @@ export default class ImageRegistryTest extends Test {
 	 */
 	public createImageTest() {
 		for (const imageName of Object.keys(ImageRegistry.IMAGE_LIST)) {
-			Assertion.assertTrue(
+			this.assertTrue(
 				Reflect.apply(ImageRegistry["createImage"], undefined, [imageName]) instanceof HTMLImageElement
 			);
 		}
@@ -33,10 +32,7 @@ export default class ImageRegistryTest extends Test {
 	 */
 	public getImageTest() {
 		for (const imageName of Object.keys(ImageRegistry.IMAGE_LIST)) {
-			Assertion.assertOfType(
-				"string",
-				ImageRegistry.getImage(imageName as keyof typeof ImageRegistry.IMAGE_LIST)
-			);
+			this.assertOfType("string", ImageRegistry.getImage(imageName as keyof typeof ImageRegistry.IMAGE_LIST));
 		}
 	}
 }

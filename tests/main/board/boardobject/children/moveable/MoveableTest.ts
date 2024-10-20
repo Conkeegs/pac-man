@@ -8,7 +8,6 @@ import Moveable from "../../../../../../src/main/board/boardobject/children/move
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { TILESIZE } from "../../../../../../src/main/utils/Globals.js";
 import { millisToSeconds } from "../../../../../../src/main/utils/Utils.js";
-import Assertion from "../../../../../base/Assertion.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
@@ -23,8 +22,8 @@ export default class MoveableTest extends Test {
 	public createMoveableTest(): void {
 		const moveable = new PacMan();
 
-		Assertion.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
+		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			moveable["distancePerFrame"]
 		);
@@ -36,7 +35,7 @@ export default class MoveableTest extends Test {
 	public getSpeedTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, pacman.getSpeed());
+		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, pacman.getSpeed());
 	}
 
 	/**
@@ -45,13 +44,13 @@ export default class MoveableTest extends Test {
 	public getCurrentDirectionTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertDoesntExist(pacman.getCurrentDirection());
+		this.assertDoesntExist(pacman.getCurrentDirection());
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman["currentDirection"] = movementDirection;
 
-		Assertion.assertStrictlyEqual(movementDirection, pacman["currentDirection"]);
+		this.assertStrictlyEqual(movementDirection, pacman["currentDirection"]);
 	}
 
 	/**
@@ -60,13 +59,13 @@ export default class MoveableTest extends Test {
 	public getLastMoveCodeTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertDoesntExist(pacman.getLastMoveCode());
+		this.assertDoesntExist(pacman.getLastMoveCode());
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman["lastMoveCode"] = movementDirection;
 
-		Assertion.assertStrictlyEqual(movementDirection, pacman["lastMoveCode"]);
+		this.assertStrictlyEqual(movementDirection, pacman["lastMoveCode"]);
 	}
 
 	/**
@@ -75,7 +74,7 @@ export default class MoveableTest extends Test {
 	public getDistancePerFrameTest(): void {
 		const moveable = new PacMan();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			moveable.getDistancePerFrame()
 		);
@@ -87,17 +86,17 @@ export default class MoveableTest extends Test {
 	public isMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman.startMoving(movementDirection);
 
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 	}
 
 	/**
@@ -106,24 +105,24 @@ export default class MoveableTest extends Test {
 	public stopMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman.startMoving(movementDirection);
 
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		pacman.setPosition({ x: 500, y: 700 });
 		pacman.stopMoving();
 
-		Assertion.assertFalse(pacman.isMoving());
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
-		Assertion.assertDoesntExist(pacman["lastMoveCode"]);
-		Assertion.assertStrictlyEqual(0, pacman["_framesUpdating"]);
-		Assertion.assertArrayDoesntContain(pacman, App.COLLIDABLES_MAP[pacman["getCollidablePositionKey"]()]!);
-		Assertion.assertDoesntExist(pacman["_animationIntervalId"]);
-		Assertion.assertDoesntExist(pacman.getCurrentDirection());
+		this.assertFalse(pacman.isMoving());
+		this.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertDoesntExist(pacman["lastMoveCode"]);
+		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
+		this.assertArrayDoesntContain(pacman, App.COLLIDABLES_MAP[pacman["getCollidablePositionKey"]()]!);
+		this.assertDoesntExist(pacman["_animationIntervalId"]);
+		this.assertDoesntExist(pacman.getCurrentDirection());
 	}
 
 	/**
@@ -132,7 +131,7 @@ export default class MoveableTest extends Test {
 	public startMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
 		const turn = {
@@ -147,11 +146,11 @@ export default class MoveableTest extends Test {
 		});
 		pacman.startMoving(movementDirection);
 
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
-		Assertion.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
-		Assertion.assertOfType("number", pacman["_animationIntervalId"]);
-		Assertion.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
+		this.assertTrue(pacman.isMoving());
+		this.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
+		this.assertOfType("number", pacman["_animationIntervalId"]);
+		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
 
 		pacman.stopMoving();
 		pacman.startMoving(movementDirection, {
@@ -160,13 +159,13 @@ export default class MoveableTest extends Test {
 
 		const position = pacman.getPosition();
 
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
-		Assertion.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
-		Assertion.assertOfType("number", pacman["_animationIntervalId"]);
-		Assertion.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
-		Assertion.assertStrictlyEqual(turn.x - pacman.getWidth()! / 2, position.x);
-		Assertion.assertStrictlyEqual(turn.y - pacman.getHeight()! / 2, position.y);
+		this.assertTrue(pacman.isMoving());
+		this.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
+		this.assertOfType("number", pacman["_animationIntervalId"]);
+		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
+		this.assertStrictlyEqual(turn.x - pacman.getWidth()! / 2, position.x);
+		this.assertStrictlyEqual(turn.y - pacman.getHeight()! / 2, position.y);
 
 		pacman.stopMoving();
 	}
@@ -188,19 +187,19 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(turnFirstDirection);
 		pacman.tick();
 
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertStrictlyEqual(turnFirstDirection, pacman.getCurrentDirection());
+		this.assertTrue(pacman.isMoving());
+		this.assertStrictlyEqual(turnFirstDirection, pacman.getCurrentDirection());
 
 		const leftTeleporterPosition = pacman["TELEPORTER_DIRECTION_MAP"][MovementDirection.LEFT]!;
 		const rightTeleporterPosition = pacman["TELEPORTER_DIRECTION_MAP"][MovementDirection.RIGHT]!;
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			Board.calcTileOffsetX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
 			leftTeleporterPosition.x
 		);
-		Assertion.assertStrictlyEqual(Board.calcTileOffsetY(18.25), leftTeleporterPosition.y);
-		Assertion.assertStrictlyEqual(Board.calcTileOffsetX(29), rightTeleporterPosition.x);
-		Assertion.assertStrictlyEqual(Board.calcTileOffsetY(18.25), rightTeleporterPosition.y);
+		this.assertStrictlyEqual(Board.calcTileOffsetY(18.25), leftTeleporterPosition.y);
+		this.assertStrictlyEqual(Board.calcTileOffsetX(29), rightTeleporterPosition.x);
+		this.assertStrictlyEqual(Board.calcTileOffsetY(18.25), rightTeleporterPosition.y);
 
 		let movementDirection = MovementDirection.LEFT;
 
@@ -216,7 +215,7 @@ export default class MoveableTest extends Test {
 		pacman.tick();
 
 		// moveables should have been teleported to opposite (right) teleporter
-		Assertion.assertStrictlyEqual(rightTeleporterPosition.x, pacman.getPosition().x);
+		this.assertStrictlyEqual(rightTeleporterPosition.x, pacman.getPosition().x);
 
 		movementDirection = MovementDirection.RIGHT;
 
@@ -232,11 +231,11 @@ export default class MoveableTest extends Test {
 		pacman.tick();
 
 		// moveable should have been teleported to opposite (left) teleporter
-		Assertion.assertStrictlyEqual(leftTeleporterPosition.x, pacman.getPosition().x);
+		this.assertStrictlyEqual(leftTeleporterPosition.x, pacman.getPosition().x);
 
 		pacman.stopMoving();
 
-		Assertion.assertStrictlyEqual(0, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
 
 		// finally, we want to test that moveables move a certain amount every tick(), depending
 		// on the direction they are moving and that the frame count increases for the moveable.
@@ -255,11 +254,11 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			originalPosition.y - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().y
 		);
-		Assertion.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
 
 		// test the "DOWN" direction
 		movementDirection = MovementDirection.DOWN;
@@ -276,11 +275,11 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			originalPosition.y + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().y
 		);
-		Assertion.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
 
 		// test the "LEFT" direction
 		movementDirection = MovementDirection.LEFT;
@@ -297,11 +296,11 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			originalPosition.x - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().x
 		);
-		Assertion.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
 
 		// test the "RIGHT" direction
 		movementDirection = MovementDirection.RIGHT;
@@ -318,11 +317,11 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			originalPosition.x + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().x
 		);
-		Assertion.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
 	}
 
 	/**
@@ -347,7 +346,7 @@ export default class MoveableTest extends Test {
 		moveable.startMoving(MovementDirection.RIGHT);
 		moveable.interpolate(alpha, oldPosition);
 
-		Assertion.assertStrictlyEqual(oldPositionX * alpha + oldPositionX * (1.0 - alpha), moveable.getPosition().x);
+		this.assertStrictlyEqual(oldPositionX * alpha + oldPositionX * (1.0 - alpha), moveable.getPosition().x);
 	}
 
 	/**
@@ -356,11 +355,11 @@ export default class MoveableTest extends Test {
 	public deleteTest(): void {
 		const moveable = new Pinky();
 
-		Assertion.assertArrayContains(moveable, App.MOVEABLES);
+		this.assertArrayContains(moveable, App.MOVEABLES);
 
 		moveable.delete();
 
-		Assertion.assertArrayDoesntContain(moveable, App.MOVEABLES);
+		this.assertArrayDoesntContain(moveable, App.MOVEABLES);
 	}
 
 	/**
@@ -371,35 +370,35 @@ export default class MoveableTest extends Test {
 
 		const moveable = new PacMan();
 
-		Assertion.assertArrayLength(0, moveable["turnQueue"]);
+		this.assertArrayLength(0, moveable["turnQueue"]);
 
 		const turn = Board.getInstance().turnData![0]!;
 
 		moveable["queueTurn"](turn.directions[0]!, turn);
 
-		Assertion.assertArrayLength(1, moveable["turnQueue"]);
-		Assertion.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
-		Assertion.assertStrictlyEqual(turn.directions[0]!, moveable["turnQueue"][0]!.direction);
+		this.assertArrayLength(1, moveable["turnQueue"]);
+		this.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
+		this.assertStrictlyEqual(turn.directions[0]!, moveable["turnQueue"][0]!.direction);
 
 		moveable["queueTurn"](turn.directions[1]!, turn);
 
-		Assertion.assertArrayLength(1, moveable["turnQueue"]);
-		Assertion.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
-		Assertion.assertStrictlyEqual(turn.directions[1]!, moveable["turnQueue"][0]!.direction);
+		this.assertArrayLength(1, moveable["turnQueue"]);
+		this.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
+		this.assertStrictlyEqual(turn.directions[1]!, moveable["turnQueue"][0]!.direction);
 	}
 
 	/**
 	 * Test that moveables can check if they can turn at given turns correctly.
 	 */
 	public canTurnWithMoveDirectionTest(): void {
-		Assertion.assertTrue(
+		this.assertTrue(
 			Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, {
 				x: 300,
 				y: 300,
 				directions: [MovementDirection.RIGHT],
 			})
 		);
-		Assertion.assertFalse(
+		this.assertFalse(
 			Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, {
 				x: 300,
 				y: 300,
@@ -421,8 +420,8 @@ export default class MoveableTest extends Test {
 
 		const moveablePosition = moveable.getPosition();
 
-		Assertion.assertStrictlyEqual(turnData.x - moveable.getWidth() / 2, moveablePosition.x);
-		Assertion.assertStrictlyEqual(turnData.y - moveable.getHeight() / 2, moveablePosition.y);
+		this.assertStrictlyEqual(turnData.x - moveable.getWidth() / 2, moveablePosition.x);
+		this.assertStrictlyEqual(turnData.y - moveable.getHeight() / 2, moveablePosition.y);
 	}
 
 	/**
@@ -455,8 +454,8 @@ export default class MoveableTest extends Test {
 		let nearestTurn = moveable["findNearestTurn"]()!;
 
 		// nearest turn should be one that is least pixels away horizontally
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
+		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
+		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
 
 		direction = MovementDirection.UP;
 
@@ -478,8 +477,8 @@ export default class MoveableTest extends Test {
 		nearestTurn = moveable["findNearestTurn"]()!;
 
 		// nearest turn should be one that is least pixels away vertically
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
+		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
+		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
 	}
 
 	/**
@@ -512,8 +511,8 @@ export default class MoveableTest extends Test {
 		let nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.x === moveablePosition.x + 40)!;
 
 		// nearest turn should be one that is least pixels away horizontally and fits filter
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
+		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
+		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
 
 		direction = MovementDirection.UP;
 
@@ -535,8 +534,8 @@ export default class MoveableTest extends Test {
 		nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.y === moveablePosition.y - 40)!;
 
 		// nearest turn should be one that is least pixels away vertically and fits filter
-		Assertion.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
-		Assertion.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
+		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
+		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
 	}
 
 	/**
@@ -546,9 +545,9 @@ export default class MoveableTest extends Test {
 		const moveable = new PacMan();
 		const distancePerFrame = moveable.getDistancePerFrame();
 
-		Assertion.assertFalse(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame + 1));
-		Assertion.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame - 1));
-		Assertion.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame));
+		this.assertFalse(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame + 1));
+		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame - 1));
+		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame));
 	}
 
 	/**
@@ -563,11 +562,11 @@ export default class MoveableTest extends Test {
 			directions: [MovementDirection.RIGHT],
 		});
 
-		Assertion.assertArrayLength(1, moveable["turnQueue"]);
+		this.assertArrayLength(1, moveable["turnQueue"]);
 
 		moveable["dequeueTurns"]();
 
-		Assertion.assertArrayLength(0, moveable["turnQueue"]);
+		this.assertArrayLength(0, moveable["turnQueue"]);
 	}
 
 	/**
@@ -583,7 +582,7 @@ export default class MoveableTest extends Test {
 
 		moveable["moveUp"](moveAmount);
 
-		Assertion.assertStrictlyEqual(originalPosition.y - moveAmount, moveable.getPosition().y);
+		this.assertStrictlyEqual(originalPosition.y - moveAmount, moveable.getPosition().y);
 	}
 
 	/**
@@ -599,7 +598,7 @@ export default class MoveableTest extends Test {
 
 		moveable["moveDown"](moveAmount);
 
-		Assertion.assertStrictlyEqual(originalPosition.y + moveAmount, moveable.getPosition().y);
+		this.assertStrictlyEqual(originalPosition.y + moveAmount, moveable.getPosition().y);
 	}
 
 	/**
@@ -615,7 +614,7 @@ export default class MoveableTest extends Test {
 
 		moveable["moveLeft"](moveAmount);
 
-		Assertion.assertStrictlyEqual(originalPosition.x - moveAmount, moveable.getPosition().x);
+		this.assertStrictlyEqual(originalPosition.x - moveAmount, moveable.getPosition().x);
 	}
 
 	/**
@@ -631,6 +630,6 @@ export default class MoveableTest extends Test {
 
 		moveable["moveRight"](moveAmount);
 
-		Assertion.assertStrictlyEqual(originalPosition.x + moveAmount, moveable.getPosition().x);
+		this.assertStrictlyEqual(originalPosition.x + moveAmount, moveable.getPosition().x);
 	}
 }

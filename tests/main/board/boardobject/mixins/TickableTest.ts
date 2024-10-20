@@ -2,7 +2,6 @@ import { App } from "../../../../../src/main/App.js";
 import Board from "../../../../../src/main/board/Board.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
 
 /**
@@ -15,7 +14,7 @@ export default class TickableTest extends Test {
 	public createCollidableTest(): void {
 		const collidable = new PacMan();
 
-		Assertion.assertArrayContains(collidable, App.TICKABLES);
+		this.assertArrayContains(collidable, App.TICKABLES);
 	}
 
 	/**
@@ -28,11 +27,11 @@ export default class TickableTest extends Test {
 
 		collidable.startMoving(MovementDirection.RIGHT);
 
-		Assertion.assertStrictlyEqual(0, collidable._framesUpdating);
+		this.assertStrictlyEqual(0, collidable._framesUpdating);
 
 		collidable.tick();
 
-		Assertion.assertStrictlyEqual(1, collidable._framesUpdating);
+		this.assertStrictlyEqual(1, collidable._framesUpdating);
 	}
 
 	/**
@@ -41,10 +40,10 @@ export default class TickableTest extends Test {
 	public deleteTest(): void {
 		const collidable = new PacMan();
 
-		Assertion.assertArrayContains(collidable, App.TICKABLES);
+		this.assertArrayContains(collidable, App.TICKABLES);
 
 		collidable.delete();
 
-		Assertion.assertArrayDoesntContain(collidable, App.TICKABLES);
+		this.assertArrayDoesntContain(collidable, App.TICKABLES);
 	}
 }

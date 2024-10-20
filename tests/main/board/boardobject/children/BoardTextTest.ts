@@ -2,7 +2,6 @@ import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObje
 import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
-import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
 import { tests } from "../../../../base/Decorators.js";
 
@@ -23,14 +22,14 @@ export default class BoardTextTest extends Test {
 		});
 		let boardTextElement = boardText.getElement();
 
-		Assertion.assertStrictlyEqual(TILESIZE, boardText.getFontSize());
-		Assertion.assertStrictlyEqual(String(BoardObject.BOARD_OBJECT_Z_INDEX + 2), boardTextElement.css("zIndex"));
-		Assertion.assertStrictlyEqual("white", boardText.getColor());
-		Assertion.assertFalse(boardText.isVertical());
-		Assertion.assertStrictlyEqual(text, boardText.getText());
+		this.assertStrictlyEqual(TILESIZE, boardText.getFontSize());
+		this.assertStrictlyEqual(String(BoardObject.BOARD_OBJECT_Z_INDEX + 2), boardTextElement.css("zIndex"));
+		this.assertStrictlyEqual("white", boardText.getColor());
+		this.assertFalse(boardText.isVertical());
+		this.assertStrictlyEqual(text, boardText.getText());
 
 		// font size greater than "TILESIZE" should throw error
-		Assertion.assertThrows(Error.name, "BoardText.constructor()", () => {
+		this.assertThrows(Error.name, "BoardText.constructor()", () => {
 			new BoardText({
 				name,
 				text,
@@ -50,7 +49,7 @@ export default class BoardTextTest extends Test {
 			color,
 		});
 
-		Assertion.assertStrictlyEqual(color, boardText.getColor());
+		this.assertStrictlyEqual(color, boardText.getColor());
 	}
 
 	/**
@@ -64,7 +63,7 @@ export default class BoardTextTest extends Test {
 			fontSize,
 		});
 
-		Assertion.assertStrictlyEqual(fontSize, boardText.getFontSize());
+		this.assertStrictlyEqual(fontSize, boardText.getFontSize());
 	}
 
 	/**
@@ -78,14 +77,14 @@ export default class BoardTextTest extends Test {
 			vertical,
 		});
 
-		Assertion.assertTrue(boardText.isVertical());
+		this.assertTrue(boardText.isVertical());
 
 		boardText = new BoardText({
 			name: "test-boardtext-2",
 			text: "Display Text",
 		});
 
-		Assertion.assertFalse(boardText.isVertical());
+		this.assertFalse(boardText.isVertical());
 	}
 
 	/**
@@ -98,7 +97,7 @@ export default class BoardTextTest extends Test {
 			text,
 		});
 
-		Assertion.assertStrictlyEqual(text, boardText.getText());
+		this.assertStrictlyEqual(text, boardText.getText());
 	}
 
 	/**
@@ -113,34 +112,31 @@ export default class BoardTextTest extends Test {
 		});
 		let boardTextElement = boardText.getElement();
 
-		Assertion.assertStrictlyEqual(
-			text.length,
-			boardTextElement.getElementsByClassName("board-text-container").length
-		);
+		this.assertStrictlyEqual(text.length, boardTextElement.getElementsByClassName("board-text-container").length);
 
 		let boardTextChildren = boardTextElement.children;
 
 		for (let i = 0; i < boardTextChildren.length; i++) {
 			const textContainer = boardTextChildren[i] as HTMLDivElement;
 
-			Assertion.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
-			Assertion.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("left"));
-			Assertion.assertTrue(text.includes(textContainer.textContent!));
-			Assertion.assertTrue(boardTextElement.contains(textContainer));
+			this.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
+			this.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("left"));
+			this.assertTrue(text.includes(textContainer.textContent!));
+			this.assertTrue(boardTextElement.contains(textContainer));
 		}
 
-		Assertion.assertStrictlyEqual(px(boardText.getWidth()), boardTextElement.css("width"));
-		Assertion.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("height"));
-		Assertion.assertStrictlyEqual(text, boardText.getText());
+		this.assertStrictlyEqual(px(boardText.getWidth()), boardTextElement.css("width"));
+		this.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("height"));
+		this.assertStrictlyEqual(text, boardText.getText());
 
 		const newText = text + " Some more text!";
 
 		// explicitly call method now
 		boardText.setText(newText);
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			newText.length,
 			boardTextElement.getElementsByClassName("board-text-container").length
 		);
@@ -150,17 +146,17 @@ export default class BoardTextTest extends Test {
 		for (let i = 0; i < boardTextChildren.length; i++) {
 			const textContainer = boardTextChildren[i] as HTMLDivElement;
 
-			Assertion.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
-			Assertion.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("left"));
-			Assertion.assertTrue(newText.includes(textContainer.textContent!));
-			Assertion.assertTrue(boardTextElement.contains(textContainer));
+			this.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
+			this.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("left"));
+			this.assertTrue(newText.includes(textContainer.textContent!));
+			this.assertTrue(boardTextElement.contains(textContainer));
 		}
 
-		Assertion.assertStrictlyEqual(px(boardText.getWidth()), boardTextElement.css("width"));
-		Assertion.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("height"));
-		Assertion.assertStrictlyEqual(newText, boardText.getText());
+		this.assertStrictlyEqual(px(boardText.getWidth()), boardTextElement.css("width"));
+		this.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("height"));
+		this.assertStrictlyEqual(newText, boardText.getText());
 
 		boardText = new BoardText({
 			name: "test-boardtext-2",
@@ -169,32 +165,29 @@ export default class BoardTextTest extends Test {
 		});
 		boardTextElement = boardText.getElement();
 
-		Assertion.assertStrictlyEqual(
-			text.length,
-			boardTextElement.getElementsByClassName("board-text-container").length
-		);
+		this.assertStrictlyEqual(text.length, boardTextElement.getElementsByClassName("board-text-container").length);
 
 		boardTextChildren = boardTextElement.children;
 
 		for (let i = 0; i < boardTextChildren.length; i++) {
 			const textContainer = boardTextChildren[i] as HTMLDivElement;
 
-			Assertion.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
-			Assertion.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("top"));
-			Assertion.assertTrue(newText.includes(textContainer.textContent!));
-			Assertion.assertTrue(boardTextElement.contains(textContainer));
+			this.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
+			this.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("top"));
+			this.assertTrue(newText.includes(textContainer.textContent!));
+			this.assertTrue(boardTextElement.contains(textContainer));
 		}
 
-		Assertion.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("width"));
-		Assertion.assertStrictlyEqual(px(boardText.getHeight()), boardTextElement.css("height"));
-		Assertion.assertStrictlyEqual(text, boardText.getText());
+		this.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("width"));
+		this.assertStrictlyEqual(px(boardText.getHeight()), boardTextElement.css("height"));
+		this.assertStrictlyEqual(text, boardText.getText());
 
 		// explicitly call method now
 		boardText.setText(newText);
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			newText.length,
 			boardTextElement.getElementsByClassName("board-text-container").length
 		);
@@ -204,16 +197,16 @@ export default class BoardTextTest extends Test {
 		for (let i = 0; i < boardTextChildren.length; i++) {
 			const textContainer = boardTextChildren[i] as HTMLDivElement;
 
-			Assertion.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
-			Assertion.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
-			Assertion.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("top"));
-			Assertion.assertTrue(newText.includes(textContainer.textContent!));
-			Assertion.assertTrue(boardTextElement.contains(textContainer));
+			this.assertStrictlyEqual(boardText.getColor(), textContainer.css("color"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("width"));
+			this.assertStrictlyEqual(px(TILESIZE), textContainer.css("height"));
+			this.assertStrictlyEqual(px(-(TILESIZE * i)), textContainer.css("top"));
+			this.assertTrue(newText.includes(textContainer.textContent!));
+			this.assertTrue(boardTextElement.contains(textContainer));
 		}
 
-		Assertion.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("width"));
-		Assertion.assertStrictlyEqual(px(boardText.getHeight()), boardTextElement.css("height"));
-		Assertion.assertStrictlyEqual(newText, boardText.getText());
+		this.assertStrictlyEqual(px(TILESIZE), boardTextElement.css("width"));
+		this.assertStrictlyEqual(px(boardText.getHeight()), boardTextElement.css("height"));
+		this.assertStrictlyEqual(newText, boardText.getText());
 	}
 }

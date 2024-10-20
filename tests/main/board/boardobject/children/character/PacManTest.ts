@@ -1,10 +1,8 @@
-import { App } from "../../../../../../src/main/App.js";
 import Board from "../../../../../../src/main/board/Board.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { ANIMATION_TYPE } from "../../../../../../src/main/board/boardobject/mixins/Animateable.js";
-import Assertion from "../../../../../base/Assertion.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
@@ -19,7 +17,7 @@ export default class PacManTest extends Test {
 	public createPacmanTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertStrictlyEqual(ANIMATION_TYPE.LOOP, pacman._animationType);
+		this.assertStrictlyEqual(ANIMATION_TYPE.LOOP, pacman._animationType);
 	}
 
 	/**
@@ -28,11 +26,11 @@ export default class PacManTest extends Test {
 	public isSpawningTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertTrue(pacman.isSpawning());
+		this.assertTrue(pacman.isSpawning());
 
 		pacman["spawning"] = false;
 
-		Assertion.assertFalse(pacman.isSpawning());
+		this.assertFalse(pacman.isSpawning());
 	}
 
 	/**
@@ -41,11 +39,11 @@ export default class PacManTest extends Test {
 	public startMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertTrue(pacman.isSpawning());
+		this.assertTrue(pacman.isSpawning());
 
 		pacman.startMoving(MovementDirection.RIGHT);
 
-		Assertion.assertFalse(pacman.isSpawning());
+		this.assertFalse(pacman.isSpawning());
 	}
 
 	/**
@@ -57,13 +55,13 @@ export default class PacManTest extends Test {
 		pacman.startMoving(MovementDirection.RIGHT);
 		await Board.getInstance()["loadTurnData"]();
 
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertArrayLength(0, pacman["turnQueue"]);
 
 		pacman.tick();
 
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertArrayLength(0, pacman["turnQueue"]);
 		// should not "stop" at wall yet
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		const turnWithRightDirection = Board.getInstance().turnData!.find((turn) =>
 			turn.directions.includes(MovementDirection.RIGHT)
@@ -75,13 +73,13 @@ export default class PacManTest extends Test {
 			y: turnWithRightDirection.y - pacman.getHeight() / 2,
 		});
 
-		Assertion.assertArrayLength(1, pacman["turnQueue"]);
+		this.assertArrayLength(1, pacman["turnQueue"]);
 
 		pacman.tick();
 
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertArrayLength(0, pacman["turnQueue"]);
 		// should not "stop" at wall yet since queued turn exists
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		const turnWithNoRightDirection = Board.getInstance().turnData!.find(
 			(turn) => !turn.directions.includes(MovementDirection.RIGHT)
@@ -95,9 +93,9 @@ export default class PacManTest extends Test {
 
 		pacman.tick();
 
-		Assertion.assertArrayLength(0, pacman["turnQueue"]);
+		this.assertArrayLength(0, pacman["turnQueue"]);
 		// pacman should have stopped now since he hit a wall and has no queued turns
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 	}
 
 	/**
@@ -118,9 +116,9 @@ export default class PacManTest extends Test {
 		);
 
 		// just spawned
-		Assertion.assertFalse(pacman.isSpawning());
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertStrictlyEqual(MovementDirection.RIGHT, pacman.getCurrentDirection());
+		this.assertFalse(pacman.isSpawning());
+		this.assertTrue(pacman.isMoving());
+		this.assertStrictlyEqual(MovementDirection.RIGHT, pacman.getCurrentDirection());
 
 		document.body.dispatchEvent(
 			new KeyboardEvent("keydown", {
@@ -134,8 +132,8 @@ export default class PacManTest extends Test {
 		);
 
 		// moving in opposite direction
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
+		this.assertTrue(pacman.isMoving());
+		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
 
 		pacman.stopMoving();
 		pacman["nearestStoppingTurn"] = {
@@ -156,8 +154,8 @@ export default class PacManTest extends Test {
 		);
 
 		// moving after "stopped"
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertStrictlyEqual(MovementDirection.UP, pacman.getCurrentDirection());
+		this.assertTrue(pacman.isMoving());
+		this.assertStrictlyEqual(MovementDirection.UP, pacman.getCurrentDirection());
 
 		await Board.getInstance()["loadTurnData"]();
 
@@ -181,8 +179,8 @@ export default class PacManTest extends Test {
 		);
 
 		// regular, 90-degree turn
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
+		this.assertTrue(pacman.isMoving());
+		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
 
 		const turnWithDownDirection = Board.getInstance().turnData!.find((turn) =>
 			Moveable["canTurnWithMoveDirection"](MovementDirection.DOWN, turn)
@@ -205,17 +203,17 @@ export default class PacManTest extends Test {
 		);
 
 		// turn should be queued now
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 		// queued turn, so we haven't started moving "down" yet and should still be moving left
-		Assertion.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
-		Assertion.assertStrictlyEqual(pacman.getLastMoveCode(), MovementDirection.DOWN);
-		Assertion.assertNotEmpty(pacman["turnQueue"]);
+		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
+		this.assertStrictlyEqual(pacman.getLastMoveCode(), MovementDirection.DOWN);
+		this.assertNotEmpty(pacman["turnQueue"]);
 
 		const queuedTurn = pacman["turnQueue"][0]!;
 
-		Assertion.assertStrictlyEqual(MovementDirection.DOWN, queuedTurn.direction);
-		Assertion.assertStrictlyEqual(turnWithDownDirection.x, queuedTurn.turn.x);
-		Assertion.assertStrictlyEqual(turnWithDownDirection.y, queuedTurn.turn.y);
+		this.assertStrictlyEqual(MovementDirection.DOWN, queuedTurn.direction);
+		this.assertStrictlyEqual(turnWithDownDirection.x, queuedTurn.turn.x);
+		this.assertStrictlyEqual(turnWithDownDirection.y, queuedTurn.turn.y);
 	}
 
 	/**
@@ -224,7 +222,7 @@ export default class PacManTest extends Test {
 	public handleKeyUpTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertTrue(pacman["listenForKeydown"]);
+		this.assertTrue(pacman["listenForKeydown"]);
 
 		document.body.dispatchEvent(
 			new KeyboardEvent("keydown", {
@@ -232,8 +230,8 @@ export default class PacManTest extends Test {
 			})
 		);
 
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertFalse(pacman["listenForKeydown"]);
+		this.assertTrue(pacman.isMoving());
+		this.assertFalse(pacman["listenForKeydown"]);
 
 		document.body.dispatchEvent(
 			new KeyboardEvent("keyup", {
@@ -241,8 +239,8 @@ export default class PacManTest extends Test {
 			})
 		);
 
-		Assertion.assertTrue(pacman.isMoving());
-		Assertion.assertTrue(pacman["listenForKeydown"]);
+		this.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman["listenForKeydown"]);
 	}
 
 	/**
@@ -251,11 +249,11 @@ export default class PacManTest extends Test {
 	public createMoveEventListenersTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertOfType(
+		this.assertOfType(
 			"object",
 			pacman._EVENT_LISTENERS.find((listenerData) => listenerData.eventName === "keydown")
 		);
-		Assertion.assertOfType(
+		this.assertOfType(
 			"object",
 			pacman._EVENT_LISTENERS.find((listenerData) => listenerData.eventName === "keyup")
 		);
@@ -268,16 +266,13 @@ export default class PacManTest extends Test {
 		const pacman = new PacMan();
 		let animationImage = pacman._getCurrentAnimationImageName();
 
-		Assertion.assertStrictlyEqual(1, pacman._animationFrame);
-		Assertion.assertStrictlyEqual(pacman.defaultAnimationImageName(), animationImage);
+		this.assertStrictlyEqual(1, pacman._animationFrame);
+		this.assertStrictlyEqual(pacman.defaultAnimationImageName(), animationImage);
 
 		pacman._animationFrame++;
 
 		animationImage = pacman._getCurrentAnimationImageName();
 
-		Assertion.assertStrictlyEqual(
-			`${pacman.defaultAnimationImageName()}-${pacman["currentDirection"]}`,
-			animationImage
-		);
+		this.assertStrictlyEqual(`${pacman.defaultAnimationImageName()}-${pacman["currentDirection"]}`, animationImage);
 	}
 }

@@ -1,6 +1,5 @@
 import Ghost from "../../../../../../src/main/board/boardobject/children/character/Ghost.js";
 import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
-import Assertion from "../../../../../base/Assertion.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
@@ -15,6 +14,6 @@ export default class GhostTest extends Test {
 	public createGhostTest(): void {
 		const ghost = new Inky();
 
-		Assertion.assertTrue(ghost.getElement().classList.contains("ghost"));
+		this.assertTrue(ghost.getElement().classList.contains("ghost"));
 	}
 }

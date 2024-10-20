@@ -1,5 +1,4 @@
 import AudioRegistry from "../../../src/main/assets/AudioRegistry.js";
-import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
 
@@ -13,7 +12,7 @@ export default class AudioRegistryTest extends Test {
 	 */
 	public audioListTest() {
 		for (const audio of Object.values(AudioRegistry.AUDIO_LIST)) {
-			Assertion.assertTrue(audio instanceof HTMLAudioElement);
+			this.assertTrue(audio instanceof HTMLAudioElement);
 		}
 	}
 
@@ -22,7 +21,7 @@ export default class AudioRegistryTest extends Test {
 	 */
 	public createAudioTest() {
 		for (const eatAudioName of Object.keys(AudioRegistry.AUDIO_LIST)) {
-			Assertion.assertTrue(
+			this.assertTrue(
 				Reflect.apply(AudioRegistry["createAudio"], undefined, [eatAudioName]) instanceof HTMLAudioElement
 			);
 		}
@@ -32,7 +31,7 @@ export default class AudioRegistryTest extends Test {
 	 * Test that we can get a path to an audio in the game.
 	 */
 	public getAudioTest() {
-		Assertion.assertOfType("string", AudioRegistry.getAudio("food-eat-0"));
-		Assertion.assertOfType("string", AudioRegistry.getAudio("food-eat-1"));
+		this.assertOfType("string", AudioRegistry.getAudio("food-eat-0"));
+		this.assertOfType("string", AudioRegistry.getAudio("food-eat-1"));
 	}
 }

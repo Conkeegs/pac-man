@@ -3,7 +3,6 @@ import Board from "../../../src/main/board/Board.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
 import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";
-import Assertion from "../../base/Assertion.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
 
@@ -22,20 +21,20 @@ export default class BoardTest extends Test {
 
 		await board.create();
 
-		Assertion.assertExists(game);
-		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), game!.css("backgroundColor"));
-		Assertion.assertStrictlyEqual(game, boardDiv.parentElement);
-		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
-		Assertion.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
-		Assertion.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
-		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
-		Assertion.assertNotEmpty(App.COLLIDABLES_MAP);
-		Assertion.assertNotEmpty(App.BOARDOBJECTS);
-		Assertion.assertNotEmpty(App.CHARACTERS);
-		Assertion.assertNotEmpty(board.turnData);
-		Assertion.assertNotEmpty(board["wallElements"]);
-		Assertion.assertTrue(boardDiv.childElementCount > 0);
-		Assertion.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
+		this.assertExists(game);
+		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), game!.css("backgroundColor"));
+		this.assertStrictlyEqual(game, boardDiv.parentElement);
+		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
+		this.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
+		this.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
+		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
+		this.assertNotEmpty(App.COLLIDABLES_MAP);
+		this.assertNotEmpty(App.BOARDOBJECTS);
+		this.assertNotEmpty(App.CHARACTERS);
+		this.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board["wallElements"]);
+		this.assertTrue(boardDiv.childElementCount > 0);
+		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
 	}
 
 	/**
@@ -43,14 +42,14 @@ export default class BoardTest extends Test {
 	 */
 	public calcTileOffsetTest(): void {
 		// triple the tilesize and see if it's equal
-		Assertion.assertStrictlyEqual(TILESIZE * 3, Board.calcTileOffset(3));
+		this.assertStrictlyEqual(TILESIZE * 3, Board.calcTileOffset(3));
 	}
 
 	/**
 	 * Test that the game's board can calc horizontal offsets.
 	 */
 	public calcTileOffsetXTest(): void {
-		Assertion.assertStrictlyEqual(TILESIZE * 3 - TILESIZE, Board.calcTileOffsetX(3));
+		this.assertStrictlyEqual(TILESIZE * 3 - TILESIZE, Board.calcTileOffsetX(3));
 	}
 
 	/**
@@ -60,7 +59,7 @@ export default class BoardTest extends Test {
 		const totalTileWidth = TILESIZE * ROWS;
 		const tripleTileSize = TILESIZE * 3;
 
-		Assertion.assertStrictlyEqual(totalTileWidth - tripleTileSize - TILESIZE, Board.calcTileOffsetY(3));
+		this.assertStrictlyEqual(totalTileWidth - tripleTileSize - TILESIZE, Board.calcTileOffsetY(3));
 	}
 
 	/**
@@ -72,7 +71,7 @@ export default class BoardTest extends Test {
 
 		// 5 tiles-sizes in means the edge of the object would be at the start of the 6th tile, so we
 		// add 1 to "numTiles"
-		Assertion.assertStrictlyEqual(numTiles + 1, Board.calcTileNumX(pixelOffset));
+		this.assertStrictlyEqual(numTiles + 1, Board.calcTileNumX(pixelOffset));
 	}
 
 	/**
@@ -84,7 +83,7 @@ export default class BoardTest extends Test {
 
 		// 5 tiles-sizes in means the edge of the object would be at the start of the 6th tile, so we
 		// add 1 to "numTiles". also, subtract from "ROWS" since vertical offsets come from the top-down
-		Assertion.assertStrictlyEqual(ROWS - (numTiles + 1), Board.calcTileNumY(pixelOffset));
+		this.assertStrictlyEqual(ROWS - (numTiles + 1), Board.calcTileNumY(pixelOffset));
 	}
 
 	/**
@@ -95,27 +94,27 @@ export default class BoardTest extends Test {
 
 		await board.createMainBoardObjects();
 
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			Board.FOOD_COUNT,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
 		);
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			1,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "PacMan")
 		);
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			1,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Blinky")
 		);
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			1,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Inky")
 		);
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			1,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Pinky")
 		);
-		Assertion.assertArrayLength(
+		this.assertArrayLength(
 			1,
 			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Clyde")
 		);
@@ -127,17 +126,17 @@ export default class BoardTest extends Test {
 	public async destroyTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		Assertion.assertFalse(board.boardDiv.childElementCount === 0);
-		Assertion.assertNotEmpty(board.turnData);
-		Assertion.assertNotEmpty(board["wallElements"]);
-		Assertion.assertTrue(Board["instance"] instanceof Board);
+		this.assertFalse(board.boardDiv.childElementCount === 0);
+		this.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board["wallElements"]);
+		this.assertTrue(Board["instance"] instanceof Board);
 
 		board.destroy();
 
-		Assertion.assertTrue(board.boardDiv.childElementCount === 0);
-		Assertion.assertEmpty(board.turnData);
-		Assertion.assertEmpty(board["wallElements"]);
-		Assertion.assertOfType("undefined", Board["instance"]);
+		this.assertTrue(board.boardDiv.childElementCount === 0);
+		this.assertEmpty(board.turnData);
+		this.assertEmpty(board["wallElements"]);
+		this.assertOfType("undefined", Board["instance"]);
 	}
 
 	/**
@@ -152,9 +151,9 @@ export default class BoardTest extends Test {
 
 		const pacmanPosition = pacman.getPosition();
 
-		Assertion.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
-		Assertion.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
-		Assertion.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
+		this.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
+		this.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
+		this.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
 	}
 
 	/**
@@ -165,7 +164,7 @@ export default class BoardTest extends Test {
 
 		await board["loadTurnData"]();
 
-		Assertion.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board.turnData);
 	}
 
 	/**
@@ -176,6 +175,6 @@ export default class BoardTest extends Test {
 
 		await board["loadWallElements"]();
 
-		Assertion.assertNotEmpty(board["wallElements"]);
+		this.assertNotEmpty(board["wallElements"]);
 	}
 }

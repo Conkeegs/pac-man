@@ -6,7 +6,6 @@ import PacMan from "../../../../../../src/main/board/boardobject/children/charac
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { TILESIZE } from "../../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../../src/main/utils/Utils.js";
-import Assertion from "../../../../../base/Assertion.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
@@ -22,10 +21,10 @@ export default class CharacterTest extends Test {
 		const pacman = new PacMan();
 		const pacmanElement = pacman.getElement();
 
-		Assertion.assertArrayContains(pacman, App.CHARACTERS);
-		Assertion.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("width"));
-		Assertion.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
-		Assertion.assertStrictlyEqual(
+		this.assertArrayContains(pacman, App.CHARACTERS);
+		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("width"));
+		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
+		this.assertStrictlyEqual(
 			`url(\"${ImageRegistry.getImage("pacman-1")}\")`,
 			pacmanElement.css("backgroundImage")
 		);
@@ -37,7 +36,7 @@ export default class CharacterTest extends Test {
 	public getSourceTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertStrictlyEqual(ImageRegistry.getImage("pacman-1"), pacman.getSource());
+		this.assertStrictlyEqual(ImageRegistry.getImage("pacman-1"), pacman.getSource());
 	}
 
 	/**
@@ -46,18 +45,18 @@ export default class CharacterTest extends Test {
 	public stopMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman.startMoving(movementDirection);
 
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		pacman.setPosition({ x: 500, y: 700 });
 		pacman.stopMoving();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 	}
 
 	/**
@@ -66,7 +65,7 @@ export default class CharacterTest extends Test {
 	public startMovingTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertFalse(pacman.isMoving());
+		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
 		const turn = {
@@ -81,14 +80,14 @@ export default class CharacterTest extends Test {
 		});
 		pacman.startMoving(movementDirection);
 
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
 		pacman.startMoving(movementDirection, {
 			fromTurn: turn,
 		});
 
-		Assertion.assertTrue(pacman.isMoving());
+		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
 	}
@@ -99,10 +98,10 @@ export default class CharacterTest extends Test {
 	public deleteTest(): void {
 		const pacman = new PacMan();
 
-		Assertion.assertArrayContains(pacman, App.CHARACTERS);
+		this.assertArrayContains(pacman, App.CHARACTERS);
 
 		pacman.delete();
 
-		Assertion.assertArrayDoesntContain(pacman, App.CHARACTERS);
+		this.assertArrayDoesntContain(pacman, App.CHARACTERS);
 	}
 }

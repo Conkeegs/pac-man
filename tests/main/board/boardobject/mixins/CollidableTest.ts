@@ -3,7 +3,6 @@ import Board from "../../../../../src/main/board/Board.js";
 import Inky from "../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../../src/main/board/boardobject/children/character/Pinky.js";
-import Assertion from "../../../../base/Assertion.js";
 import Test from "../../../../base/Base.js";
 
 /**
@@ -16,7 +15,7 @@ export default class CollidableTest extends Test {
 	public createCollidableTest(): void {
 		const collidable = new Inky();
 
-		Assertion.assertStrictlyEqual(50, collidable._collisionBoxPercentage);
+		this.assertStrictlyEqual(50, collidable._collisionBoxPercentage);
 	}
 
 	/**
@@ -30,7 +29,7 @@ export default class CollidableTest extends Test {
 			y: 1,
 		});
 
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -41,7 +40,7 @@ export default class CollidableTest extends Test {
 
 		collidable.setPositionX(1);
 
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -52,7 +51,7 @@ export default class CollidableTest extends Test {
 
 		collidable.setPositionY(1);
 
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -66,11 +65,11 @@ export default class CollidableTest extends Test {
 			y: 1,
 		});
 
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 
 		collidable.delete();
 
-		Assertion.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -79,12 +78,12 @@ export default class CollidableTest extends Test {
 	public updateTileKeysTest(): void {
 		const collidable = new Inky();
 
-		Assertion.assertOfType("undefined", App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]);
+		this.assertOfType("undefined", App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]);
 
 		collidable.updateTileKeys();
 
-		Assertion.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -93,24 +92,24 @@ export default class CollidableTest extends Test {
 	public checkForCollidableAndRemoveTest(): void {
 		const collidable = new Inky();
 
-		Assertion.assertOfType("undefined", collidable._currentPositionKey);
+		this.assertOfType("undefined", collidable._currentPositionKey);
 
 		collidable.checkForCollidableAndRemove();
 
-		Assertion.assertOfType("undefined", collidable._currentPositionKey);
+		this.assertOfType("undefined", collidable._currentPositionKey);
 
 		collidable.setPosition({
 			x: 1,
 			y: 1,
 		});
 
-		Assertion.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		Assertion.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 
 		collidable.checkForCollidableAndRemove();
 
-		Assertion.assertArrayLength(0, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		Assertion.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayLength(0, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 	}
 
 	/**
@@ -124,23 +123,17 @@ export default class CollidableTest extends Test {
 		const height = collidable.getHeight();
 		const collisionBoxPercentage = collidable._collisionBoxPercentage;
 
-		Assertion.assertOfType("number", collisionBox.bottom);
-		Assertion.assertOfType("number", collisionBox.left);
-		Assertion.assertOfType("number", collisionBox.right);
-		Assertion.assertOfType("number", collisionBox.top);
-		Assertion.assertStrictlyEqual(
-			position.x + (width - (width * collisionBoxPercentage) / 100) / 2,
-			collisionBox.left
-		);
-		Assertion.assertStrictlyEqual(
+		this.assertOfType("number", collisionBox.bottom);
+		this.assertOfType("number", collisionBox.left);
+		this.assertOfType("number", collisionBox.right);
+		this.assertOfType("number", collisionBox.top);
+		this.assertStrictlyEqual(position.x + (width - (width * collisionBoxPercentage) / 100) / 2, collisionBox.left);
+		this.assertStrictlyEqual(
 			position.x + width - (width - (width * collisionBoxPercentage) / 100) / 2,
 			collisionBox.right
 		);
-		Assertion.assertStrictlyEqual(
-			position.y + (height - (height * collisionBoxPercentage) / 100) / 2,
-			collisionBox.top
-		);
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(position.y + (height - (height * collisionBoxPercentage) / 100) / 2, collisionBox.top);
+		this.assertStrictlyEqual(
 			position.y + height - (height - (height * collisionBoxPercentage) / 100) / 2,
 			collisionBox.bottom
 		);
@@ -163,8 +156,8 @@ export default class CollidableTest extends Test {
 		});
 
 		// colliding vertically
-		Assertion.assertTrue(collidable1.isCollidingWithCollidable(collidable2));
-		Assertion.assertTrue(collidable2.isCollidingWithCollidable(collidable1));
+		this.assertTrue(collidable1.isCollidingWithCollidable(collidable2));
+		this.assertTrue(collidable2.isCollidingWithCollidable(collidable1));
 
 		collidable1.setPosition({
 			x: 300,
@@ -176,8 +169,8 @@ export default class CollidableTest extends Test {
 		});
 
 		// colliding horizontally
-		Assertion.assertTrue(collidable1.isCollidingWithCollidable(collidable2));
-		Assertion.assertTrue(collidable2.isCollidingWithCollidable(collidable1));
+		this.assertTrue(collidable1.isCollidingWithCollidable(collidable2));
+		this.assertTrue(collidable2.isCollidingWithCollidable(collidable1));
 	}
 
 	/**
@@ -187,7 +180,7 @@ export default class CollidableTest extends Test {
 		const collidable = new PacMan();
 		const centerPosition = collidable.getCenterPosition();
 
-		Assertion.assertStrictlyEqual(
+		this.assertStrictlyEqual(
 			`${Board.calcTileNumX(centerPosition.x)}-${Board.calcTileNumY(centerPosition.y)}`,
 			collidable.getCollidablePositionKey()
 		);
