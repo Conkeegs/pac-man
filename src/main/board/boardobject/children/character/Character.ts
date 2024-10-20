@@ -14,10 +14,14 @@ import MovementDirection from "../moveable/MovementDirection.js";
  * A character is any of the AI or user-controlled objects on the board.
  */
 export default abstract class Character extends MakeAnimateable(MakeCollidable(Moveable, 50)) {
+	protected override readonly _width: number = TILESIZE + Board.calcTileOffset(0.5);
+	protected override readonly _height = TILESIZE + Board.calcTileOffset(0.5);
+
 	/**
 	 * The path to the character's picture file.
 	 */
 	private readonly source: string;
+
 	/**
 	 * The maximum number of different animation states this character can be in.
 	 */
@@ -28,8 +32,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	abstract override _ANIMATION_STATE_MILLIS: number;
 
 	public abstract override canBeCollidedByTypes: string[];
-	public override readonly width: number = TILESIZE + Board.calcTileOffset(0.5);
-	public override readonly height = TILESIZE + Board.calcTileOffset(0.5);
 
 	/**
 	 * Creates a character.
@@ -46,9 +48,9 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 
 		this.source = source;
 
-		this.element.css({
-			width: px(this.width),
-			height: px(this.height),
+		this.getElement().css({
+			width: px(this._width),
+			height: px(this._height),
 			backgroundImage: `url(${source})`,
 		});
 	}

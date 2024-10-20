@@ -12,6 +12,9 @@ import { BoardObject } from "../BoardObject.js";
  * Represents text on the board.
  */
 export default class BoardText extends BoardObject {
+	protected override _width: number = TILESIZE;
+	protected override _height: number = TILESIZE;
+
 	/**
 	 * The current text being displayed.
 	 */
@@ -28,9 +31,6 @@ export default class BoardText extends BoardObject {
 	 * Whether or not the displayed text should be displayed vertically (defaults to `false`).
 	 */
 	private vertical: boolean;
-
-	public override width: number = TILESIZE;
-	public override height: number = TILESIZE;
 
 	/**
 	 * Creates a board text object.
@@ -71,10 +71,10 @@ export default class BoardText extends BoardObject {
 		// #!END_DEBUG
 
 		// display text above board objects
-		this.element.css({
+		this.getElement().css({
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-			width: px(this.width),
-			height: px(this.height),
+			width: px(this._width),
+			height: px(this._height),
 		});
 
 		this.color = data.color || "white";
@@ -124,15 +124,17 @@ export default class BoardText extends BoardObject {
 	 * @param newText the text to visually display
 	 */
 	public setText(newText: string): void {
-		if (this.element.hasChildNodes()) {
-			this.element.removeAllChildren();
+		const element = this.getElement();
+
+		if (element.hasChildNodes()) {
+			element.removeAllChildren();
 		}
 
 		const notVertical = !this.vertical;
 
 		// reset width/height variable depending on display of text. we need to do this because
 		// the width/height of the element will change when more characters are added/removed
-		notVertical ? (this.width = 0) : (this.height = 0);
+		notVertical ? (this._width = 0) : (this._height = 0);
 
 		// we want to reverse the text first, since pacman text "grows" to the left, the more characters
 		// are added
@@ -152,14 +154,14 @@ export default class BoardText extends BoardObject {
 
 			container.textContent = character;
 
-			(this.element as HTMLElement).appendChild(container);
+			(element as HTMLElement).appendChild(container);
 		}
 
 		const pixelDimensions = Board.calcTileOffset(newText.length);
-		notVertical ? (this.width = pixelDimensions) : (this.height = pixelDimensions);
+		notVertical ? (this._width = pixelDimensions) : (this._height = pixelDimensions);
 
-		this.element.css({
-			[notVertical ? "width" : "height"]: px(notVertical ? this.width : this.height),
+		element.css({
+			[notVertical ? "width" : "height"]: px(notVertical ? this._width : this._height),
 		});
 
 		this.text = newText;

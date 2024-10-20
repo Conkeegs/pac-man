@@ -1,9 +1,9 @@
 import { App } from "../../../App.js";
+import type { Position, PositionSetOptions } from "../../../GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
-import type { Position } from "../../Board.js";
 import Board from "../../Board.js";
-import { BoardObject, type PositionSetOptions } from "../BoardObject.js";
+import { BoardObject } from "../BoardObject.js";
 
 /**
  * Represents the positions of the sides of a collision box for a

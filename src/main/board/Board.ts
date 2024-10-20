@@ -1,6 +1,7 @@
 "use strict";
 
 import { App } from "../App.js";
+import { GameElement, type Position } from "../GameElement.js";
 import JsonRegistry from "../assets/JsonRegistry.js";
 // #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
@@ -60,20 +61,6 @@ interface PathData {
 }
 
 /**
- * Represents a board object's horizontal and vertical offsets on the board.
- */
-export type Position = {
-	/**
-	 * The x position of this board object (offset from left side of board).
-	 */
-	x: number;
-	/**
-	 * The y position of this board object (offset from top of board)
-	 */
-	y: number;
-};
-
-/**
  * Represents a position on the board where a character is allowed to turn,
  * and also includes an array of `MovementDirection` values to tell the character
  * what directions it can turn when it reaches the given turn coordinates.
@@ -128,7 +115,10 @@ export type FoodData = {
 /**
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
-export default class Board {
+export default class Board extends GameElement {
+	protected override readonly _width: number = WIDTH;
+	protected override readonly _height: number = HEIGHT;
+
 	/**
 	 * The singleton-instance of the board.
 	 */
@@ -149,13 +139,6 @@ export default class Board {
 	 */
 	private wallElements: HTMLElement[] = [];
 
-	/**
-	 * The container of everything that the board holds.
-	 */
-	public boardDiv: HTMLDivElement = create({
-		name: "div",
-		id: "board",
-	}) as HTMLDivElement;
 	/**
 	 * The default background color of the board.
 	 */
@@ -184,6 +167,8 @@ export default class Board {
 	 * Creates the singleton board instance.
 	 */
 	private constructor() {
+		super("board");
+
 		if (App.isRunning()) {
 			App.destroy();
 		}
@@ -223,14 +208,15 @@ export default class Board {
 		// #!END_DEBUG
 
 		const DEFAULT_COLOR = Board.DEFAULT_COLOR;
+		const element = this.getElement();
 
-		this.boardDiv.css({
-			width: px(WIDTH),
-			height: px(HEIGHT),
+		element.css({
+			width: px(this.getWidth()),
+			height: px(this.getHeight()),
 			backgroundColor: DEFAULT_COLOR,
 		});
 
-		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(this.boardDiv);
+		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(element);
 
 		// #!DEBUG
 		// debugging methods
@@ -243,7 +229,7 @@ export default class Board {
 
 		// display the walls of the game
 		for (const wallElement of this.wallElements) {
-			this.boardDiv.appendChild(wallElement);
+			element.appendChild(wallElement);
 		}
 
 		// place BoardObject instances on board
@@ -414,7 +400,7 @@ export default class Board {
 	 */
 	public destroy(): void {
 		if (Board.instance) {
-			Board.getInstance().boardDiv.removeAllChildren();
+			Board.getInstance().getElement().removeAllChildren();
 		}
 
 		this.turnData = [];
@@ -455,7 +441,7 @@ export default class Board {
 		);
 		boardObject.render();
 
-		this.boardDiv.appendChild(boardObject.getElement());
+		this.getElement().appendChild(boardObject.getElement());
 	}
 
 	/**
@@ -516,6 +502,8 @@ export default class Board {
 	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
 	 */
 	private debug_createGrid() {
+		const element = this.getElement();
+
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
 			this.placeBoardObject(
 				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
@@ -523,7 +511,7 @@ export default class Board {
 				0
 			);
 
-			this.boardDiv.appendChild(
+			element.appendChild(
 				create({ name: "div", classes: ["grid-vert"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
@@ -536,7 +524,7 @@ export default class Board {
 			// store as variable so we can use it to offset the text, based on the number of characters
 			this.placeBoardObject(new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
 
-			this.boardDiv.appendChild(
+			element.appendChild(
 				create({ name: "div", classes: ["grid-horiz"] }).css({
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
@@ -576,7 +564,7 @@ export default class Board {
 
 				const heightLessThan1 = height < 1;
 
-				this.boardDiv.appendChild(
+				this.getElement().appendChild(
 					create({
 						name: "div",
 						id: `pathline-${pathLineIndex++}`,

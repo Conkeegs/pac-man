@@ -27,7 +27,7 @@ export default abstract class Ghost extends Character {
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed, source);
 
-		this.element.classList.add("ghost");
+		this.getElement().classList.add("ghost");
 
 		setTimeout(() => {
 			// this.startMoving(MovementDirection.LEFT);

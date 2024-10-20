@@ -9,6 +9,9 @@ import PacMan from "./character/PacMan.js";
  * Represents food that PacMan collects.
  */
 export default class Food extends MakeCollidable(BoardObject) {
+	protected override readonly _width: number = TILESIZE;
+	protected override readonly _height: number = TILESIZE;
+
 	/**
 	 * Indicates which half of the "food-eat" sound the game is playing at a given moment in time. `true` for the first half,
 	 * `false` for the second.
@@ -16,8 +19,6 @@ export default class Food extends MakeCollidable(BoardObject) {
 	private static audioFlag: true | false = false;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name];
-	public override readonly width: number = TILESIZE;
-	public override readonly height: number = TILESIZE;
 	/**
 	 * The default background color of all food on the board.
 	 */
@@ -31,7 +32,7 @@ export default class Food extends MakeCollidable(BoardObject) {
 	constructor(name: string) {
 		super(name);
 
-		const element = this.element;
+		const element = this.getElement();
 
 		element.css({
 			width: px(TILESIZE),
@@ -48,8 +49,8 @@ export default class Food extends MakeCollidable(BoardObject) {
 				})
 			)
 			.css({
-				width: px(this.width / 4),
-				height: px(this.height / 4),
+				width: px(this._width / 4),
+				height: px(this._height / 4),
 				backgroundColor: Food.BACKGROUND_COLOR,
 			});
 	}

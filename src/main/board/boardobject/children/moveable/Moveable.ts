@@ -1,7 +1,8 @@
 import { App } from "../../../../App.js";
+import type { Position } from "../../../../GameElement.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
-import type { Position, TurnData } from "../../../Board.js";
+import type { TurnData } from "../../../Board.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
 import MakeTickable from "../../mixins/Tickable.js";

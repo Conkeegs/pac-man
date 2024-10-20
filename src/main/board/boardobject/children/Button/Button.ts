@@ -12,6 +12,9 @@ import BoardText from "../BoardText.js";
  * Represents a clickable button on the board.
  */
 export default class Button extends BoardObject {
+	protected override _width: number = 0;
+	protected override readonly _height: number = TILESIZE + TILESIZE / 2;
+
 	/**
 	 * The text being displayed in the button.
 	 */
@@ -26,8 +29,6 @@ export default class Button extends BoardObject {
 	 */
 	private clickListenerCount: 0 | 1 = 0;
 
-	public override width: number = 0;
-	public override readonly height: number = TILESIZE + TILESIZE / 2;
 	/**
 	 * Padding of the clip-path used on UI elements.
 	 */
@@ -48,13 +49,13 @@ export default class Button extends BoardObject {
 			text: text,
 		});
 
-		const element = this.element;
+		const element = this.getElement();
 
 		element.classList.add("button");
 
 		const boardText = this.boardText;
 		const boardTextElement = boardText.getElement();
-		const height = this.height;
+		const height = this._height;
 
 		// add "BoardText" as child of this button
 		element.appendChild(boardTextElement);
@@ -96,7 +97,7 @@ export default class Button extends BoardObject {
 				classes: ["button-inner"],
 			}).css({
 				height: px(height - Button.CLIP_PATH_PIXEL_PADDING),
-				width: px(this.width - Button.CLIP_PATH_PIXEL_PADDING),
+				width: px(this._width - Button.CLIP_PATH_PIXEL_PADDING),
 				backgroundColor: boardBackgroundColor,
 			}) as HTMLDivElement
 		);
@@ -116,7 +117,7 @@ export default class Button extends BoardObject {
 		}
 		// #!END_DEBUG
 
-		App.addEventListenerToElement("click", this.element, callback);
+		App.addEventListenerToElement("click", this.getElement(), callback);
 	}
 
 	/**
@@ -136,9 +137,9 @@ export default class Button extends BoardObject {
 
 		const boardTextFontSize = boardText.getFontSize();
 
-		this.width = boardText.getWidth()! + boardTextFontSize;
-		const width = this.width;
-		const element = this.element;
+		this._width = boardText.getWidth()! + boardTextFontSize;
+		const width = this._width;
+		const element = this.getElement();
 
 		element.css({
 			width: px(width),

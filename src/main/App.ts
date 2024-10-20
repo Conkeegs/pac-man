@@ -3,7 +3,7 @@
 // #!DEBUG
 import RunTests from "../../tests/RunTests.js";
 // #!END_DEBUG
-import Board, { type Position } from "./board/Board.js";
+import Board from "./board/Board.js";
 import { BoardObject } from "./board/boardobject/BoardObject.js";
 // #!DEBUG
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
@@ -14,6 +14,7 @@ import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import { makeCollidablePositionKey } from "./board/boardobject/mixins/Collidable.js";
 import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
+import type { GameElement, Position } from "./GameElement.js";
 import { TILESIZE } from "./utils/Globals.js";
 import { create, defined, get } from "./utils/Utils.js";
 
@@ -51,8 +52,12 @@ export class App {
 	 */
 	public static GAME_PAUSED: boolean = false;
 	/**
-	 * An array of classes that extends the `BoardObject` class so we can add/remove them when needed,
+	 * An array of classes that extends the `GameElement` class so we can add/remove them when needed,
 	 * and also check for duplicates since each of them have unique `name` properties.
+	 */
+	public static GAME_ELEMENTS: GameElement[] = [];
+	/**
+	 * An array of classes that extends the `BoardObject` class so we can add/remove them when needed.
 	 */
 	public static BOARDOBJECTS: BoardObject[] = [];
 	/**
@@ -198,6 +203,7 @@ export class App {
 
 		App.EVENT_LISTENERS.length = 0;
 		App.ANIMATEABLES.length = 0;
+		App.GAME_ELEMENTS = [];
 		App.BOARDOBJECTS.length = 0;
 		App.CHARACTERS.length = 0;
 		App.MOVEABLES.length = 0;
