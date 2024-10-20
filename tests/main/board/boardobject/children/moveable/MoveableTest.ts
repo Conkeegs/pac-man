@@ -1,11 +1,11 @@
 import { App } from "../../../../../../src/main/App.js";
-import type { Position } from "../../../../../../src/main/board/Board.js";
 import Board from "../../../../../../src/main/board/Board.js";
 import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../../../src/main/board/boardobject/children/character/Pinky.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import type { Position } from "../../../../../../src/main/GameElement.js";
 import { TILESIZE } from "../../../../../../src/main/utils/Globals.js";
 import { millisToSeconds } from "../../../../../../src/main/utils/Utils.js";
 import Test from "../../../../../base/Base.js";

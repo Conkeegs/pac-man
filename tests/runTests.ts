@@ -23,6 +23,8 @@ import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js"
 import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
 import TickableTest from "./main/board/boardobject/mixins/TickableTest.js";
 import BoardTest from "./main/board/BoardTest.js";
+import GameElementTest from "./main/GameElementTest.js";
+import ListenableTest from "./main/mixins/ListenableTest.js";
 
 /**
  * Represents an object containing a testing class and its methods
@@ -80,6 +82,8 @@ export default class RunTests {
 		new CollidableTest(),
 		new TickableTest(),
 		new AppTest(),
+		new GameElementTest(),
+		new ListenableTest(),
 	];
 
 	/**

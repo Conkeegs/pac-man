@@ -1,12 +1,8 @@
 import { App } from "../../../../src/main/App.js";
-import Board from "../../../../src/main/board/Board.js";
 import { BoardObject } from "../../../../src/main/board/boardobject/BoardObject.js";
 import Clyde from "../../../../src/main/board/boardobject/children/character/Clyde.js";
-import Inky from "../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.js";
-import Food from "../../../../src/main/board/boardobject/children/Food.js";
-import { ROWS, TILESIZE } from "../../../../src/main/utils/Globals.js";
 import { get, px } from "../../../../src/main/utils/Utils.js";
 import Test from "../../../base/Base.js";
 import { tests } from "../../../base/Decorators.js";
@@ -22,38 +18,8 @@ export default class BoardObjectTest extends Test {
 	public createBoardObjectTest(): void {
 		let pacmanName = "";
 
-		// no empty names
-		this.assertThrows(Error.name, "PacMan.constructor()", () => {
-			new PacMan(pacmanName);
-		});
-
-		// no empty names
-		try {
-			new PacMan(pacmanName);
-		} catch (error: any) {
-			this.assertStrictlyEqual(
-				"Error in BoardObject.js -- constructor(): BoardObject must have a name",
-				error.message
-			);
-		}
-
 		pacmanName = "pacman1";
 		const pacman1 = new PacMan(pacmanName);
-
-		// no duplicate names
-		this.assertThrows(Error.name, "PacMan.constructor()", () => {
-			new PacMan(pacmanName);
-		});
-
-		// no duplicate names
-		try {
-			new PacMan(pacmanName);
-		} catch (error: any) {
-			this.assertStrictlyEqual(
-				`Error in BoardObject.js -- constructor(): A BoardObject with the name '${pacmanName}' already exists`,
-				error.message
-			);
-		}
 
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
 		this.assertNotEmpty(App.BOARDOBJECTS.filter((boardObject) => boardObject.getName() === pacmanName));
@@ -64,104 +30,6 @@ export default class BoardObjectTest extends Test {
 		this.assertStrictlyEqual(pacmanName, boardObjectElement.id);
 		this.assertTrue(boardObjectElement.classList.contains("board-object"));
 		this.assertStrictlyEqual(BoardObject.BOARD_OBJECT_Z_INDEX, Number(boardObjectElement.css("zIndex")));
-	}
-
-	/**
-	 * Test that board objects correctly have their positions retrieved.
-	 */
-	public getPositionTest(): void {
-		const pacman = new PacMan();
-		let position = pacman.getPosition();
-
-		// haven't placed on board yet so position should be default
-		this.assertOfType("object", pacman.getPosition());
-		this.assertStrictlyEqual(0, position.x);
-		this.assertStrictlyEqual(0, position.y);
-
-		const board = Board.getInstance();
-		const numTiles = 5;
-
-		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
-
-		position = pacman.getPosition();
-
-		this.assertOfType("object", position);
-		this.assertOfType("number", position.x);
-		this.assertOfType("number", position.y);
-		this.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, position.x);
-		this.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, position.y);
-	}
-
-	/**
-	 * Test that board objects correctly have their css transforms retrieved.
-	 */
-	public getTransformTest(): void {
-		const pacman = new PacMan();
-
-		// haven't moved on board yet so transform should be 0
-		this.assertStrictlyEqual(0, pacman.getTransform().x);
-		this.assertStrictlyEqual(0, pacman.getTransform().y);
-	}
-
-	/**
-	 * Test that a board object's HTMLElement can be retrieved correctly.
-	 */
-	public getElementTest(): void {
-		const food = new Food("test-food");
-		const foodElement = food.getElement();
-
-		this.assertExists(foodElement);
-		this.assertStrictlyEqual(HTMLDivElement.name, foodElement.constructor.name);
-	}
-
-	/**
-	 * Test that a board object's name can be retried correctly.
-	 */
-	public getNameTest(): void {
-		const name = "testing-food";
-		const food = new Food(name);
-		const foodName = food.getName();
-
-		this.assertNotEmpty(foodName);
-		this.assertStrictlyEqual(name, foodName);
-
-		const foodElementId = food.getElement().id;
-
-		this.assertStrictlyEqual(foodElementId, foodName);
-		this.assertStrictlyEqual(name, foodElementId);
-	}
-
-	/**
-	 * Test that board objects correctly have their width set.
-	 */
-	public getWidthTest(): void {
-		const inky = new Inky();
-
-		// haven't placed on board yet so width should be undefined
-		this.assertOfType("number", inky.getWidth());
-	}
-
-	/**
-	 * Test that board objects correctly have their height set.
-	 */
-	public getHeightTest(): void {
-		const inky = new Inky();
-
-		// haven't placed on board yet so height should be undefined
-		this.assertOfType("number", inky.getHeight());
-	}
-
-	/**
-	 * Test that board objects correctly have their center positions retrieved.
-	 */
-	public getCenterPositionTest(): void {
-		const pacman = new PacMan();
-		let centerPosition = pacman.getCenterPosition();
-
-		// haven't placed on board yet so position should be default
-		this.assertOfType("object", pacman.getCenterPosition());
-		this.assertStrictlyEqual(0 + pacman.getWidth() / 2, centerPosition.x);
-		this.assertStrictlyEqual(0 + pacman.getHeight() / 2, centerPosition.y);
 	}
 
 	/**

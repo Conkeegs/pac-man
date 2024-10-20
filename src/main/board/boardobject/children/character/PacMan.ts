@@ -2,11 +2,11 @@
 
 import { App } from "../../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
+import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
-import MakeListenable from "../../mixins/Listenable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -281,9 +281,9 @@ export default class PacMan extends MakeListenable(Character) {
 		const documentBody = document.body;
 
 		// listen for movement keys for PacMan
-		this._addEventListener("keydown", documentBody, this.handleKeyDown.bind(this));
+		this._addEventListener("keydown", this.handleKeyDown.bind(this), documentBody);
 		// listen for user releasing a movement key
-		this._addEventListener("keyup", documentBody, this.handleKeyUp.bind(this));
+		this._addEventListener("keyup", this.handleKeyUp.bind(this), documentBody);
 	}
 
 	/**

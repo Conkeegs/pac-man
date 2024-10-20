@@ -1,6 +1,6 @@
 import { App } from "../../../../../src/main/App.js";
-import type { Position } from "../../../../../src/main/board/Board.js";
 import Food from "../../../../../src/main/board/boardobject/children/Food.js";
+import type { Position } from "../../../../../src/main/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { hexToRgb, px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";

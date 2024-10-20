@@ -16,7 +16,7 @@ export default class BoardTest extends Test {
 	 */
 	public async createTest(): Promise<void> {
 		const board = Board.getInstance();
-		const boardDiv = board.boardDiv;
+		const boardDiv = board.getElement();
 		const game = get("game");
 
 		await board.create();
@@ -126,14 +126,14 @@ export default class BoardTest extends Test {
 	public async destroyTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		this.assertFalse(board.boardDiv.childElementCount === 0);
+		this.assertFalse(board.getElement().childElementCount === 0);
 		this.assertNotEmpty(board.turnData);
 		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(Board["instance"] instanceof Board);
 
 		board.destroy();
 
-		this.assertTrue(board.boardDiv.childElementCount === 0);
+		this.assertTrue(board.getElement().childElementCount === 0);
 		this.assertEmpty(board.turnData);
 		this.assertEmpty(board["wallElements"]);
 		this.assertOfType("undefined", Board["instance"]);
@@ -153,7 +153,7 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
 		this.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
-		this.assertStrictlyEqual(board.boardDiv, pacman.getElement().parentElement);
+		this.assertStrictlyEqual(board.getElement(), pacman.getElement().parentElement);
 	}
 
 	/**
