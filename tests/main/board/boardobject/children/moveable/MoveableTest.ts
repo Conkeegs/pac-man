@@ -6,7 +6,6 @@ import Pinky from "../../../../../../src/main/board/boardobject/children/charact
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import type { Position } from "../../../../../../src/main/GameElement.js";
-import { TILESIZE } from "../../../../../../src/main/utils/Globals.js";
 import { millisToSeconds } from "../../../../../../src/main/utils/Utils.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
@@ -190,48 +189,7 @@ export default class MoveableTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(turnFirstDirection, pacman.getCurrentDirection());
 
-		const leftTeleporterPosition = pacman["TELEPORTER_DIRECTION_MAP"][MovementDirection.LEFT]!;
-		const rightTeleporterPosition = pacman["TELEPORTER_DIRECTION_MAP"][MovementDirection.RIGHT]!;
-
-		this.assertStrictlyEqual(
-			Board.calcTileOffsetX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
-			leftTeleporterPosition.x
-		);
-		this.assertStrictlyEqual(Board.calcTileOffsetY(18.25), leftTeleporterPosition.y);
-		this.assertStrictlyEqual(Board.calcTileOffsetX(29), rightTeleporterPosition.x);
-		this.assertStrictlyEqual(Board.calcTileOffsetY(18.25), rightTeleporterPosition.y);
-
 		let movementDirection = MovementDirection.LEFT;
-
-		pacman.stopMoving();
-		// set current direction to make moveables able to use left teleporter
-		pacman["currentDirection"] = movementDirection;
-		// set position to left teleporter's position
-		pacman.setPosition({
-			x: leftTeleporterPosition.x,
-			y: leftTeleporterPosition.y,
-		});
-		pacman.startMoving(movementDirection);
-		pacman.tick();
-
-		// moveables should have been teleported to opposite (right) teleporter
-		this.assertStrictlyEqual(rightTeleporterPosition.x, pacman.getPosition().x);
-
-		movementDirection = MovementDirection.RIGHT;
-
-		pacman.stopMoving();
-		// set current direction to make moveable able to use right teleporter
-		pacman["currentDirection"] = movementDirection;
-		// set position to right teleporter's position
-		pacman.setPosition({
-			x: rightTeleporterPosition.x,
-			y: rightTeleporterPosition.y,
-		});
-		pacman.startMoving(movementDirection);
-		pacman.tick();
-
-		// moveable should have been teleported to opposite (left) teleporter
-		this.assertStrictlyEqual(leftTeleporterPosition.x, pacman.getPosition().x);
 
 		pacman.stopMoving();
 

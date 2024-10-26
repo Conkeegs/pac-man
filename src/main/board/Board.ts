@@ -15,12 +15,13 @@ import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 // #!END_DEBUG
 import Food from "./boardobject/children/Food.js";
 import PathNode from "./boardobject/children/PathNode.js";
+import Teleporter from "./boardobject/children/Teleporter.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
 import Clyde from "./boardobject/children/character/Clyde.js";
 import Inky from "./boardobject/children/character/Inky.js";
 import PacMan from "./boardobject/children/character/PacMan.js";
 import Pinky from "./boardobject/children/character/Pinky.js";
-import type MovementDirection from "./boardobject/children/moveable/MovementDirection.js";
+import MovementDirection from "./boardobject/children/moveable/MovementDirection.js";
 
 /**
  * Represents the white lines between each "turn" node when in debug mode.
@@ -220,7 +221,7 @@ export default class Board extends GameElement {
 
 		// #!DEBUG
 		// debugging methods
-		// this.debug_createGrid();
+		this.debug_createGrid();
 		// this.createPaths();
 		// #!END_DEBUG
 
@@ -377,6 +378,14 @@ export default class Board extends GameElement {
 			Board.PACMAN_SPAWN_X,
 			Board.CLYDE_SPAWN_Y
 		);
+
+		const leftTeleporter = new Teleporter("left-teleporter", MovementDirection.RIGHT);
+		const rightTeleporter = new Teleporter("right-teleporter", MovementDirection.LEFT);
+
+		leftTeleporter.link(rightTeleporter);
+		rightTeleporter.link(leftTeleporter);
+		this.placeBoardObject(leftTeleporter, -1.5, 18.25);
+		this.placeBoardObject(rightTeleporter, 30.5, 18.25);
 
 		// #!DEBUG
 		// display fps counter if in debug mode

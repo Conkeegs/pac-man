@@ -72,7 +72,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 * The types of `BoardObject` sub-classes that this collidable can
 		 * be "collided by".
 		 */
-		public canBeCollidedByTypes: string[] = [];
+		public abstract canBeCollidedByTypes: string[];
 
 		/**
 		 * Creates a `CollidableClass` instance.

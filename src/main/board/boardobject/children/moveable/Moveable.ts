@@ -1,6 +1,5 @@
 import { App } from "../../../../App.js";
 import type { Position } from "../../../../GameElement.js";
-import { TILESIZE } from "../../../../utils/Globals.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
 import type { TurnData } from "../../../Board.js";
 import Board from "../../../Board.js";
@@ -75,25 +74,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		[MovementDirection.RIGHT]: this.setPositionX,
 		[MovementDirection.UP]: this.setPositionY,
 		[MovementDirection.DOWN]: this.setPositionY,
-	};
-	/**
-	 * The directions that this board object must be moving in order to search for the nearest "teleport" position.
-	 */
-	private readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [MovementDirection.LEFT, MovementDirection.RIGHT];
-	/**
-	 * Map of directions to teleporter positions on the board.
-	 */
-	private readonly TELEPORTER_DIRECTION_MAP: { [key: number]: Position } = {
-		[MovementDirection.LEFT]: {
-			// subtract by board object's width. otherwise, when board object is teleported to this left teleporter's position,
-			// it will have its left-hand side placed at the start of the entrance, instead of emerging from it
-			x: Board.calcTileOffsetX(1) - (TILESIZE + Board.calcTileOffset(0.5)),
-			y: Board.calcTileOffsetY(18.25),
-		},
-		[MovementDirection.RIGHT]: {
-			x: Board.calcTileOffsetX(29),
-			y: Board.calcTileOffsetY(18.25),
-		},
 	};
 
 	/**
@@ -288,35 +268,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			}
 		}
 
-		const teleporterPositions = this.TELEPORTER_DIRECTION_MAP;
-		const currentDirection = this.currentDirection!;
-
-		// if this board object is moving in any direction that leads to a teleporter, keep checking if it's within range
-		// of one, and teleport them when they are
-		if (
-			this.TELEPORTER_DIRECTIONS.includes(currentDirection) &&
-			this.isWithinTeleporterDistance(teleporterPositions[currentDirection as number]!)
-		) {
-			// set baord object's position to the opposite teleporter
-			this.setPositionX(
-				teleporterPositions[
-					Moveable.directionOpposites[currentDirection as keyof typeof Moveable.directionOpposites] as number
-				]!.x,
-				{
-					modifyCss: false,
-					modifyTransform: true,
-				}
-			);
-
-			// start moving board object in the same direction, again, because if we don't, the board object will still have "stale" data tied to it.
-			// for example, an "old" queued-turn, which was valid before the board object teleported, but invalid afterwards. it could also
-			// give pacman an invalid "nearestStoppingTurn", etc.
-			this.startMoving(currentDirection);
-
-			return;
-		}
-
-		this.movementMethods[currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
+		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
 
 		super.tick();
 	}
@@ -384,20 +336,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		return (
 			this.distanceWithinDistancePerFrame(centerPosition.x, turn.x) &&
 			this.distanceWithinDistancePerFrame(centerPosition.y, turn.y)
-		);
-	}
-
-	/**
-	 * Determines if this board object is within distance of a teleporter.
-	 *
-	 * @param position the position of the teleporter's collision
-	 * @returns boolean indicating if the board object is within the pixel threshold of the teleporter
-	 */
-	protected isWithinTeleporterDistance(teleporterPosition: Position): boolean {
-		const position = this.getPosition();
-
-		return (
-			position.y === teleporterPosition.y && this.distanceWithinDistancePerFrame(position.x, teleporterPosition.x)
 		);
 	}
 
