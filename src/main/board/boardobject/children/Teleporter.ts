@@ -63,6 +63,13 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 	}
 
 	/**
+	 * Get the teleporter this teleporter is linked to.
+	 */
+	public getLinkedTeleporter(): Teleporter | undefined {
+		return this.linkedTeleporter;
+	}
+
+	/**
 	 * Links this teleporter to another teleporter so that they may be teleport `Moveable`
 	 * board objects to each other.
 	 *

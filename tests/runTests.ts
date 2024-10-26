@@ -19,6 +19,7 @@ import PinkyTest from "./main/board/boardobject/children/character/PinkyTest.js"
 import FoodTest from "./main/board/boardobject/children/FoodTest.js";
 import MoveableTest from "./main/board/boardobject/children/moveable/MoveableTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
+import TeleporterTest from "./main/board/boardobject/children/TeleporterTest.js";
 import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js";
 import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
 import TickableTest from "./main/board/boardobject/mixins/TickableTest.js";
@@ -84,6 +85,7 @@ export default class RunTests {
 		new AppTest(),
 		new GameElementTest(),
 		new ListenableTest(),
+		new TeleporterTest(),
 	];
 
 	/**
