@@ -360,16 +360,6 @@ export class App {
 			// #!END_DEBUG
 		}
 
-		if (movingMoveables) {
-			for (let i = 0; i < movingMoveables.length; i++) {
-				const moveable = movingMoveables[i]!;
-
-				if (typeof moveable["_onCollision" as keyof typeof moveable] === "function") {
-					App.checkForCollision(moveable as Moveable & Collidable);
-				}
-			}
-		}
-
 		const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 		// some moveables may have stopped/started moving after ticking, so refresh this array
 		movingMoveables = App.MOVEABLES.filter((moveable) => moveable.isMoving());
@@ -389,6 +379,19 @@ export class App {
 				}
 
 				moveable.interpolate(alpha, oldMoveablePosition);
+			}
+		}
+
+		// check for collisions after interpolation since some collisions (teleporters for example)
+		// cause sudden, drastic position changes for Moveable instances. interpolation between the old & new
+		// positions will cause these drastic position changes to function unexpectedly
+		if (movingMoveables) {
+			for (let i = 0; i < movingMoveables.length; i++) {
+				const moveable = movingMoveables[i]!;
+
+				if (typeof moveable["_onCollision" as keyof typeof moveable] === "function") {
+					App.checkForCollision(moveable as Moveable & Collidable);
+				}
 			}
 		}
 
@@ -510,7 +513,8 @@ export class App {
 				// "_onCollision()" logic if we do not explicity call it here
 				if (collidable.isCollidingWithCollidable(collidedWith)) {
 					console.log({
-						name: collidable.getName(),
+						moveable: collidable.getName(),
+						collidedWith: collidedWith.getName(),
 						distancePerFrame,
 						boxSize: collisionBox.right - collisionBox.left,
 						tileSearchCount,
