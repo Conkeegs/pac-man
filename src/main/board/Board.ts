@@ -16,6 +16,7 @@ import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 import Food from "./boardobject/children/Food.js";
 import PathNode from "./boardobject/children/PathNode.js";
 import Teleporter from "./boardobject/children/Teleporter.js";
+import Turn from "./boardobject/children/Turn.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
 import Clyde from "./boardobject/children/character/Clyde.js";
 import Inky from "./boardobject/children/character/Inky.js";
@@ -62,11 +63,9 @@ interface PathData {
 }
 
 /**
- * Represents a position on the board where a character is allowed to turn,
- * and also includes an array of `MovementDirection` values to tell the character
- * what directions it can turn when it reaches the given turn coordinates.
+ * Represents raw turn data from the `turns.json` file.
  */
-export interface TurnData extends Position {
+interface TurnData extends Position {
 	/**
 	 * The `x` position of the turn.
 	 */
@@ -139,15 +138,15 @@ export default class Board extends GameElement {
 	 * The walls to display in the game.
 	 */
 	private wallElements: HTMLElement[] = [];
+	/**
+	 * The turns on the board.
+	 */
+	private turns: Turn[] = [];
 
 	/**
 	 * The default background color of the board.
 	 */
 	public static readonly BACKGROUND_COLOR: "#070200" = "#070200";
-	/**
-	 * Data telling characters where they are allowed to turn.
-	 */
-	public turnData: TurnData[] = [];
 	/**
 	 * Total amount of food on the board.
 	 */
@@ -182,6 +181,15 @@ export default class Board extends GameElement {
 	 */
 	public static getInstance(): Board {
 		return Board.instance || (Board.instance = new this());
+	}
+
+	/**
+	 * Get all of the board's turns.
+	 *
+	 * @returns this board's turns
+	 */
+	public getTurns(): Turn[] {
+		return Board.getInstance().turns;
 	}
 
 	/**
@@ -412,7 +420,7 @@ export default class Board extends GameElement {
 			Board.getInstance().getElement().removeAllChildren();
 		}
 
-		this.turnData = [];
+		this.turns = [];
 		this.wallElements = [];
 		Board.instance = undefined;
 	}
@@ -457,14 +465,14 @@ export default class Board extends GameElement {
 	 * Load all board's turns into memory.
 	 */
 	private async loadTurnData(): Promise<void> {
-		// tell all characters where they can turn
+		// tell all moveables where they can turn
 		return fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
-				turn.x = Board.calcTileOffsetX(turn.x + 0.5);
-				turn.y = Board.calcTileOffsetY(turn.y - 0.5);
-			}
+				const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
 
-			this.turnData = turnData;
+				this.turns.push(turnBoardObject);
+				this.placeBoardObject(turnBoardObject, turn.x + 0.5, turn.y - 0.5);
+			}
 		});
 	}
 
