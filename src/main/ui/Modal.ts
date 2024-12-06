@@ -18,7 +18,5 @@ export default class Modal extends UiElement {
 
 		this.width = width;
 		this.height = height;
-
-		this.getElement().classList.add("modal");
 	}
 }

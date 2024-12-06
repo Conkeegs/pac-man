@@ -51,8 +51,6 @@ export default class Button extends BoardObject {
 
 		const element = this.getElement();
 
-		element.classList.add("button");
-
 		const boardText = this.boardText;
 		const boardTextElement = boardText.getElement();
 		const height = this._height;
