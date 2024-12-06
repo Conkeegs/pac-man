@@ -20,6 +20,7 @@ import FoodTest from "./main/board/boardobject/children/FoodTest.js";
 import MoveableTest from "./main/board/boardobject/children/moveable/MoveableTest.js";
 import PathNodeTest from "./main/board/boardobject/children/PathNodeTest.js";
 import TeleporterTest from "./main/board/boardobject/children/TeleporterTest.js";
+import TurnTest from "./main/board/boardobject/children/TurnTest.js";
 import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js";
 import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
 import TickableTest from "./main/board/boardobject/mixins/TickableTest.js";
@@ -86,6 +87,7 @@ export default class RunTests {
 		new GameElementTest(),
 		new ListenableTest(),
 		new TeleporterTest(),
+		new TurnTest(),
 	];
 
 	/**

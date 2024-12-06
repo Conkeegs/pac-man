@@ -4,6 +4,7 @@ import Board from "../../../../../../src/main/board/Board.js";
 import Character from "../../../../../../src/main/board/boardobject/children/character/Character.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
 import { TILESIZE } from "../../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../../src/main/utils/Utils.js";
 import Test from "../../../../../base/Base.js";
@@ -68,11 +69,12 @@ export default class CharacterTest extends Test {
 		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
-		const turn = {
+		const turn = new Turn("test-turn", [movementDirection]);
+
+		turn.setPosition({
 			x: 500,
 			y: 700,
-			directions: [movementDirection],
-		};
+		});
 
 		pacman["turnQueue"].push({
 			direction: movementDirection,

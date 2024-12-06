@@ -19,6 +19,9 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	protected override readonly _width: number = TILESIZE / 4;
 	protected override readonly _height = TILESIZE / 4;
 
+	/**
+	 * This turn's `MovementDirection`s it has available.
+	 */
 	private directions: MovementDirection[];
 
 	/**
@@ -43,6 +46,11 @@ export default class Turn extends MakeCollidable(BoardObject) {
 		});
 	}
 
+	/**
+	 * Get this turn's `MovementDirection`s it has available.
+	 *
+	 * @returns the available directions of the turn
+	 */
 	public getDirections(): MovementDirection[] {
 		return this.directions;
 	}

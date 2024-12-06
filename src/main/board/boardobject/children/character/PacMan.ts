@@ -4,12 +4,12 @@ import { App } from "../../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
-import type { TurnData } from "../../../Board.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
+import type Turn from "../Turn.js";
 import Blinky from "./Blinky.js";
 import Character from "./Character.js";
 import Clyde from "./Clyde.js";
@@ -25,9 +25,9 @@ export default class PacMan extends MakeListenable(Character) {
 	 */
 	private listenForKeydown: boolean = true;
 	/**
-	 * This character's nearest turn which does not accept its current movement direction, and "stops" the character from moving.
+	 * Pacman's nearest turn which does not accept its current movement direction, and "stops" pacman from moving.
 	 */
-	private nearestStoppingTurn: TurnData | undefined;
+	private nearestStoppingTurn: Turn | undefined;
 	/**
 	 * Whether or not pacman is spawning.
 	 */
@@ -120,7 +120,6 @@ export default class PacMan extends MakeListenable(Character) {
 		super.tick();
 
 		const turnQueueLengthAfterTick = this.turnQueue.length;
-
 		const nearestStoppingTurn = this.nearestStoppingTurn;
 
 		// if the turnqueue is full after ticking, or the turnqueue changes from 1

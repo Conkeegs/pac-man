@@ -31,7 +31,7 @@ export default class BoardTest extends Test {
 		this.assertNotEmpty(App.COLLIDABLES_MAP);
 		this.assertNotEmpty(App.BOARDOBJECTS);
 		this.assertNotEmpty(App.CHARACTERS);
-		this.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board.getTurns());
 		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(boardDiv.childElementCount > 0);
 		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
@@ -127,14 +127,13 @@ export default class BoardTest extends Test {
 		const board = Board.getInstance();
 
 		this.assertFalse(board.getElement().childElementCount === 0);
-		this.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board.getTurns());
 		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(Board["instance"] instanceof Board);
 
 		board.destroy();
 
 		this.assertTrue(board.getElement().childElementCount === 0);
-		this.assertEmpty(board.turnData);
 		this.assertEmpty(board["wallElements"]);
 		this.assertOfType("undefined", Board["instance"]);
 	}
@@ -164,7 +163,7 @@ export default class BoardTest extends Test {
 
 		await board["loadTurnData"]();
 
-		this.assertNotEmpty(board.turnData);
+		this.assertNotEmpty(board.getTurns());
 	}
 
 	/**

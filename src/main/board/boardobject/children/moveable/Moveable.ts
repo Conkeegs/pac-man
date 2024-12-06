@@ -1,10 +1,10 @@
 import { App } from "../../../../App.js";
 import type { Position } from "../../../../GameElement.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
-import type { TurnData } from "../../../Board.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
 import MakeTickable from "../../mixins/Tickable.js";
+import type Turn from "../Turn.js";
 import MovementDirection from "./MovementDirection.js";
 
 /**
@@ -29,7 +29,7 @@ export type StartMoveOptions = {
 	 * be provided because it's possible that this board object is simply "turning around" in the opposite direction of
 	 * where it is currently heading, and not making a 90 degree turn.
 	 */
-	fromTurn?: TurnData;
+	fromTurn?: Turn;
 };
 
 /**
@@ -89,35 +89,39 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * within distance of the turn yet, and so must queue the turn. The length of this array
 	 * must always be `1`.
 	 */
-	protected turnQueue: { direction: MovementDirection; turn: TurnData }[] = [];
+	protected turnQueue: { direction: MovementDirection; turn: Turn }[] = [];
 	/**
 	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
 	 * direction this board object is currently heading and if it is on the same "row"/"column" as the board object.
 	 */
 	protected turnValidators = {
-		[MovementDirection.LEFT]: (turn: TurnData) => {
+		[MovementDirection.LEFT]: (turn: Turn) => {
+			const turnCenterPosition = turn.getCenterPosition();
 			const centerPosition = this.getCenterPosition();
 
 			// only turns to the left of board object and in the same row
-			return turn.x <= centerPosition.x && turn.y === centerPosition.y;
+			return turnCenterPosition.x <= centerPosition.x && turnCenterPosition.y === centerPosition.y;
 		},
-		[MovementDirection.RIGHT]: (turn: TurnData) => {
+		[MovementDirection.RIGHT]: (turn: Turn) => {
+			const turnCenterPosition = turn.getCenterPosition();
 			const centerPosition = this.getCenterPosition();
 
 			// only turns to the right of board object and in the same row
-			return turn.x >= centerPosition.x && turn.y === centerPosition.y;
+			return turnCenterPosition.x >= centerPosition.x && turnCenterPosition.y === centerPosition.y;
 		},
-		[MovementDirection.UP]: (turn: TurnData) => {
+		[MovementDirection.UP]: (turn: Turn) => {
+			const turnCenterPosition = turn.getCenterPosition();
 			const centerPosition = this.getCenterPosition();
 
 			// only turns above board object and in the same column
-			return turn.y <= centerPosition.y && turn.x === centerPosition.x;
+			return turnCenterPosition.y <= centerPosition.y && turnCenterPosition.x === centerPosition.x;
 		},
-		[MovementDirection.DOWN]: (turn: TurnData) => {
+		[MovementDirection.DOWN]: (turn: Turn) => {
+			const turnCenterPosition = turn.getCenterPosition();
 			const centerPosition = this.getCenterPosition();
 
 			// only turns below board object and in the same column
-			return turn.y >= centerPosition.y && turn.x === centerPosition.x;
+			return turnCenterPosition.y >= centerPosition.y && turnCenterPosition.x === centerPosition.x;
 		},
 	};
 	/**
@@ -309,7 +313,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param direction the direction the board object wants to move at a future point in time
 	 * @param turn the turn location the board object wants to turn at in a future point in time
 	 */
-	protected queueTurn(direction: MovementDirection, turn: TurnData): void {
+	protected queueTurn(direction: MovementDirection, turn: Turn): void {
 		if (this.turnQueue.length) {
 			// clear the queue if we're queueing a separate turn before another ones completes
 			this.dequeueTurns();
@@ -327,15 +331,16 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param turn the turn position to check against
 	 * @returns boolean indicating if the board object is within the pixel threshold of this turn
 	 */
-	protected isWithinTurnDistance(turn: TurnData): boolean {
+	protected isWithinTurnDistance(turn: Turn): boolean {
 		const centerPosition = this.getCenterPosition();
+		const turnCenterPosition = turn.getCenterPosition();
 
 		// add half of the board object's width/height to the turn's x & y position so that
 		// our threshold takes effect when the board object is about "half" way over the turn's
 		// position
 		return (
-			this.distanceWithinDistancePerFrame(centerPosition.x, turn.x) &&
-			this.distanceWithinDistancePerFrame(centerPosition.y, turn.y)
+			this.distanceWithinDistancePerFrame(centerPosition.x, turnCenterPosition.x) &&
+			this.distanceWithinDistancePerFrame(centerPosition.y, turnCenterPosition.y)
 		);
 	}
 
@@ -347,8 +352,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param turn the turn position object wants to turn at
 	 * @returns boolean indicating whether the board object can use a given `direction` to turn at the given `turn`
 	 */
-	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: TurnData): boolean {
-		return turn.directions.includes(direction);
+	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: Turn): boolean {
+		return turn.getDirections().includes(direction);
 	}
 
 	/**
@@ -358,12 +363,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 *
 	 * @param turn the turn to snap this board object's physical to
 	 */
-	protected offsetPositionToTurn(turn: TurnData): void {
+	protected offsetPositionToTurn(turn: Turn): void {
 		const oldPosition = this.getPosition();
+		const turnCenterPosition = turn.getCenterPosition();
 		// find the "true" position x & y that the board object should be placed at when performing a turn (since
-		// it could be within the turn's threshold, but not perfectly placed at the turn position)
-		const boardObjectTurnX = turn.x - this.getWidth()! / 2;
-		const boardObjectTurnY = turn.y - this.getHeight()! / 2;
+		// it could be within the turn's distance, but not perfectly placed at the turn position)
+		const boardObjectTurnX = turnCenterPosition.x - this.getWidth()! / 2;
+		const boardObjectTurnY = turnCenterPosition.y - this.getHeight()! / 2;
 
 		// we know at this point that we're within this turn's threshold, so correct the board object's position
 		// by moving it to the turn's exact location to keep the board object's movement consistent
@@ -386,23 +392,23 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 *
 	 * @returns the closest turn to this board object
 	 */
-	protected findNearestTurn(): TurnData | undefined {
+	protected findNearestTurn(): Turn | undefined {
 		// find turns "ahead" of board object
-		const filteredTurnData = Board.getInstance().turnData!.filter((turn) =>
-			this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn)
-		);
+		const filteredTurns = Board.getInstance()
+			.getTurns()
+			.filter((turn) => this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn));
 
 		const currentDirection = this.currentDirection;
 
 		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-		// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows this
+		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
 		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
-		// "start" of the "filteredTurnData" array
+		// "start" of the "filteredTurns" array
 		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-			filteredTurnData.reverse();
+			filteredTurns.reverse();
 		}
 
-		return filteredTurnData[0];
+		return filteredTurns[0];
 	}
 
 	/**
@@ -415,34 +421,39 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @returns the closest turn to this board object that falls under `filter`'s criteria
 	 */
 	protected findNearestTurnWhere(
-		filter: (turn: TurnData) => boolean,
-		callback?: ((turn: TurnData) => unknown) | undefined
-	): TurnData | undefined {
+		filter: (turn: Turn) => boolean,
+		callback?: ((turn: Turn) => unknown) | undefined
+	): Turn | undefined {
 		// find turns "ahead" of board object and that fit the "filter"
-		const filteredTurnData = Board.getInstance().turnData!.filter((turn) => {
-			if (this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) && filter(turn)) {
-				// run callback if our filter passes, and it's defined
-				if (callback) {
-					callback(turn);
+		const filteredTurns = Board.getInstance()
+			.getTurns()
+			.filter((turn) => {
+				if (
+					this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) &&
+					filter(turn)
+				) {
+					// run callback if our filter passes, and it's defined
+					if (callback) {
+						callback(turn);
+					}
+
+					return true;
 				}
 
-				return true;
-			}
-
-			return false;
-		});
+				return false;
+			});
 
 		const currentDirection = this.currentDirection;
 
 		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-		// reverse the array here so that when we call "find()" on "filteredTurnData" in order to find the first turn that allows this
+		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
 		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
-		// "start" of the "filteredTurnData" array
+		// "start" of the "filteredTurns" array
 		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-			filteredTurnData.reverse();
+			filteredTurns.reverse();
 		}
 
-		return filteredTurnData[0];
+		return filteredTurns[0];
 	}
 
 	/**

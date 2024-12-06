@@ -5,6 +5,7 @@ import PacMan from "../../../../../../src/main/board/boardobject/children/charac
 import Pinky from "../../../../../../src/main/board/boardobject/children/character/Pinky.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
 import type { Position } from "../../../../../../src/main/GameElement.js";
 import { millisToSeconds } from "../../../../../../src/main/utils/Utils.js";
 import Test from "../../../../../base/Base.js";
@@ -133,11 +134,12 @@ export default class MoveableTest extends Test {
 		this.assertFalse(pacman.isMoving());
 
 		const movementDirection = MovementDirection.UP;
-		const turn = {
+		const turn = new Turn("test-turn", [movementDirection]);
+
+		turn.setPosition({
 			x: 500,
 			y: 700,
-			directions: [movementDirection],
-		};
+		});
 
 		pacman["turnQueue"].push({
 			direction: movementDirection,
@@ -157,14 +159,15 @@ export default class MoveableTest extends Test {
 		});
 
 		const position = pacman.getPosition();
+		const turnCenterPosition = turn.getCenterPosition();
 
 		this.assertTrue(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
 		this.assertOfType("number", pacman["_animationIntervalId"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
-		this.assertStrictlyEqual(turn.x - pacman.getWidth()! / 2, position.x);
-		this.assertStrictlyEqual(turn.y - pacman.getHeight()! / 2, position.y);
+		this.assertStrictlyEqual(turnCenterPosition.x - pacman.getWidth()! / 2, position.x);
+		this.assertStrictlyEqual(turnCenterPosition.y - pacman.getHeight()! / 2, position.y);
 
 		pacman.stopMoving();
 	}
@@ -176,12 +179,13 @@ export default class MoveableTest extends Test {
 		await Board.getInstance()["loadTurnData"]();
 
 		const pacman = new PacMan();
-		const turn = Board.getInstance().turnData![0]!;
-		const turnFirstDirection = turn.directions[0]!;
+		const turn = Board.getInstance().getTurns()[0]!;
+		const turnCenterPosition = turn.getCenterPosition();
+		const turnFirstDirection = turn.getDirections()[0]!;
 
 		pacman.setPosition({
-			x: turn.x - pacman.getWidth() / 2,
-			y: turn.y - pacman.getHeight() / 2,
+			x: turnCenterPosition.x - pacman.getWidth() / 2,
+			y: turnCenterPosition.y - pacman.getHeight() / 2,
 		});
 		pacman.startMoving(turnFirstDirection);
 		pacman.tick();
@@ -330,39 +334,32 @@ export default class MoveableTest extends Test {
 
 		this.assertArrayLength(0, moveable["turnQueue"]);
 
-		const turn = Board.getInstance().turnData![0]!;
+		const turn = Board.getInstance().getTurns()[0]!;
 
-		moveable["queueTurn"](turn.directions[0]!, turn);
-
-		this.assertArrayLength(1, moveable["turnQueue"]);
-		this.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
-		this.assertStrictlyEqual(turn.directions[0]!, moveable["turnQueue"][0]!.direction);
-
-		moveable["queueTurn"](turn.directions[1]!, turn);
+		moveable["queueTurn"](turn.getDirections()[0]!, turn);
 
 		this.assertArrayLength(1, moveable["turnQueue"]);
 		this.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
-		this.assertStrictlyEqual(turn.directions[1]!, moveable["turnQueue"][0]!.direction);
+		this.assertStrictlyEqual(turn.getDirections()[0]!, moveable["turnQueue"][0]!.direction);
+
+		moveable["queueTurn"](turn.getDirections()[1]!, turn);
+
+		this.assertArrayLength(1, moveable["turnQueue"]);
+		this.assertStrictlyEqual(turn, moveable["turnQueue"][0]!.turn);
+		this.assertStrictlyEqual(turn.getDirections()[1]!, moveable["turnQueue"][0]!.direction);
 	}
 
 	/**
 	 * Test that moveables can check if they can turn at given turns correctly.
 	 */
 	public canTurnWithMoveDirectionTest(): void {
-		this.assertTrue(
-			Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, {
-				x: 300,
-				y: 300,
-				directions: [MovementDirection.RIGHT],
-			})
-		);
-		this.assertFalse(
-			Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, {
-				x: 300,
-				y: 300,
-				directions: [MovementDirection.LEFT],
-			})
-		);
+		const turnWithRightDirection = new Turn("test-right", [MovementDirection.RIGHT]);
+
+		this.assertTrue(Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, turnWithRightDirection));
+
+		const turnWithLeftDirection = new Turn("test-left", [MovementDirection.LEFT]);
+
+		this.assertFalse(Moveable["canTurnWithMoveDirection"](MovementDirection.RIGHT, turnWithLeftDirection));
 	}
 
 	/**
@@ -372,14 +369,15 @@ export default class MoveableTest extends Test {
 		await Board.getInstance()["loadTurnData"]();
 
 		const moveable = new PacMan();
-		const turnData = Board.getInstance().turnData![0]!;
+		const turnData = Board.getInstance().getTurns()[0]!;
 
 		moveable["offsetPositionToTurn"](turnData);
 
 		const moveablePosition = moveable.getPosition();
+		const turnCenterPosition = turnData.getCenterPosition();
 
-		this.assertStrictlyEqual(turnData.x - moveable.getWidth() / 2, moveablePosition.x);
-		this.assertStrictlyEqual(turnData.y - moveable.getHeight() / 2, moveablePosition.y);
+		this.assertStrictlyEqual(turnCenterPosition.x - moveable.getWidth() / 2, moveablePosition.x);
+		this.assertStrictlyEqual(turnCenterPosition.y - moveable.getHeight() / 2, moveablePosition.y);
 	}
 
 	/**
@@ -387,56 +385,62 @@ export default class MoveableTest extends Test {
 	 */
 	public async findNearestTurnTest(): Promise<void> {
 		const moveable = new PacMan();
-		const moveablePosition: Position = {
-			x: 300,
-			y: 400,
-		};
 		let direction = MovementDirection.RIGHT;
 
-		moveable.setPosition(moveablePosition);
+		moveable.setPosition({
+			x: 300,
+			y: 400,
+		});
 		moveable.startMoving(direction);
 
-		Board.getInstance().turnData = [
-			{
-				x: moveablePosition.x + 40,
-				y: moveablePosition.y + moveable.getHeight() / 2,
-				directions: [direction],
-			},
-			{
-				x: moveablePosition.x + 60,
-				y: moveablePosition.y + moveable.getHeight() / 2,
-				directions: [direction],
-			},
-		];
+		const moveableCenterPosition = moveable.getCenterPosition();
+		const turn1 = new Turn("turn-1", [direction]);
+		const turn2 = new Turn("turn-2", [direction]);
+
+		turn1.setPosition({
+			x: moveableCenterPosition.x + 40,
+			y: moveableCenterPosition.y - turn1.getHeight() / 2,
+		});
+		turn2.setPosition({
+			x: moveableCenterPosition.x + 60,
+			y: moveableCenterPosition.y - turn2.getHeight() / 2,
+		});
+
+		Board.getInstance()["turns"] = [turn1, turn2];
 
 		let nearestTurn = moveable["findNearestTurn"]()!;
+		let nearestTurnPosition = nearestTurn.getPosition();
+		let actualNearestTurnPosition = Board.getInstance().getTurns()[0]!.getPosition();
 
 		// nearest turn should be one that is least pixels away horizontally
-		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
-		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
+		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
+		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
 
 		direction = MovementDirection.UP;
 
 		moveable.startMoving(direction);
 
-		Board.getInstance().turnData = [
-			{
-				x: moveablePosition.x + moveable.getWidth() / 2,
-				y: moveablePosition.y - 60,
-				directions: [direction],
-			},
-			{
-				x: moveablePosition.x + moveable.getWidth() / 2,
-				y: moveablePosition.y - 40,
-				directions: [direction],
-			},
-		];
+		const turn3 = new Turn("turn-3", [direction]);
+		const turn4 = new Turn("turn-4", [direction]);
+
+		turn3.setPosition({
+			x: moveableCenterPosition.x - turn3.getWidth() / 2,
+			y: moveableCenterPosition.y - 60,
+		});
+		turn4.setPosition({
+			x: moveableCenterPosition.x - turn4.getWidth() / 2,
+			y: moveableCenterPosition.y - 40,
+		});
+
+		Board.getInstance()["turns"] = [turn3, turn4];
 
 		nearestTurn = moveable["findNearestTurn"]()!;
+		nearestTurnPosition = nearestTurn.getPosition();
+		actualNearestTurnPosition = Board.getInstance().getTurns()[1]!.getPosition();
 
 		// nearest turn should be one that is least pixels away vertically
-		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
-		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
+		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
+		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
 	}
 
 	/**
@@ -444,56 +448,66 @@ export default class MoveableTest extends Test {
 	 */
 	public async findNearestTurnWhereTest(): Promise<void> {
 		const moveable = new PacMan();
-		const moveablePosition: Position = {
-			x: 300,
-			y: 400,
-		};
 		let direction = MovementDirection.RIGHT;
 
-		moveable.setPosition(moveablePosition);
+		moveable.setPosition({
+			x: 300,
+			y: 400,
+		});
 		moveable.startMoving(direction);
 
-		Board.getInstance().turnData = [
-			{
-				x: moveablePosition.x + 40,
-				y: moveablePosition.y + moveable.getHeight() / 2,
-				directions: [direction],
-			},
-			{
-				x: moveablePosition.x + 60,
-				y: moveablePosition.y + moveable.getHeight() / 2,
-				directions: [direction],
-			},
-		];
+		const moveableCenterPosition = moveable.getCenterPosition();
+		const turn1 = new Turn("turn-1", [direction]);
+		const turn2 = new Turn("turn-2", [direction]);
 
-		let nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.x === moveablePosition.x + 40)!;
+		turn1.setPosition({
+			x: moveableCenterPosition.x + 40,
+			y: moveableCenterPosition.y - turn1.getHeight() / 2,
+		});
+		turn2.setPosition({
+			x: moveableCenterPosition.x + 60,
+			y: moveableCenterPosition.y - turn2.getHeight() / 2,
+		});
+
+		Board.getInstance()["turns"] = [turn1, turn2];
+
+		let nearestTurn = moveable["findNearestTurnWhere"](
+			(turn) => turn.getPosition().x === moveableCenterPosition.x + 40
+		)!;
+		let nearestTurnPosition = nearestTurn.getPosition();
+		let actualNearestTurnPosition = Board.getInstance().getTurns()[0]!.getPosition();
 
 		// nearest turn should be one that is least pixels away horizontally and fits filter
-		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![0]!.x);
-		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![0]!.y);
+		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
+		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
 
 		direction = MovementDirection.UP;
 
 		moveable.startMoving(direction);
 
-		Board.getInstance().turnData = [
-			{
-				x: moveablePosition.x + moveable.getWidth() / 2,
-				y: moveablePosition.y - 60,
-				directions: [direction],
-			},
-			{
-				x: moveablePosition.x + moveable.getWidth() / 2,
-				y: moveablePosition.y - 40,
-				directions: [direction],
-			},
-		];
+		const turn3 = new Turn("turn-3", [direction]);
+		const turn4 = new Turn("turn-4", [direction]);
 
-		nearestTurn = moveable["findNearestTurnWhere"]((turn) => turn.y === moveablePosition.y - 40)!;
+		turn3.setPosition({
+			x: moveableCenterPosition.x - turn3.getWidth() / 2,
+			y: moveableCenterPosition.y - 60,
+		});
+		turn4.setPosition({
+			x: moveableCenterPosition.x - turn4.getWidth() / 2,
+			y: moveableCenterPosition.y - 40,
+		});
+
+		Board.getInstance()["turns"] = [turn3, turn4];
+
+		nearestTurn = moveable["findNearestTurnWhere"](
+			(turn) => turn.getPosition().y === moveableCenterPosition.y - 40
+		)!;
+		nearestTurnPosition = nearestTurn.getPosition();
+		actualNearestTurnPosition = Board.getInstance().getTurns()[1]!.getPosition();
 
 		// nearest turn should be one that is least pixels away vertically and fits filter
-		this.assertStrictlyEqual(nearestTurn.x, Board.getInstance().turnData![1]!.x);
-		this.assertStrictlyEqual(nearestTurn.y, Board.getInstance().turnData![1]!.y);
+		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
+		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
 	}
 
 	/**
@@ -513,12 +527,9 @@ export default class MoveableTest extends Test {
 	 */
 	public dequeueTurnsTest(): void {
 		const moveable = new PacMan();
+		const queuedTurn = new Turn("test-turn", [MovementDirection.RIGHT]);
 
-		moveable["queueTurn"](MovementDirection.RIGHT, {
-			x: 300,
-			y: 400,
-			directions: [MovementDirection.RIGHT],
-		});
+		moveable["queueTurn"](MovementDirection.RIGHT, queuedTurn);
 
 		this.assertArrayLength(1, moveable["turnQueue"]);
 

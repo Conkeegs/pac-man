@@ -2,6 +2,7 @@ import Board from "../../../../../../src/main/board/Board.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
 import { ANIMATION_TYPE } from "../../../../../../src/main/board/boardobject/mixins/Animateable.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
@@ -63,14 +64,15 @@ export default class PacManTest extends Test {
 		// should not "stop" at wall yet
 		this.assertTrue(pacman.isMoving());
 
-		const turnWithRightDirection = Board.getInstance().turnData!.find((turn) =>
-			turn.directions.includes(MovementDirection.RIGHT)
-		)!;
+		const turnWithRightDirection = Board.getInstance()
+			.getTurns()
+			.find((turn) => turn.getDirections().includes(MovementDirection.RIGHT))!;
+		const turnWithRightDirectionPosition = turnWithRightDirection.getPosition();
 
 		pacman["queueTurn"](MovementDirection.DOWN, turnWithRightDirection);
 		pacman.setPosition({
-			x: turnWithRightDirection.x - pacman.getWidth() / 2,
-			y: turnWithRightDirection.y - pacman.getHeight() / 2,
+			x: turnWithRightDirectionPosition.x - pacman.getWidth() / 2,
+			y: turnWithRightDirectionPosition.y - pacman.getHeight() / 2,
 		});
 
 		this.assertArrayLength(1, pacman["turnQueue"]);
@@ -81,14 +83,15 @@ export default class PacManTest extends Test {
 		// should not "stop" at wall yet since queued turn exists
 		this.assertTrue(pacman.isMoving());
 
-		const turnWithNoRightDirection = Board.getInstance().turnData!.find(
-			(turn) => !turn.directions.includes(MovementDirection.RIGHT)
-		)!;
+		const turnWithNoRightDirection = Board.getInstance()
+			.getTurns()
+			.find((turn) => !turn.getDirections().includes(MovementDirection.RIGHT))!;
+		const turnWithNoRightDirectionCenterPosition = turnWithNoRightDirection.getCenterPosition();
 
 		pacman.startMoving(MovementDirection.RIGHT);
 		pacman.setPosition({
-			x: turnWithNoRightDirection.x - pacman.getWidth() / 2,
-			y: turnWithNoRightDirection.y - pacman.getHeight() / 2,
+			x: turnWithNoRightDirectionCenterPosition.x - (pacman.getDistancePerFrame() + pacman.getWidth() / 2),
+			y: turnWithNoRightDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
 
 		pacman.tick();
@@ -136,11 +139,14 @@ export default class PacManTest extends Test {
 		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
 
 		pacman.stopMoving();
-		pacman["nearestStoppingTurn"] = {
+
+		const nearestStoppingTurn = new Turn("test-turn", [MovementDirection.UP]);
+
+		nearestStoppingTurn.setPosition({
 			x: 300,
 			y: 400,
-			directions: [MovementDirection.UP],
-		};
+		});
+		pacman["nearestStoppingTurn"] = nearestStoppingTurn;
 
 		document.body.dispatchEvent(
 			new KeyboardEvent("keydown", {
@@ -159,13 +165,14 @@ export default class PacManTest extends Test {
 
 		await Board.getInstance()["loadTurnData"]();
 
-		const turnWithLeftDirection = Board.getInstance().turnData!.find((turn) =>
-			Moveable["canTurnWithMoveDirection"](MovementDirection.LEFT, turn)
-		)!;
+		const turnWithLeftDirection = Board.getInstance()
+			.getTurns()
+			.find((turn) => Moveable["canTurnWithMoveDirection"](MovementDirection.LEFT, turn))!;
+		const turnWithLeftDirectionCenterPosition = turnWithLeftDirection.getCenterPosition();
 
 		pacman.setPosition({
-			x: turnWithLeftDirection.x - pacman.getWidth() / 2,
-			y: turnWithLeftDirection.y - pacman.getHeight() / 2,
+			x: turnWithLeftDirectionCenterPosition.x - pacman.getWidth() / 2,
+			y: turnWithLeftDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
 		document.body.dispatchEvent(
 			new KeyboardEvent("keydown", {
@@ -182,13 +189,14 @@ export default class PacManTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
 
-		const turnWithDownDirection = Board.getInstance().turnData!.find((turn) =>
-			Moveable["canTurnWithMoveDirection"](MovementDirection.DOWN, turn)
-		)!;
+		const turnWithDownDirection = Board.getInstance()
+			.getTurns()
+			.find((turn) => Moveable["canTurnWithMoveDirection"](MovementDirection.DOWN, turn))!;
+		const turnWithDownDirectionCenterPosition = turnWithDownDirection.getCenterPosition();
 
 		pacman.setPosition({
-			x: turnWithDownDirection.x + pacman.getWidth(),
-			y: turnWithDownDirection.y - pacman.getHeight() / 2,
+			x: turnWithDownDirectionCenterPosition.x + pacman.getWidth(),
+			y: turnWithDownDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
 
 		document.body.dispatchEvent(
@@ -210,10 +218,11 @@ export default class PacManTest extends Test {
 		this.assertNotEmpty(pacman["turnQueue"]);
 
 		const queuedTurn = pacman["turnQueue"][0]!;
+		const queuedTurnCenterPosition = queuedTurn.turn.getCenterPosition();
 
 		this.assertStrictlyEqual(MovementDirection.DOWN, queuedTurn.direction);
-		this.assertStrictlyEqual(turnWithDownDirection.x, queuedTurn.turn.x);
-		this.assertStrictlyEqual(turnWithDownDirection.y, queuedTurn.turn.y);
+		this.assertStrictlyEqual(turnWithDownDirectionCenterPosition.x, queuedTurnCenterPosition.x);
+		this.assertStrictlyEqual(turnWithDownDirectionCenterPosition.y, queuedTurnCenterPosition.y);
 	}
 
 	/**
