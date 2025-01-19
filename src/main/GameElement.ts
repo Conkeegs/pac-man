@@ -285,6 +285,17 @@ export abstract class GameElement {
 	}
 
 	/**
+	 * Checks if two positions are equal in coordinate values.
+	 *
+	 * @param position1 first position to check against
+	 * @param position2 second position to check against
+	 * @returns if both positions are equal
+	 */
+	public static positionsEqual(position1: Position, position2: Position): boolean {
+		return position1.x === position2.x && position1.y === position2.y;
+	}
+
+	/**
 	 * Sets this game element's `transformX` and `translateY` CSS values and in-memory.
 	 *
 	 * @param transform the amounts to change the `translateX` and `translateY` values by

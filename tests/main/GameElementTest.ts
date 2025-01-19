@@ -3,7 +3,7 @@ import Board from "../../src/main/board/Board.js";
 import Inky from "../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
 import Food from "../../src/main/board/boardobject/children/Food.js";
-import { GameElement } from "../../src/main/GameElement.js";
+import { GameElement, type Position } from "../../src/main/GameElement.js";
 import { ROWS, TILESIZE } from "../../src/main/utils/Globals.js";
 import { get, px } from "../../src/main/utils/Utils.js";
 import Test from "../base/Base.js";
@@ -565,5 +565,32 @@ export default class GameElementTest extends Test {
 			`translate(${px(newTransformX)}, ${px(newTransformY)})`,
 			gameElement.getElement().css("transform")
 		);
+	}
+
+	/**
+	 * Test that game element class can check if two positions are equal properly.
+	 */
+	public positionsEqualTest(): void {
+		let position1: Position = {
+			x: 300,
+			y: 500,
+		};
+		let position2: Position = {
+			x: 400,
+			y: 500,
+		};
+
+		this.assertFalse(GameElement.positionsEqual(position1, position2));
+
+		position1 = {
+			x: 300,
+			y: 500,
+		};
+		position2 = {
+			x: 300,
+			y: 500,
+		};
+
+		this.assertTrue(GameElement.positionsEqual(position1, position2));
 	}
 }

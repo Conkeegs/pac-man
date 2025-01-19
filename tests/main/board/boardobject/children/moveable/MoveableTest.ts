@@ -81,6 +81,23 @@ export default class MoveableTest extends Test {
 	}
 
 	/**
+	 * Test that moveables can get their turn queue data correctly.
+	 */
+	public getTurnQueueTest(): void {
+		const moveable = new PacMan();
+		const turnQueue = moveable.getTurnQueue();
+
+		this.assertEmpty(turnQueue);
+
+		const testTurn = new Turn("test-turn", [MovementDirection.RIGHT]);
+
+		moveable["queueTurn"](MovementDirection.RIGHT, testTurn);
+
+		this.assertStrictlyEqual(testTurn, turnQueue[0]!.turn);
+		this.assertStrictlyEqual(MovementDirection.RIGHT, turnQueue[0]!.direction);
+	}
+
+	/**
 	 * Test that moveables can get whether or not they are moving correctly.
 	 */
 	public isMovingTest(): void {

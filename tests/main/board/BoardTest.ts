@@ -133,7 +133,7 @@ export default class BoardTest extends Test {
 
 		board.destroy();
 
-		this.assertTrue(board.getElement().childElementCount === 0);
+		this.assertEmpty(board.getElement());
 		this.assertEmpty(board["wallElements"]);
 		this.assertOfType("undefined", Board["instance"]);
 	}

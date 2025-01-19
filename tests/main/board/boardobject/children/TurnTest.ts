@@ -1,5 +1,7 @@
+import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import Turn from "../../../../../src/main/board/boardobject/children/Turn.js";
+import { GameElement, type Position } from "../../../../../src/main/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";
@@ -28,5 +30,44 @@ export default class TurnTest extends Test {
 		const testTurn = new Turn("test-turn", directions);
 
 		this.assertStrictlyEqual(directions, testTurn.getDirections());
+	}
+
+	/**
+	 * Test that collisions with turns behave correctly.
+	 */
+	public onCollisionTest(): void {
+		const testTurn = new Turn("test-turn", [MovementDirection.LEFT, MovementDirection.RIGHT]);
+		const collidableMoveable = new PacMan();
+		const movementDirection = MovementDirection.RIGHT;
+
+		collidableMoveable["queueTurn"](movementDirection, testTurn);
+		testTurn._onCollision(collidableMoveable);
+
+		// valid turn allows collidableMoveable to start moving in one of its directions
+		this.assertTrue(collidableMoveable.isMoving());
+		this.assertStrictlyEqual(movementDirection, collidableMoveable.getCurrentDirection());
+
+		const testPosition: Position = {
+			x: 300,
+			y: 500,
+		};
+
+		testTurn.setPosition({
+			x: testPosition.x,
+			y: testPosition.y,
+		});
+		collidableMoveable["nearestStoppingTurn"] = testTurn;
+		testTurn._onCollision(collidableMoveable);
+
+		const turnCenterPosition = testTurn.getCenterPosition();
+
+		this.assertStrictlyEqual(2, collidableMoveable._animationFrame);
+		this.assertFalse(collidableMoveable.isMoving());
+		this.assertTrue(
+			GameElement.positionsEqual(collidableMoveable.getPosition(), {
+				x: turnCenterPosition.x - collidableMoveable.getWidth()! / 2,
+				y: turnCenterPosition.y - collidableMoveable.getHeight()! / 2,
+			})
+		);
 	}
 }

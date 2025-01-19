@@ -33,6 +33,12 @@ export type StartMoveOptions = {
 };
 
 /**
+ * Represents data present within a moveable's turn queue such as the direction it will turn
+ * and the turn object at which it will turn.
+ */
+type TurnQueue = { direction: MovementDirection; turn: Turn }[];
+
+/**
  * Represents a board object that is capable of moving across the board.
  */
 export default abstract class Moveable extends MakeTickable(BoardObject) {
@@ -89,7 +95,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * within distance of the turn yet, and so must queue the turn. The length of this array
 	 * must always be `1`.
 	 */
-	protected turnQueue: { direction: MovementDirection; turn: Turn }[] = [];
+	protected turnQueue: TurnQueue = [];
 	/**
 	 * Takes a given turn and a position and returns a boolean indicating whether or not the turn is "ahead" of the
 	 * direction this board object is currently heading and if it is on the same "row"/"column" as the board object.
@@ -188,6 +194,15 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
+	 * Get this moveable's turn queue data.
+	 *
+	 * @returns this moveable's turn queue data
+	 */
+	public getTurnQueue(): TurnQueue {
+		return this.turnQueue;
+	}
+
+	/**
 	 * Determines if the board object is currently moving.
 	 * @returns `boolean` if the board object is moving or not
 	 */
@@ -256,24 +271,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			return;
 		}
 
-		// check the turn queue for any queued turns
-		if (this.turnQueue.length) {
-			const queuedTurnInfo = this.turnQueue[0]!;
-			const turn = queuedTurnInfo.turn;
-
-			// every frame, check if the board object is within the queued-turn's threshold, and turn
-			// the board object in that direction when it is
-			if (this.isWithinTurnDistance(turn)) {
-				this.startMoving(queuedTurnInfo.direction, {
-					fromTurn: turn,
-				});
-
-				return;
-			}
-		}
-
 		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
-
 		super.tick();
 	}
 
@@ -307,41 +305,48 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
-	 * Queues a turn for a future point in time so that when the board object reaches the threshold of the turn,
-	 * it will turn at it.
+	 * This method will return the "closest" turn to this board object, based on the current direction it is moving.
+	 * It will return the first turn that is not only "ahead" of where this board object is heading, but that also
+	 * passes `filter`'s criteria.
 	 *
-	 * @param direction the direction the board object wants to move at a future point in time
-	 * @param turn the turn location the board object wants to turn at in a future point in time
+	 * @param filter given a turn, this function decides whether the turn falls under a specified criteria
+	 * @param callback any logic to run when a turn falls under `filter`'s criteria
+	 * @returns the closest turn to this board object that falls under `filter`'s criteria
 	 */
-	protected queueTurn(direction: MovementDirection, turn: Turn): void {
-		if (this.turnQueue.length) {
-			// clear the queue if we're queueing a separate turn before another ones completes
-			this.dequeueTurns();
+	public findNearestTurnWhere(
+		filter: (turn: Turn) => boolean,
+		callback?: ((turn: Turn) => unknown) | undefined
+	): Turn | undefined {
+		// find turns "ahead" of board object and that fit the "filter"
+		const filteredTurns = Board.getInstance()
+			.getTurns()
+			.filter((turn) => {
+				if (
+					this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) &&
+					filter(turn)
+				) {
+					// run callback if our filter passes, and it's defined
+					if (callback) {
+						callback(turn);
+					}
+
+					return true;
+				}
+
+				return false;
+			});
+
+		const currentDirection = this.currentDirection;
+
+		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
+		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
+		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
+		// "start" of the "filteredTurns" array
+		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
+			filteredTurns.reverse();
 		}
 
-		this.turnQueue.push({
-			direction,
-			turn,
-		});
-	}
-
-	/**
-	 * Determines if this board object is within distance of a turn's position.
-	 *
-	 * @param turn the turn position to check against
-	 * @returns boolean indicating if the board object is within the pixel threshold of this turn
-	 */
-	protected isWithinTurnDistance(turn: Turn): boolean {
-		const centerPosition = this.getCenterPosition();
-		const turnCenterPosition = turn.getCenterPosition();
-
-		// add half of the board object's width/height to the turn's x & y position so that
-		// our threshold takes effect when the board object is about "half" way over the turn's
-		// position
-		return (
-			this.distanceWithinDistancePerFrame(centerPosition.x, turnCenterPosition.x) &&
-			this.distanceWithinDistancePerFrame(centerPosition.y, turnCenterPosition.y)
-		);
+		return filteredTurns[0];
 	}
 
 	/**
@@ -352,7 +357,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param turn the turn position object wants to turn at
 	 * @returns boolean indicating whether the board object can use a given `direction` to turn at the given `turn`
 	 */
-	protected static canTurnWithMoveDirection(direction: MovementDirection, turn: Turn): boolean {
+	public static canTurnWithMoveDirection(direction: MovementDirection, turn: Turn): boolean {
 		return turn.getDirections().includes(direction);
 	}
 
@@ -363,7 +368,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 *
 	 * @param turn the turn to snap this board object's physical to
 	 */
-	protected offsetPositionToTurn(turn: Turn): void {
+	public offsetPositionToTurn(turn: Turn): void {
 		const oldPosition = this.getPosition();
 		const turnCenterPosition = turn.getCenterPosition();
 		// find the "true" position x & y that the board object should be placed at when performing a turn (since
@@ -388,6 +393,25 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
+	 * Queues a turn for a future point in time so that when the board object reaches the threshold of the turn,
+	 * it will turn at it.
+	 *
+	 * @param direction the direction the board object wants to move at a future point in time
+	 * @param turn the turn location the board object wants to turn at in a future point in time
+	 */
+	protected queueTurn(direction: MovementDirection, turn: Turn): void {
+		if (this.turnQueue.length) {
+			// clear the queue if we're queueing a separate turn before another ones completes
+			this.dequeueTurns();
+		}
+
+		this.turnQueue.push({
+			direction,
+			turn,
+		});
+	}
+
+	/**
 	 * This method will return the "closest" turn to this board object, based on the current direction it is moving.
 	 *
 	 * @returns the closest turn to this board object
@@ -397,51 +421,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		const filteredTurns = Board.getInstance()
 			.getTurns()
 			.filter((turn) => this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn));
-
-		const currentDirection = this.currentDirection;
-
-		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
-		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
-		// "start" of the "filteredTurns" array
-		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-			filteredTurns.reverse();
-		}
-
-		return filteredTurns[0];
-	}
-
-	/**
-	 * This method will return the "closest" turn to this board object, based on the current direction it is moving.
-	 * It will return the first turn that is not only "ahead" of where this board object is heading, but that also
-	 * passes `filter`'s criteria.
-	 *
-	 * @param filter given a turn, this function decides whether the turn falls under a specified criteria
-	 * @param callback any logic to run when a turn falls under `filter`'s criteria
-	 * @returns the closest turn to this board object that falls under `filter`'s criteria
-	 */
-	protected findNearestTurnWhere(
-		filter: (turn: Turn) => boolean,
-		callback?: ((turn: Turn) => unknown) | undefined
-	): Turn | undefined {
-		// find turns "ahead" of board object and that fit the "filter"
-		const filteredTurns = Board.getInstance()
-			.getTurns()
-			.filter((turn) => {
-				if (
-					this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) &&
-					filter(turn)
-				) {
-					// run callback if our filter passes, and it's defined
-					if (callback) {
-						callback(turn);
-					}
-
-					return true;
-				}
-
-				return false;
-			});
 
 		const currentDirection = this.currentDirection;
 

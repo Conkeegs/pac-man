@@ -2,6 +2,7 @@
 
 import { App } from "../../../../App.js";
 import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
+import { GameElement } from "../../../../GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
@@ -91,6 +92,15 @@ export default class PacMan extends MakeListenable(Character) {
 	}
 
 	/**
+	 * Get the nearest turn that will stop PacMan.
+	 *
+	 * @returns pacman's nearest turn that will stop him
+	 */
+	public getNearestStoppingTurn(): Turn | undefined {
+		return this.nearestStoppingTurn;
+	}
+
+	/**
 	 * Overrides `Character.startMoving()` since pacman needs to keep track of whether he's spawning or not.
 	 *
 	 */
@@ -115,41 +125,7 @@ export default class PacMan extends MakeListenable(Character) {
 			);
 		}
 
-		const turnQueueLengthBeforeTick = this.turnQueue.length;
-
 		super.tick();
-
-		const turnQueueLengthAfterTick = this.turnQueue.length;
-		const nearestStoppingTurn = this.nearestStoppingTurn;
-
-		// if the turnqueue is full after ticking, or the turnqueue changes from 1
-		// to 0, we do not want to "stop" pacman
-		if (
-			(turnQueueLengthBeforeTick && turnQueueLengthAfterTick) ||
-			(turnQueueLengthBeforeTick === 1 && turnQueueLengthAfterTick === 0)
-		) {
-			return;
-		}
-
-		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
-		// pacman doesn't just stop and cancel valid queued-turns.
-		if (
-			nearestStoppingTurn &&
-			// check if pacman is within nearest turn's distance (e.g. technically hitting the wall)
-			this.isWithinTurnDistance(nearestStoppingTurn)
-		) {
-			// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
-			// when users are against walls does not make a visual change
-			if (this._animationFrame === 1) {
-				this._animationFrame++;
-
-				this._updateAnimationImage(this._getCurrentAnimationImageName());
-			}
-
-			this.stopMoving();
-			// snap pacman to "stop" location to keep collision detection consistent
-			this.offsetPositionToTurn(nearestStoppingTurn);
-		}
 	}
 
 	/**
@@ -241,7 +217,7 @@ export default class PacMan extends MakeListenable(Character) {
 		// PacMan hasn't arrived in its threshold yet
 		if (nearestTurnableTurn) {
 			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-			if (this.isWithinTurnDistance(nearestTurnableTurn)) {
+			if (GameElement.positionsEqual(this.getCenterPosition(), nearestTurnableTurn.getCenterPosition())) {
 				this.startMoving(inputDirection, {
 					fromTurn: nearestTurnableTurn,
 				});

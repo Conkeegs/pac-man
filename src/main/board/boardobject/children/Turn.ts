@@ -1,3 +1,4 @@
+import { GameElement } from "../../../GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
@@ -7,7 +8,7 @@ import Clyde from "./character/Clyde.js";
 import Inky from "./character/Inky.js";
 import PacMan from "./character/PacMan.js";
 import Pinky from "./character/Pinky.js";
-import type Moveable from "./moveable/Moveable.js";
+import Moveable from "./moveable/Moveable.js";
 import type MovementDirection from "./moveable/MovementDirection.js";
 
 /**
@@ -58,5 +59,50 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	/**
 	 * @inheritdoc
 	 */
-	public override _onCollision(collidableMoveable: Moveable & Collidable): void {}
+	public override _onCollision(collidableMoveable: Moveable & Collidable): void {
+		const position = this.getPosition();
+		const queuedTurnInfo = collidableMoveable.getTurnQueue()[0]!;
+
+		// check the turn queue for any queued turns
+		if (queuedTurnInfo) {
+			const queuedTurnInfoTurn = queuedTurnInfo.turn;
+
+			if (GameElement.positionsEqual(position, queuedTurnInfoTurn.getPosition())) {
+				collidableMoveable.startMoving(queuedTurnInfo.direction, {
+					fromTurn: queuedTurnInfoTurn,
+				});
+
+				return;
+			}
+		}
+
+		if (!(collidableMoveable instanceof PacMan)) {
+			return;
+		}
+
+		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
+		// pacman doesn't just stop and cancel valid queued-turns.
+		const pacmanNearestStoppingTurn = collidableMoveable.getNearestStoppingTurn();
+
+		if (
+			!pacmanNearestStoppingTurn ||
+			!GameElement.positionsEqual(position, pacmanNearestStoppingTurn.getPosition())
+		) {
+			return;
+		}
+
+		const pacmanAnimationFrame = collidableMoveable._animationFrame;
+
+		// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
+		// when users are against walls does not make a visual change
+		if (pacmanAnimationFrame === 1) {
+			collidableMoveable._animationFrame++;
+
+			collidableMoveable._updateAnimationImage(collidableMoveable._getCurrentAnimationImageName());
+		}
+
+		collidableMoveable.stopMoving();
+		// snap pacman to "stop" location to keep collision detection consistent
+		collidableMoveable.offsetPositionToTurn(pacmanNearestStoppingTurn);
+	}
 }

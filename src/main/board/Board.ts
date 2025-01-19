@@ -417,7 +417,7 @@ export default class Board extends GameElement {
 	 */
 	public destroy(): void {
 		if (Board.instance) {
-			Board.getInstance().getElement().removeAllChildren();
+			Board.getInstance().getElement().remove();
 		}
 
 		this.turns = [];
