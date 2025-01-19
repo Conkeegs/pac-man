@@ -2,6 +2,7 @@ import { App } from "../../../../../../src/main/App.js";
 import ImageRegistry from "../../../../../../src/main/assets/ImageRegistry.js";
 import Board from "../../../../../../src/main/board/Board.js";
 import Character from "../../../../../../src/main/board/boardobject/children/character/Character.js";
+import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
@@ -105,5 +106,17 @@ export default class CharacterTest extends Test {
 		pacman.delete();
 
 		this.assertArrayDoesntContain(pacman, App.CHARACTERS);
+	}
+
+	/**
+	 * Test that characters get their current animation image name correctly.
+	 */
+	public getCurrentAnimationImageNameTest(): void {
+		const inky = new Inky();
+
+		this.assertStrictlyEqual(
+			inky._getCurrentAnimationImageName(),
+			`${inky.defaultAnimationImageName()}-${inky.getCurrentDirection()}`
+		);
 	}
 }

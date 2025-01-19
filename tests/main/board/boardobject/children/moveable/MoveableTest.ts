@@ -618,4 +618,16 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(originalPosition.x + moveAmount, moveable.getPosition().x);
 	}
+
+	/**
+	 * Test that moveables can set their current direction correctly.
+	 */
+	public setCurrentDirectionTest(): void {
+		const moveable = new PacMan();
+		const direction = MovementDirection.LEFT;
+
+		moveable.setCurrentDirection(direction);
+
+		this.assertStrictlyEqual(direction, moveable.getCurrentDirection());
+	}
 }

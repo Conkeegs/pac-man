@@ -95,7 +95,8 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	}
 
 	/**
-	 * @inheritdoc
+	 * The the current animation image for this `Character` instance, combined with its current direction since
+	 * it is `Moveable`.
 	 */
 	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
 		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;

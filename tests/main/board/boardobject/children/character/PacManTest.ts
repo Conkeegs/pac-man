@@ -55,50 +55,23 @@ export default class PacManTest extends Test {
 
 		pacman.startMoving(MovementDirection.RIGHT);
 		await Board.getInstance()["loadTurnData"]();
-
-		this.assertArrayLength(0, pacman["turnQueue"]);
-
-		pacman.tick();
-
-		this.assertArrayLength(0, pacman["turnQueue"]);
-		// should not "stop" at wall yet
-		this.assertTrue(pacman.isMoving());
-
-		const turnWithRightDirection = Board.getInstance()
-			.getTurns()
-			.find((turn) => turn.getDirections().includes(MovementDirection.RIGHT))!;
-		const turnWithRightDirectionPosition = turnWithRightDirection.getPosition();
-
-		pacman["queueTurn"](MovementDirection.DOWN, turnWithRightDirection);
-		pacman.setPosition({
-			x: turnWithRightDirectionPosition.x - pacman.getWidth() / 2,
-			y: turnWithRightDirectionPosition.y - pacman.getHeight() / 2,
-		});
-
-		this.assertArrayLength(1, pacman["turnQueue"]);
-
-		pacman.tick();
-
-		this.assertArrayLength(0, pacman["turnQueue"]);
-		// should not "stop" at wall yet since queued turn exists
-		this.assertTrue(pacman.isMoving());
+		pacman.setCurrentDirection(MovementDirection.RIGHT);
 
 		const turnWithNoRightDirection = Board.getInstance()
 			.getTurns()
 			.find((turn) => !turn.getDirections().includes(MovementDirection.RIGHT))!;
 		const turnWithNoRightDirectionCenterPosition = turnWithNoRightDirection.getCenterPosition();
 
-		pacman.startMoving(MovementDirection.RIGHT);
 		pacman.setPosition({
-			x: turnWithNoRightDirectionCenterPosition.x - (pacman.getDistancePerFrame() + pacman.getWidth() / 2),
+			x: turnWithNoRightDirectionCenterPosition.x - pacman.getWidth() * 2,
 			y: turnWithNoRightDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
-
 		pacman.tick();
 
-		this.assertArrayLength(0, pacman["turnQueue"]);
-		// pacman should have stopped now since he hit a wall and has no queued turns
-		this.assertFalse(pacman.isMoving());
+		const nearestStoppingTurn = pacman.getNearestStoppingTurn();
+
+		this.assertExists(nearestStoppingTurn);
+		this.assertStrictlyEqual(turnWithNoRightDirection, nearestStoppingTurn);
 	}
 
 	/**
@@ -283,5 +256,20 @@ export default class PacManTest extends Test {
 		animationImage = pacman._getCurrentAnimationImageName();
 
 		this.assertStrictlyEqual(`${pacman.defaultAnimationImageName()}-${pacman["currentDirection"]}`, animationImage);
+	}
+
+	/**
+	 * Test that pacman can get his nearest "stopping" turn correctly.
+	 */
+	public getNearestStoppingTurnTest(): void {
+		const pacman = new PacMan();
+
+		this.assertStrictlyEqual(undefined, pacman.getNearestStoppingTurn());
+
+		const nearestStoppingTurn = new Turn("test-turn", [MovementDirection.RIGHT]);
+
+		pacman["nearestStoppingTurn"] = nearestStoppingTurn;
+
+		this.assertStrictlyEqual(nearestStoppingTurn, pacman.getNearestStoppingTurn());
 	}
 }
