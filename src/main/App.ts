@@ -217,7 +217,7 @@ export class App {
 		App.debug_framesCounted = 0;
 		// #!END_DEBUG
 
-		App.board?.destroy();
+		Board.getInstance().delete();
 		App.board = undefined;
 
 		get("game")!.removeAllChildren();

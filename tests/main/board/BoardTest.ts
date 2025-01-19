@@ -123,18 +123,21 @@ export default class BoardTest extends Test {
 	/**
 	 * Test that the game's board can delete itself.
 	 */
-	public async destroyTest(): Promise<void> {
+	public async deleteTest(): Promise<void> {
 		const board = Board.getInstance();
+
+		await board.create();
 
 		this.assertFalse(board.getElement().childElementCount === 0);
 		this.assertNotEmpty(board.getTurns());
 		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(Board["instance"] instanceof Board);
 
-		board.destroy();
+		board.delete();
 
 		this.assertEmpty(board.getElement());
 		this.assertEmpty(board["wallElements"]);
+		this.assertEmpty(board["turns"]);
 		this.assertOfType("undefined", Board["instance"]);
 	}
 
@@ -175,5 +178,18 @@ export default class BoardTest extends Test {
 		await board["loadWallElements"]();
 
 		this.assertNotEmpty(board["wallElements"]);
+	}
+
+	/**
+	 * Test that the board can get its turns correctly.
+	 */
+	public async getTurnsTest(): Promise<void> {
+		const board = Board.getInstance();
+
+		this.assertEmpty(board.getTurns());
+
+		await board["loadTurnData"]();
+
+		this.assertNotEmpty(board.getTurns());
 	}
 }
