@@ -72,7 +72,7 @@ export default class TeleporterTest extends Test {
 		const collidableMoveable = new PacMan();
 
 		collidableMoveable.startMoving(MovementDirection.RIGHT);
-		teleporter2._onCollision(collidableMoveable);
+		teleporter2.onCollision(collidableMoveable);
 
 		const teleporter1Position = teleporter1.getPosition();
 		let collidableMoveablePosition = collidableMoveable.getPosition();
@@ -81,7 +81,7 @@ export default class TeleporterTest extends Test {
 		this.assertStrictlyEqual(teleporter1Position.y, collidableMoveablePosition.y);
 
 		collidableMoveable.startMoving(MovementDirection.LEFT);
-		teleporter1._onCollision(collidableMoveable);
+		teleporter1.onCollision(collidableMoveable);
 
 		const teleporter2Position = teleporter2.getPosition();
 		collidableMoveablePosition = collidableMoveable.getPosition();

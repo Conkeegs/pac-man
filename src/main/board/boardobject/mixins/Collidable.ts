@@ -92,7 +92,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 *
 		 * @returns boolean to optionally break out of `tick()`
 		 */
-		abstract _onCollision(withCollidable: CollidableClass): void;
+		abstract onCollision(withCollidable: CollidableClass): void;
 
 		/**
 		 * @inheritdoc
@@ -237,6 +237,17 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 */
 		public getCollidablePositionKey(): string {
 			return makeCollidablePositionKey(this.getCenterPosition());
+		}
+
+		/**
+		 * Returns a boolean indicating if this `Collidable` instance can be collided by one
+		 * with the name `collidableName`.
+		 *
+		 * @param collidableName the name of the collidable to check against
+		 * @returns boolean indicating if this collidable can collide with `collidableName`
+		 */
+		public canBeCollidedBy(collidableName: string): boolean {
+			return collidableName in this.collisionHandlers;
 		}
 	}
 

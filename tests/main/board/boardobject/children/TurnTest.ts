@@ -41,7 +41,7 @@ export default class TurnTest extends Test {
 		const movementDirection = MovementDirection.RIGHT;
 
 		collidableMoveable["queueTurn"](movementDirection, testTurn);
-		testTurn._onCollision(collidableMoveable);
+		testTurn.onCollision(collidableMoveable);
 
 		// valid turn allows collidableMoveable to start moving in one of its directions
 		this.assertTrue(collidableMoveable.isMoving());
@@ -57,7 +57,7 @@ export default class TurnTest extends Test {
 			y: testPosition.y,
 		});
 		collidableMoveable["nearestStoppingTurn"] = testTurn;
-		testTurn._onCollision(collidableMoveable);
+		testTurn.onCollision(collidableMoveable);
 
 		const turnCenterPosition = testTurn.getCenterPosition();
 

@@ -58,7 +58,7 @@ export default class Food extends MakeCollidable(BoardObject) {
 	/**
 	 * @inheritdoc
 	 */
-	_onCollision(): void {
+	onCollision(): void {
 		this.delete();
 
 		// each time food is eaten, play the opposite half of the "foot-eat" sound

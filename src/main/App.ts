@@ -389,7 +389,7 @@ export class App {
 			for (let i = 0; i < movingMoveables.length; i++) {
 				const moveable = movingMoveables[i]!;
 
-				if (typeof moveable["_onCollision" as keyof typeof moveable] === "function") {
+				if (typeof moveable["onCollision" as keyof typeof moveable] === "function") {
 					App.checkForCollision(moveable as Moveable & Collidable);
 				}
 			}
@@ -503,14 +503,14 @@ export class App {
 					// filter out the current board object we're operating on
 					collidedWith.getName() === collidable.getName() ||
 					// if the collided-with boardobject doesn't allow collidable to collide with it, skip
-					!collidedWith.canBeCollidedByTypes.includes(collidable.constructor.name)
+					!collidedWith.canBeCollidedBy(collidable.constructor.name)
 				) {
 					continue;
 				}
 
 				// want to make sure to call the collision-handling function for the collided-with object,
 				// since not all Collidables call the "tick()" method and therefore will not run their
-				// "_onCollision()" logic if we do not explicity call it here
+				// "onCollision()" logic if we do not explicity call it here
 				if (collidable.isCollidingWithCollidable(collidedWith)) {
 					console.log({
 						moveable: collidable.getName(),

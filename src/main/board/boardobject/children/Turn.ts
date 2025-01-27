@@ -59,7 +59,7 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	/**
 	 * @inheritdoc
 	 */
-	public override _onCollision(collidableMoveable: Moveable & Collidable): void {
+	public override onCollision(collidableMoveable: Moveable & Collidable): void {
 		const position = this.getPosition();
 		const queuedTurnInfo = collidableMoveable.getTurnQueue()[0]!;
 

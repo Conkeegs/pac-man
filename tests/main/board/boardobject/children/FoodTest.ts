@@ -48,7 +48,7 @@ export default class FoodTest extends Test {
 		this.assertArrayContains(food, App.COLLIDABLES_MAP[food["getCollidablePositionKey"]()]!);
 		this.assertFalse(Food["audioFlag"]);
 
-		food._onCollision();
+		food.onCollision();
 
 		await this.assertPropertyChanges(true, Food, "audioFlag");
 		this.assertArrayDoesntContain(food, App.COLLIDABLES_MAP[food["getCollidablePositionKey"]()]!);

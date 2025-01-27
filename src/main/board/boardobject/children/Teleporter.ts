@@ -82,7 +82,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 	/**
 	 * @inheritdoc
 	 */
-	public override _onCollision(collidableMoveable: Moveable & Collidable): void {
+	public override onCollision(collidableMoveable: Moveable & Collidable): void {
 		const linkedTeleporter = this.linkedTeleporter;
 		const currentDirection = collidableMoveable.getCurrentDirection()!;
 

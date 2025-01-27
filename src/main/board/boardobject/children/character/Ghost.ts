@@ -56,7 +56,7 @@ export default abstract class Ghost extends Character {
 		}
 	}
 
-	override _onCollision(withCollidable: PacMan): void {
+	override onCollision(withCollidable: PacMan): void {
 		withCollidable.stopMoving();
 
 		console.log(`${withCollidable.getName()} has collided with ${this.getName()}`);

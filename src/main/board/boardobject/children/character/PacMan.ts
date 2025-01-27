@@ -274,7 +274,7 @@ export default class PacMan extends MakeListenable(Character) {
 		return imageName as keyof IMAGE_LIST;
 	}
 
-	override _onCollision(withCollidable: Collidable): void {
+	override onCollision(withCollidable: Collidable): void {
 		// withCollidable.stopMoving();
 		// this.stopMoving();
 		// console.log("DEAD!!!");
