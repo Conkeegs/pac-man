@@ -59,6 +59,13 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 ) {
 	abstract class CollidableClass extends Base {
 		/**
+		 * Functions that handle collision between this collidable and another.
+		 */
+		protected abstract _collisionHandlers: {
+			[collidableName: string]: ((withCollidable: CollidableClass) => void) | undefined;
+		};
+
+		/**
 		 * The current key into the `COLLIDABLES_MAP` that this collidable is under.
 		 */
 		_currentPositionKey: string | undefined;
@@ -67,12 +74,6 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 * box will be, compared to its width and height.
 		 */
 		_collisionBoxPercentage: number;
-
-		/**
-		 * The types of `BoardObject` sub-classes that this collidable can
-		 * be "collided by".
-		 */
-		public abstract canBeCollidedByTypes: string[];
 
 		/**
 		 * Creates a `CollidableClass` instance.
@@ -92,7 +93,9 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 *
 		 * @returns boolean to optionally break out of `tick()`
 		 */
-		abstract onCollision(withCollidable: CollidableClass): void;
+		public onCollision(withCollidable: CollidableClass): void {
+			this._collisionHandlers[withCollidable.constructor.name]?.bind(this)(withCollidable);
+		}
 
 		/**
 		 * @inheritdoc
@@ -247,7 +250,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 * @returns boolean indicating if this collidable can collide with `collidableName`
 		 */
 		public canBeCollidedBy(collidableName: string): boolean {
-			return collidableName in this.collisionHandlers;
+			return collidableName in this._collisionHandlers;
 		}
 	}
 

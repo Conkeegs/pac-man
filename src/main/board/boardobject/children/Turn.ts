@@ -19,16 +19,43 @@ import type MovementDirection from "./moveable/MovementDirection.js";
 export default class Turn extends MakeCollidable(BoardObject) {
 	protected override readonly _width: number = TILESIZE / 4;
 	protected override readonly _height = TILESIZE / 4;
+	protected override _collisionHandlers = {
+		[PacMan.name]: (collidable: Collidable) => {
+			// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
+			// pacman doesn't just stop and cancel valid queued-turns.
+			const pacmanNearestStoppingTurn = (collidable as PacMan).getNearestStoppingTurn();
+
+			if (
+				!pacmanNearestStoppingTurn ||
+				!GameElement.positionsEqual(this.getCenterPosition(), pacmanNearestStoppingTurn.getCenterPosition())
+			) {
+				return;
+			}
+
+			const pacmanAnimationFrame = (collidable as PacMan)._animationFrame;
+
+			// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
+			// when users are against walls does not make a visual change
+			if (pacmanAnimationFrame === 1) {
+				(collidable as PacMan)._animationFrame++;
+
+				(collidable as PacMan)._updateAnimationImage((collidable as PacMan)._getCurrentAnimationImageName());
+			}
+
+			(collidable as PacMan).stopMoving();
+			// snap pacman to "stop" location to keep collision detection consistent
+			(collidable as PacMan).offsetPositionToTurn(pacmanNearestStoppingTurn);
+		},
+		[Pinky.name]: undefined,
+		[Inky.name]: undefined,
+		[Blinky.name]: undefined,
+		[Clyde.name]: undefined,
+	};
 
 	/**
 	 * This turn's `MovementDirection`s it has available.
 	 */
 	private directions: MovementDirection[];
-
-	/**
-	 * @inheritdoc
-	 */
-	public override canBeCollidedByTypes: string[] = [PacMan.name, Pinky.name, Inky.name, Blinky.name, Clyde.name];
 
 	/**
 	 * Create a turn instance.
@@ -60,14 +87,13 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	 * @inheritdoc
 	 */
 	public override onCollision(collidableMoveable: Moveable & Collidable): void {
-		const position = this.getPosition();
 		const queuedTurnInfo = collidableMoveable.getTurnQueue()[0]!;
 
 		// check the turn queue for any queued turns
 		if (queuedTurnInfo) {
 			const queuedTurnInfoTurn = queuedTurnInfo.turn;
 
-			if (GameElement.positionsEqual(position, queuedTurnInfoTurn.getPosition())) {
+			if (GameElement.positionsEqual(this.getCenterPosition(), queuedTurnInfoTurn.getCenterPosition())) {
 				collidableMoveable.startMoving(queuedTurnInfo.direction, {
 					fromTurn: queuedTurnInfoTurn,
 				});
@@ -76,33 +102,6 @@ export default class Turn extends MakeCollidable(BoardObject) {
 			}
 		}
 
-		if (!(collidableMoveable instanceof PacMan)) {
-			return;
-		}
-
-		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
-		// pacman doesn't just stop and cancel valid queued-turns.
-		const pacmanNearestStoppingTurn = collidableMoveable.getNearestStoppingTurn();
-
-		if (
-			!pacmanNearestStoppingTurn ||
-			!GameElement.positionsEqual(position, pacmanNearestStoppingTurn.getPosition())
-		) {
-			return;
-		}
-
-		const pacmanAnimationFrame = collidableMoveable._animationFrame;
-
-		// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
-		// when users are against walls does not make a visual change
-		if (pacmanAnimationFrame === 1) {
-			collidableMoveable._animationFrame++;
-
-			collidableMoveable._updateAnimationImage(collidableMoveable._getCurrentAnimationImageName());
-		}
-
-		collidableMoveable.stopMoving();
-		// snap pacman to "stop" location to keep collision detection consistent
-		collidableMoveable.offsetPositionToTurn(pacmanNearestStoppingTurn);
+		super.onCollision(collidableMoveable);
 	}
 }

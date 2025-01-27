@@ -31,8 +31,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 */
 	abstract override _ANIMATION_STATE_MILLIS: number;
 
-	public abstract override canBeCollidedByTypes: string[];
-
 	/**
 	 * Creates a character.
 	 *

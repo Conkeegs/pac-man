@@ -1,4 +1,5 @@
 import { getRandomInt } from "../../../../utils/Utils.js";
+import type { Collidable } from "../../mixins/Collidable.js";
 import Character from "./Character.js";
 import PacMan from "./PacMan.js";
 
@@ -6,6 +7,16 @@ import PacMan from "./PacMan.js";
  * Represents any of the four ghosts on the board.
  */
 export default abstract class Ghost extends Character {
+	protected override _collisionHandlers = {
+		[PacMan.name]: (collidable: Collidable) => {
+			(collidable as PacMan).stopMoving();
+
+			console.log(`${(collidable as PacMan).getName()} has collided with ${this.getName()}`);
+
+			this.stopMoving();
+		},
+	};
+
 	/**
 	 * @inheritdoc
 	 */
@@ -14,8 +25,6 @@ export default abstract class Ghost extends Character {
 	 * @inheritdoc
 	 */
 	override readonly _ANIMATION_STATE_MILLIS: 100 = 100;
-
-	public override canBeCollidedByTypes: string[] = [PacMan.name];
 
 	/**
 	 * Creates a `Ghost`.
@@ -54,13 +63,5 @@ export default abstract class Ghost extends Character {
 
 			this.queueTurn(turnDirections[getRandomInt(turnDirections.length - 1)]!, nearestTurn);
 		}
-	}
-
-	override onCollision(withCollidable: PacMan): void {
-		withCollidable.stopMoving();
-
-		console.log(`${withCollidable.getName()} has collided with ${this.getName()}`);
-
-		this.stopMoving();
 	}
 }
