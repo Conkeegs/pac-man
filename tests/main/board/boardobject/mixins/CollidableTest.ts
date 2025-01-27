@@ -185,4 +185,16 @@ export default class CollidableTest extends Test {
 			collidable.getCollidablePositionKey()
 		);
 	}
+
+	/**
+	 * Test that collidables know which other collidables they can collide with.
+	 */
+	public canBeCollidedByTest(): void {
+		const collidable = new PacMan();
+		const collisionHandlerKeys = Object.keys(collidable["_collisionHandlers"]);
+
+		for (const key of collisionHandlerKeys) {
+			this.assertTrue(collidable.canBeCollidedBy(key));
+		}
+	}
 }
