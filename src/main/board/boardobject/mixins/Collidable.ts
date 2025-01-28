@@ -247,7 +247,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 * @returns boolean indicating if this collidable can collide with `collidableName`
 		 */
 		public canBeCollidedBy(collidableName: string): boolean {
-			return collidableName in this.collisionHandlers;
+			return this.canBeCollidedByTypes.includes(collidableName);
 		}
 	}
 
