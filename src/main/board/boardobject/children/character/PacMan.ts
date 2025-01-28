@@ -6,6 +6,7 @@ import { GameElement } from "../../../../GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
+import type { Collidable } from "../../mixins/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -20,14 +21,6 @@ import Pinky from "./Pinky.js";
  * Represents the PacMan character on the board.
  */
 export default class PacMan extends MakeListenable(Character) {
-	protected override _collisionHandlers = {
-		[PacMan.name]: undefined,
-		[Pinky.name]: undefined,
-		[Inky.name]: undefined,
-		[Blinky.name]: undefined,
-		[Clyde.name]: undefined,
-	};
-
 	/**
 	 * Whether or not PacMan is currently listening for movement inputs.
 	 */
@@ -74,6 +67,8 @@ export default class PacMan extends MakeListenable(Character) {
 	 * @inheritdoc
 	 */
 	override _animationFrame: 1 | 2 | 3 = 1;
+
+	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];
 
 	/**
 	 * Creates PacMan.
@@ -277,5 +272,11 @@ export default class PacMan extends MakeListenable(Character) {
 		}
 
 		return imageName as keyof IMAGE_LIST;
+	}
+
+	override onCollision(withCollidable: Collidable): void {
+		// withCollidable.stopMoving();
+		// this.stopMoving();
+		// console.log("DEAD!!!");
 	}
 }
