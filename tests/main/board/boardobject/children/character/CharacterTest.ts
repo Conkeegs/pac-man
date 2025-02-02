@@ -1,5 +1,5 @@
 import { App } from "../../../../../../src/main/App.js";
-import ImageRegistry from "../../../../../../src/main/assets/ImageRegistry.js";
+import AssetRegistry from "../../../../../../src/main/assets/AssetRegistry.js";
 import Board from "../../../../../../src/main/board/Board.js";
 import Character from "../../../../../../src/main/board/boardobject/children/character/Character.js";
 import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
@@ -27,7 +27,7 @@ export default class CharacterTest extends Test {
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("width"));
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
 		this.assertStrictlyEqual(
-			`url(\"${ImageRegistry.getImage("pacman-1")}\")`,
+			`url(\"${AssetRegistry.getImageSrc("pacman-1")}\")`,
 			pacmanElement.css("backgroundImage")
 		);
 	}
@@ -38,7 +38,7 @@ export default class CharacterTest extends Test {
 	public getSourceTest(): void {
 		const pacman = new PacMan();
 
-		this.assertStrictlyEqual(ImageRegistry.getImage("pacman-1"), pacman.getSource());
+		this.assertStrictlyEqual(AssetRegistry.getImageSrc("pacman-1"), pacman.getSource());
 	}
 
 	/**

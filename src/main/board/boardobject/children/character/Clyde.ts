@@ -1,4 +1,4 @@
-import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import AssetRegistry from "../../../../assets/AssetRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**
@@ -15,6 +15,6 @@ export default class Clyde extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("clyde", Clyde.CLYDE_SPEED, ImageRegistry.getImage("clyde-1-2"));
+		super("clyde", Clyde.CLYDE_SPEED, AssetRegistry.getImageSrc("clyde-1-2"));
 	}
 }

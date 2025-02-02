@@ -1,4 +1,4 @@
-import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import AssetRegistry from "../../../../assets/AssetRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**
@@ -15,6 +15,6 @@ export default class Blinky extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("blinky", Blinky.BLINKY_SPEED, ImageRegistry.getImage("blinky-1-0"));
+		super("blinky", Blinky.BLINKY_SPEED, AssetRegistry.getImageSrc("blinky-1-0"));
 	}
 }

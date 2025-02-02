@@ -1,4 +1,4 @@
-import ImageRegistry from "../../../../assets/ImageRegistry.js";
+import AssetRegistry from "../../../../assets/AssetRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**
@@ -15,6 +15,6 @@ export default class Pinky extends Ghost {
 	 *
 	 */
 	constructor() {
-		super("pinky", Pinky.PINKY_SPEED, ImageRegistry.getImage("pinky-1-3"));
+		super("pinky", Pinky.PINKY_SPEED, AssetRegistry.getImageSrc("pinky-1-3"));
 	}
 }

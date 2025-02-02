@@ -1,4 +1,4 @@
-import AudioRegistry from "../../../assets/AudioRegistry.js";
+import AssetRegistry from "../../../assets/AssetRegistry.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
@@ -64,7 +64,7 @@ export default class Food extends MakeCollidable(BoardObject) {
 		// each time food is eaten, play the opposite half of the "foot-eat" sound
 		const audioFlag = Food.audioFlag;
 		const currentAudioElement =
-			AudioRegistry.AUDIO_LIST[`food-eat-${Number(audioFlag)}` as "food-eat-0" | "food-eat-1"];
+			AssetRegistry.ASSET_LIST["audio"][`food-eat-${Number(audioFlag)}` as "food-eat-0" | "food-eat-1"];
 
 		// play the current sound and then flip back to the opposite half
 		currentAudioElement.play().then(() => {

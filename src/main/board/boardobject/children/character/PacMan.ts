@@ -1,7 +1,8 @@
 "use strict";
 
 import { App } from "../../../../App.js";
-import ImageRegistry, { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
+import AssetRegistry from "../../../../assets/AssetRegistry.js";
+import { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
 import { GameElement } from "../../../../GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
@@ -76,7 +77,7 @@ export default class PacMan extends MakeListenable(Character) {
 	 * @param name unique name of pacman instance, defaults to just "pacman"
 	 */
 	constructor(name: string = "pacman") {
-		super(name, PacMan.PACMAN_SPEED * 0.8, ImageRegistry.getImage("pacman-1"));
+		super(name, PacMan.PACMAN_SPEED * 0.8, AssetRegistry.getImageSrc("pacman-1"));
 
 		this.createMoveEventListeners();
 		this._setAnimationType(ANIMATION_TYPE.LOOP);

@@ -1,5 +1,6 @@
 import { App } from "../../../App.js";
-import ImageRegistry, { type IMAGE_LIST } from "../../../assets/ImageRegistry.js";
+import AssetRegistry from "../../../assets/AssetRegistry.js";
+import { type IMAGE_LIST } from "../../../assets/ImageRegistry.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
@@ -185,7 +186,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 			let imageName = this._getCurrentAnimationImageName();
 
 			// default to "not found" image if the image doesn't exist
-			if (!defined(ImageRegistry.IMAGE_LIST[imageName])) {
+			if (!defined(AssetRegistry.ASSET_LIST["image"][imageName])) {
 				imageName = "not-found";
 			}
 
@@ -199,7 +200,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		 */
 		_updateAnimationImage(imageName: keyof IMAGE_LIST): void {
 			this.getElement().css({
-				backgroundImage: `url(${ImageRegistry.getImage(imageName)})`,
+				backgroundImage: `url(${AssetRegistry.getImageSrc(imageName)})`,
 			});
 		}
 

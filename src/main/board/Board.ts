@@ -2,7 +2,7 @@
 
 import { App } from "../App.js";
 import { GameElement, type Position } from "../GameElement.js";
-import JsonRegistry from "../assets/JsonRegistry.js";
+import AssetRegistry from "../assets/AssetRegistry.js";
 // #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
@@ -315,7 +315,7 @@ export default class Board extends GameElement {
 	 */
 	public async createMainBoardObjects(): Promise<void> {
 		const foodPositions: Position[] = [];
-		const foodData: FoodData[] = await fetchJSON(JsonRegistry.getJson("food"));
+		const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
 
 		// place all food on the board
 		for (const data of foodData) {
@@ -468,7 +468,7 @@ export default class Board extends GameElement {
 	 */
 	private async loadTurnData(): Promise<void> {
 		// tell all moveables where they can turn
-		return fetchJSON(JsonRegistry.getJson("turns")).then((turnData: TurnData[]) => {
+		return fetchJSON(AssetRegistry.getJsonSrc("turns")).then((turnData: TurnData[]) => {
 			for (let turn of turnData) {
 				const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
 
@@ -494,7 +494,7 @@ export default class Board extends GameElement {
 	 * Load all board's walls into memory.
 	 */
 	private async loadWallElements(): Promise<void> {
-		return fetchJSON(JsonRegistry.getJson("walls")).then((wallData: WallDataElement[]) => {
+		return fetchJSON(AssetRegistry.getJsonSrc("walls")).then((wallData: WallDataElement[]) => {
 			for (let element of wallData) {
 				const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
 					width: px(Board.calcTileOffset(element.styles.width)),
@@ -572,7 +572,7 @@ export default class Board extends GameElement {
 	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
 	 */
 	private async debug_createPaths() {
-		const pathData: PathData = await fetchJSON(JsonRegistry.getJson("paths"));
+		const pathData: PathData = await fetchJSON(AssetRegistry.getJsonSrc("paths"));
 
 		const nodePositions: [number, number][] = [];
 		let pathLineIndex = 0;

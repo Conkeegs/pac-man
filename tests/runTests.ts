@@ -4,9 +4,7 @@ import { pluralize } from "../src/main/utils/Utils.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
 import AppTest from "./main/AppTest.js";
-import AudioRegistryTest from "./main/assets/AudioRegistryTest.js";
-import ImageRegistryTest from "./main/assets/ImageRegistryTest.js";
-import JsonRegistryTest from "./main/assets/JsonRegistryTest.js";
+import AssetRegistryTest from "./main/assets/AssetRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
 import BlinkyTest from "./main/board/boardobject/children/character/BlinkyTest.js";
@@ -64,9 +62,7 @@ export default class RunTests {
 	 * All test class instances to run.
 	 */
 	private static readonly TEST_CLASSES: Test[] = [
-		new AudioRegistryTest(),
-		new ImageRegistryTest(),
-		new JsonRegistryTest(),
+		new AssetRegistryTest(),
 		new BoardTest(),
 		new BoardObjectTest(),
 		new PathNodeTest(),
