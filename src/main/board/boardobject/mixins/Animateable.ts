@@ -1,6 +1,5 @@
 import { App } from "../../../App.js";
-import AssetRegistry from "../../../assets/AssetRegistry.js";
-import { type IMAGE_LIST } from "../../../assets/ImageRegistry.js";
+import AssetRegistry, { type ASSET_LIST } from "../../../assets/AssetRegistry.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
@@ -165,15 +164,15 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		 *
 		 * @returns string that combines this board object's name and current animation frame
 		 */
-		public defaultAnimationImageName(): keyof IMAGE_LIST {
-			return `${this.getName()}-${this._animationFrame}` as keyof IMAGE_LIST;
+		public defaultAnimationImageName(): keyof ASSET_LIST["image"] {
+			return `${this.getName()}-${this._animationFrame}` as keyof ASSET_LIST["image"];
 		}
 
 		/**
 		 * Returns this board object's image source-name, based on its current animation frame, and
 		 * other factors in its implementation.
 		 */
-		_getCurrentAnimationImageName(): keyof IMAGE_LIST {
+		_getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
 			return this.defaultAnimationImageName();
 		}
 
@@ -198,7 +197,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		 *
 		 * @param imageName the image to set this animateable's CSS `background-image` to
 		 */
-		_updateAnimationImage(imageName: keyof IMAGE_LIST): void {
+		_updateAnimationImage(imageName: keyof ASSET_LIST["image"]): void {
 			this.getElement().css({
 				backgroundImage: `url(${AssetRegistry.getImageSrc(imageName)})`,
 			});

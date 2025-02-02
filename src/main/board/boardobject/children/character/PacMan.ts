@@ -1,8 +1,7 @@
 "use strict";
 
 import { App } from "../../../../App.js";
-import AssetRegistry from "../../../../assets/AssetRegistry.js";
-import { type IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
+import AssetRegistry, { type ASSET_LIST } from "../../../../assets/AssetRegistry.js";
 import { GameElement } from "../../../../GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
@@ -265,14 +264,14 @@ export default class PacMan extends MakeListenable(Character) {
 	/**
 	 * @inheritdoc
 	 */
-	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
+	override _getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
 		let imageName = this.defaultAnimationImageName();
 
 		if (this._animationFrame !== 1) {
 			imageName += `-${this.currentDirection}`;
 		}
 
-		return imageName as keyof IMAGE_LIST;
+		return imageName as keyof ASSET_LIST["image"];
 	}
 
 	override onCollision(withCollidable: Collidable): void {

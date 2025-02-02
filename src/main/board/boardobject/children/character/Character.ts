@@ -1,7 +1,7 @@
 "use strict";
 
 import { App } from "../../../../App.js";
-import type { IMAGE_LIST } from "../../../../assets/ImageRegistry.js";
+import type { ASSET_LIST } from "../../../../assets/AssetRegistry.js";
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { px } from "../../../../utils/Utils.js";
@@ -98,7 +98,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * The the current animation image for this `Character` instance, combined with its current direction since
 	 * it is `Moveable`.
 	 */
-	override _getCurrentAnimationImageName(): keyof IMAGE_LIST {
-		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof IMAGE_LIST;
+	override _getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
+		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof ASSET_LIST["image"];
 	}
 }
