@@ -50,7 +50,7 @@ export default abstract class Ghost extends Character {
 		const nearestTurn = this.findNearestTurn();
 
 		if (nearestTurn) {
-			const turnDirections = nearestTurn.directions;
+			const turnDirections = nearestTurn.getDirections();
 
 			this.queueTurn(turnDirections[getRandomInt(turnDirections.length - 1)]!, nearestTurn);
 		}
