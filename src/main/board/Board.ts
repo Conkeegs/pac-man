@@ -307,7 +307,7 @@ export default class Board extends GameElement {
 	 * @returns integer tile number for a given vertical offset
 	 */
 	static calcTileNumY(yPixels: number): number {
-		return Math.floor((Board.calcTileOffset(ROWS) - (yPixels + TILESIZE)) / TILESIZE);
+		return Math.ceil((Board.calcTileOffset(ROWS) - (yPixels + TILESIZE)) / TILESIZE);
 	}
 
 	/**
