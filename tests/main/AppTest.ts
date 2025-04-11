@@ -173,6 +173,19 @@ export default class AppTest extends Test {
 	}
 
 	/**
+	 * Test that app can tell whether it is running or not.
+	 */
+	public async isRunningTest(): Promise<void> {
+		await App.run();
+
+		this.assertTrue(App.isRunning());
+
+		App.destroy();
+
+		this.assertFalse(App.isRunning());
+	}
+
+	/**
 	 * Test that app can add and manage event listeners correctly.
 	 */
 	public addEventListenerToElementTest(): void {
