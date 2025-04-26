@@ -39,8 +39,9 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 				const eventListenerInfo = eventListeners[i]!;
 
 				eventListenerInfo.element.removeEventListener(eventListenerInfo.eventName, eventListenerInfo.callback);
-				eventListeners.splice(i, 1);
 			}
+
+			eventListeners.length = 0;
 
 			super.delete();
 		}

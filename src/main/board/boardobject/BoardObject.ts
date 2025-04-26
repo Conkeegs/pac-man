@@ -21,6 +21,10 @@ export abstract class BoardObject extends GameElement {
 	 * CSS render updates for this board object that are queued for the future.
 	 */
 	private queuedRenderUpdates: (() => void)[] = [];
+	/**
+	 * Whether or not this `BoardObject` is ready for visual updates.
+	 */
+	private readyForRender: true | false = false as const;
 
 	/**
 	 * `z-index` CSS property of all `BoardObject` instances on the board.
@@ -174,11 +178,12 @@ export abstract class BoardObject extends GameElement {
 		for (let i = 0; i < renderUpdates.length; i++) {
 			// render visual update
 			renderUpdates[i]!();
-
-			renderUpdates.splice(i, 1);
 		}
 
 		App.BOARDOBJECTS_TO_RENDER.splice(App.BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
+
+		renderUpdates.length = 0;
+		this.readyForRender = false;
 	}
 
 	/**
@@ -232,7 +237,13 @@ export abstract class BoardObject extends GameElement {
 	 * @param updateCallback callback that will update this board object's CSS
 	 */
 	private queueRenderUpdate(updateCallback: () => void): void {
-		App.BOARDOBJECTS_TO_RENDER.push(this);
+		// check if already pushed, otherwise board object will render same updates more
+		// than once for no reason
+		if (!this.readyForRender) {
+			App.BOARDOBJECTS_TO_RENDER.push(this);
+
+			this.readyForRender = true;
+		}
 
 		this.queuedRenderUpdates.push(updateCallback);
 	}

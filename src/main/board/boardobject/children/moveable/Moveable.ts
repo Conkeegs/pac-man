@@ -373,8 +373,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		const turnCenterPosition = turn.getCenterPosition();
 		// find the "true" position x & y that the board object should be placed at when performing a turn (since
 		// it could be within the turn's distance, but not perfectly placed at the turn position)
-		const boardObjectTurnX = turnCenterPosition.x - this.getWidth()! / 2;
-		const boardObjectTurnY = turnCenterPosition.y - this.getHeight()! / 2;
+		const boardObjectTurnX = turnCenterPosition.x - this.getWidth() / 2;
+		const boardObjectTurnY = turnCenterPosition.y - this.getHeight() / 2;
 
 		// we know at this point that we're within this turn's threshold, so correct the board object's position
 		// by moving it to the turn's exact location to keep the board object's movement consistent

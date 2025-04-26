@@ -1,6 +1,5 @@
 "use strict";
 
-import { BoardObject } from "../board/boardobject/BoardObject.js";
 // #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
@@ -380,8 +379,15 @@ export function getRandomInt(max: number): number {
  *
  * @param x the horizontal position of the square
  * @param y the vertical position of the square
+ * @param color the color of the square
+ * @param scale the height and width of the square
  */
-export function insertDivAtPosition(x: number, y: number, color: string | undefined = "purple"): void {
+export function insertDivAtPosition(
+	x: number,
+	y: number,
+	color: string | undefined = "purple",
+	scale: number = 10
+): void {
 	get("board")!.appendChild(
 		create({
 			name: "div",
@@ -390,10 +396,10 @@ export function insertDivAtPosition(x: number, y: number, color: string | undefi
 			position: "absolute",
 			left: px(x),
 			top: px(y),
-			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
+			zIndex: 999,
 			backgroundColor: color,
-			height: px(10),
-			width: px(10),
+			height: px(scale),
+			width: px(scale),
 		}) as HTMLElement
 	);
 }
