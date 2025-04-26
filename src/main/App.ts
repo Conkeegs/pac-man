@@ -380,12 +380,10 @@ export class App {
 
 				moveable.interpolate(alpha, oldMoveablePosition);
 			}
-		}
 
-		// check for collisions after interpolation since some collisions (teleporters for example)
-		// cause sudden, drastic position changes for Moveable instances. interpolation between the old & new
-		// positions will cause these drastic position changes to function unexpectedly
-		if (movingMoveables) {
+			// check for collisions after interpolation since some collisions (teleporters for example)
+			// cause sudden, drastic position changes for Moveable instances. interpolation between the old & new
+			// positions will cause these drastic position changes to function unexpectedly
 			for (let i = 0; i < movingMoveables.length; i++) {
 				const moveable = movingMoveables[i]!;
 
