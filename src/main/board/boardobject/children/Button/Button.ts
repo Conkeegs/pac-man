@@ -1,8 +1,6 @@
-// #!DEBUG
 import { App } from "../../../../App.js";
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
-// #!END_DEBUG
 import { create, px } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";

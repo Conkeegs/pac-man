@@ -3,17 +3,13 @@
 import { App } from "../App.js";
 import { GameElement, type Position } from "../GameElement.js";
 import AssetRegistry from "../assets/AssetRegistry.js";
-// #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-// #!END_DEBUG
 import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
 import BoardText from "./boardobject/children/BoardText.js";
-// #!DEBUG
 import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 import Food from "./boardobject/children/Food.js";
-// #!END_DEBUG
 import PathNode from "./boardobject/children/PathNode.js";
 import Teleporter from "./boardobject/children/Teleporter.js";
 import Turn from "./boardobject/children/Turn.js";

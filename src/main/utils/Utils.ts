@@ -1,9 +1,7 @@
 "use strict";
 
-// #!DEBUG
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
-// #!END_DEBUG
 
 declare global {
 	interface HTMLElement {

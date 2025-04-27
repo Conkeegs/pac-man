@@ -1,19 +1,16 @@
 "use strict";
 
-// #!DEBUG
 import RunTests from "../../tests/RunTests.js";
-// #!END_DEBUG
 import Board from "./board/Board.js";
 import { BoardObject } from "./board/boardobject/BoardObject.js";
-// #!DEBUG
 import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type Character from "./board/boardobject/children/character/Character.js";
-// #!END_DEBUG
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import { makeCollidablePositionKey } from "./board/boardobject/mixins/Collidable.js";
 import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
+import Debugging from "./Debugging.js";
 import type { GameElement, Position } from "./GameElement.js";
 import { TILESIZE } from "./utils/Globals.js";
 import { create, defined, get } from "./utils/Utils.js";
