@@ -1,5 +1,5 @@
 {
-    "$schema": "https://json.schemastore.org/swcrc",
+    "$schema": "https://swc.rs/schema.json",
     "test": ".*\\.ts$",
     "sourceMaps": "inline",
     "inlineSourcesContent": true,
@@ -24,12 +24,12 @@
         "target": "es2015",
         "loose": true,
         // "externalHelpers": true,
-        "keepClassNames": false,
+        "keepClassNames": false
         // "transform": {
         //     "constModules": {
         //         "globals": {
         //             "@pacman/env-flags": {
-        //                 "DEBUG": "true"
+        //                 "s": "true"
         //             },
         //             "@pacman/features": {
         //                 "FEATURE_A": "false",
@@ -49,6 +49,6 @@
         "strict": false,
         "strictMode": true,
         "lazy": false,
-        "noInterop": false,
+        "noInterop": false
     }
 }
