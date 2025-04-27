@@ -20,20 +20,23 @@ export default class ListenableTest extends Test {
 		listenable._addEventListener("keydown", () => {
 			changedValue++;
 		});
+		listenable._addEventListener("keydown", () => {
+			changedValue++;
+		});
 
 		this.assertStrictlyEqual(1, changedValue);
-		this.assertArrayLength(1, listenable._EVENT_LISTENERS);
+		this.assertArrayLength(2, listenable._EVENT_LISTENERS);
 
 		listenable.getElement().dispatchEvent(new KeyboardEvent("keydown"));
 
 		// assert event listener works
-		this.assertStrictlyEqual(2, changedValue);
+		this.assertStrictlyEqual(3, changedValue);
 
 		listenable.delete();
 		listenable.getElement().dispatchEvent(new KeyboardEvent("keydown"));
 
 		// event listener should not be registered anymore so it should not increment "changedValue"
-		this.assertStrictlyEqual(2, changedValue);
+		this.assertStrictlyEqual(3, changedValue);
 		this.assertArrayLength(0, listenable._EVENT_LISTENERS);
 	}
 
