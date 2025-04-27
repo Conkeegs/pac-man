@@ -23,6 +23,7 @@ export default class BoardObjectTest extends Test {
 
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
 		this.assertNotEmpty(App.BOARDOBJECTS.filter((boardObject) => boardObject.getName() === pacmanName));
+		this.assertFalse(pacman1["readyForRender"]);
 
 		const boardObjectElement = pacman1.getElement();
 
@@ -333,6 +334,7 @@ export default class BoardObjectTest extends Test {
 
 		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
+		this.assertFalse(clyde["readyForRender"]);
 
 		clyde.setPosition(
 			{
@@ -343,12 +345,24 @@ export default class BoardObjectTest extends Test {
 				modifyCss: true,
 			}
 		);
+		clyde.setPosition(
+			{
+				x: 300,
+				y: 100,
+			},
+			{
+				modifyCss: true,
+			}
+		);
 
-		this.assertArrayLength(1, clyde["queuedRenderUpdates"]);
+		this.assertArrayLength(2, clyde["queuedRenderUpdates"]);
 		this.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
+		this.assertTrue(clyde["readyForRender"]);
 
 		clyde.render();
 
+		this.assertFalse(clyde["readyForRender"]);
+		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 	}
 
@@ -359,6 +373,7 @@ export default class BoardObjectTest extends Test {
 		const clyde = new Clyde();
 
 		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		this.assertFalse(clyde["readyForRender"]);
 
 		const position = {
 			x: 900,
@@ -382,6 +397,23 @@ export default class BoardObjectTest extends Test {
 		this.assertArrayLength(1, clyde["queuedRenderUpdates"]);
 		this.assertEmpty(clydeElement.css("left") as string);
 		this.assertEmpty(clydeElement.css("top") as string);
+		this.assertTrue(clyde["readyForRender"]);
+		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
+
+		// another visual update
+		clyde.setPosition(
+			{
+				x: position.x,
+				y: position.y,
+			},
+			{
+				modifyCss: true,
+			}
+		);
+
+		// queueing another update should not push board object to "BOARDOBJECTS_TO_RENDER" more
+		// than once
+		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
 
 		clyde.render();
 
@@ -390,6 +422,8 @@ export default class BoardObjectTest extends Test {
 		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
 		this.assertStrictlyEqual(px(position.x), clydeElement.css("left"));
 		this.assertStrictlyEqual(px(position.y), clydeElement.css("top"));
+		this.assertFalse(clyde["readyForRender"]);
+		this.assertArrayLength(0, App.BOARDOBJECTS_TO_RENDER);
 	}
 
 	/**
