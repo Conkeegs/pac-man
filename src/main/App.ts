@@ -77,6 +77,10 @@ export class App {
 	 */
 	public static TICKABLES: Tickable[] = [];
 	/**
+	 * An array of classes that use the `Collidable` mixin..
+	 */
+	public static COLLIDABLES: Collidable[] = [];
+	/**
 	 * An array of `BoardObject`s objects to render CSS changes to the screen for.
 	 */
 	public static BOARDOBJECTS_TO_RENDER: BoardObject[] = [];

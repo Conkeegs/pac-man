@@ -83,6 +83,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			super(...args);
 
 			this._collisionBoxPercentage = collisionBoxPercentage;
+
+			App.COLLIDABLES.push(this);
 		}
 
 		/**
@@ -126,8 +128,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 */
 		public override delete(): void {
 			this.checkForCollidableAndRemove();
-
 			super.delete();
+			App.COLLIDABLES.splice(App.COLLIDABLES.indexOf(this), 1);
 		}
 
 		/**
