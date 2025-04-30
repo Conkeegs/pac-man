@@ -294,7 +294,7 @@ export default class Board extends GameElement {
 	/**
 	 * Calculates an integer tile number for a given vertical offset on the board. Add `TILESIZE` to
 	 * `yPixels` since each object on the board's y-position is marked by their top-most side, so for example,
-	 * "5" tiles from the top would = 6the tile vertically.
+	 * "5" tiles from the top would = 6th tile vertically.
 	 *
 	 * @param yPixels the vertical offset
 	 * @returns integer tile number for a given vertical offset
