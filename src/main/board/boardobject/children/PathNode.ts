@@ -9,8 +9,10 @@ import { BoardObject } from "../BoardObject.js";
  * Represents a circular node at each location on the board where characters can turn.
  */
 export default class PathNode extends BoardObject {
-	public override readonly _width: number = TILESIZE;
-	public override readonly _height: number = TILESIZE;
+	/**
+	 * `PathNode`s' width and height in pixels.
+	 */
+	private static readonly PATHNODE_DIMENSIONS: number = TILESIZE;
 
 	/**
 	 * Creates a path node.
@@ -21,13 +23,9 @@ export default class PathNode extends BoardObject {
 	constructor(name: string, color = "white") {
 		super(name);
 
+		this.setDimensions(PathNode.PATHNODE_DIMENSIONS, PathNode.PATHNODE_DIMENSIONS);
+
 		const element: HTMLElement = this.getElement();
-
-		element.css({
-			width: px(this._width),
-			height: px(this._height),
-		});
-
 		const childDimensionsPixels = px(Board.calcTileOffset(0.5));
 
 		element.appendChild(

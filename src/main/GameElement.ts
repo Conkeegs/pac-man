@@ -63,15 +63,15 @@ export abstract class GameElement {
 		x: 0,
 		y: 0,
 	};
+
 	/**
 	 * The game element's width in pixels.
 	 */
-	protected abstract readonly _width: number;
+	private _width: number = 0;
 	/**
 	 * The game element's height in pixels.
 	 */
-	protected abstract readonly _height: number;
-
+	private _height: number = 0;
 	/**
 	 * The HTML element that contains this game element.
 	 */
@@ -332,5 +332,47 @@ export abstract class GameElement {
 		});
 
 		this.transform.y = y;
+	}
+
+	/**
+	 * Set this game element's width in pixels.
+	 *
+	 * @param width new width in pixels
+	 */
+	protected setWidth(width: number): void {
+		this._width = width;
+
+		this.element.css({
+			width: px(width),
+		});
+	}
+
+	/**
+	 * Set this game element's height in pixels.
+	 *
+	 * @param height new height in pixels
+	 */
+	protected setHeight(height: number): void {
+		this._height = height;
+
+		this.element.css({
+			height: px(height),
+		});
+	}
+
+	/**
+	 * Set this game element's width and height in pixels.
+	 *
+	 * @param width new width in pixels
+	 * @param height new height in pixels
+	 */
+	protected setDimensions(width: number, height: number): void {
+		this.setWidth(width);
+		this.setHeight(height);
+
+		this.element.css({
+			width: px(width),
+			height: px(height),
+		});
 	}
 }

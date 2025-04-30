@@ -4,7 +4,6 @@ import { App } from "../../../../App.js";
 import type { ASSET_LIST } from "../../../../assets/AssetRegistry.js";
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
-import { px } from "../../../../utils/Utils.js";
 import MakeAnimateable from "../../mixins/Animateable.js";
 import MakeCollidable from "../../mixins/Collidable.js";
 import Moveable, { type StartMoveOptions } from "../moveable/Moveable.js";
@@ -14,9 +13,10 @@ import MovementDirection from "../moveable/MovementDirection.js";
  * A character is any of the AI or user-controlled objects on the board.
  */
 export default abstract class Character extends MakeAnimateable(MakeCollidable(Moveable, 50)) {
-	protected override readonly _width: number = TILESIZE + Board.calcTileOffset(0.5);
-	protected override readonly _height = TILESIZE + Board.calcTileOffset(0.5);
-
+	/**
+	 * `Character`s' width and height in pixels.
+	 */
+	private static readonly CHARACTER_DIMENSIONS: number = TILESIZE + Board.calcTileOffset(0.5);
 	/**
 	 * The path to the character's picture file.
 	 */
@@ -43,14 +43,14 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed);
 
+		this.setDimensions(Character.CHARACTER_DIMENSIONS, Character.CHARACTER_DIMENSIONS);
+
 		// keep track of every character created for convenience
 		App.CHARACTERS.push(this);
 
 		this.source = source;
 
 		this.getElement().css({
-			width: px(this._width),
-			height: px(this._height),
 			backgroundImage: `url(${source})`,
 		});
 	}

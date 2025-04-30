@@ -112,9 +112,6 @@ export type FoodData = {
  * The board contains all the main elements in the game: characters, ghosts, items, etc.
  */
 export default class Board extends GameElement {
-	protected override readonly _width: number = WIDTH;
-	protected override readonly _height: number = HEIGHT;
-
 	/**
 	 * The singleton-instance of the board.
 	 */
@@ -164,6 +161,8 @@ export default class Board extends GameElement {
 	 */
 	private constructor() {
 		super("board");
+
+		this.setDimensions(WIDTH, HEIGHT);
 
 		if (App.isRunning()) {
 			App.destroy();
@@ -216,8 +215,6 @@ export default class Board extends GameElement {
 		const element = this.getElement();
 
 		element.css({
-			width: px(this.getWidth()),
-			height: px(this.getHeight()),
 			backgroundColor: DEFAULT_COLOR,
 		});
 

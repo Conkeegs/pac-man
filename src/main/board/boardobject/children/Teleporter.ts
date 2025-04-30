@@ -1,5 +1,4 @@
 import { TILESIZE } from "../../../utils/Globals.js";
-import { px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
 import PacMan from "./character/PacMan.js";
@@ -10,8 +9,10 @@ import MovementDirection from "./moveable/MovementDirection.js";
  * Represents a teleporter that is usable by `Moveable` board objects.
  */
 export default class Teleporter extends MakeCollidable(BoardObject) {
-	protected override readonly _width: number = TILESIZE;
-	protected override readonly _height = TILESIZE;
+	/**
+	 * `Teleporter`s' width and height in pixels.
+	 */
+	private static readonly TELEPORTER_DIMENSIONS: number = TILESIZE;
 
 	/**
 	 * The direction that the moveable (that is teleporting) will continue to move
@@ -46,12 +47,9 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 	constructor(name: string, teleportDirection: MovementDirection) {
 		super(name);
 
-		this.teleportDirection = teleportDirection;
+		this.setDimensions(Teleporter.TELEPORTER_DIMENSIONS, Teleporter.TELEPORTER_DIMENSIONS);
 
-		this.getElement().css({
-			width: px(this._width),
-			height: px(this._height),
-		});
+		this.teleportDirection = teleportDirection;
 	}
 
 	/**

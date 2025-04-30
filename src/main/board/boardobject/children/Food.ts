@@ -1,6 +1,5 @@
 import AssetRegistry from "../../../assets/AssetRegistry.js";
 import { TILESIZE } from "../../../utils/Globals.js";
-import { create, px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 import MakeCollidable from "../mixins/Collidable.js";
 import PacMan from "./character/PacMan.js";
@@ -9,8 +8,10 @@ import PacMan from "./character/PacMan.js";
  * Represents food that PacMan collects.
  */
 export default class Food extends MakeCollidable(BoardObject) {
-	protected override readonly _width: number = TILESIZE;
-	protected override readonly _height: number = TILESIZE;
+	/**
+	 * `Food`s' width and height in pixels.
+	 */
+	private static readonly FOOD_DIMENSIONS: number = TILESIZE / 4;
 
 	/**
 	 * Indicates which half of the "food-eat" sound the game is playing at a given moment in time. `true` for the first half,
@@ -32,12 +33,13 @@ export default class Food extends MakeCollidable(BoardObject) {
 	constructor(name: string) {
 		super(name);
 
+		this.setDimensions(Food.FOOD_DIMENSIONS, Food.FOOD_DIMENSIONS);
+
 		const element = this.getElement();
 
 		element.css({
-			width: px(TILESIZE),
-			height: px(TILESIZE),
-			backgroundColor: "transparent",
+			// backgroundColor: "transparent",
+			backgroundColor: Food.BACKGROUND_COLOR,
 		});
 
 		element

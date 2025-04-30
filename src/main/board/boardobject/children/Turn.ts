@@ -1,6 +1,5 @@
 import { GameElement } from "../../../GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
-import { px } from "../../../utils/Utils.js";
 import { BoardObject } from "../BoardObject.js";
 import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
 import Blinky from "./character/Blinky.js";
@@ -17,9 +16,10 @@ import type MovementDirection from "./moveable/MovementDirection.js";
  * what directions it can turn when it reaches the given turn coordinates.
  */
 export default class Turn extends MakeCollidable(BoardObject) {
-	protected override readonly _width: number = TILESIZE / 4;
-	protected override readonly _height = TILESIZE / 4;
-
+	/**
+	 * `Turn`s' width and height in pixels.
+	 */
+	private static readonly TURN_DIMENSIONS: number = TILESIZE / 4;
 	/**
 	 * This turn's `MovementDirection`s it has available.
 	 */
@@ -39,12 +39,9 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	constructor(name: string, directions: MovementDirection[]) {
 		super(name);
 
-		this.directions = directions;
+		this.setDimensions(Turn.TURN_DIMENSIONS, Turn.TURN_DIMENSIONS);
 
-		this.getElement().css({
-			width: px(this._width),
-			height: px(this._height),
-		});
+		this.directions = directions;
 	}
 
 	/**

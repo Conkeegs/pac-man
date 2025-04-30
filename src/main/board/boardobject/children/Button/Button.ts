@@ -10,8 +10,14 @@ import BoardText from "../BoardText.js";
  * Represents a clickable button on the board.
  */
 export default class Button extends BoardObject {
-	protected override _width: number = 0;
-	protected override readonly _height: number = TILESIZE + TILESIZE / 2;
+	/**
+	 * `Button`s' initial width in pixels.
+	 */
+	private static readonly BUTTON_INITIAL_WIDTH: number = 0;
+	/**
+	 * `Button`s' initial height in pixels.
+	 */
+	private static readonly BUTTON_INITIAL_HEIGHT: number = TILESIZE + TILESIZE / 2;
 
 	/**
 	 * The text being displayed in the button.
@@ -41,6 +47,8 @@ export default class Button extends BoardObject {
 	constructor(name: string, text: string) {
 		super(name);
 
+		this.setDimensions(Button.BUTTON_INITIAL_WIDTH, Button.BUTTON_INITIAL_HEIGHT);
+
 		this.text = text;
 		this.boardText = new BoardText({
 			name: `${name}-text`,
@@ -51,13 +59,12 @@ export default class Button extends BoardObject {
 
 		const boardText = this.boardText;
 		const boardTextElement = boardText.getElement();
-		const height = this._height;
+		const height = this.getHeight();
 
 		// add "BoardText" as child of this button
 		element.appendChild(boardTextElement);
 
 		element.css({
-			height: px(height),
 			backgroundColor: "white",
 		});
 
@@ -93,7 +100,7 @@ export default class Button extends BoardObject {
 				classes: ["button-inner"],
 			}).css({
 				height: px(height - Button.CLIP_PATH_PIXEL_PADDING),
-				width: px(this._width - Button.CLIP_PATH_PIXEL_PADDING),
+				width: px(this.getWidth() - Button.CLIP_PATH_PIXEL_PADDING),
 				backgroundColor: boardBackgroundColor,
 			}) as HTMLDivElement
 		);
@@ -133,8 +140,8 @@ export default class Button extends BoardObject {
 
 		const boardTextFontSize = boardText.getFontSize();
 
-		this._width = boardText.getWidth()! + boardTextFontSize;
-		const width = this._width;
+		this.setWidth(boardText.getWidth()! + boardTextFontSize);
+		const width = this.getWidth();
 		const element = this.getElement();
 
 		element.css({

@@ -9,15 +9,6 @@ import { px } from "../../utils/Utils.js";
  */
 export abstract class BoardObject extends GameElement {
 	/**
-	 * The board object's width in pixels.
-	 */
-	protected abstract override readonly _width: number;
-	/**
-	 * The board object's height in pixels.
-	 */
-	protected abstract override readonly _height: number;
-
-	/**
 	 * CSS render updates for this board object that are queued for the future.
 	 */
 	private queuedRenderUpdates: (() => void)[] = [];

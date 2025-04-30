@@ -10,9 +10,10 @@ import { BoardObject } from "../BoardObject.js";
  * Represents text on the board.
  */
 export default class BoardText extends BoardObject {
-	protected override _width: number = TILESIZE;
-	protected override _height: number = TILESIZE;
-
+	/**
+	 * `BoardText`s' width and height in pixels.
+	 */
+	private static readonly BOARDTEXT_DIMENSIONS: number = TILESIZE;
 	/**
 	 * The current text being displayed.
 	 */
@@ -56,6 +57,8 @@ export default class BoardText extends BoardObject {
 	}) {
 		super(data.name);
 
+		this.setDimensions(BoardText.BOARDTEXT_DIMENSIONS, BoardText.BOARDTEXT_DIMENSIONS);
+
 		this.fontSize = data.fontSize || TILESIZE;
 
 		// #!DEBUG
@@ -71,8 +74,6 @@ export default class BoardText extends BoardObject {
 		// display text above board objects
 		this.getElement().css({
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-			width: px(this._width),
-			height: px(this._height),
 		});
 
 		this.color = data.color || "white";
@@ -132,7 +133,7 @@ export default class BoardText extends BoardObject {
 
 		// reset width/height variable depending on display of text. we need to do this because
 		// the width/height of the element will change when more characters are added/removed
-		notVertical ? (this._width = 0) : (this._height = 0);
+		notVertical ? this.setWidth(0) : this.setHeight(0);
 
 		// we want to reverse the text first, since pacman text "grows" to the left, the more characters
 		// are added
@@ -156,10 +157,10 @@ export default class BoardText extends BoardObject {
 		}
 
 		const pixelDimensions = Board.calcTileOffset(newText.length);
-		notVertical ? (this._width = pixelDimensions) : (this._height = pixelDimensions);
+		notVertical ? this.setWidth(pixelDimensions) : this.setHeight(pixelDimensions);
 
 		element.css({
-			[notVertical ? "width" : "height"]: px(notVertical ? this._width : this._height),
+			[notVertical ? "width" : "height"]: px(notVertical ? this.getWidth() : this.getHeight()),
 		});
 
 		this.text = newText;
