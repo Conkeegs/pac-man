@@ -320,7 +320,7 @@ export default class Board extends GameElement {
 				for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
-						this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i);
+						this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i, true);
 
 						foodPositions.push({
 							x,
@@ -335,7 +335,7 @@ export default class Board extends GameElement {
 				for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
-						this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y);
+						this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y, true);
 
 						foodPositions.push({
 							x: i,
@@ -426,8 +426,9 @@ export default class Board extends GameElement {
 	 * @param boardObject the board object to place
 	 * @param tileX the horizontal offset of the board object
 	 * @param tileY the vertical offset of the board object
+	 * @param center whether not not to center the board object in the tiles
 	 */
-	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number) {
+	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number, center?: boolean) {
 		// if (tileX > 28) {
 		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
 		// } else if (tileX < -1) {
@@ -438,8 +439,15 @@ export default class Board extends GameElement {
 		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
 		// }
 
-		const left = Board.calcTileOffsetX(tileX);
-		const top = Board.calcTileOffsetY(tileY);
+		let left = Board.calcTileOffsetX(tileX);
+		let top = Board.calcTileOffsetY(tileY);
+
+		if (center) {
+			const offset = TILESIZE / 2 - boardObject.getWidth() / 2;
+
+			left += offset;
+			top += offset;
+		}
 
 		boardObject.setPosition(
 			{
@@ -466,19 +474,7 @@ export default class Board extends GameElement {
 				const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
 
 				this.turns.push(turnBoardObject);
-				this.placeBoardObject(turnBoardObject, turn.x, turn.y);
-
-				const turnPosition = turnBoardObject.getPosition();
-
-				turnBoardObject.setPosition(
-					{
-						x: turnPosition.x + TILESIZE / 2 - turnBoardObject.getWidth() / 2,
-						y: turnPosition.y + TILESIZE / 2 - turnBoardObject.getHeight() / 2,
-					},
-					{
-						modifyTransform: true,
-					}
-				);
+				this.placeBoardObject(turnBoardObject, turn.x, turn.y, true);
 			}
 		});
 	}

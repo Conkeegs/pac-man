@@ -12,7 +12,6 @@ export default class Food extends MakeCollidable(BoardObject) {
 	 * `Food`s' width and height in pixels.
 	 */
 	private static readonly FOOD_DIMENSIONS: number = TILESIZE / 4;
-
 	/**
 	 * Indicates which half of the "food-eat" sound the game is playing at a given moment in time. `true` for the first half,
 	 * `false` for the second.
