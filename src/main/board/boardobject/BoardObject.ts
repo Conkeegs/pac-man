@@ -35,7 +35,6 @@ export abstract class BoardObject extends GameElement {
 
 		const element = this.getElement();
 
-		element.classList.add("board-object", this.constructor.name.toLowerCase() || "base-boardobject");
 		element.css({
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX,
 		});
