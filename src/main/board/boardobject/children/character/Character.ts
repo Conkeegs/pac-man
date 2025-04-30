@@ -16,7 +16,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	/**
 	 * `Character`s' width and height in pixels.
 	 */
-	private static readonly CHARACTER_DIMENSIONS: number = TILESIZE + Board.calcTileOffset(0.5);
+	private readonly CHARACTER_DIMENSIONS: number = TILESIZE + Board.calcTileOffset(0.5);
 	/**
 	 * The path to the character's picture file.
 	 */
@@ -43,7 +43,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	constructor(name: string, speed: number, source: string) {
 		super(name, speed);
 
-		this.setDimensions(Character.CHARACTER_DIMENSIONS, Character.CHARACTER_DIMENSIONS);
+		this.setDimensions(this.CHARACTER_DIMENSIONS, this.CHARACTER_DIMENSIONS);
 
 		// keep track of every character created for convenience
 		App.CHARACTERS.push(this);
