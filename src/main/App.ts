@@ -137,6 +137,11 @@ export class App {
 			}
 		});
 
+		// put the game in a "unpaused" state upon opening the window
+		App.addEventListenerToElement("focus", window, () => {
+			App.animationFrameId = App.startGame();
+		});
+
 		// initial start of the game
 		App.animationFrameId = App.startGame();
 		App.running = true;
@@ -169,6 +174,7 @@ export class App {
 		App.CHARACTERS.length = 0;
 		App.MOVEABLES.length = 0;
 		App.TICKABLES.length = 0;
+		App.COLLIDABLES.length = 0;
 		App.BOARDOBJECTS_TO_RENDER.length = 0;
 		App.running = false;
 		App.GAME_PAUSED = false;

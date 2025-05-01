@@ -86,7 +86,7 @@ export default class TeleporterTest extends Test {
 		const teleporter2Position = teleporter2.getPosition();
 		collidableMoveablePosition = collidableMoveable.getPosition();
 
-		this.assertStrictlyEqual(teleporter2Position.x - teleporter2.getWidth(), collidableMoveablePosition.x);
+		this.assertStrictlyEqual(teleporter2Position.x - collidableMoveable.getWidth(), collidableMoveablePosition.x);
 		this.assertStrictlyEqual(teleporter2Position.y, collidableMoveablePosition.y);
 	}
 }

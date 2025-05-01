@@ -18,22 +18,11 @@ export default class FoodTest extends Test {
 		const foodName = "test-food";
 		const food = new Food(foodName);
 		const foodElement = food.getElement();
+		const foodSize = TILESIZE / 4;
 
-		this.assertStrictlyEqual(px(TILESIZE), foodElement.css("width"));
-		this.assertStrictlyEqual(px(TILESIZE), foodElement.css("height"));
-		this.assertStrictlyEqual("transparent", foodElement.css("backgroundColor"));
-
-		let foodElementChild: HTMLDivElement | null = foodElement.firstElementChild as HTMLDivElement;
-
-		this.assertNotNull(foodElementChild);
-
-		foodElementChild = foodElementChild!;
-
-		this.assertStrictlyEqual(foodName, foodElementChild.id);
-		this.assertTrue(foodElementChild.classList.contains("food"));
-		this.assertStrictlyEqual(px(TILESIZE / 4), foodElementChild.css("width"));
-		this.assertStrictlyEqual(px(TILESIZE / 4), foodElementChild.css("height"));
-		this.assertStrictlyEqual(hexToRgb(Food.BACKGROUND_COLOR), foodElementChild.css("backgroundColor"));
+		this.assertStrictlyEqual(px(foodSize), foodElement.css("width"));
+		this.assertStrictlyEqual(px(foodSize), foodElement.css("height"));
+		this.assertStrictlyEqual(hexToRgb(Food.BACKGROUND_COLOR), foodElement.css("backgroundColor"));
 	}
 
 	/**

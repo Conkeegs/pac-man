@@ -46,6 +46,7 @@ export default class AppTest extends Test {
 		this.assertNotEmpty(App.CHARACTERS);
 		this.assertNotEmpty(App.MOVEABLES);
 		this.assertNotEmpty(App.TICKABLES);
+		this.assertNotEmpty(App.COLLIDABLES);
 		this.assertNotEmpty(App.BOARDOBJECTS_TO_RENDER);
 		this.assertTrue(App["running"]);
 		this.assertTrue(App["board"] instanceof Board);
@@ -65,6 +66,7 @@ export default class AppTest extends Test {
 		this.assertEmpty(App.CHARACTERS);
 		this.assertEmpty(App.MOVEABLES);
 		this.assertEmpty(App.TICKABLES);
+		this.assertEmpty(App.COLLIDABLES);
 		this.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
 		this.assertFalse(App["running"]);
 		this.assertFalse(App["board"] instanceof Board);
