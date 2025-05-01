@@ -1,4 +1,5 @@
 import { App } from "./App.js";
+import Debugging from "./Debugging.js";
 import DebugWindow from "./debugwindow/DebugWindow.js";
 import { create, px } from "./utils/Utils.js";
 
@@ -88,12 +89,18 @@ export abstract class GameElement {
 	 */
 	constructor(name: string) {
 		// #!DEBUG
-		if (!name) {
-			DebugWindow.error("GameElement.js", "constructor", "GameElement must have a name");
-		}
+		if (Debugging.isEnabled()) {
+			if (!name) {
+				DebugWindow.error("GameElement.js", "constructor", "GameElement must have a name");
+			}
 
-		if (App.GAME_ELEMENTS.findIndex((gameElement) => gameElement.getName() === name) !== -1) {
-			DebugWindow.error("GameElement.js", "constructor", `A GameElement with the name '${name}' already exists`);
+			if (App.GAME_ELEMENTS.findIndex((gameElement) => gameElement.getName() === name) !== -1) {
+				DebugWindow.error(
+					"GameElement.js",
+					"constructor",
+					`A GameElement with the name '${name}' already exists`
+				);
+			}
 		}
 		// #!END_DEBUG
 

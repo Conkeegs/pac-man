@@ -1,16 +1,14 @@
 "use strict";
 
 import { App } from "../App.js";
+import Debugging from "../Debugging.js";
 import { GameElement, type Position } from "../GameElement.js";
 import AssetRegistry from "../assets/AssetRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
-import BoardText from "./boardobject/children/BoardText.js";
-import PausePlayButton from "./boardobject/children/Button/PausePlayButton.js";
 import Food from "./boardobject/children/Food.js";
-import PathNode from "./boardobject/children/PathNode.js";
 import Teleporter from "./boardobject/children/Teleporter.js";
 import Turn from "./boardobject/children/Turn.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
@@ -145,17 +143,6 @@ export default class Board extends GameElement {
 	 */
 	public static FOOD_COUNT: 244 = 244;
 
-	// #!DEBUG
-	/**
-	 * Displays the current frames-per-second count of the app, in debug mode.
-	 */
-	public debug_fpsCounter: BoardText | undefined;
-	/**
-	 * Button used for playing/pausing the game in debug mode.
-	 */
-	public debug_pausePlayButton: PausePlayButton | undefined;
-	// #!END_DEBUG
-
 	/**
 	 * Creates the singleton board instance.
 	 */
@@ -194,22 +181,22 @@ export default class Board extends GameElement {
 		let game: HTMLElement | null = get("game");
 
 		// #!DEBUG
-		if (!exists(game)) {
-			DebugWindow.error("Board.js", "constructor", "No #game element found.");
+		if (Debugging.isEnabled()) {
+			if (!exists(game)) {
+				DebugWindow.error("Board.js", "constructor", "No #game element found.");
+			}
+
+			if (WIDTH % COLUMNS !== 0) {
+				DebugWindow.error("Board.js", "constructor", "Board width not divisible by 28.");
+			} else if (HEIGHT % ROWS !== 0) {
+				DebugWindow.error("Board.js", "constructor", "Board height not divisible by 36.");
+			}
 		}
 		// #!END_DEBUG
 
 		game = game!;
 
 		game.removeAllChildren();
-
-		// #!DEBUG
-		if (WIDTH % COLUMNS !== 0) {
-			DebugWindow.error("Board.js", "constructor", "Board width not divisible by 28.");
-		} else if (HEIGHT % ROWS !== 0) {
-			DebugWindow.error("Board.js", "constructor", "Board height not divisible by 36.");
-		}
-		// #!END_DEBUG
 
 		const DEFAULT_COLOR = Board.DEFAULT_COLOR;
 		const element = this.getElement();
@@ -219,12 +206,6 @@ export default class Board extends GameElement {
 		});
 
 		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(element);
-
-		// #!DEBUG
-		// debugging methods
-		this.debug_createGrid();
-		// this.createPaths();
-		// #!END_DEBUG
 
 		await this.loadTurnData();
 		await this.loadWallElements();
@@ -387,22 +368,6 @@ export default class Board extends GameElement {
 		rightTeleporter.link(leftTeleporter);
 		this.placeBoardObject(leftTeleporter, -1.5, 18.25);
 		this.placeBoardObject(rightTeleporter, 30.5, 18.25);
-
-		// #!DEBUG
-		// display fps counter if in debug mode
-		if (App.DEBUG) {
-			this.debug_fpsCounter = new BoardText({
-				name: "fps-counter",
-				text: "FPS",
-			});
-
-			this.placeBoardObject(this.debug_fpsCounter, -5, 31);
-
-			this.debug_pausePlayButton = new PausePlayButton("pause-play-button", "Pause");
-
-			this.placeBoardObject(this.debug_pausePlayButton, 37, 31);
-		}
-		// #!END_DEBUG
 	}
 
 	/**
@@ -429,16 +394,6 @@ export default class Board extends GameElement {
 	 * @param center whether not not to center the board object in the tiles
 	 */
 	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number, center?: boolean) {
-		// if (tileX > 28) {
-		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileX value is above 28.");
-		// } else if (tileX < -1) {
-		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileX value is below -1.");
-		// } else if (tileY > 36) {
-		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is above 36.");
-		// } else if (tileY < 0) {
-		// 	DebugWindow.error("Board.js", "placeBoardObject", "tileY value is below 0.");
-		// }
-
 		let left = Board.calcTileOffsetX(tileX);
 		let top = Board.calcTileOffsetY(tileY);
 
@@ -516,88 +471,4 @@ export default class Board extends GameElement {
 			}
 		});
 	}
-
-	// #!DEBUG
-	/**
-	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
-	 */
-	private debug_createGrid() {
-		const element = this.getElement();
-
-		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			this.placeBoardObject(
-				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
-				i,
-				0
-			);
-
-			element.appendChild(
-				create({ name: "div", classes: ["grid-vert"] }).css({
-					left: px(left),
-					height: px(HEIGHT + TILESIZE),
-					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-				}) as HTMLElement
-			);
-		}
-
-		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-			// store as variable so we can use it to offset the text, based on the number of characters
-			this.placeBoardObject(new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
-
-			element.appendChild(
-				create({ name: "div", classes: ["grid-horiz"] }).css({
-					left: px(-TILESIZE),
-					top: px(top + TILESIZE),
-					width: px(WIDTH + TILESIZE),
-					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-				}) as HTMLElement
-			);
-		}
-	}
-	// #!END_DEBUG
-
-	// #!DEBUG
-	/**
-	 * Creates circular nodes at each corner where characters can turn and also draws lines that connect these circular nodes, in debug mode.
-	 */
-	private async debug_createPaths() {
-		const pathData: PathData = await fetchJSON(AssetRegistry.getJsonSrc("paths"));
-
-		const nodePositions: [number, number][] = [];
-		let pathLineIndex = 0;
-
-		for (let [index, position] of Object.entries(pathData.nodes)) {
-			this.placeBoardObject(new PathNode(`pathnode-${index}`), position.x, position.y);
-
-			nodePositions.push([
-				Board.calcTileOffset(position.x) + Board.calcTileOffset(0.5),
-				Board.calcTileOffset(position.y) + Board.calcTileOffset(0.5),
-			]);
-		}
-
-		for (let line of pathData.lines) {
-			const startNode = line.startNode;
-
-			for (let endNode of line.to) {
-				let width = Math.abs(nodePositions[endNode]![0] - nodePositions[startNode]![0]);
-				let height = Math.abs(nodePositions[endNode]![1] - nodePositions[startNode]![1]);
-
-				const heightLessThan1 = height < 1;
-
-				this.getElement().appendChild(
-					create({
-						name: "div",
-						id: `pathline-${pathLineIndex++}`,
-						classes: ["path-line"],
-					}).css({
-						width: px(width < 1 ? 1 : width),
-						height: px(heightLessThan1 ? 1 : height),
-						bottom: px(nodePositions[startNode]![1] - (heightLessThan1 ? 0 : height)),
-						left: px(nodePositions[startNode]![0] - TILESIZE),
-					}) as HTMLElement
-				);
-			}
-		}
-	}
-	// #!END_DEBUG
 }

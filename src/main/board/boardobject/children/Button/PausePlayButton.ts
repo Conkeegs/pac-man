@@ -5,6 +5,58 @@ export enum State {
 	PLAYING,
 }
 
+// #!DEBUG
+// const pausePlayButton = board.debug_pausePlayButton!;
+// // #!END_DEBUG
+
+// // put the game in a "unpaused" state upon opening the window
+// App.addEventListenerToElement("focus", window, () => {
+// 	// #!DEBUG
+// 	// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
+// 	if (!(pausePlayButton.getState() === State.PAUSED)) {
+// 		// #!END_DEBUG
+// 		App.animationFrameId = App.startGame();
+// 		// #!DEBUG
+// 	}
+// 	// #!END_DEBUG
+// });
+
+// if (Debugging.isEnabled()) {
+// 	pausePlayButton.onClick(() => {
+// 		App.GAME_PAUSED = !App.GAME_PAUSED;
+
+// 		if (App.GAME_PAUSED) {
+// 			App.stopGame(true);
+// 			pausePlayButton.setText("Play");
+// 			pausePlayButton.setPaused();
+
+// 			return;
+// 		}
+
+// 		App.startGame();
+// 		pausePlayButton.setText("Pause");
+// 		pausePlayButton.setPlaying();
+// 	});
+// }
+// #!END_DEBUG
+
+// #!DEBUG
+// update fps counter
+// if (App.DEBUG) {
+// 	if (frameCount === 0) {
+// 		App.debug_frameCountTimeStamp = currentTimestamp;
+// 	}
+
+// 	if (currentTimestamp >= App.debug_frameCountTimeStamp + 1000) {
+// 		// Update every second
+// 		App.board!.debug_fpsCounter!.setText(`FPS:${App.debug_framesCounted}`);
+
+// 		App.debug_framesCounted = 0;
+// 		App.debug_frameCountTimeStamp = currentTimestamp;
+// 	}
+// }
+// #!END_DEBUG
+
 /**
  * Represents the button used to pause/play the game.
  */

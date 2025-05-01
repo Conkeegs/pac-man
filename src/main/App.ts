@@ -3,7 +3,6 @@
 import RunTests from "../../tests/RunTests.js";
 import Board from "./board/Board.js";
 import { BoardObject } from "./board/boardobject/BoardObject.js";
-import { State } from "./board/boardobject/children/Button/PausePlayButton.js";
 import type Character from "./board/boardobject/children/character/Character.js";
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
@@ -114,15 +113,7 @@ export class App {
 	/**
 	 * Whether or not the app is in testing mode.
 	 */
-	public static TESTING: boolean = true;
-	/**
-	 * The last timestamp in the game's animation frame that the fps was displayed.
-	 */
-	private static debug_frameCountTimeStamp: number = 0;
-	/**
-	 * The number of frames that have passed in about one second.
-	 */
-	private static debug_framesCounted: number = 0;
+	public static TESTING: boolean = false;
 	// #!END_DEBUG
 
 	/**
@@ -146,45 +137,15 @@ export class App {
 			}
 		});
 
-		// #!DEBUG
-		const pausePlayButton = board.debug_pausePlayButton!;
-		// #!END_DEBUG
-
-		// put the game in a "unpaused" state upon opening the window
-		App.addEventListenerToElement("focus", window, () => {
-			// #!DEBUG
-			// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
-			if (!(pausePlayButton.getState() === State.PAUSED)) {
-				// #!END_DEBUG
-				App.animationFrameId = App.startGame();
-				// #!DEBUG
-			}
-			// #!END_DEBUG
-		});
-
-		// #!DEBUG
-		if (App.DEBUG) {
-			pausePlayButton.onClick(() => {
-				App.GAME_PAUSED = !App.GAME_PAUSED;
-
-				if (App.GAME_PAUSED) {
-					App.stopGame(true);
-					pausePlayButton.setText("Play");
-					pausePlayButton.setPaused();
-
-					return;
-				}
-
-				App.startGame();
-				pausePlayButton.setText("Pause");
-				pausePlayButton.setPlaying();
-			});
-		}
-		// #!END_DEBUG
-
 		// initial start of the game
 		App.animationFrameId = App.startGame();
 		App.running = true;
+
+		// #!DEBUG
+		if (Debugging.isEnabled()) {
+			Debugging.showHitBoxes();
+		}
+		// #!END_DEBUG
 	}
 
 	/**
@@ -211,11 +172,6 @@ export class App {
 		App.BOARDOBJECTS_TO_RENDER.length = 0;
 		App.running = false;
 		App.GAME_PAUSED = false;
-
-		// #!DEBUG
-		App.debug_frameCountTimeStamp = 0;
-		App.debug_framesCounted = 0;
-		// #!END_DEBUG
 
 		Board.getInstance().delete();
 		App.board = undefined;
@@ -268,14 +224,6 @@ export class App {
 		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
 			App.ANIMATEABLES[i]!.stopAnimation();
 		}
-
-		// #!DEBUG
-		// reset fpscounter variables
-		if (App.DEBUG) {
-			App.debug_frameCountTimeStamp = 0;
-			App.debug_framesCounted = 0;
-		}
-		// #!END_DEBUG
 	}
 
 	/**
@@ -306,23 +254,6 @@ export class App {
 
 		App.deltaTimeAccumulator += deltaTime;
 
-		// #!DEBUG
-		// update fps counter
-		if (App.DEBUG) {
-			if (frameCount === 0) {
-				App.debug_frameCountTimeStamp = currentTimestamp;
-			}
-
-			if (currentTimestamp >= App.debug_frameCountTimeStamp + 1000) {
-				// Update every second
-				App.board!.debug_fpsCounter!.setText(`FPS:${App.debug_framesCounted}`);
-
-				App.debug_framesCounted = 0;
-				App.debug_frameCountTimeStamp = currentTimestamp;
-			}
-		}
-		// #!END_DEBUG
-
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
 		// keep track of each moveable's position so we can properly interpolate it every frame
 		let oldMoveablePositions: { [key: string]: Position } = {};
@@ -352,12 +283,6 @@ export class App {
 
 			frameCount++;
 			App.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
-
-			// #!DEBUG
-			if (App.DEBUG) {
-				App.debug_framesCounted++;
-			}
-			// #!END_DEBUG
 		}
 
 		const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;

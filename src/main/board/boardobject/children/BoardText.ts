@@ -1,5 +1,6 @@
 "use strict";
 
+import Debugging from "../../../Debugging.js";
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
@@ -62,12 +63,14 @@ export default class BoardText extends BoardObject {
 		this.fontSize = data.fontSize || TILESIZE;
 
 		// #!DEBUG
-		if (this.fontSize > TILESIZE) {
-			DebugWindow.error(
-				"BoardText.js",
-				"constructor",
-				`fontsize cannot be greater than tile size: ${px(TILESIZE)}.`
-			);
+		if (Debugging.isEnabled()) {
+			if (this.fontSize > TILESIZE) {
+				DebugWindow.error(
+					"BoardText.js",
+					"constructor",
+					`fontsize cannot be greater than tile size: ${px(TILESIZE)}.`
+				);
+			}
 		}
 		// #!END_DEBUG
 

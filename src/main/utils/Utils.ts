@@ -1,5 +1,6 @@
 "use strict";
 
+import Debugging from "../Debugging.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { ORIGINAL_TILE_SIZE, TILESIZE } from "./Globals.js";
 
@@ -66,11 +67,13 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | obje
 	}
 
 	// #!DEBUG
-	DebugWindow.error(
-		"Utils.js",
-		"css()",
-		`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`
-	);
+	if (Debugging.isEnabled()) {
+		DebugWindow.error(
+			"Utils.js",
+			"css()",
+			`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`
+		);
+	}
 	// #!END_DEBUG
 
 	return;
@@ -93,7 +96,9 @@ HTMLCollection.prototype.css = function (style: CSSStyleDeclaration | object): b
 				item.css(style);
 			} // #!DEBUG
 			else {
-				DebugWindow.error("Utils.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
+				if (Debugging.isEnabled()) {
+					DebugWindow.error("Utils.js", "css()", "Item in HTMLCollection not an instance of HTMLElement");
+				}
 			}
 			// #!END_DEBUG
 		}
@@ -124,15 +129,19 @@ export async function fetchJSON(filename: string): Promise<any> {
 		const body: Promise<any> = await (await fetch(filename)).json();
 
 		// #!DEBUG
-		if (!body) {
-			DebugWindow.error("Utils.js", "fetchJSON", "JSON response body is empty");
+		if (Debugging.isEnabled()) {
+			if (!body) {
+				DebugWindow.error("Utils.js", "fetchJSON", "JSON response body is empty");
+			}
 		}
 		// #!END_DEBUG
 
 		return body;
 	} catch (error: any) {
 		// #!DEBUG
-		DebugWindow.error("Utils.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
+		if (Debugging.isEnabled()) {
+			DebugWindow.error("Utils.js", "fetchJSON", `'${error.message}' while fetching data in ${filename}.`);
+		}
 		// #!END_DEBUG
 
 		return;
@@ -496,8 +505,10 @@ export function hexToRgb(hex: string): string {
 	let result: string[] | null = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 
 	// #!DEBUG
-	if (result === null) {
-		DebugWindow.error("Utils.ts", "hexToRgb", "Improper hex argument provided");
+	if (Debugging.isEnabled()) {
+		if (result === null) {
+			DebugWindow.error("Utils.ts", "hexToRgb", "Improper hex argument provided");
+		}
 	}
 	// #!END_DEBUG
 

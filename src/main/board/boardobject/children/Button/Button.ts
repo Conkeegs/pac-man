@@ -1,4 +1,5 @@
 import { App } from "../../../../App.js";
+import Debugging from "../../../../Debugging.js";
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { create, px } from "../../../../utils/Utils.js";
@@ -115,8 +116,10 @@ export default class Button extends BoardObject {
 		this.clickListenerCount++;
 
 		// #!DEBUG
-		if (this.clickListenerCount > 1) {
-			DebugWindow.error("Button.ts", "onClick", "More than one click listener assigned.");
+		if (Debugging.isEnabled()) {
+			if (this.clickListenerCount > 1) {
+				DebugWindow.error("Button.ts", "onClick", "More than one click listener assigned.");
+			}
 		}
 		// #!END_DEBUG
 
