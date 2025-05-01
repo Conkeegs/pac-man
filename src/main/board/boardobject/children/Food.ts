@@ -37,23 +37,8 @@ export default class Food extends MakeCollidable(BoardObject) {
 		const element = this.getElement();
 
 		element.css({
-			// backgroundColor: "transparent",
 			backgroundColor: Food.BACKGROUND_COLOR,
 		});
-
-		element
-			.appendChild(
-				create({
-					name: "div",
-					id: name,
-					classes: ["food"],
-				})
-			)
-			.css({
-				width: px(this._width / 4),
-				height: px(this._height / 4),
-				backgroundColor: Food.BACKGROUND_COLOR,
-			});
 	}
 
 	/**

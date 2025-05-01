@@ -97,7 +97,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 		// forth
 		switch (linkedTeleporter.getTeleportDirection()) {
 			case MovementDirection.LEFT:
-				teleportX -= teleporterWidth;
+				teleportX -= collidableMoveable.getWidth();
 
 				break;
 			case MovementDirection.RIGHT:
