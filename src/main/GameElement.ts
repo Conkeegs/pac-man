@@ -168,6 +168,15 @@ export abstract class GameElement {
 	}
 
 	/**
+	 * Gets this game element's width and height in pixels.
+	 *
+	 * @returns this game element's width and height in pixels
+	 */
+	public getDimensions(): { width: number; height: number } {
+		return { width: this._width, height: this._height };
+	}
+
+	/**
 	 * Returns the center position of this game element by calculating its center with half
 	 * of its width and height.
 	 *

@@ -143,6 +143,18 @@ export default class GameElementTest extends Test {
 	}
 
 	/**
+	 * Test that game elements correctly get their width and height.
+	 */
+	public getDimensionsTest(): void {
+		const inky = new Inky();
+		const dimensions = inky.getDimensions();
+
+		// haven't placed on board yet so height should be undefined
+		this.assertOfType("number", dimensions.width);
+		this.assertOfType("number", dimensions.height);
+	}
+
+	/**
 	 * Test that game elements correctly have their center positions retrieved.
 	 */
 	public getCenterPositionTest(): void {
@@ -160,9 +172,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -270,9 +279,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionXTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -358,9 +364,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionYTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -447,9 +450,6 @@ export default class GameElementTest extends Test {
 	public deleteTest(): void {
 		const name = "test game element";
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super(name);
 			}
@@ -471,9 +471,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -504,9 +501,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformXTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -538,9 +532,6 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformYTest(): void {
 		const gameElement = new (class extends GameElement {
-			protected override readonly _width: number = 10;
-			protected override readonly _height: number = 10;
-
 			constructor() {
 				super("test game element");
 			}
@@ -592,5 +583,55 @@ export default class GameElementTest extends Test {
 		};
 
 		this.assertTrue(GameElement.positionsEqual(position1, position2));
+	}
+
+	/**
+	 * Test that game elements can set their width correctly.
+	 */
+	public setWidthTest(): void {
+		const gameElement = new (class extends GameElement {
+			constructor() {
+				super("test game element");
+			}
+		})();
+		const width = 50;
+
+		gameElement["setWidth"](width);
+
+		this.assertStrictlyEqual(width, gameElement.getWidth());
+	}
+
+	/**
+	 * Test that game elements can set their height correctly.
+	 */
+	public setHeightTest(): void {
+		const gameElement = new (class extends GameElement {
+			constructor() {
+				super("test game element");
+			}
+		})();
+		const height = 50;
+
+		gameElement["setHeight"](height);
+
+		this.assertStrictlyEqual(height, gameElement.getHeight());
+	}
+
+	/**
+	 * Test that game elements can set their dimensions correctly.
+	 */
+	public setDimensionsTest(): void {
+		const gameElement = new (class extends GameElement {
+			constructor() {
+				super("test game element");
+			}
+		})();
+		const width = 50;
+		const height = 50;
+
+		gameElement["setDimensions"](width, height);
+
+		this.assertStrictlyEqual(width, gameElement.getWidth());
+		this.assertStrictlyEqual(height, gameElement.getHeight());
 	}
 }

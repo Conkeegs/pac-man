@@ -1,6 +1,7 @@
 import { App } from "../../../src/main/App.js";
 import Board from "../../../src/main/board/Board.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
+import Food from "../../../src/main/board/boardobject/children/Food.js";
 import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
 import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";
 import Test from "../../base/Base.js";
@@ -156,6 +157,24 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(TILESIZE * numTiles - TILESIZE, pacmanPosition.x);
 		this.assertStrictlyEqual(Board.calcTileOffset(ROWS) - TILESIZE * numTiles - TILESIZE, pacmanPosition.y);
 		this.assertStrictlyEqual(board.getElement(), pacman.getElement().parentElement);
+
+		const food = new Food("testing food");
+		const foodTileX = 2;
+		const foodTileY = 19;
+
+		// test board object centering in tiles
+		board["placeBoardObject"](food, foodTileX, foodTileY, true);
+
+		const foodPosition = food.getPosition();
+
+		this.assertStrictlyEqual(
+			Board.calcTileOffsetX(foodTileX) + (TILESIZE / 2 - food.getWidth() / 2),
+			foodPosition.x
+		);
+		this.assertStrictlyEqual(
+			Board.calcTileOffsetY(foodTileY) + (TILESIZE / 2 - food.getWidth() / 2),
+			foodPosition.y
+		);
 	}
 
 	/**
