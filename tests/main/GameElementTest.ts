@@ -55,6 +55,7 @@ export default class GameElementTest extends Test {
 
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
 		this.assertNotEmpty(App.GAME_ELEMENTS.filter((gameElement) => gameElement.getName() === pacmanName));
+		this.assertTrue(pacman1.getElement().classList.contains("game-element"));
 	}
 
 	/**

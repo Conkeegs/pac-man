@@ -52,7 +52,7 @@ body {
     position: relative;
 }
 
-.board-object,
+.game-element,
 .board-text-container {
     position: absolute;
     display: grid;

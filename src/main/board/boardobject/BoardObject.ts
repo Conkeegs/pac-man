@@ -38,6 +38,7 @@ export abstract class BoardObject extends GameElement {
 		element.css({
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX,
 		});
+		element.classList.add("board-object");
 	}
 
 	/**

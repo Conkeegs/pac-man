@@ -110,7 +110,7 @@ export abstract class GameElement {
 		App.GAME_ELEMENTS.push(this);
 
 		this.element = create({ name: "div", id: name, classes: ["game-element"] });
-		this.element.classList.add("board-object", this.constructor.name.toLowerCase() || "base-game-element");
+		this.element.classList.add("game-element", this.constructor.name.toLowerCase() || "base-game-element");
 	}
 
 	/**
