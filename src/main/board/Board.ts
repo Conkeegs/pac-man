@@ -374,10 +374,6 @@ export default class Board extends GameElement {
 	 * Destroys the board and the resources it's using.
 	 */
 	public override delete(): void {
-		if (Board.instance) {
-			Board.getInstance().getElement().remove();
-		}
-
 		this.turns = [];
 		this.wallElements = [];
 		Board.instance = undefined;
