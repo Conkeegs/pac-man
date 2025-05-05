@@ -404,16 +404,10 @@ export default class Board extends GameElement {
 			top += offset;
 		}
 
-		boardObject.setPosition(
-			{
-				x: left,
-				y: top,
-			},
-			{
-				modifyCss: true,
-				modifyTransform: false,
-			}
-		);
+		boardObject.setPosition({
+			x: left,
+			y: top,
+		});
 		boardObject.render();
 
 		this.getElement().appendChild(boardObject.getElement());

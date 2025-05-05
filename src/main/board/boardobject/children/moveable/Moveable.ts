@@ -379,16 +379,10 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		// we know at this point that we're within this turn's threshold, so correct the board object's position
 		// by moving it to the turn's exact location to keep the board object's movement consistent
 		if (oldPosition.x !== boardObjectTurnX || oldPosition.y !== boardObjectTurnY) {
-			this.setPosition(
-				{
-					x: boardObjectTurnX,
-					y: boardObjectTurnY,
-				},
-				{
-					modifyCss: false,
-					modifyTransform: true,
-				}
-			);
+			this.setPosition({
+				x: boardObjectTurnX,
+				y: boardObjectTurnY,
+			});
 		}
 	}
 
@@ -461,10 +455,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param amount the amount of pixels to move the board object up
 	 */
 	private moveUp(amount: number): void {
-		this.setPositionY(this.getPosition().y - amount, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
+		this.setPositionY(this.getPosition().y - amount);
 	}
 
 	/**
@@ -474,10 +465,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param amount the amount of pixels to move the board object down
 	 */
 	private moveDown(amount: number): void {
-		this.setPositionY(this.getPosition().y + amount, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
+		this.setPositionY(this.getPosition().y + amount);
 	}
 
 	/**
@@ -487,10 +475,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param amount the amount of pixels to move the board object left
 	 */
 	private moveLeft(amount: number): void {
-		this.setPositionX(this.getPosition().x - amount, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
+		this.setPositionX(this.getPosition().x - amount);
 	}
 
 	/**
@@ -500,9 +485,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param amount the amount of pixels to move the board object right
 	 */
 	private moveRight(amount: number): void {
-		this.setPositionX(this.getPosition().x + amount, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
+		this.setPositionX(this.getPosition().x + amount);
 	}
 }

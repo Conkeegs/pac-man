@@ -325,7 +325,7 @@ export default class MoveableTest extends Test {
 		moveable.startMoving(MovementDirection.RIGHT);
 		moveable.interpolate(alpha, oldPosition);
 
-		this.assertStrictlyEqual(oldPositionX * alpha + oldPositionX * (1.0 - alpha), moveable.getPosition().x);
+		this.assertStrictlyEqual(oldPositionX * alpha + oldPositionX * (1.0 - alpha), moveable.getTransform().x);
 	}
 
 	/**

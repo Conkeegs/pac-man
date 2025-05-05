@@ -106,15 +106,10 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 				break;
 		}
 
-		collidableMoveable.setPosition(
-			{
-				x: teleportX,
-				y: linkedTeleporterPosition.y,
-			},
-			{
-				modifyTransform: true,
-			}
-		);
+		collidableMoveable.setPosition({
+			x: teleportX,
+			y: linkedTeleporterPosition.y,
+		});
 
 		// start moving board object in the same direction, again, because if we don't, the board object will still have "stale" data tied to it.
 		// for example, an "old" queued-turn, which was valid before the board object teleported, but invalid afterwards. it could also

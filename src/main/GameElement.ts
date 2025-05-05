@@ -200,7 +200,7 @@ export abstract class GameElement {
 	public setPosition(
 		position: Position,
 		options: PositionSetOptions | undefined = {
-			modifyCss: true,
+			modifyCss: false,
 			modifyTransform: true,
 		}
 	): void {
@@ -211,19 +211,12 @@ export abstract class GameElement {
 			});
 		}
 
-		const oldPosition = this.position;
-
 		this.position = position;
 
-		if (options.modifyTransform) {
-			// get the game element's new position in order to compare it to its old one
-			const newPosition = position;
-			const transform = this.transform;
-
-			// add to game element's transform
+		if (options.modifyTransform ?? true) {
 			this.setTransform({
-				x: transform.x + (newPosition.x - oldPosition.x),
-				y: transform.y + (newPosition.y - oldPosition.y),
+				x: position.x,
+				y: position.y,
 			});
 		}
 	}
@@ -237,7 +230,7 @@ export abstract class GameElement {
 	public setPositionX(
 		x: number,
 		options: PositionSetOptions | undefined = {
-			modifyCss: true,
+			modifyCss: false,
 			modifyTransform: true,
 		}
 	): void {
@@ -247,16 +240,10 @@ export abstract class GameElement {
 			});
 		}
 
-		const oldPositionX = this.position.x;
-
 		this.position.x = x;
 
-		if (options.modifyTransform) {
-			// get the game element's new position in order to compare it to its old one
-			const newPositionX = x;
-
-			// add to game element's transform
-			this.setTransformX(this.transform.x + (newPositionX - oldPositionX));
+		if (options.modifyTransform ?? true) {
+			this.setTransformX(x);
 		}
 	}
 
@@ -269,7 +256,7 @@ export abstract class GameElement {
 	public setPositionY(
 		y: number,
 		options: PositionSetOptions | undefined = {
-			modifyCss: true,
+			modifyCss: false,
 			modifyTransform: true,
 		}
 	): void {
@@ -279,16 +266,10 @@ export abstract class GameElement {
 			});
 		}
 
-		const oldPositionY = this.position.y;
-
 		this.position.y = y;
 
-		if (options.modifyTransform) {
-			// get the game element's new position in order to compare it to its old one
-			const newPositionY = y;
-
-			// add to game element's transform
-			this.setTransformY(this.transform.y + (newPositionY - oldPositionY));
+		if (options.modifyTransform ?? true) {
+			this.setTransformY(y);
 		}
 	}
 

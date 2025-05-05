@@ -38,7 +38,6 @@ export default class BoardObjectTest extends Test {
 	 */
 	public setPositionTest(): void {
 		const pinky = new Pinky();
-		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
 		pinky.setPosition(
@@ -47,96 +46,19 @@ export default class BoardObjectTest extends Test {
 				y: offset,
 			},
 			{
-				modifyCss: false,
-				modifyTransform: false,
-			}
-		);
-
-		let position = pinky.getPosition();
-		let transform = pinky.getTransform();
-
-		// css should not be same since not changed and transform should still be 0 since not changed
-		this.assertStrictlyEqual(offset, position.x);
-		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const olderOffset = 600;
-
-		pinky.setPosition(
-			{
-				x: olderOffset,
-				y: olderOffset,
-			},
-			{
-				modifyCss: true,
-				modifyTransform: false,
-			}
-		);
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should be same since changed and transform should still be 0 since not changed
-		this.assertStrictlyEqual(olderOffset, position.x);
-		this.assertStrictlyEqual(olderOffset, position.y);
-		this.assertStrictlyEqual(px(olderOffset), pinkyElement.css("top"));
-		this.assertStrictlyEqual(px(olderOffset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const oldOffset = 700;
-
-		pinky.setPosition(
-			{
-				x: oldOffset,
-				y: oldOffset,
-			},
-			{
-				modifyCss: false,
 				modifyTransform: true,
 			}
 		);
 		pinky.render();
 
-		position = pinky.getPosition();
-		const oldTransform = pinky.getTransform();
+		const position = pinky.getPosition();
+		const transform = pinky.getTransform();
 
 		// css should not be same since not changed and transform should be equal to current transform + difference in positions
-		this.assertStrictlyEqual(oldOffset, position.x);
-		this.assertStrictlyEqual(oldOffset, position.y);
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0 + (oldOffset - olderOffset), oldTransform.x);
-		this.assertStrictlyEqual(0 + (oldOffset - olderOffset), oldTransform.y);
-
-		offset = 800;
-
-		pinky.setPosition(
-			{
-				x: offset,
-				y: offset,
-			},
-			{
-				modifyCss: true,
-				modifyTransform: true,
-			}
-		);
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should same since changed and transform should be equal to current transform + difference in positions
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(oldTransform.x + (offset - oldOffset), transform.x);
-		this.assertStrictlyEqual(oldTransform.y + (offset - oldOffset), transform.y);
+		this.assertStrictlyEqual(offset, transform.x);
+		this.assertStrictlyEqual(offset, transform.y);
 	}
 
 	/**
@@ -144,83 +66,19 @@ export default class BoardObjectTest extends Test {
 	 */
 	public setPositionXTest(): void {
 		const pinky = new Pinky();
-		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
-		pinky.setPositionX(offset, {
-			modifyCss: false,
-			modifyTransform: false,
-		});
-
-		let position = pinky.getPosition();
-		let transform = pinky.getTransform();
-
-		// css should not be same since not changed and transform should still be 0 since not changed
-		this.assertStrictlyEqual(offset, position.x);
-		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const olderOffset = 600;
-
-		pinky.setPositionX(olderOffset, {
-			modifyCss: true,
-			modifyTransform: false,
-		});
+		pinky.setPositionX(offset);
 		pinky.render();
 
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should be same since changed and transform should still be 0 since not changed
-		this.assertStrictlyEqual(olderOffset, position.x);
-		this.assertNotStrictlyEqual(olderOffset, position.y);
-		this.assertNotStrictlyEqual(px(olderOffset), pinkyElement.css("top"));
-		this.assertStrictlyEqual(px(olderOffset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const oldOffset = 700;
-
-		pinky.setPositionX(oldOffset, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
+		const position = pinky.getPosition();
+		const transform = pinky.getTransform();
 
 		// css should not be same since not changed and transform should be equal to current transform + difference in positions
-		this.assertStrictlyEqual(oldOffset, position.x);
-		this.assertNotStrictlyEqual(oldOffset, position.y);
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0 + (oldOffset - olderOffset), transform.x);
-		this.assertNotStrictlyEqual(0 + (oldOffset - olderOffset), transform.y);
-
-		offset = 800;
-		const oldTransformX = transform.x;
-		const oldTransformY = transform.y;
-
-		pinky.setPositionX(offset, {
-			modifyCss: true,
-			modifyTransform: true,
-		});
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should same since changed and transform should be equal to current transform + difference in positions
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(oldTransformX + (offset - oldOffset), transform.x);
-		this.assertNotStrictlyEqual(oldTransformY + (offset - oldOffset), transform.y);
+		this.assertStrictlyEqual(offset, transform.x);
+		this.assertNotStrictlyEqual(offset, transform.y);
 	}
 
 	/**
@@ -228,83 +86,19 @@ export default class BoardObjectTest extends Test {
 	 */
 	public setPositionYTest(): void {
 		const pinky = new Pinky();
-		const pinkyElement = pinky.getElement();
 		let offset = 500;
 
-		pinky.setPositionY(offset, {
-			modifyCss: false,
-			modifyTransform: false,
-		});
-
-		let position = pinky.getPosition();
-		let transform = pinky.getTransform();
-
-		// css should not be same since not changed and transform should still be 0 since not changed
-		this.assertNotStrictlyEqual(offset, position.x);
-		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const olderOffset = 600;
-
-		pinky.setPositionY(olderOffset, {
-			modifyCss: true,
-			modifyTransform: false,
-		});
+		pinky.setPositionY(offset);
 		pinky.render();
 
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should be same since changed and transform should still be 0 since not changed
-		this.assertNotStrictlyEqual(olderOffset, position.x);
-		this.assertStrictlyEqual(olderOffset, position.y);
-		this.assertStrictlyEqual(px(olderOffset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(olderOffset), pinkyElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
-
-		const oldOffset = 700;
-
-		pinky.setPositionY(oldOffset, {
-			modifyCss: false,
-			modifyTransform: true,
-		});
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
+		const position = pinky.getPosition();
+		const transform = pinky.getTransform();
 
 		// css should not be same since not changed and transform should be equal to current transform + difference in positions
-		this.assertNotStrictlyEqual(oldOffset, position.x);
-		this.assertStrictlyEqual(oldOffset, position.y);
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(oldOffset), pinkyElement.css("left"));
-		this.assertNotStrictlyEqual(0 + (oldOffset - olderOffset), transform.x);
-		this.assertStrictlyEqual(0 + (oldOffset - olderOffset), transform.y);
-
-		offset = 800;
-		const oldTransformX = transform.x;
-		const oldTransformY = transform.y;
-
-		pinky.setPositionY(offset, {
-			modifyCss: true,
-			modifyTransform: true,
-		});
-		pinky.render();
-
-		position = pinky.getPosition();
-		transform = pinky.getTransform();
-
-		// css should same since changed and transform should be equal to current transform + difference in positions
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(px(offset), pinkyElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), pinkyElement.css("left"));
-		this.assertNotStrictlyEqual(oldTransformX + (offset - oldOffset), transform.x);
-		this.assertStrictlyEqual(oldTransformY + (offset - oldOffset), transform.y);
+		this.assertNotStrictlyEqual(offset, transform.x);
+		this.assertStrictlyEqual(offset, transform.y);
 	}
 
 	/**
@@ -336,24 +130,14 @@ export default class BoardObjectTest extends Test {
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 		this.assertFalse(clyde["readyForRender"]);
 
-		clyde.setPosition(
-			{
-				x: 100,
-				y: 300,
-			},
-			{
-				modifyCss: true,
-			}
-		);
-		clyde.setPosition(
-			{
-				x: 300,
-				y: 100,
-			},
-			{
-				modifyCss: true,
-			}
-		);
+		clyde.setPosition({
+			x: 100,
+			y: 300,
+		});
+		clyde.setPosition({
+			x: 300,
+			y: 100,
+		});
 
 		this.assertArrayLength(2, clyde["queuedRenderUpdates"]);
 		this.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
@@ -380,36 +164,26 @@ export default class BoardObjectTest extends Test {
 			y: 700,
 		};
 
-		// modifying css positions only should only queue 1 update for CSS "left" and "top" values
+		// modifying transform positions only should only queue 1 update for transform "x" and "y" values
 		// on the board object
-		clyde.setPosition(
-			{
-				x: position.x,
-				y: position.y,
-			},
-			{
-				modifyCss: true,
-			}
-		);
+		clyde.setPosition({
+			x: position.x,
+			y: position.y,
+		});
 
 		let clydeElement = clyde.getElement();
+		let transform = clyde.getTransform();
 
 		this.assertArrayLength(1, clyde["queuedRenderUpdates"]);
-		this.assertEmpty(clydeElement.css("left") as string);
-		this.assertEmpty(clydeElement.css("top") as string);
+		this.assertEmpty(clydeElement.css("transform") as string);
 		this.assertTrue(clyde["readyForRender"]);
 		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
 
 		// another visual update
-		clyde.setPosition(
-			{
-				x: position.x,
-				y: position.y,
-			},
-			{
-				modifyCss: true,
-			}
-		);
+		clyde.setPosition({
+			x: position.x,
+			y: position.y,
+		});
 
 		// queueing another update should not push board object to "BOARDOBJECTS_TO_RENDER" more
 		// than once
@@ -418,10 +192,11 @@ export default class BoardObjectTest extends Test {
 		clyde.render();
 
 		clydeElement = clyde.getElement();
+		transform = clyde.getTransform();
 
 		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
-		this.assertStrictlyEqual(px(position.x), clydeElement.css("left"));
-		this.assertStrictlyEqual(px(position.y), clydeElement.css("top"));
+		this.assertStrictlyEqual(px(position.x), px(transform.x));
+		this.assertStrictlyEqual(px(position.y), px(transform.y));
 		this.assertFalse(clyde["readyForRender"]);
 		this.assertArrayLength(0, App.BOARDOBJECTS_TO_RENDER);
 	}
