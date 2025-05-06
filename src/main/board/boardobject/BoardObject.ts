@@ -16,6 +16,10 @@ export abstract class BoardObject extends GameElement {
 	 * Whether or not this `BoardObject` is ready for visual updates.
 	 */
 	private readyForRender: true | false = false as const;
+	/**
+	 * Whether or not this board object is marked as deleted.
+	 */
+	private deleted: boolean = false;
 
 	/**
 	 * `z-index` CSS property of all `BoardObject` instances on the board.
@@ -39,6 +43,15 @@ export abstract class BoardObject extends GameElement {
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX,
 		});
 		element.classList.add("board-object");
+	}
+
+	/**
+	 * Get whether or not this board object is marked as deleted
+	 *
+	 * @returns whether or not this board object is marked as deleted
+	 */
+	public getDeleted(): boolean {
+		return this.deleted;
 	}
 
 	/**
@@ -90,6 +103,8 @@ export abstract class BoardObject extends GameElement {
 
 		App.GAME_ELEMENTS.splice(App.GAME_ELEMENTS.indexOf(this), 1);
 		App.BOARDOBJECTS.splice(App.BOARDOBJECTS.indexOf(this), 1);
+
+		this.deleted = true;
 	}
 
 	/**

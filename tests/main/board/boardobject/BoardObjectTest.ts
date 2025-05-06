@@ -34,6 +34,19 @@ export default class BoardObjectTest extends Test {
 	}
 
 	/**
+	 * Test that board objects can tell if they are deleted or not.
+	 */
+	public getDeletedTest(): void {
+		const pinky = new Pinky();
+
+		this.assertFalse(pinky.getDeleted());
+
+		pinky.delete();
+
+		this.assertTrue(pinky.getDeleted());
+	}
+
+	/**
 	 * Test that board objects correctly have their positions set.
 	 */
 	public setPositionTest(): void {
@@ -110,12 +123,14 @@ export default class BoardObjectTest extends Test {
 
 		get("game")!.appendChild(clyde.getElement());
 
+		this.assertFalse(clyde["deleted"]);
 		this.assertNotNull(get(name));
 		this.assertArrayContains(clyde, App.BOARDOBJECTS);
 
 		clyde.delete();
 		clyde.render();
 
+		this.assertTrue(clyde["deleted"]);
 		this.assertNull(get(name));
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS);
 	}
