@@ -75,11 +75,11 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	/**
 	 * The proper method to set this board object's position, based on the direction it is moving.
 	 */
-	private directionalPositionSetters = {
-		[MovementDirection.LEFT]: this.setPositionX,
-		[MovementDirection.RIGHT]: this.setPositionX,
-		[MovementDirection.UP]: this.setPositionY,
-		[MovementDirection.DOWN]: this.setPositionY,
+	private directionalTransformSetters = {
+		[MovementDirection.LEFT]: this.setTransformX,
+		[MovementDirection.RIGHT]: this.setTransformX,
+		[MovementDirection.UP]: this.setTransformY,
+		[MovementDirection.DOWN]: this.setTransformY,
 	};
 
 	/**
@@ -286,12 +286,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
 		// exceeded "MS_PER_FRAME"
-		this.directionalPositionSetters[direction as keyof typeof this.directionalPositionSetters].bind(this)(
-			this.getPosition()![directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha),
-			{
-				modifyCss: false,
-				modifyTransform: true,
-			}
+		this.directionalTransformSetters[direction as keyof typeof this.directionalTransformSetters].bind(this)(
+			this.getPosition()![directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha)
 		);
 	}
 
