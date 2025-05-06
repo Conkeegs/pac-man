@@ -1,5 +1,5 @@
 import { App } from "../../../App.js";
-import type { Position, PositionSetOptions } from "../../../GameElement.js";
+import type { Position } from "../../../GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
@@ -99,8 +99,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * @inheritdoc
 		 */
-		public override setPosition(position: Position, options?: PositionSetOptions): void {
-			super.setPosition(position, options);
+		public override setPosition(position: Position): void {
+			super.setPosition(position);
 
 			this.updateTileKeys();
 		}
@@ -108,8 +108,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * @inheritdoc
 		 */
-		public override setPositionX(x: number, options?: PositionSetOptions): void {
-			super.setPositionX(x, options);
+		public override setPositionX(x: number): void {
+			super.setPositionX(x);
 
 			this.updateTileKeys();
 		}
@@ -117,8 +117,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * @inheritdoc
 		 */
-		public override setPositionY(y: number, options?: PositionSetOptions): void {
-			super.setPositionY(y, options);
+		public override setPositionY(y: number): void {
+			super.setPositionY(y);
 
 			this.updateTileKeys();
 		}
@@ -175,6 +175,8 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 
 			if (defined(positionCollidables) && positionCollidables!.includes(instance)) {
 				App.COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(instance), 1);
+
+				this._currentPositionKey = undefined;
 			}
 		}
 

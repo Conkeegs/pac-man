@@ -110,6 +110,7 @@ export default class CollidableTest extends Test {
 
 		this.assertArrayLength(0, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		this.assertOfType("undefined", collidable._currentPositionKey);
 	}
 
 	/**
