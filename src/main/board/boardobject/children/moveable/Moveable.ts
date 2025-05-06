@@ -301,6 +301,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	public override delete(): void {
 		super.delete();
 
+		this.stopMoving();
 		App.MOVEABLES.splice(App.MOVEABLES.indexOf(this), 1);
 	}
 

@@ -334,10 +334,14 @@ export default class MoveableTest extends Test {
 	public deleteTest(): void {
 		const moveable = new Pinky();
 
+		moveable["moving"] = true;
+
 		this.assertArrayContains(moveable, App.MOVEABLES);
 
 		moveable.delete();
 
+		// each delete should stop moveable from moving
+		this.assertFalse(moveable["moving"]);
 		this.assertArrayDoesntContain(moveable, App.MOVEABLES);
 	}
 
