@@ -59,6 +59,7 @@ export default class CharacterTest extends Test {
 		pacman.stopMoving();
 
 		this.assertFalse(pacman.isMoving());
+		this.assertOfType("undefined", pacman._animationIntervalId);
 	}
 
 	/**
