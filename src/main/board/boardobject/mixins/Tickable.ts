@@ -22,6 +22,12 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		 * the game has been running).
 		 */
 		_framesUpdating: number = 0;
+		/**
+		 * Whether or not this board object should interpolate its rendering for smoothness.
+		 * Useful for things like teleporters since we don't want board objects to interpolate
+		 * "between" the two teleporters.
+		 */
+		_shouldInterpolate: boolean = true;
 
 		/**
 		 * Creates a `TickableClass` instance.
@@ -32,6 +38,24 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 			super(...args);
 
 			App.TICKABLES.push(this as Tickable);
+		}
+
+		/**
+		 * Get whether or not this board object should interpolate.
+		 *
+		 * @returns whether or not this board object should interpolate
+		 */
+		public getShouldInterpolate(): boolean {
+			return this._shouldInterpolate;
+		}
+
+		/**
+		 * Set whether or not this board object should interpolate.
+		 *
+		 * @param shouloInterpolate whether or not this board object should interpolate
+		 */
+		public setShouldInterpolate(shouloInterpolate: boolean): void {
+			this._shouldInterpolate = shouloInterpolate;
 		}
 
 		/**
@@ -56,6 +80,8 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		 */
 		public override delete(): void {
 			super.delete();
+
+			this._framesUpdating = 0;
 
 			App.TICKABLES.splice(App.TICKABLES.indexOf(this as unknown as Tickable), 1);
 		}
