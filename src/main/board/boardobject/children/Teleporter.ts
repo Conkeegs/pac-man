@@ -88,6 +88,10 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 			return;
 		}
 
+		// teleporting board objects should not interpolate their positions, otherwise
+		// they will appear to just move really fast instead of teleport
+		collidableMoveable.setShouldInterpolate(false);
+
 		const linkedTeleporterPosition = linkedTeleporter.getPosition();
 		const teleporterWidth = this.getWidth();
 		let teleportX: number = linkedTeleporterPosition.x;
