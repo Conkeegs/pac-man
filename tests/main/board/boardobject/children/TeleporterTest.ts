@@ -71,6 +71,8 @@ export default class TeleporterTest extends Test {
 
 		const collidableMoveable = new PacMan();
 
+		this.assertTrue(collidableMoveable.getShouldInterpolate());
+
 		collidableMoveable.startMoving(MovementDirection.RIGHT);
 		teleporter2.onCollision(collidableMoveable);
 
@@ -79,6 +81,7 @@ export default class TeleporterTest extends Test {
 
 		this.assertStrictlyEqual(teleporter1Position.x + teleporter1.getWidth(), collidableMoveablePosition.x);
 		this.assertStrictlyEqual(teleporter1Position.y, collidableMoveablePosition.y);
+		this.assertFalse(collidableMoveable.getShouldInterpolate());
 
 		collidableMoveable.startMoving(MovementDirection.LEFT);
 		teleporter1.onCollision(collidableMoveable);
