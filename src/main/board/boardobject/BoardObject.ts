@@ -11,7 +11,7 @@ export abstract class BoardObject extends GameElement {
 	/**
 	 * CSS render updates for this board object that are queued for the future.
 	 */
-	private queuedRenderUpdates: (() => void)[] = [];
+	private queuedRenderUpdate: (() => void) | undefined;
 	/**
 	 * Whether or not this `BoardObject` is ready for visual updates.
 	 */
@@ -111,16 +111,17 @@ export abstract class BoardObject extends GameElement {
 	 * Renders CSS changes of this board object to the screen.
 	 */
 	public render(): void {
-		const renderUpdates = this.queuedRenderUpdates;
+		const queuedRenderUpdate = this.queuedRenderUpdate;
 
-		for (let i = 0; i < renderUpdates.length; i++) {
-			// render visual update
-			renderUpdates[i]!();
+		if (!queuedRenderUpdate) {
+			return;
 		}
 
+		// render visual update
+		queuedRenderUpdate();
 		App.BOARDOBJECTS_TO_RENDER.splice(App.BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
 
-		renderUpdates.length = 0;
+		this.queuedRenderUpdate = undefined;
 		this.readyForRender = false;
 	}
 
@@ -183,6 +184,6 @@ export abstract class BoardObject extends GameElement {
 			this.readyForRender = true;
 		}
 
-		this.queuedRenderUpdates.push(updateCallback);
+		this.queuedRenderUpdate = updateCallback;
 	}
 }

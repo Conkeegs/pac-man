@@ -53,15 +53,10 @@ export default class BoardObjectTest extends Test {
 		const pinky = new Pinky();
 		let offset = 500;
 
-		pinky.setPosition(
-			{
-				x: offset,
-				y: offset,
-			},
-			{
-				modifyTransform: true,
-			}
-		);
+		pinky.setPosition({
+			x: offset,
+			y: offset,
+		});
 		pinky.render();
 
 		const position = pinky.getPosition();
@@ -141,7 +136,7 @@ export default class BoardObjectTest extends Test {
 	public renderTest(): void {
 		const clyde = new Clyde();
 
-		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 		this.assertFalse(clyde["readyForRender"]);
 
@@ -154,14 +149,14 @@ export default class BoardObjectTest extends Test {
 			y: 100,
 		});
 
-		this.assertArrayLength(2, clyde["queuedRenderUpdates"]);
+		this.assertOfType("function", clyde["queuedRenderUpdate"]);
 		this.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
 		this.assertTrue(clyde["readyForRender"]);
 
 		clyde.render();
 
 		this.assertFalse(clyde["readyForRender"]);
-		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
 		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 	}
 
@@ -171,7 +166,7 @@ export default class BoardObjectTest extends Test {
 	public queueRenderUpdateTest(): void {
 		const clyde = new Clyde();
 
-		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
 		this.assertFalse(clyde["readyForRender"]);
 
 		const position = {
@@ -189,7 +184,7 @@ export default class BoardObjectTest extends Test {
 		let clydeElement = clyde.getElement();
 		let transform = clyde.getTransform();
 
-		this.assertArrayLength(1, clyde["queuedRenderUpdates"]);
+		this.assertOfType("function", clyde["queuedRenderUpdate"]);
 		this.assertEmpty(clydeElement.css("transform") as string);
 		this.assertTrue(clyde["readyForRender"]);
 		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
@@ -209,7 +204,7 @@ export default class BoardObjectTest extends Test {
 		clydeElement = clyde.getElement();
 		transform = clyde.getTransform();
 
-		this.assertArrayLength(0, clyde["queuedRenderUpdates"]);
+		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
 		this.assertStrictlyEqual(px(position.x), px(transform.x));
 		this.assertStrictlyEqual(px(position.y), px(transform.y));
 		this.assertFalse(clyde["readyForRender"]);
