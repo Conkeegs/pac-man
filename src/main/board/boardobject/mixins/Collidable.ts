@@ -171,10 +171,9 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			}
 
 			let positionCollidables = App.COLLIDABLES_MAP[currentPositionKey];
-			const instance = this as Collidable;
 
-			if (defined(positionCollidables) && positionCollidables!.includes(instance)) {
-				App.COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(instance), 1);
+			if (defined(positionCollidables) && positionCollidables!.includes(this)) {
+				App.COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(this), 1);
 
 				this._currentPositionKey = undefined;
 			}
