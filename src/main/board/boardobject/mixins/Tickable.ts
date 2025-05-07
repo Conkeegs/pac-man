@@ -52,10 +52,10 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		/**
 		 * Set whether or not this board object should interpolate.
 		 *
-		 * @param shouloInterpolate whether or not this board object should interpolate
+		 * @param shouldInterpolate whether or not this board object should interpolate
 		 */
-		public setShouldInterpolate(shouloInterpolate: boolean): void {
-			this._shouldInterpolate = shouloInterpolate;
+		public setShouldInterpolate(shouldInterpolate: boolean): void {
+			this._shouldInterpolate = shouldInterpolate;
 		}
 
 		/**
