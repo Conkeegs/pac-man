@@ -29,10 +29,10 @@ export default abstract class Ghost extends Character {
 
 		this.getElement().classList.add("ghost");
 
-		setTimeout(() => {
-			// this.startMoving(MovementDirection.LEFT);
-			// this.lookForTurn();
-		}, 2000);
+		// setTimeout(() => {
+		// 	this.startMoving(MovementDirection.LEFT);
+		// 	this.lookForTurn();
+		// }, 2000);
 	}
 
 	/**
