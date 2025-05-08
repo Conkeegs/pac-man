@@ -230,7 +230,7 @@ export default class Board extends GameElement {
 	 * @param numTiles the number of square tiles to calculate an offset for
 	 * @returns `TILESIZE` * `numTiles`
 	 */
-	static calcTileOffset(numTiles: number) {
+	public static calcTileOffset(numTiles: number) {
 		return TILESIZE * numTiles;
 	}
 
@@ -244,7 +244,7 @@ export default class Board extends GameElement {
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
 	 */
-	static calcTileOffsetX(tileX: number): number {
+	public static calcTileOffsetX(tileX: number): number {
 		return Board.calcTileOffset(tileX) - TILESIZE;
 	}
 
@@ -256,7 +256,7 @@ export default class Board extends GameElement {
 	 * @param tileX the horizontal tile number to calculate an offset for
 	 * @returns the x position for the given tile number
 	 */
-	static calcTileOffsetY(tileY: number): number {
+	public static calcTileOffsetY(tileY: number): number {
 		return Board.calcTileOffset(ROWS) - Board.calcTileOffset(tileY) - TILESIZE;
 	}
 
@@ -268,7 +268,7 @@ export default class Board extends GameElement {
 	 * @param xPixels the horizontal offset
 	 * @returns integer tile number for a given horizontal offset
 	 */
-	static calcTileNumX(xPixels: number): number {
+	public static calcTileNumX(xPixels: number): number {
 		return Math.floor((xPixels + TILESIZE) / TILESIZE);
 	}
 
@@ -280,7 +280,7 @@ export default class Board extends GameElement {
 	 * @param yPixels the vertical offset
 	 * @returns integer tile number for a given vertical offset
 	 */
-	static calcTileNumY(yPixels: number): number {
+	public static calcTileNumY(yPixels: number): number {
 		return Math.ceil((Board.calcTileOffset(ROWS) - (yPixels + TILESIZE)) / TILESIZE);
 	}
 
