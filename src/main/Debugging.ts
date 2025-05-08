@@ -93,7 +93,7 @@ export default abstract class Debugging {
 	/**
 	 * Whether or not debugging in the app is enabled.
 	 */
-	private static enabled: true | false = false as const;
+	private static enabled: true | false = true as const;
 
 	/**
 	 * Get whether or not debugging in the app is enabled.
