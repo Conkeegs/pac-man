@@ -2,6 +2,7 @@ import { App } from "../../../src/main/App.js";
 import Board from "../../../src/main/board/Board.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import Food from "../../../src/main/board/boardobject/children/Food.js";
+import type { Position } from "../../../src/main/GameElement.js";
 import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
 import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";
 import Test from "../../base/Base.js";
@@ -85,6 +86,31 @@ export default class BoardTest extends Test {
 		// 5 tiles-sizes in means the edge of the object would be at the start of the 6th tile, so we
 		// add 1 to "numTiles". also, subtract from "ROWS" since vertical offsets come from the top-down
 		this.assertStrictlyEqual(ROWS - (numTiles + 1), Board.calcTileNumY(pixelOffset));
+	}
+
+	/**
+	 * Test that the board can form tile keys.
+	 */
+	public tileKeyTest(): void {
+		const position1: Position = {
+			x: 500,
+			y: 750,
+		};
+
+		this.assertStrictlyEqual(
+			`${Board.calcTileNumX(position1.x)}-${Board.calcTileNumY(position1.y)}`,
+			Board.tileKey(position1)
+		);
+
+		const position2: Position = {
+			x: 450,
+			y: 900,
+		};
+
+		this.assertStrictlyEqual(
+			`${Board.calcTileNumX(position2.x)}-${Board.calcTileNumY(position2.y)}`,
+			Board.tileKey(position2)
+		);
 	}
 
 	/**

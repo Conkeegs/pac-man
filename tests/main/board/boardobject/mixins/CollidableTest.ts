@@ -92,11 +92,11 @@ export default class CollidableTest extends Test {
 	public checkForCollidableAndRemoveTest(): void {
 		const collidable = new Inky();
 
-		this.assertOfType("undefined", collidable._currentPositionKey);
+		this.assertOfType("undefined", collidable._currentTileKey);
 
 		collidable.checkForCollidableAndRemove();
 
-		this.assertOfType("undefined", collidable._currentPositionKey);
+		this.assertOfType("undefined", collidable._currentTileKey);
 
 		collidable.setPosition({
 			x: 1,
@@ -110,7 +110,7 @@ export default class CollidableTest extends Test {
 
 		this.assertArrayLength(0, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
 		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		this.assertOfType("undefined", collidable._currentPositionKey);
+		this.assertOfType("undefined", collidable._currentTileKey);
 	}
 
 	/**

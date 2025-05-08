@@ -285,6 +285,16 @@ export default class Board extends GameElement {
 	}
 
 	/**
+	 * Returns a formatted string of form `"x-y"` for the passed-in `position`. Useful
+	 * for indexing into `Collidable` mapping.
+	 *
+	 * @returns formatted string of form `"x-y"` for the passed-in `position`
+	 */
+	public static tileKey(position: Position): string {
+		return `${Board.calcTileNumX(position.x)}-${Board.calcTileNumY(position.y)}`;
+	}
+
+	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public async createMainBoardObjects(): Promise<void> {

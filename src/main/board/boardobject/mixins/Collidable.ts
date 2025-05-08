@@ -35,16 +35,6 @@ type CollisionBox = {
 export type Collidable = InstanceType<ReturnType<typeof MakeCollidable<typeof BoardObject>>>;
 
 /**
- * Formats `Position` objects into string-keys that can be used to index into the `COLLIDABLES_MAP`.
- *
- * @param position the `Position` object to make into the collidable key
- * @returns
- */
-export function makeCollidablePositionKey(position: Position): string {
-	return `${Board.calcTileNumX(position.x)}-${Board.calcTileNumY(position.y)}`;
-}
-
-/**
  * Gives `BoardObject` instances functionality that allows it to properly "collide" with
  * other board objects on the board.
  *
@@ -61,7 +51,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * The current key into the `COLLIDABLES_MAP` that this collidable is under.
 		 */
-		_currentPositionKey: string | undefined;
+		_currentTileKey: string | undefined;
 		/**
 		 * The percent (out of 100) that the size of this collidable's collision
 		 * box will be, compared to its width and height.
@@ -88,13 +78,27 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		}
 
 		/**
-		 * Logic that executes when this collidable is collided with.
+		 * Gets the current position of this collidable's collision box, based on the collidable's position.
 		 *
-		 * @param withCollidable the `Collidable` that has collided with this collidable
-		 *
-		 * @returns boolean to optionally break out of `tick()`
+		 * @returns positions of the collision box's sides
 		 */
-		abstract onCollision(withCollidable: CollidableClass): void;
+		public getCollisionBox(): CollisionBox {
+			const collisionBoxPercentage = this._collisionBoxPercentage;
+			const width = this.getWidth();
+			const height = this.getHeight();
+			const paddingHorizontal = (width - (width * collisionBoxPercentage) / 100) / 2;
+			const paddingVertical = (height - (height * collisionBoxPercentage) / 100) / 2;
+			const collidablePosition = this.getPosition();
+			const collidablePositionX = collidablePosition.x;
+			const collidablePositionY = collidablePosition.y;
+
+			return {
+				left: collidablePositionX + paddingHorizontal,
+				right: collidablePositionX + width - paddingHorizontal,
+				top: collidablePositionY + paddingVertical,
+				bottom: collidablePositionY + height - paddingVertical,
+			};
+		}
 
 		/**
 		 * @inheritdoc
@@ -124,83 +128,13 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		}
 
 		/**
-		 * Deletes this board object and makes sure that it's also removed from the collidables map.
-		 */
-		public override delete(): void {
-			this.checkForCollidableAndRemove();
-			super.delete();
-			App.COLLIDABLES.splice(App.COLLIDABLES.indexOf(this), 1);
-		}
-
-		/**
-		 * Every `BoardObject` class that implements the `Collidable` interface should call this method every time
-		 * they update their position. This makes sure that the `COLLIDABLES_MAP` stores `collidable` in its own "group",
-		 * based on its current x and y position. This reduces the number of `BoardObject`s we need to run collision detection
-		 * against.
+		 * Logic that executes when this collidable is collided with.
 		 *
-		 */
-		public updateTileKeys(): void {
-			const newCollidablePositionKey = this.getCollidablePositionKey();
-
-			if (newCollidablePositionKey === this._currentPositionKey) {
-				return;
-			}
-
-			this._currentPositionKey = newCollidablePositionKey;
-
-			// create a new mapping for the new position, if there isn't one yet
-			if (!defined(App.COLLIDABLES_MAP[newCollidablePositionKey])) {
-				App.COLLIDABLES_MAP[newCollidablePositionKey] = [];
-			}
-
-			// make sure we remove any existing references to "collidable" in the map,since it's
-			// now moving to a different location in the map
-			this.checkForCollidableAndRemove();
-			// push "collidable" into its own position-based group
-			App.COLLIDABLES_MAP[newCollidablePositionKey]!.push(this as Collidable);
-		}
-
-		/**
-		 * Checks that `collidable` doesn't already have a mapping in the `COLLIDABLES_MAP`, and removes it if it does.
-		 */
-		public checkForCollidableAndRemove(): void {
-			const currentPositionKey = this._currentPositionKey;
-
-			if (!currentPositionKey) {
-				return;
-			}
-
-			let positionCollidables = App.COLLIDABLES_MAP[currentPositionKey];
-
-			if (defined(positionCollidables) && positionCollidables!.includes(this)) {
-				App.COLLIDABLES_MAP[currentPositionKey]!.splice(positionCollidables!.indexOf(this), 1);
-
-				this._currentPositionKey = undefined;
-			}
-		}
-
-		/**
-		 * Gets the current position of this collidable's collision box, based on the collidable's position.
+		 * @param withCollidable the `Collidable` that has collided with this collidable
 		 *
-		 * @returns positions of the collision box's sides
+		 * @returns boolean to optionally break out of `tick()`
 		 */
-		public getCollisionBox(): CollisionBox {
-			const collisionBoxPercentage = this._collisionBoxPercentage;
-			const width = this.getWidth();
-			const height = this.getHeight();
-			const paddingHorizontal = (width - (width * collisionBoxPercentage) / 100) / 2;
-			const paddingVertical = (height - (height * collisionBoxPercentage) / 100) / 2;
-			const collidablePosition = this.getPosition();
-			const collidablePositionX = collidablePosition.x;
-			const collidablePositionY = collidablePosition.y;
-
-			return {
-				left: collidablePositionX + paddingHorizontal,
-				right: collidablePositionX + width - paddingHorizontal,
-				top: collidablePositionY + paddingVertical,
-				bottom: collidablePositionY + height - paddingVertical,
-			};
-		}
+		abstract onCollision(withCollidable: CollidableClass): void;
 
 		/**
 		 * Determines if this collidable is colliding with another `BoardObject`.
@@ -234,12 +168,59 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		}
 
 		/**
-		 * This will create a properly-formatted key into the `COLLIDABLES_MAP` based on this collidable's `Position`.
-		 *
-		 * @returns a properly-formatted key into the `COLLIDABLES_MAP`
+		 * Deletes this board object and makes sure that it's also removed from the collidables map.
 		 */
-		public getCollidablePositionKey(): string {
-			return makeCollidablePositionKey(this.getCenterPosition());
+		public override delete(): void {
+			this.checkForCollidableAndRemove();
+			super.delete();
+			App.COLLIDABLES.splice(App.COLLIDABLES.indexOf(this), 1);
+		}
+
+		/**
+		 * Every `BoardObject` class that implements the `Collidable` interface should call this method every time
+		 * they update their position. This makes sure that the `COLLIDABLES_MAP` stores `collidable` in its own "group",
+		 * based on its current x and y position. This reduces the number of `BoardObject`s we need to run collision detection
+		 * against.
+		 *
+		 */
+		public updateTileKeys(): void {
+			const newTileKey = Board.tileKey(this.getCenterPosition());
+
+			if (newTileKey === this._currentTileKey) {
+				return;
+			}
+
+			this._currentTileKey = newTileKey;
+
+			// create a new mapping for the new position, if there isn't one yet
+			if (!defined(App.COLLIDABLES_MAP[newTileKey])) {
+				App.COLLIDABLES_MAP[newTileKey] = [];
+			}
+
+			// make sure we remove any existing references to "collidable" in the map,since it's
+			// now moving to a different location in the map
+			this.checkForCollidableAndRemove();
+			// push "collidable" into its own position-based group
+			App.COLLIDABLES_MAP[newTileKey]!.push(this as Collidable);
+		}
+
+		/**
+		 * Checks that `collidable` doesn't already have a mapping in the `COLLIDABLES_MAP`, and removes it if it does.
+		 */
+		public checkForCollidableAndRemove(): void {
+			const currentTileKey = this._currentTileKey;
+
+			if (!currentTileKey) {
+				return;
+			}
+
+			let positionCollidables = App.COLLIDABLES_MAP[currentTileKey];
+
+			if (defined(positionCollidables) && positionCollidables!.includes(this)) {
+				App.COLLIDABLES_MAP[currentTileKey]!.splice(positionCollidables!.indexOf(this), 1);
+
+				this._currentTileKey = undefined;
+			}
 		}
 
 		/**
