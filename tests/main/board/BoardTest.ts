@@ -89,9 +89,9 @@ export default class BoardTest extends Test {
 	}
 
 	/**
-	 * Test that the board can form tile keys.
+	 * Test that the board can form tile keys for positions.
 	 */
-	public tileKeyTest(): void {
+	public tileKeyFromPositionTest(): void {
 		const position1: Position = {
 			x: 500,
 			y: 750,
@@ -99,7 +99,7 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${Board.calcTileNumX(position1.x)}-${Board.calcTileNumY(position1.y)}`,
-			Board.tileKey(position1)
+			Board.tileKeyFromPosition(position1)
 		);
 
 		const position2: Position = {
@@ -109,8 +109,27 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${Board.calcTileNumX(position2.x)}-${Board.calcTileNumY(position2.y)}`,
-			Board.tileKey(position2)
+			Board.tileKeyFromPosition(position2)
 		);
+	}
+
+	/**
+	 * Test that the board can form tile keys.
+	 */
+	public createTileKeyTest(): void {
+		const position1: Position = {
+			x: 500,
+			y: 750,
+		};
+
+		this.assertStrictlyEqual(`${position1.x}-${position1.y}`, Board.createTileKey(position1.x, position1.y));
+
+		const position2: Position = {
+			x: 450,
+			y: 900,
+		};
+
+		this.assertStrictlyEqual(`${position2.x}-${position2.y}`, Board.createTileKey(position2.x, position2.y));
 	}
 
 	/**
