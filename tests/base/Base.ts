@@ -124,7 +124,7 @@ export default abstract class Test {
 		actual: unknown
 	): void {
 		if (expected !== typeof actual) {
-			this.formMessageAndThrow(expected, "typeof", String(actual));
+			this.formMessageAndThrow(JSON.stringify(actual), "typeof", expected);
 		}
 
 		this.setCurrentAssertionCount(this.getCurrentAssertionCount() + 1);
