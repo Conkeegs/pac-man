@@ -23,7 +23,7 @@ type CollisionBox = {
 	 */
 	top: number;
 	/**
-	 * Y-coordinate of the bottom-hand side.
+	 * Y-coordinate of the bottom-most side.
 	 */
 	bottom: number;
 };
@@ -51,7 +51,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * The current key into the `COLLIDABLES_MAP` that this collidable is under.
 		 */
-		_currentTileKey: string | undefined;
+		_currentTileKeys: string[] = [];
 		/**
 		 * The percent (out of 100) that the size of this collidable's collision
 		 * box will be, compared to its width and height.
@@ -75,6 +75,17 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			this._collisionBoxPercentage = collisionBoxPercentage;
 
 			App.COLLIDABLES.push(this);
+		}
+
+		/**
+		 * Get the current tile keys that this collidable's collision box
+		 * is located in.
+		 *
+		 * @returns current tile keys that this collidable's collision box
+		 * is located in
+		 */
+		public getCurrentTileKeys(): string[] {
+			return this._currentTileKeys;
 		}
 
 		/**
@@ -184,42 +195,62 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		 *
 		 */
 		public updateTileKeys(): void {
-			const newTileKey = Board.tileKey(this.getCenterPosition());
-
-			if (newTileKey === this._currentTileKey) {
-				return;
-			}
-
-			this._currentTileKey = newTileKey;
-
-			// create a new mapping for the new position, if there isn't one yet
-			if (!defined(App.COLLIDABLES_MAP[newTileKey])) {
-				App.COLLIDABLES_MAP[newTileKey] = [];
-			}
-
-			// make sure we remove any existing references to "collidable" in the map,since it's
+			// make sure we remove any existing references to "collidable" in the map, since it's
 			// now moving to a different location in the map
 			this.checkForCollidableAndRemove();
-			// push "collidable" into its own position-based group
-			App.COLLIDABLES_MAP[newTileKey]!.push(this as Collidable);
+
+			const collisionBox = this.getCollisionBox();
+			const leftTile = Board.calcTileNumX(collisionBox.left);
+			const rightTile = Board.calcTileNumX(collisionBox.right);
+			const topTile = Board.calcTileNumY(collisionBox.top);
+			const bottomTile = Board.calcTileNumY(collisionBox.bottom);
+			const currentTileKeys = this._currentTileKeys;
+
+			// looks through each column and row this collidable's collision box is in
+			// and make sure it is put into the respective tile keys in the collidables map
+			for (let tileY = bottomTile; tileY <= topTile; tileY++) {
+				for (let tileX = leftTile; tileX <= rightTile; tileX++) {
+					const tileKey = Board.createTileKey(tileX, tileY);
+
+					// if we're in the first column/row, and the first tile key that this collidable's
+					// collision box is located in is still just the first column/row, we know that no
+					// other parts of the collision box have changed tiles, so stop here
+					if (tileY == bottomTile && tileX == leftTile && currentTileKeys[0] === tileKey) {
+						return;
+					}
+
+					// create a new mapping for the new position, if there isn't one yet
+					if (!defined(App.COLLIDABLES_MAP[tileKey])) {
+						App.COLLIDABLES_MAP[tileKey] = [];
+					}
+
+					// push "collidable" into its own position-based group
+					App.COLLIDABLES_MAP[tileKey].push(this);
+					this._currentTileKeys.push(tileKey);
+				}
+			}
 		}
 
 		/**
 		 * Checks that `collidable` doesn't already have a mapping in the `COLLIDABLES_MAP`, and removes it if it does.
 		 */
 		public checkForCollidableAndRemove(): void {
-			const currentTileKey = this._currentTileKey;
+			const currentTileKeys = this._currentTileKeys;
+			const currentTileKeysLength = currentTileKeys.length;
 
-			if (!currentTileKey) {
+			if (!currentTileKeysLength) {
 				return;
 			}
 
-			let positionCollidables = App.COLLIDABLES_MAP[currentTileKey];
+			// find all tiles the collision box is in and remove it
+			for (let i = 0; i < currentTileKeysLength; i++) {
+				let positionCollidables = App.COLLIDABLES_MAP[currentTileKeys[i]!];
 
-			if (defined(positionCollidables) && positionCollidables!.includes(this)) {
-				App.COLLIDABLES_MAP[currentTileKey]!.splice(positionCollidables!.indexOf(this), 1);
+				if (defined(positionCollidables) && positionCollidables.includes(this)) {
+					positionCollidables.splice(positionCollidables.indexOf(this), 1);
 
-				this._currentTileKey = undefined;
+					this._currentTileKeys = [];
+				}
 			}
 		}
 

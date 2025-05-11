@@ -1,5 +1,4 @@
 import { App } from "../../../../../src/main/App.js";
-import Board from "../../../../../src/main/board/Board.js";
 import Inky from "../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../../src/main/board/boardobject/children/character/Pinky.js";
@@ -19,6 +18,22 @@ export default class CollidableTest extends Test {
 	}
 
 	/**
+	 * Test that collidables can get their current tile keys correctly.
+	 */
+	public getCurrentTileKeysTest(): void {
+		const collidable = new PacMan();
+
+		this.assertEmpty(collidable.getCurrentTileKeys());
+
+		collidable.setPosition({
+			x: 1,
+			y: 1,
+		});
+
+		this.assertNotEmpty(collidable.getCurrentTileKeys());
+	}
+
+	/**
 	 * Test that collidables can set their positions correctly.
 	 */
 	public setPositionTest(): void {
@@ -29,7 +44,11 @@ export default class CollidableTest extends Test {
 			y: 1,
 		});
 
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		const currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 	}
 
 	/**
@@ -40,7 +59,11 @@ export default class CollidableTest extends Test {
 
 		collidable.setPositionX(1);
 
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		const currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 	}
 
 	/**
@@ -51,7 +74,11 @@ export default class CollidableTest extends Test {
 
 		collidable.setPositionY(1);
 
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		const currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 	}
 
 	/**
@@ -65,11 +92,19 @@ export default class CollidableTest extends Test {
 			y: 1,
 		});
 
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		let currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 
 		collidable.delete();
 
-		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 	}
 
 	/**
@@ -77,13 +112,20 @@ export default class CollidableTest extends Test {
 	 */
 	public updateTileKeysTest(): void {
 		const collidable = new Inky();
+		let currentTileKeys = collidable.getCurrentTileKeys();
 
-		this.assertOfType("undefined", App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]);
+		for (const tileKey of currentTileKeys) {
+			this.assertOfType("undefined", App.COLLIDABLES_MAP[tileKey]);
+		}
 
 		collidable.updateTileKeys();
 
-		this.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayLength(1, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 	}
 
 	/**
@@ -92,25 +134,34 @@ export default class CollidableTest extends Test {
 	public checkForCollidableAndRemoveTest(): void {
 		const collidable = new Inky();
 
-		this.assertOfType("undefined", collidable._currentTileKey);
+		this.assertEmpty(collidable._currentTileKeys);
 
 		collidable.checkForCollidableAndRemove();
 
-		this.assertOfType("undefined", collidable._currentTileKey);
+		this.assertEmpty(collidable._currentTileKeys);
 
 		collidable.setPosition({
 			x: 1,
 			y: 1,
 		});
 
-		this.assertArrayLength(1, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		this.assertArrayContains(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
+		let currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayLength(1, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
 
 		collidable.checkForCollidableAndRemove();
 
-		this.assertArrayLength(0, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[collidable.getCollidablePositionKey()]!);
-		this.assertOfType("undefined", collidable._currentTileKey);
+		currentTileKeys = collidable.getCurrentTileKeys();
+
+		for (const tileKey of currentTileKeys) {
+			this.assertArrayLength(0, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[tileKey]!);
+		}
+
+		this.assertEmpty(collidable._currentTileKeys);
 	}
 
 	/**
@@ -172,19 +223,6 @@ export default class CollidableTest extends Test {
 		// colliding horizontally
 		this.assertTrue(collidable1.isCollidingWithCollidable(collidable2));
 		this.assertTrue(collidable2.isCollidingWithCollidable(collidable1));
-	}
-
-	/**
-	 * Test that collidables can get their collidable tile keys correctly.
-	 */
-	public getCollidablePositionKeyTest(): void {
-		const collidable = new PacMan();
-		const centerPosition = collidable.getCenterPosition();
-
-		this.assertStrictlyEqual(
-			`${Board.calcTileNumX(centerPosition.x)}-${Board.calcTileNumY(centerPosition.y)}`,
-			collidable.getCollidablePositionKey()
-		);
 	}
 
 	/**
