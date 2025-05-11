@@ -6,7 +6,7 @@ import { BoardObject } from "./board/boardobject/BoardObject.js";
 import type Character from "./board/boardobject/children/character/Character.js";
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
-import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
+import type { Collidable } from "./board/boardobject/mixins/collidable/Collidable.js";
 import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
 import Debugging from "./Debugging.js";
 import type { GameElement, Position } from "./GameElement.js";

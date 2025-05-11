@@ -1,7 +1,7 @@
 import { GameElement } from "../../../GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { BoardObject } from "../BoardObject.js";
-import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
+import MakeCollidable, { type Collidable } from "../mixins/collidable/Collidable.js";
 import Blinky from "./character/Blinky.js";
 import Clyde from "./character/Clyde.js";
 import Inky from "./character/Inky.js";

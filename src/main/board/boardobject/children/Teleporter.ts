@@ -1,6 +1,6 @@
 import { TILESIZE } from "../../../utils/Globals.js";
 import { BoardObject } from "../BoardObject.js";
-import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
+import MakeCollidable, { type Collidable } from "../mixins/collidable/Collidable.js";
 import PacMan from "./character/PacMan.js";
 import type Moveable from "./moveable/Moveable.js";
 import MovementDirection from "./moveable/MovementDirection.js";

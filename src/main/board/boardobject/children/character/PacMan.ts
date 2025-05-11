@@ -6,7 +6,7 @@ import { GameElement } from "../../../../GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
-import type { Collidable } from "../../mixins/Collidable.js";
+import type { Collidable } from "../../mixins/collidable/Collidable.js";
 import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";

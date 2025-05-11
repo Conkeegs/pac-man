@@ -1,7 +1,7 @@
 import AssetRegistry from "../../../assets/AssetRegistry.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { BoardObject } from "../BoardObject.js";
-import MakeCollidable from "../mixins/Collidable.js";
+import MakeCollidable from "../mixins/collidable/Collidable.js";
 import PacMan from "./character/PacMan.js";
 
 /**
