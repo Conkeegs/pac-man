@@ -30,9 +30,11 @@ export abstract class BoardObject extends GameElement {
 	 * Creates a board object.
 	 *
 	 * @param name the name/HTML id of the board object
+	 * @param width the width of this board object
+	 * @param height the width of this board object
 	 */
-	constructor(name: string) {
-		super(name);
+	constructor(name: string, width: number, height: number) {
+		super(name, width, height);
 
 		// keep track of this board object so we can clean it up later, if needed
 		App.BOARDOBJECTS.push(this);

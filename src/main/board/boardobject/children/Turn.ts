@@ -37,9 +37,7 @@ export default class Turn extends MakeCollidable(BoardObject) {
 	 * @param directions the allowed `MovementDirection`s of the turn
 	 */
 	constructor(name: string, directions: MovementDirection[]) {
-		super(name);
-
-		this.setDimensions(Turn.TURN_DIMENSIONS, Turn.TURN_DIMENSIONS);
+		super(name, Turn.TURN_DIMENSIONS, Turn.TURN_DIMENSIONS);
 
 		this.directions = directions;
 	}

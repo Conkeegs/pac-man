@@ -45,9 +45,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 	 * after it has teleported
 	 */
 	constructor(name: string, teleportDirection: MovementDirection) {
-		super(name);
-
-		this.setDimensions(Teleporter.TELEPORTER_DIMENSIONS, Teleporter.TELEPORTER_DIMENSIONS);
+		super(name, Teleporter.TELEPORTER_DIMENSIONS, Teleporter.TELEPORTER_DIMENSIONS);
 
 		this.teleportDirection = teleportDirection;
 	}

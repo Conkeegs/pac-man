@@ -56,9 +56,7 @@ export default class BoardText extends BoardObject {
 		 */
 		vertical?: boolean;
 	}) {
-		super(data.name);
-
-		this.setDimensions(BoardText.BOARDTEXT_DIMENSIONS, BoardText.BOARDTEXT_DIMENSIONS);
+		super(data.name, BoardText.BOARDTEXT_DIMENSIONS, BoardText.BOARDTEXT_DIMENSIONS);
 
 		this.fontSize = data.fontSize || TILESIZE;
 

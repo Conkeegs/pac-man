@@ -86,8 +86,10 @@ export abstract class GameElement {
 	 * Creates a game element.
 	 *
 	 * @param name the name/HTML id of the game element
+	 * @param width the width of this game element
+	 * @param height the height of this game element
 	 */
-	constructor(name: string) {
+	constructor(name: string, width: number, height: number) {
 		// #!DEBUG
 		if (Debugging.isEnabled()) {
 			if (!name) {
@@ -105,12 +107,16 @@ export abstract class GameElement {
 		// #!END_DEBUG
 
 		this.name = name;
+		this._width = width;
+		this._height = height;
 
 		// keep track of this game element so we can clean it up later, if needed
 		App.GAME_ELEMENTS.push(this);
 
 		this.element = create({ name: "div", id: name, classes: ["game-element"] });
 		this.element.classList.add("game-element", this.constructor.name.toLowerCase() || "base-game-element");
+
+		this.setDimensions(width, height);
 	}
 
 	/**

@@ -143,11 +143,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	/**
 	 * Creates a moveable board object.
 	 *
-	 * @param speed the speed of the board object (in pixels-per-second)
 	 * @param name
+	 * @param width the width of this moveable
+	 * @param height the height of this moveable
+	 * @param speed the speed of the board object (in pixels-per-second)
 	 */
-	constructor(name: string, speed: number) {
-		super(name);
+	constructor(name: string, width: number, height: number, speed: number) {
+		super(name, width, height);
 
 		this.speed = speed;
 		// faster board objects have larger distances per-frame

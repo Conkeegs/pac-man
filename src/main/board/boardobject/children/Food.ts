@@ -30,9 +30,7 @@ export default class Food extends MakeCollidable(BoardObject) {
 	 * @param name
 	 */
 	constructor(name: string) {
-		super(name);
-
-		this.setDimensions(Food.FOOD_DIMENSIONS, Food.FOOD_DIMENSIONS);
+		super(name, Food.FOOD_DIMENSIONS, Food.FOOD_DIMENSIONS);
 
 		const element = this.getElement();
 

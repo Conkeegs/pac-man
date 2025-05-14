@@ -21,9 +21,7 @@ export default class PathNode extends BoardObject {
 	 * @param color the color of the path node
 	 */
 	constructor(name: string, color = "white") {
-		super(name);
-
-		this.setDimensions(PathNode.PATHNODE_DIMENSIONS, PathNode.PATHNODE_DIMENSIONS);
+		super(name, PathNode.PATHNODE_DIMENSIONS, PathNode.PATHNODE_DIMENSIONS);
 
 		const element: HTMLElement = this.getElement();
 		const childDimensionsPixels = px(Board.calcTileOffset(0.5));

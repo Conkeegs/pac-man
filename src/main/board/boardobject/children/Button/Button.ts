@@ -46,9 +46,7 @@ export default class Button extends BoardObject {
 	 * @param text the text to be displayed in the button
 	 */
 	constructor(name: string, text: string) {
-		super(name);
-
-		this.setDimensions(Button.BUTTON_INITIAL_WIDTH, Button.BUTTON_INITIAL_HEIGHT);
+		super(name, Button.BUTTON_INITIAL_WIDTH, Button.BUTTON_INITIAL_HEIGHT);
 
 		this.text = text;
 		this.boardText = new BoardText({

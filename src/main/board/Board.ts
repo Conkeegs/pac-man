@@ -147,9 +147,7 @@ export default class Board extends GameElement {
 	 * Creates the singleton board instance.
 	 */
 	private constructor() {
-		super("board");
-
-		this.setDimensions(WIDTH, HEIGHT);
+		super("board", WIDTH, HEIGHT);
 
 		if (App.isRunning()) {
 			App.destroy();
