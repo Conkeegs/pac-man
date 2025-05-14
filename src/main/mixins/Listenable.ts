@@ -1,5 +1,5 @@
 import { App } from "../App.js";
-import type { GameElement } from "../GameElement.js";
+import type { GameElement } from "../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../types.js";
 
 /**

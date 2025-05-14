@@ -1,4 +1,4 @@
-import { GameElement } from "../../../GameElement.js";
+import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { BoardObject } from "../BoardObject.js";
 import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";

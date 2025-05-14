@@ -1,7 +1,7 @@
-import { App } from "./App.js";
-import Debugging from "./Debugging.js";
-import DebugWindow from "./debugwindow/DebugWindow.js";
-import { create, px } from "./utils/Utils.js";
+import { App } from "../App.js";
+import Debugging from "../Debugging.js";
+import DebugWindow from "../debugwindow/DebugWindow.js";
+import { create, px } from "../utils/Utils.js";
 
 /**
  * Represents a game element's horizontal and vertical offsets in the game.

@@ -1,13 +1,13 @@
-import { App } from "../../src/main/App.js";
-import Board from "../../src/main/board/Board.js";
-import Inky from "../../src/main/board/boardobject/children/character/Inky.js";
-import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
-import Food from "../../src/main/board/boardobject/children/Food.js";
-import { GameElement, type Position } from "../../src/main/GameElement.js";
-import { ROWS, TILESIZE } from "../../src/main/utils/Globals.js";
-import { get, px } from "../../src/main/utils/Utils.js";
-import Test from "../base/Base.js";
-import { tests } from "../base/Decorators.js";
+import { App } from "../../../src/main/App.js";
+import Board from "../../../src/main/board/Board.js";
+import Inky from "../../../src/main/board/boardobject/children/character/Inky.js";
+import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
+import Food from "../../../src/main/board/boardobject/children/Food.js";
+import { GameElement, type Position } from "../../../src/main/gameelement/GameElement.js";
+import { ROWS, TILESIZE } from "../../../src/main/utils/Globals.js";
+import { get, px } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests functionality of `GameElement` instances.
@@ -174,7 +174,7 @@ export default class GameElementTest extends Test {
 	public setPositionTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const htmlElement = gameElement.getElement();
@@ -279,7 +279,7 @@ export default class GameElementTest extends Test {
 	public setPositionXTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const htmlElement = gameElement.getElement();
@@ -360,7 +360,7 @@ export default class GameElementTest extends Test {
 	public setPositionYTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const htmlElement = gameElement.getElement();
@@ -442,7 +442,7 @@ export default class GameElementTest extends Test {
 		const name = "test game element";
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super(name);
+				super(name, 0, 0);
 			}
 		})();
 
@@ -463,7 +463,7 @@ export default class GameElementTest extends Test {
 	public setTransformTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		let transform = gameElement.getTransform();
@@ -493,7 +493,7 @@ export default class GameElementTest extends Test {
 	public setTransformXTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const newTransformY = 600;
@@ -524,7 +524,7 @@ export default class GameElementTest extends Test {
 	public setTransformYTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const newTransformX = 600;
@@ -582,7 +582,7 @@ export default class GameElementTest extends Test {
 	public setWidthTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const width = 50;
@@ -598,7 +598,7 @@ export default class GameElementTest extends Test {
 	public setHeightTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const height = 50;
@@ -614,7 +614,7 @@ export default class GameElementTest extends Test {
 	public setDimensionsTest(): void {
 		const gameElement = new (class extends GameElement {
 			constructor() {
-				super("test game element");
+				super("test game element", 0, 0);
 			}
 		})();
 		const width = 50;

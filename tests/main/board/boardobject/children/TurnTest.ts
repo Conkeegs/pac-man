@@ -1,7 +1,7 @@
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import Turn from "../../../../../src/main/board/boardobject/children/Turn.js";
-import { GameElement, type Position } from "../../../../../src/main/GameElement.js";
+import { GameElement, type Position } from "../../../../../src/main/gameelement/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";

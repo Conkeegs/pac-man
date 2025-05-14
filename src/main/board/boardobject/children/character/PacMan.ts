@@ -2,7 +2,7 @@
 
 import { App } from "../../../../App.js";
 import AssetRegistry, { type ASSET_LIST } from "../../../../assets/AssetRegistry.js";
-import { GameElement } from "../../../../GameElement.js";
+import { GameElement } from "../../../../gameelement/GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";

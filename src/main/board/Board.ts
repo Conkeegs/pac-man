@@ -2,9 +2,9 @@
 
 import { App } from "../App.js";
 import Debugging from "../Debugging.js";
-import { GameElement, type Position } from "../GameElement.js";
 import AssetRegistry from "../assets/AssetRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
+import { GameElement, type Position } from "../gameelement/GameElement.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";

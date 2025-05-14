@@ -1,5 +1,5 @@
 import { App } from "../../../../App.js";
-import type { Position } from "../../../../GameElement.js";
+import type { Position } from "../../../../gameelement/GameElement.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
