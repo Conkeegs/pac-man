@@ -116,8 +116,8 @@ export default abstract class Debugging {
 			const collisionBoxElement = create({
 				name: "div",
 			}).css({
-				width: px(collisionBox.right - collisionBox.left),
-				height: px(collisionBox.bottom - collisionBox.top),
+				width: px(collisionBox.getWidth()),
+				height: px(collisionBox.getHeight()),
 				border: "2px solid red",
 				position: "absolute",
 				right: 0,
