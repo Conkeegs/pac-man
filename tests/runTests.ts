@@ -23,7 +23,8 @@ import AnimateableTest from "./main/board/boardobject/mixins/AnimateableTest.js"
 import CollidableTest from "./main/board/boardobject/mixins/CollidableTest.js";
 import TickableTest from "./main/board/boardobject/mixins/TickableTest.js";
 import BoardTest from "./main/board/BoardTest.js";
-import GameElementTest from "./main/GameElementTest.js";
+import CollisionBoxTest from "./main/gameelement/CollisionBoxTest.js";
+import GameElementTest from "./main/gameelement/GameElementTest.js";
 import ListenableTest from "./main/mixins/ListenableTest.js";
 
 /**
@@ -84,6 +85,7 @@ export default class RunTests {
 		new ListenableTest(),
 		new TeleporterTest(),
 		new TurnTest(),
+		new CollisionBoxTest(),
 	];
 
 	/**

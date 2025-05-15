@@ -133,6 +133,98 @@ export default class BoardTest extends Test {
 	}
 
 	/**
+	 * Test that the board can find the closest point on a line segment to a given position.
+	 */
+	public positionDistanceToLineSegmentTest(): void {
+		/*
+			In this case, point/position is perfectly between
+			line segment on y-axis, so closest point is in the center
+			of the line.
+
+			      │
+			*     │
+				  │
+		*/
+		const pointX = 10;
+		const pointY = 10;
+		const offset = 5;
+		const position: Position = {
+			x: pointX,
+			y: pointY,
+		};
+		let lineStart: Position = {
+			x: pointX + offset,
+			y: pointY - offset,
+		};
+		let lineEnd: Position = {
+			x: pointX + offset,
+			y: pointY + offset,
+		};
+
+		this.assertStrictlyEqual(offset, Board.positionDistanceToLineSegment(position, lineStart, lineEnd));
+
+		/*
+			Point/position is perfectly between line segment
+			on y-axis again, so closest point is in the center
+			of the line again.
+
+			│
+			│     *
+			│
+		*/
+		lineStart = {
+			x: pointX - offset,
+			y: pointY - offset,
+		};
+		lineEnd = {
+			x: pointX - offset,
+			y: pointY + offset,
+		};
+
+		this.assertStrictlyEqual(offset, Board.positionDistanceToLineSegment(position, lineStart, lineEnd));
+
+		/*
+			In this case, point/position is at top of line
+			segment on its left side, so closest point is
+			the top of the line.
+
+			*     │
+				  │
+				  │
+		*/
+		lineStart = {
+			x: pointX + offset,
+			y: pointY,
+		};
+		lineEnd = {
+			x: pointX + offset,
+			y: pointY + offset,
+		};
+
+		this.assertStrictlyEqual(offset, Board.positionDistanceToLineSegment(position, lineStart, lineEnd));
+
+		/*
+			In this case, point/position is at top of line
+			segment on its left side, so closest point is
+			the top of the line.
+
+			│     *
+			│
+			│
+		*/
+		lineStart = {
+			x: pointX - offset,
+			y: pointY,
+		};
+		lineEnd = {
+			x: pointX - offset,
+			y: pointY + offset,
+		};
+
+		this.assertStrictlyEqual(offset, Board.positionDistanceToLineSegment(position, lineStart, lineEnd));
+	}
+
+	/**
 	 * Test that the game's board can create & place the main board objects on itself.
 	 */
 	public async createMainBoardObjectsTest(): Promise<void> {

@@ -303,6 +303,60 @@ export default class Board extends GameElement {
 	}
 
 	/**
+	 * Given a position `position` and the two positions of the start and end of a line
+	 * segment (`segmentPointA` and `segmentPointB` respectively), this will find the closest
+	 * point along the line `[segmentPointA, segmentPointB]` to the reference point `position`.
+	 *
+	 * @param position reference point/position to measure distance from
+	 * @param segmentPointA start of line segment
+	 * @param segmentPointB end of line segment
+	 * @returns closest point along the line `[segmentPointA, segmentPointB]` to the reference point `position`
+	 */
+	public static positionDistanceToLineSegment(
+		position: Position,
+		segmentPointA: Position,
+		segmentPointB: Position
+	): number {
+		const positionX = position.x;
+		const positionY = position.y;
+		const segmentPointAX = segmentPointA.x;
+		const segmentPointAY = segmentPointA.y;
+		const segmentPointBX = segmentPointB.x;
+		const segmentPointBY = segmentPointB.y;
+		const vectorToPositionX = positionX - segmentPointAX;
+		const vectorToPositionY = positionY - segmentPointAY;
+		const deltaX = segmentPointBX - segmentPointAX;
+		const deltaY = segmentPointBY - segmentPointAY;
+		const dotProduct = vectorToPositionX * deltaX + vectorToPositionY * deltaY;
+		const segmentLengthSquared = deltaX * deltaX + deltaY * deltaY;
+		let projectionFactor = -1;
+
+		// in case of 0 length line
+		if (segmentLengthSquared != 0) {
+			projectionFactor = dotProduct / segmentLengthSquared;
+		}
+
+		let closestX;
+		let closestY;
+
+		if (projectionFactor < 0) {
+			closestX = segmentPointAX;
+			closestY = segmentPointAY;
+		} else if (projectionFactor > 1) {
+			closestX = segmentPointBX;
+			closestY = segmentPointBY;
+		} else {
+			closestX = segmentPointAX + projectionFactor * deltaX;
+			closestY = segmentPointAY + projectionFactor * deltaY;
+		}
+
+		const distanceX = positionX - closestX;
+		const distanceY = positionY - closestY;
+
+		return Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+	}
+
+	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public async createMainBoardObjects(): Promise<void> {
