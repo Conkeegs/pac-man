@@ -46,6 +46,27 @@ export type PositionSetOptions = {
 };
 
 /**
+ * Represents data about a child `GameElement` instance that another
+ * `GameElement` instance may be the parent of.
+ */
+type Child = {
+	/**
+	 * Offset (in pixels) from the left for a child based on the parent's
+	 * x-position.
+	 */
+	offsetX?: number;
+	/**
+	 * Offset (in pixels) from the top for a child based on the parent's
+	 * y-position.
+	 */
+	offsetY?: number;
+	/**
+	 * The actual `GameElement` instance a child represents.
+	 */
+	gameElement: GameElement;
+};
+
+/**
  * Represents any object in the game that is displayed on the game as an `HTMLElement`
  * in the DOM.
  */
@@ -81,6 +102,10 @@ export abstract class GameElement {
 	 * The game element's unique name and HTML id.
 	 */
 	private readonly name: string;
+	/**
+	 * Array of child-`GameElement` instances this `GameElement` holds.
+	 */
+	private children: Child[] = [];
 
 	/**
 	 * Creates a game element.
@@ -198,6 +223,13 @@ export abstract class GameElement {
 	}
 
 	/**
+	 * Get the array of child-`GameElement` instances this `GameElement` holds.
+	 */
+	public getChildren(): Child[] {
+		return this.children;
+	}
+
+	/**
 	 * Sets this game element's position.
 	 *
 	 * @param position the new position of the game element
@@ -210,10 +242,26 @@ export abstract class GameElement {
 			modifyTransform: true,
 		}
 	): void {
+		const positionX = position.x;
+		const positionY = position.y;
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPosition(
+				{
+					x: positionX + (child.offsetX ?? 0),
+					y: positionY + (child.offsetY ?? 0),
+				},
+				options
+			);
+		}
+
 		if (options.modifyCss) {
 			this.element.css({
-				left: px(position.x),
-				top: px(position.y),
+				left: px(positionX),
+				top: px(positionY),
 			});
 		}
 
@@ -221,8 +269,8 @@ export abstract class GameElement {
 
 		if (options.modifyTransform ?? true) {
 			this.setTransform({
-				x: position.x,
-				y: position.y,
+				x: positionX,
+				y: positionY,
 			});
 		}
 	}
@@ -240,6 +288,14 @@ export abstract class GameElement {
 			modifyTransform: true,
 		}
 	): void {
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPositionX(x + (child.offsetX ?? 0)), options;
+		}
+
 		if (options.modifyCss) {
 			this.element.css({
 				left: px(x),
@@ -266,6 +322,14 @@ export abstract class GameElement {
 			modifyTransform: true,
 		}
 	): void {
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPositionY(y + (child.offsetY ?? 0), options);
+		}
+
 		if (options.modifyCss) {
 			this.element.css({
 				top: px(y),
@@ -378,5 +442,18 @@ export abstract class GameElement {
 			width: px(width),
 			height: px(height),
 		});
+	}
+
+	/**
+	 * Adds a `GameElement` instance as a child to this game element.
+	 * The child's position will be the same as its parent plus any x and
+	 * y offsets specified for this child.
+	 *
+	 * @param child data about the child `GameElement` instance; the instance itself
+	 * and optional x and y pixel-offsets
+	 */
+	protected addChild(child: Child): void {
+		this.children.push(child);
+		this.getElement().appendChild(child.gameElement.getElement());
 	}
 }

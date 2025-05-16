@@ -94,7 +94,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			this.addChild({
 				offsetX: paddingHorizontal,
 				offsetY: paddingVertical,
-				boardObject: this.collisionBox,
+				gameElement: this.collisionBox,
 			});
 			App.COLLIDABLES.push(this);
 		}

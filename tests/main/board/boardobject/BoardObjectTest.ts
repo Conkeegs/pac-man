@@ -47,23 +47,6 @@ export default class BoardObjectTest extends Test {
 	}
 
 	/**
-	 * Test that board objects can get their child-board objects.
-	 */
-	public getChildrenTest(): void {
-		const boardObject = new (class extends BoardObject {})("parent-board-object", 0, 0);
-
-		this.assertEmpty(boardObject.getChildren());
-
-		boardObject["addChild"]({
-			offsetX: 0,
-			offsetY: 0,
-			boardObject: new (class extends BoardObject {})("child-board-object", 0, 0),
-		});
-
-		this.assertArrayLength(1, boardObject.getChildren());
-	}
-
-	/**
 	 * Test that board objects correctly have their positions set.
 	 */
 	public setPositionTest(): void {
@@ -83,36 +66,6 @@ export default class BoardObjectTest extends Test {
 		this.assertStrictlyEqual(offset, position.y);
 		this.assertStrictlyEqual(offset, transform.x);
 		this.assertStrictlyEqual(offset, transform.y);
-
-		offset = 600;
-		const childOffsetX = 10;
-		const childOffsetY = 15;
-
-		boardObject["addChild"]({
-			offsetX: childOffsetX,
-			offsetY: childOffsetY,
-			boardObject: new (class extends BoardObject {})("child-board-object", 0, 0),
-		});
-		boardObject.setPosition({
-			x: offset,
-			y: offset,
-		});
-
-		position = boardObject.getPosition();
-		transform = boardObject.getTransform();
-		const child = boardObject.getChildren()[0]!.boardObject;
-		const childPosition = child.getPosition();
-		const childTransform = child.getTransform();
-
-		// children should get same position + child offsets
-		this.assertStrictlyEqual(offset, position.x);
-		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childPosition.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childPosition.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childTransform.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childTransform.y);
 	}
 
 	/**
@@ -132,32 +85,6 @@ export default class BoardObjectTest extends Test {
 		this.assertNotStrictlyEqual(offset, position.y);
 		this.assertStrictlyEqual(offset, transform.x);
 		this.assertNotStrictlyEqual(offset, transform.y);
-
-		offset = 600;
-		const childOffsetX = 10;
-
-		boardObject["addChild"]({
-			offsetX: childOffsetX,
-			offsetY: 0,
-			boardObject: new (class extends BoardObject {})("child-board-object", 0, 0),
-		});
-		boardObject.setPositionX(offset);
-
-		position = boardObject.getPosition();
-		transform = boardObject.getTransform();
-		const child = boardObject.getChildren()[0]!.boardObject;
-		const childPosition = child.getPosition();
-		const childTransform = child.getTransform();
-
-		// children should get same position + child offsets
-		this.assertStrictlyEqual(offset, position.x);
-		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertNotStrictlyEqual(offset, transform.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childPosition.x);
-		this.assertNotStrictlyEqual(offset, childPosition.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childTransform.x);
-		this.assertNotStrictlyEqual(offset, childTransform.y);
 	}
 
 	/**
@@ -177,32 +104,6 @@ export default class BoardObjectTest extends Test {
 		this.assertStrictlyEqual(offset, position.y);
 		this.assertNotStrictlyEqual(offset, transform.x);
 		this.assertStrictlyEqual(offset, transform.y);
-
-		offset = 600;
-		const childOffsetY = 10;
-
-		boardObject["addChild"]({
-			offsetX: 0,
-			offsetY: childOffsetY,
-			boardObject: new (class extends BoardObject {})("child-board-object", 0, 0),
-		});
-		boardObject.setPositionY(offset);
-
-		position = boardObject.getPosition();
-		transform = boardObject.getTransform();
-		const child = boardObject.getChildren()[0]!.boardObject;
-		const childPosition = child.getPosition();
-		const childTransform = child.getTransform();
-
-		// children should get same position + child offsets
-		this.assertNotStrictlyEqual(offset, position.x);
-		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
-		this.assertNotStrictlyEqual(offset, childPosition.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childPosition.y);
-		this.assertNotStrictlyEqual(offset, childTransform.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childTransform.y);
 	}
 
 	/**
@@ -388,29 +289,5 @@ export default class BoardObjectTest extends Test {
 			`translate(${px(newTransformX)}, ${px(newTransformY)})`,
 			clyde.getElement().css("transform")
 		);
-	}
-
-	/**
-	 * Test that board objects can add child-board objects.
-	 */
-	public addChildTest(): void {
-		const boardObject = new (class extends BoardObject {})("parent-board-object", 0, 0);
-		const childBoardObject = new (class extends BoardObject {})("child-board-object", 0, 0);
-		const offsetX = 9;
-		const offsetY = 11;
-
-		boardObject["addChild"]({
-			offsetX,
-			offsetY,
-			boardObject: childBoardObject,
-		});
-
-		const children = boardObject.getChildren();
-		const firstChild = children[0]!;
-
-		this.assertArrayLength(1, children);
-		this.assertStrictlyEqual(offsetX, firstChild.offsetX);
-		this.assertStrictlyEqual(offsetY, firstChild.offsetY);
-		this.assertStrictlyEqual(childBoardObject, firstChild.boardObject);
 	}
 }
