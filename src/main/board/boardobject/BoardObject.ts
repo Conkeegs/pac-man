@@ -65,9 +65,22 @@ export abstract class BoardObject extends GameElement {
 	public override setPosition(position: Position): void {
 		this.position = position;
 
+		const positionX = position.x;
+		const positionY = position.y;
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPosition({
+				x: positionX + (child.offsetX ?? 0),
+				y: positionY + (child.offsetY ?? 0),
+			});
+		}
+
 		this.setTransform({
-			x: position.x,
-			y: position.y,
+			x: positionX,
+			y: positionY,
 		});
 	}
 
@@ -80,6 +93,14 @@ export abstract class BoardObject extends GameElement {
 	public override setPositionX(x: number): void {
 		this.position.x = x;
 
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPositionX(x + (child.offsetX ?? 0));
+		}
+
 		this.setTransformX(x);
 	}
 
@@ -91,6 +112,14 @@ export abstract class BoardObject extends GameElement {
 	 */
 	public override setPositionY(y: number): void {
 		this.position.y = y;
+
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i]!;
+
+			child.gameElement.setPositionY(y + (child.offsetY ?? 0));
+		}
 
 		this.setTransformY(y);
 	}
