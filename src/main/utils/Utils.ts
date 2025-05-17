@@ -516,3 +516,16 @@ export function hexToRgb(hex: string): string {
 
 	return `rgb(${parseInt(result[1]!, 16)}, ${parseInt(result[2]!, 16)}, ${parseInt(result[3]!, 16)})`;
 }
+
+/**
+ * Clones the given `instance`. It supports symbols but isn't perfect for getters/setters and isn't working
+ * with non-enumerable properties (see Object.assign() docs). Also, cloning basic internal classes
+ * (like Array, Date, RegExp, Map, etc.) sadly often seems to need some individual handling.
+ * https://stackoverflow.com/questions/41474986/how-to-clone-a-javascript-es6-class-instance
+ *
+ * @param instance instance to clone
+ * @returns a cloned instance of `instance`
+ */
+export function cloneClass<T>(instance: T): T {
+	return Object.assign(Object.create(Object.getPrototypeOf(instance)), instance);
+}
