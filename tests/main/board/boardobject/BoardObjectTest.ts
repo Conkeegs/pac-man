@@ -236,7 +236,6 @@ export default class BoardObjectTest extends Test {
 
 		this.assertFalse(clyde["readyForRender"]);
 		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
-		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 	}
 
 	/**
@@ -287,7 +286,6 @@ export default class BoardObjectTest extends Test {
 		this.assertStrictlyEqual(px(position.x), px(transform.x));
 		this.assertStrictlyEqual(px(position.y), px(transform.y));
 		this.assertFalse(clyde["readyForRender"]);
-		this.assertArrayLength(0, App.BOARDOBJECTS_TO_RENDER);
 	}
 
 	/**

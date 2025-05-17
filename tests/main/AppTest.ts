@@ -216,6 +216,8 @@ export default class AppTest extends Test {
 			this.assertOfType("undefined", moveable["wasInterpolated" as keyof Moveable]);
 		}
 
+		this.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
+
 		// test that moveables that aren't moving don't collide or interpolate
 		for (const moveable of movingMoveables) {
 			moveable["deleted"] = false;

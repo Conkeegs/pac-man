@@ -150,7 +150,6 @@ export abstract class BoardObject extends GameElement {
 
 		// render visual update
 		queuedRenderUpdate();
-		App.BOARDOBJECTS_TO_RENDER.splice(App.BOARDOBJECTS_TO_RENDER.indexOf(this), 1);
 
 		this.queuedRenderUpdate = undefined;
 		this.readyForRender = false;

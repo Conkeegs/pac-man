@@ -415,6 +415,7 @@ export class App {
 			(boardObject as BoardObject).render();
 		}
 
+		App.BOARDOBJECTS_TO_RENDER = [];
 		lastTimestamp = currentTimestamp;
 
 		return { lastTimestamp, newFrameCount: frameCount };
