@@ -6,12 +6,56 @@ import { BoardObject } from "./board/boardobject/BoardObject.js";
 import type Character from "./board/boardobject/children/character/Character.js";
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
-import type { Collidable } from "./board/boardobject/mixins/collidable/Collidable.js";
+import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
 import Debugging from "./Debugging.js";
-import type { GameElement, Position } from "./GameElement.js";
-import { TILESIZE } from "./utils/Globals.js";
-import { create, defined, get } from "./utils/Utils.js";
+import CollisionBox from "./gameelement/CollisionBox.js";
+import { GameElement, type Position } from "./gameelement/GameElement.js";
+import { cloneInstance, create, defined, get, uniqueId } from "./utils/Utils.js";
+
+/**
+ * Represents important data to keep track of before ticking
+ * any boardobjects.
+ */
+type OldMoveableData = {
+	/**
+	 * Old position of the board object.
+	 */
+	position: Position;
+	/**
+	 * Old collision box of the board object.
+	 */
+	collisionBox?: CollisionBox;
+};
+
+/**
+ * Represents vital data returned to the gameloop every game update.
+ */
+type GameUpdateData = {
+	/**
+	 * The last timestamp the game updated at.
+	 */
+	lastTimestamp: number;
+	/**
+	 * The current frame iteration of the game.
+	 */
+	newFrameCount: number;
+};
+
+/**
+ * Data used in collision detection to perform CCD (continuous collision detection).
+ */
+type CCDData = {
+	/**
+	 * The old state of a collidable before it started ticking.
+	 */
+	oldCollisionBox: CollisionBox;
+	/**
+	 * Swept collision box from a collidable's old collision box position
+	 * to its collision box's new position.
+	 */
+	sweptCollisionBox: CollisionBox;
+};
 
 /**
  * This class loads the game's UI before initializing the board.
@@ -103,7 +147,7 @@ export class App {
 	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
 	 * and make sure collision detection for characters is optimized into "groups".
 	 */
-	public static COLLIDABLES_MAP: { [key: string]: Collidable[] } = {};
+	public static COLLIDABLES_MAP: { [tileKey: string]: Collidable[] } = {};
 
 	// #!DEBUG
 	/**
@@ -113,7 +157,7 @@ export class App {
 	/**
 	 * Whether or not the app is in testing mode.
 	 */
-	public static TESTING: boolean = false;
+	public static TESTING: boolean = true;
 	// #!END_DEBUG
 
 	/**
@@ -233,17 +277,36 @@ export class App {
 	}
 
 	/**
-	 * The main gameloop of the game. Runs logic every frame and interpolates between updates.
+	 * The main gameloop of the game. Runs main logic every frame.
 	 *
 	 * @param lastTimestamp the last `timeStamp` value
 	 * @param currentTimestamp the current timestamp of the game in milliseconds
-	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_FPS` frames)
+	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
 	 */
 	private static gameLoop(lastTimestamp: number, currentTimestamp: number, frameCount: number): void {
 		if (!App.running || App.GAME_PAUSED) {
 			return;
 		}
 
+		console.log("IN GAMELOOP");
+
+		const gameUpdateData = App.updateGame(lastTimestamp, currentTimestamp, frameCount);
+
+		App.animationFrameId = requestAnimationFrame((timeStampNew) =>
+			App.gameLoop(gameUpdateData.lastTimestamp, timeStampNew, gameUpdateData.newFrameCount)
+		);
+	}
+
+	/**
+	 * Updates game state in a single frame (usually). Sometimes needs to run more than one frame
+	 * if player is lagging or on a slow system.
+	 *
+	 * @param lastTimestamp the last `timeStamp` value
+	 * @param currentTimestamp the current timestamp of the game in milliseconds
+	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
+	 * @returns game state data to be used in the next loop of the game
+	 */
+	private static updateGame(lastTimestamp: number, currentTimestamp: number, frameCount: number): GameUpdateData {
 		let deltaTime = currentTimestamp - lastTimestamp;
 
 		// prevent spiral of death
@@ -261,88 +324,100 @@ export class App {
 		App.deltaTimeAccumulator += deltaTime;
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
-		// keep track of each moveable's position so we can properly interpolate it every frame
-		let oldMoveablePositions: { [key: string]: Position } = {};
-
+		// keep track of old moveable data so we can use it later (after ticking)
+		let oldMoveableData: { [index: number]: OldMoveableData } = {};
 		/**
 		 * Find an array of moveables that are currently moving, and save their current positions in memory.
 		 */
-		const getMoveablesAndMapPosition = (): Moveable[] =>
-			App.MOVEABLES.filter((moveable) => {
-				if (moveable.isMoving()) {
-					oldMoveablePositions[moveable.getName()] = moveable.getPosition();
+		let movingMoveables: Moveable[] = App.MOVEABLES.filter((moveable, index) => {
+			if (moveable.isMoving()) {
+				oldMoveableData[index] = {
+					position: { ...moveable.getPosition() },
+					...(typeof moveable["onCollision" as keyof typeof moveable] === "function" && {
+						collisionBox: cloneInstance((moveable as Moveable & Collidable).getCollisionBox()),
+					}),
+				};
 
-					return true;
+				return true;
+			}
+
+			return;
+		});
+		let movingMoveablesLength = movingMoveables.length;
+
+		// tick board objects and check for collisions. fixed timestep
+		while (App.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
+			for (let i = 0; i < movingMoveablesLength; i++) {
+				const moveable = movingMoveables[i]!;
+
+				// if (!defined(moveable)) {
+				// 	continue;
+				// }
+
+				moveable.tick();
+
+				if (moveable.getDeleted() || typeof moveable["onCollision" as keyof typeof moveable] !== "function") {
+					continue;
 				}
 
-				return;
-			});
-
-		let movingMoveables: Moveable[] | undefined;
-
-		while (App.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
-			movingMoveables = getMoveablesAndMapPosition();
-
-			for (let i = 0; i < movingMoveables.length; i++) {
-				movingMoveables[i]!.tick();
+				App.lookForCollisions(moveable as unknown as Moveable & Collidable, oldMoveableData[i]!.collisionBox!);
 			}
 
 			frameCount++;
 			App.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 		}
 
-		const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
-		// some moveables may have stopped/started moving after ticking, so refresh this array
-		movingMoveables = App.MOVEABLES.filter((moveable) => moveable.isMoving());
+		movingMoveables = movingMoveables.filter((moveable) => !moveable.getDeleted());
+		movingMoveablesLength = movingMoveables.length;
 
-		if (movingMoveables.length) {
-			for (let i = 0; i < movingMoveables.length; i++) {
-				const moveable = movingMoveables[i];
+		// check for needed interpolations of board objects
+		if (movingMoveablesLength) {
+			const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 
-				if (!defined(moveable)) {
+			for (let i = 0; i < movingMoveablesLength; i++) {
+				const moveable = movingMoveables[i]!;
+
+				if (!moveable.getShouldInterpolate()) {
+					moveable.setShouldInterpolate(true);
+
 					continue;
 				}
 
-				const oldMoveablePosition = oldMoveablePositions[moveable.getName()]!;
+				const currentMoveableData = oldMoveableData[i]!;
 
-				if (!defined(oldMoveablePosition)) {
+				// if (!defined(currentMoveableData)) {
+				// 	continue;
+				// }
+
+				const oldMoveablePosition = currentMoveableData.position;
+
+				if (
+					// !defined(oldMoveablePosition) ||
+					GameElement.positionsEqual(oldMoveablePosition, moveable.getPosition())
+				) {
 					continue;
 				}
 
 				moveable.interpolate(alpha, oldMoveablePosition);
 			}
-
-			// check for collisions after interpolation since some collisions (teleporters for example)
-			// cause sudden, drastic position changes for Moveable instances. interpolation between the old & new
-			// positions will cause these drastic position changes to function unexpectedly
-			for (let i = 0; i < movingMoveables.length; i++) {
-				const moveable = movingMoveables[i]!;
-
-				if (typeof moveable["onCollision" as keyof typeof moveable] === "function") {
-					App.checkForCollision(moveable as Moveable & Collidable);
-				}
-			}
 		}
 
 		const boardObjectsToRenderCount = App.BOARDOBJECTS_TO_RENDER.length;
 
-		if (boardObjectsToRenderCount) {
-			for (let i = 0; i < boardObjectsToRenderCount; i++) {
-				const boardObject = App.BOARDOBJECTS_TO_RENDER[i];
+		// render board objects
+		for (let i = 0; i < boardObjectsToRenderCount; i++) {
+			const boardObject = App.BOARDOBJECTS_TO_RENDER[i];
 
-				if (!defined(boardObject)) {
-					continue;
-				}
+			// if (!defined(boardObject)) {
+			// 	continue;
+			// }
 
-				(boardObject as BoardObject).render();
-			}
+			(boardObject as BoardObject).render();
 		}
 
 		lastTimestamp = currentTimestamp;
 
-		App.animationFrameId = requestAnimationFrame((timeStampNew) =>
-			App.gameLoop(lastTimestamp, timeStampNew, frameCount)
-		);
+		return { lastTimestamp, newFrameCount: frameCount };
 	}
 
 	/**
@@ -377,80 +452,121 @@ export class App {
 	}
 
 	/**
-	 * Loads the game's resources.
-	 *
-	 * @returns promise which loads all game resources
-	 */
-	// private static loadResources(): Promise<[void, void]> {
-	// 	return Promise.all([]);
-	// }
-
-	/**
-	 * Checks for collisions between a moving board object and any collidables around it.
+	 * Handles looking for possible collisions between a moving collidable and any collidables around it.
+	 * This function doesn't call the actual collision handler methods, but instead will look through tiles
+	 * on the board and make sure that collidables that are near each other are checked for collisions.
 	 *
 	 * @param collidable a moveable, collidable board object
+	 * @param oldCollisionBox the old state of `collidable`'s collision box before ticking
 	 */
-	private static checkForCollision(collidable: Moveable & Collidable): void {
-		const centerPosition = collidable.getCenterPosition();
-		const tileX = Board.calcTileNumX(centerPosition.x);
-		const tileY = Board.calcTileNumY(centerPosition.y);
-		const distancePerFrame = collidable.getDistancePerFrame();
-		const collisionBox = collidable.getCollisionBox();
+	private static lookForCollisions(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
 		const collidablesMap = App.COLLIDABLES_MAP;
+		const tileKeys = collidable.getCurrentTileKeys();
 		let positionCollidables: Collidable[] = [];
-		let tileSearchCount = 1;
 
-		positionCollidables = positionCollidables.concat(collidablesMap[collidable.getCollidablePositionKey()]!);
+		// get collidables that are near passed-in collidable
+		for (let i = 0; i < tileKeys.length; i++) {
+			const tileKey = tileKeys[i]!;
 
-		if (distancePerFrame >= collisionBox.right - collisionBox.left) {
-			tileSearchCount = Math.ceil(distancePerFrame / TILESIZE);
+			positionCollidables = positionCollidables.concat(collidablesMap[tileKey]!);
 		}
 
-		// index into the collidables map, and make sure that we also look to the "left/right" and "top/bottom" of
-		// character
-		for (let i = 1; i <= tileSearchCount; i++) {
-			for (const entry of [
-				collidablesMap[`${tileX + i}-${tileY}`],
-				collidablesMap[`${tileX - i}-${tileY}`],
-				collidablesMap[`${tileX}-${tileY + i}`],
-				collidablesMap[`${tileX}-${tileY - i}`],
-			]) {
-				if (entry?.length) {
-					positionCollidables = positionCollidables.concat(entry);
-				}
+		// initial check for collisions between passed-in collidable and other collidables
+		App.checkForCollision(collidable, positionCollidables);
+
+		const collisionBox = collidable.getCollisionBox();
+
+		// if the collidable doesn't move a greater distance than its collision box each frame,
+		// we can stop here
+		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
+			return;
+		}
+
+		positionCollidables = [];
+
+		const sweptCollisionBox = new CollisionBox(
+			`swept-collision-box-${uniqueId()}`,
+			Math.min(oldCollisionBox.getLeft(), collisionBox.getLeft()),
+			Math.max(oldCollisionBox.getRight(), collisionBox.getRight()),
+			Math.min(oldCollisionBox.getTop(), collisionBox.getTop()),
+			Math.max(oldCollisionBox.getBottom(), collisionBox.getBottom())
+		);
+		const sweptTileKeys = sweptCollisionBox.findTileKeys();
+
+		for (let i = 0; i < sweptTileKeys.length; i++) {
+			const sweptTileKey = sweptTileKeys[i]!;
+
+			// create a new mapping for the new tile key, if there isn't one yet
+			if (!defined(App.COLLIDABLES_MAP[sweptTileKey])) {
+				App.COLLIDABLES_MAP[sweptTileKey] = [];
 			}
+
+			positionCollidables = positionCollidables.concat(collidablesMap[sweptTileKey]!);
 		}
 
-		const numPositionCollidables = positionCollidables.length;
+		// check for collisions between collidable and other collidables
+		App.checkForCollision(collidable, positionCollidables, {
+			oldCollisionBox,
+			sweptCollisionBox,
+		});
+	}
 
-		if (numPositionCollidables) {
-			// check for collisions between collidable and other collidables
-			for (let i = 0; i < numPositionCollidables; i++) {
-				const collidedWith = positionCollidables![i]!;
+	/**
+	 * Takes in a reference collidable `collidable` and any collidables that are either close to it
+	 * or within a swept collision box if `collidable` is fast-moving. The function can also perform
+	 * CCD. `positionCollidables` are gathered by the `App`'s `lookForCollisions` function.
+	 *
+	 * @param collidable reference collidable
+	 * @param positionCollidables collidables that are either near `collidable` or are within
+	 * the swept collision box (if `collidable` is fast-moving)
+	 * @param ccdData needed-data if this function is to perform CCD collision detection
+	 */
+	private static checkForCollision(
+		collidable: Collidable,
+		positionCollidables: Collidable[],
+		ccdData?: CCDData
+	): void {
+		const positionCollidablesLength = positionCollidables.length;
 
-				if (
-					// filter out the current board object we're operating on
-					collidedWith.getName() === collidable.getName() ||
-					// if the collided-with boardobject doesn't allow collidable to collide with it, skip
-					!collidedWith.canBeCollidedBy(collidable.constructor.name)
-				) {
-					continue;
-				}
+		if (!positionCollidablesLength) {
+			return;
+		}
 
-				// want to make sure to call the collision-handling function for the collided-with object,
-				// since not all Collidables call the "tick()" method and therefore will not run their
-				// "onCollision()" logic if we do not explicity call it here
-				if (collidable.isCollidingWithCollidable(collidedWith)) {
-					console.log({
-						moveable: collidable.getName(),
-						collidedWith: collidedWith.getName(),
-						distancePerFrame,
-						boxSize: collisionBox.right - collisionBox.left,
-						tileSearchCount,
-					});
+		const oldCollisionBox = ccdData?.oldCollisionBox;
+		// if ccdData is provided, use the center position of the old collision box
+		// position as the reference point. otherwise, just use collidable's center.
+		const sortPosition = !oldCollisionBox ? collidable.getCenterPosition() : oldCollisionBox.getCenterPosition();
 
-					collidedWith._onCollision(collidable);
-				}
+		positionCollidables.sort((collidableA, collidableB) => {
+			return (
+				collidableA.getCollisionBox().findDistanceToPosition(sortPosition) -
+				collidableB.getCollisionBox().findDistanceToPosition(sortPosition)
+			);
+		});
+
+		// if performing CCD, we have to use the whole swept collision box to look for collisions,
+		// otherwise just use the collidable's collision box
+		const sweptCollisionBox = ccdData?.sweptCollisionBox;
+		const collisionBox = !sweptCollisionBox ? collidable.getCollisionBox() : sweptCollisionBox;
+
+		for (let i = 0; i < positionCollidablesLength; i++) {
+			const otherCollidable = positionCollidables[i]!;
+
+			if (
+				// !defined(otherCollidable) ||
+				// filter out the current board object we're operating on
+				otherCollidable.getName() === collidable.getName() ||
+				// if the collided-with boardobject doesn't allow collidable to collide with it, skip
+				!otherCollidable.canBeCollidedBy(collidable.constructor.name)
+			) {
+				continue;
+			}
+
+			// want to make sure to call the collision-handling function for the collided-with object,
+			// since not all Collidables call the "tick()" method and therefore will not run their
+			// "onCollision()" logic if we do not explicity call it here
+			if (collisionBox.isCollidingWith(otherCollidable.getCollisionBox())) {
+				otherCollidable.onCollision(collidable);
 			}
 		}
 	}
@@ -465,7 +581,7 @@ if (!App.TESTING) {
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
 
-	button.onclick = () => new RunTests();
+	button.onclick = () => new RunTests("AppTest");
 
 	document.body.prepend(button);
 }
