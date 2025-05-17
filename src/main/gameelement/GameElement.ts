@@ -85,6 +85,10 @@ export abstract class GameElement {
 		x: 0,
 		y: 0,
 	};
+	/**
+	 * Array of child-`GameElement` instances this `GameElement` holds.
+	 */
+	protected children: Child[] = [];
 
 	/**
 	 * The game element's width in pixels.
@@ -102,10 +106,6 @@ export abstract class GameElement {
 	 * The game element's unique name and HTML id.
 	 */
 	private readonly name: string;
-	/**
-	 * Array of child-`GameElement` instances this `GameElement` holds.
-	 */
-	private children: Child[] = [];
 
 	/**
 	 * Creates a game element.
