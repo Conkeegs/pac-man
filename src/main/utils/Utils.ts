@@ -526,6 +526,6 @@ export function hexToRgb(hex: string): string {
  * @param instance instance to clone
  * @returns a cloned instance of `instance`
  */
-export function cloneClass<T>(instance: T): T {
+export function cloneInstance<T>(instance: T): T {
 	return Object.assign(Object.create(Object.getPrototypeOf(instance)), instance);
 }
