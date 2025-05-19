@@ -93,7 +93,7 @@ export default class Turn extends MakeCollidable(BoardObject) {
 		if (pacmanAnimationFrame === 1) {
 			collidableMoveable._animationFrame++;
 
-			collidableMoveable._updateAnimationImage(collidableMoveable._getCurrentAnimationImageName());
+			collidableMoveable.updateAnimationImage();
 		}
 
 		collidableMoveable.stopMoving();

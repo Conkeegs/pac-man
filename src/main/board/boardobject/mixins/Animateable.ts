@@ -168,6 +168,18 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
+		 * Sets this animateable's CSS `background-image`.
+		 *
+		 * @param imageName the image to set this animateable's CSS `background-image` to. defaults
+		 * to value returned from `defaultAnimationImageName()`
+		 */
+		public updateAnimationImage(imageName?: keyof ASSET_LIST["image"]): void {
+			this.getElement().css({
+				backgroundImage: `url(${AssetRegistry.getImageSrc(imageName ?? this._getCurrentAnimationImageName())})`,
+			});
+		}
+
+		/**
 		 * Returns this board object's image source-name, based on its current animation frame, and
 		 * other factors in its implementation.
 		 */
@@ -188,18 +200,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 				imageName = "not-found";
 			}
 
-			this._updateAnimationImage(imageName);
-		}
-
-		/**
-		 * Sets this animateable's CSS `background-image`.
-		 *
-		 * @param imageName the image to set this animateable's CSS `background-image` to
-		 */
-		_updateAnimationImage(imageName: keyof ASSET_LIST["image"]): void {
-			this.getElement().css({
-				backgroundImage: `url(${AssetRegistry.getImageSrc(imageName)})`,
-			});
+			this.updateAnimationImage(imageName);
 		}
 
 		/**

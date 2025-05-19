@@ -202,7 +202,7 @@ export default class PacMan extends MakeListenable(Character) {
 			// if stopped against a wall and user attempts to turn in another direction that also
 			// hits a wall, update the way pacman is facing for convenience
 			this.setCurrentDirection(inputDirection);
-			this._updateAnimationImage(this._getCurrentAnimationImageName());
+			this.updateAnimationImage();
 
 			return;
 		}
