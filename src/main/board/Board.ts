@@ -58,15 +58,15 @@ interface PathData {
 /**
  * Represents raw turn data from the `turns.json` file.
  */
-interface TurnData extends Position {
+interface TurnData {
 	/**
-	 * The `x` position of the turn.
+	 * The `x` tile number of the turn.
 	 */
-	x: number;
+	tileX: number;
 	/**
-	 * The `y` position of the turn.
+	 * The `y` tile number of the turn.
 	 */
-	y: number;
+	tileY: number;
 	/**
 	 * The allowed `MovementDirection`s of the turn.
 	 */
@@ -125,10 +125,6 @@ export default class Board extends GameElement {
 	private static readonly CLYDE_SPAWN_X: 16.25 = 16.25;
 	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
 	/**
-	 * The walls to display in the game.
-	 */
-	private wallElements: HTMLElement[] = [];
-	/**
 	 * The turns on the board.
 	 */
 	private turns: Turn[] = [];
@@ -170,7 +166,7 @@ export default class Board extends GameElement {
 	 * @returns this board's turns
 	 */
 	public getTurns(): Turn[] {
-		return Board.getInstance().turns;
+		return this.turns;
 	}
 
 	/**
@@ -203,15 +199,40 @@ export default class Board extends GameElement {
 		element.css({
 			backgroundColor: DEFAULT_COLOR,
 		});
-
 		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(element);
 
-		await this.loadTurnData();
-		await this.loadWallElements();
+		const wallDataElements = await this.loadWallElements();
 
-		// display the walls of the game
-		for (const wallElement of this.wallElements) {
-			element.appendChild(wallElement);
+		for (const wallDataElement of wallDataElements) {
+			const wall = create({ name: "div", id: wallDataElement.id, classes: wallDataElement.classes }).css({
+				width: px(Board.calcTileOffset(wallDataElement.styles.width)),
+				height: px(Board.calcTileOffset(wallDataElement.styles.height)),
+				top: px(Board.calcTileOffset(wallDataElement.styles.top)),
+				left: px(Board.calcTileOffset(wallDataElement.styles.left || 0)),
+				borderTopLeftRadius: px(
+					maybe(wallDataElement.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
+				),
+				borderTopRightRadius: px(
+					maybe(wallDataElement.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
+				),
+				borderBottomRightRadius: px(
+					maybe(wallDataElement.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
+				),
+				borderBottomLeftRadius: px(
+					maybe(wallDataElement.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
+				),
+			}) as HTMLElement;
+
+			// make sure invisible walls that are outside of teleports display over characters so that it looks
+			// like the character's "disappear" through them
+			if (wall.classList.contains("teleport-cover")) {
+				wall.css({
+					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
+				});
+			}
+
+			// display the walls of the game
+			element.appendChild(wall);
 		}
 
 		// place BoardObject instances on board
@@ -361,6 +382,15 @@ export default class Board extends GameElement {
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public async createMainBoardObjects(): Promise<void> {
+		const turnData = await this.loadTurnData();
+
+		for (let turn of turnData) {
+			const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
+
+			this.turns.push(turnBoardObject);
+			this.placeBoardObject(turnBoardObject, turn.tileX, turn.tileY, true);
+		}
+
 		const foodPositions: Position[] = [];
 		const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
 
@@ -448,7 +478,6 @@ export default class Board extends GameElement {
 	 */
 	public override delete(): void {
 		this.turns = [];
-		this.wallElements = [];
 
 		super.delete();
 	}
@@ -484,53 +513,15 @@ export default class Board extends GameElement {
 	/**
 	 * Load all board's turns into memory.
 	 */
-	private async loadTurnData(): Promise<void> {
+	private async loadTurnData(): Promise<TurnData[]> {
 		// tell all moveables where they can turn
-		return fetchJSON(AssetRegistry.getJsonSrc("turns")).then((turnData: TurnData[]) => {
-			for (let turn of turnData) {
-				const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
-
-				this.turns.push(turnBoardObject);
-				this.placeBoardObject(turnBoardObject, turn.x, turn.y, true);
-			}
-		});
+		return fetchJSON(AssetRegistry.getJsonSrc("turns"));
 	}
 
 	/**
 	 * Load all board's walls into memory.
 	 */
-	private async loadWallElements(): Promise<void> {
-		return fetchJSON(AssetRegistry.getJsonSrc("walls")).then((wallData: WallDataElement[]) => {
-			for (let element of wallData) {
-				const wall = create({ name: "div", id: element.id, classes: element.classes }).css({
-					width: px(Board.calcTileOffset(element.styles.width)),
-					height: px(Board.calcTileOffset(element.styles.height)),
-					top: px(Board.calcTileOffset(element.styles.top)),
-					left: px(Board.calcTileOffset(element.styles.left || 0)),
-					borderTopLeftRadius: px(
-						maybe(element.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
-					),
-					borderTopRightRadius: px(
-						maybe(element.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
-					),
-					borderBottomRightRadius: px(
-						maybe(element.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
-					),
-					borderBottomLeftRadius: px(
-						maybe(element.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
-					),
-				}) as HTMLElement;
-
-				// make sure invisible walls that are outside of teleports display over characters so that it looks
-				// like the character's "disappear" through them
-				if (wall.classList.contains("teleport-cover")) {
-					wall.css({
-						zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
-					});
-				}
-
-				this.wallElements.push(wall);
-			}
-		});
+	private async loadWallElements(): Promise<WallDataElement[]> {
+		return fetchJSON(AssetRegistry.getJsonSrc("walls"));
 	}
 }

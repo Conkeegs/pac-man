@@ -31,8 +31,6 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
 		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
 		this.assertTrue(App.getInstance().getCollidablesMap().size > 0);
-		this.assertNotEmpty(board.getTurns());
-		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(boardDiv.childElementCount > 0);
 		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
 	}
@@ -268,6 +266,7 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(1, inkyCount);
 		this.assertStrictlyEqual(1, pinkyCount);
 		this.assertStrictlyEqual(1, clydeCount);
+		this.assertNotEmpty(board.getTurns());
 	}
 
 	/**
@@ -280,13 +279,11 @@ export default class BoardTest extends Test {
 
 		this.assertFalse(board.getElement().childElementCount === 0);
 		this.assertNotEmpty(board.getTurns());
-		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(Board["instance"] instanceof Board);
 
 		board.delete();
 
 		this.assertEmpty(board.getElement());
-		this.assertEmpty(board["wallElements"]);
 		this.assertEmpty(board["turns"]);
 	}
 
@@ -331,9 +328,9 @@ export default class BoardTest extends Test {
 	public async loadTurnDataTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		await board["loadTurnData"]();
+		const turnData = await board["loadTurnData"]();
 
-		this.assertNotEmpty(board.getTurns());
+		this.assertNotEmpty(turnData);
 	}
 
 	/**
@@ -342,9 +339,9 @@ export default class BoardTest extends Test {
 	public async loadWallElementsTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		await board["loadWallElements"]();
+		const wallElements = await board["loadWallElements"]();
 
-		this.assertNotEmpty(board["wallElements"]);
+		this.assertNotEmpty(wallElements);
 	}
 
 	/**
@@ -355,7 +352,7 @@ export default class BoardTest extends Test {
 
 		this.assertEmpty(board.getTurns());
 
-		await board["loadTurnData"]();
+		await board["createMainBoardObjects"]();
 
 		this.assertNotEmpty(board.getTurns());
 	}
