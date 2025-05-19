@@ -1,6 +1,5 @@
 "use strict";
 
-import { App } from "../../../../App.js";
 import type { ASSET_LIST } from "../../../../assets/AssetRegistry.js";
 import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
@@ -45,9 +44,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 
 		super(name, Character.CHARACTER_DIMENSIONS, Character.CHARACTER_DIMENSIONS, speed);
 
-		// keep track of every character created for convenience
-		App.CHARACTERS.push(this);
-
 		this.source = source;
 
 		this.getElement().css({
@@ -82,15 +78,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		super.startMoving(direction, options);
 		// start playing this character's animations as they move.
 		this.playAnimation();
-	}
-
-	/**
-	 * Deletes this character off of the game's board.
-	 */
-	public override delete(): void {
-		App.CHARACTERS.splice(App.CHARACTERS.indexOf(this), 1);
-
-		super.delete();
 	}
 
 	/**

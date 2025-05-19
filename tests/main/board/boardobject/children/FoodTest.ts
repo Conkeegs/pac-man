@@ -34,12 +34,14 @@ export default class FoodTest extends Test {
 
 		food.setPosition(position);
 
-		this.assertArrayContains(food, App.COLLIDABLES_MAP[food["getCollidablePositionKey"]()]!);
+		const collidablesMap = App.getInstance().getCollidablesMap();
+
+		this.assertArrayContains(food, collidablesMap.get(food.getCollisionBox().findTileKeys()[0]!)!);
 		this.assertFalse(Food["audioFlag"]);
 
 		food.onCollision();
 
 		await this.assertPropertyChanges(true, Food, "audioFlag");
-		this.assertArrayDoesntContain(food, App.COLLIDABLES_MAP[food["getCollidablePositionKey"]()]!);
+		this.assertArrayDoesntContain(food, collidablesMap.get(food.getCollisionBox().findTileKeys()[0]!)!);
 	}
 }

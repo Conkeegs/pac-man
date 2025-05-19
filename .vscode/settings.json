@@ -9,6 +9,7 @@
         "BOARDOBJECTS",
         "Collidable",
         "COLLIDABLES",
+        "Doesnt",
         "MILLIS",
         "MOVECODES",
         "PACMAN",

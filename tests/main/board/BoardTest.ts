@@ -30,9 +30,7 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(px(WIDTH), boardDiv.css("width"));
 		this.assertStrictlyEqual(px(HEIGHT), boardDiv.css("height"));
 		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
-		this.assertNotEmpty(App.COLLIDABLES_MAP);
-		this.assertNotEmpty(App.BOARDOBJECTS);
-		this.assertNotEmpty(App.CHARACTERS);
+		this.assertTrue(App.getInstance().getCollidablesMap().size > 0);
 		this.assertNotEmpty(board.getTurns());
 		this.assertNotEmpty(board["wallElements"]);
 		this.assertTrue(boardDiv.childElementCount > 0);
@@ -232,30 +230,44 @@ export default class BoardTest extends Test {
 
 		await board.createMainBoardObjects();
 
-		this.assertArrayLength(
-			Board.FOOD_COUNT,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Food")
-		);
-		this.assertArrayLength(
-			1,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "PacMan")
-		);
-		this.assertArrayLength(
-			1,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Blinky")
-		);
-		this.assertArrayLength(
-			1,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Inky")
-		);
-		this.assertArrayLength(
-			1,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Pinky")
-		);
-		this.assertArrayLength(
-			1,
-			App.BOARDOBJECTS.filter((boardObject) => boardObject.constructor.name === "Clyde")
-		);
+		let foodCount = 0;
+		let pacmanCount = 0;
+		let blinkyCount = 0;
+		let inkyCount = 0;
+		let pinkyCount = 0;
+		let clydeCount = 0;
+
+		const gameElementsMap = App.getInstance().getGameElementsMap().values();
+
+		for (const gameElement of gameElementsMap) {
+			switch (gameElement.constructor.name) {
+				case "Food":
+					foodCount++;
+					break;
+				case "PacMan":
+					pacmanCount++;
+					break;
+				case "Blinky":
+					blinkyCount++;
+					break;
+				case "Inky":
+					inkyCount++;
+					break;
+				case "Pinky":
+					pinkyCount++;
+					break;
+				case "Clyde":
+					clydeCount++;
+					break;
+			}
+		}
+
+		this.assertStrictlyEqual(Board.FOOD_COUNT, foodCount);
+		this.assertStrictlyEqual(1, pacmanCount);
+		this.assertStrictlyEqual(1, blinkyCount);
+		this.assertStrictlyEqual(1, inkyCount);
+		this.assertStrictlyEqual(1, pinkyCount);
+		this.assertStrictlyEqual(1, clydeCount);
 	}
 
 	/**
@@ -276,7 +288,6 @@ export default class BoardTest extends Test {
 		this.assertEmpty(board.getElement());
 		this.assertEmpty(board["wallElements"]);
 		this.assertEmpty(board["turns"]);
-		this.assertOfType("undefined", Board["instance"]);
 	}
 
 	/**

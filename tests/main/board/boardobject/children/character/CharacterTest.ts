@@ -1,4 +1,3 @@
-import { App } from "../../../../../../src/main/App.js";
 import AssetRegistry from "../../../../../../src/main/assets/AssetRegistry.js";
 import Board from "../../../../../../src/main/board/Board.js";
 import Character from "../../../../../../src/main/board/boardobject/children/character/Character.js";
@@ -23,7 +22,6 @@ export default class CharacterTest extends Test {
 		const pacman = new PacMan();
 		const pacmanElement = pacman.getElement();
 
-		this.assertArrayContains(pacman, App.CHARACTERS);
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("width"));
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
 		this.assertStrictlyEqual(
@@ -94,19 +92,6 @@ export default class CharacterTest extends Test {
 		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
-	}
-
-	/**
-	 * Test that characters can delete correctly.
-	 */
-	public deleteTest(): void {
-		const pacman = new PacMan();
-
-		this.assertArrayContains(pacman, App.CHARACTERS);
-
-		pacman.delete();
-
-		this.assertArrayDoesntContain(pacman, App.CHARACTERS);
 	}
 
 	/**

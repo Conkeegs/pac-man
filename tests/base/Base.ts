@@ -1,4 +1,5 @@
 import Logger from "../../src/main/Logger.js";
+import type { AbstractConstructor } from "../../src/main/types.js";
 import { defined, empty, exists, getCircularReplacer } from "../../src/main/utils/Utils.js";
 import TestException from "./TestException.js";
 
@@ -20,6 +21,7 @@ enum OperatorsEnglish {
 	"notEmpty" = "not empty",
 	"throws" = "a function that throws",
 	"changes" = "the changed-to value from",
+	"instanceof" = "an instance of",
 }
 
 /**
@@ -124,7 +126,21 @@ export default abstract class Test {
 		actual: unknown
 	): void {
 		if (expected !== typeof actual) {
-			this.formMessageAndThrow(JSON.stringify(actual), "typeof", expected);
+			this.formMessageAndThrow(expected, "typeof", JSON.stringify(actual));
+		}
+
+		this.setCurrentAssertionCount(this.getCurrentAssertionCount() + 1);
+	}
+
+	/**
+	 * Asserts that `expected` is an `instanceof` `actual`.
+	 *
+	 * @param expected constructor to expect
+	 * @param actual instance to check against
+	 */
+	public assertInstanceOf<A, B>(expected: AbstractConstructor<A>, actual: B): void {
+		if (!(actual instanceof expected)) {
+			this.formMessageAndThrow(expected.name, "instanceof", (actual as any).constructor.name);
 		}
 
 		this.setCurrentAssertionCount(this.getCurrentAssertionCount() + 1);

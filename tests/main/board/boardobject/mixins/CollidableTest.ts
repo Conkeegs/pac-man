@@ -36,7 +36,7 @@ export default class CollidableTest extends Test {
 
 		this.assertStrictlyEqual(paddingHorizontal, firstChild.offsetX);
 		this.assertStrictlyEqual(paddingVertical, firstChild.offsetY);
-		this.assertStrictlyEqual(collisionBox, firstChild.boardObject);
+		this.assertStrictlyEqual(collisionBox, firstChild.gameElement);
 	}
 
 	/**
@@ -69,7 +69,7 @@ export default class CollidableTest extends Test {
 		const currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 	}
 
@@ -84,7 +84,7 @@ export default class CollidableTest extends Test {
 		const currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 	}
 
@@ -99,7 +99,7 @@ export default class CollidableTest extends Test {
 		const currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 	}
 
@@ -117,7 +117,7 @@ export default class CollidableTest extends Test {
 		let currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 
 		collidable.delete();
@@ -125,7 +125,7 @@ export default class CollidableTest extends Test {
 		currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayDoesntContain(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 	}
 
@@ -137,8 +137,8 @@ export default class CollidableTest extends Test {
 		let oldTileKeys = [...collidable.getCurrentTileKeys()];
 
 		for (const tileKey of oldTileKeys) {
-			this.assertArrayLength(1, App.COLLIDABLES_MAP[tileKey]!);
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayLength(1, App.getInstance().getCollidablesMap().get(tileKey)!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 
 		const oldPreviousLeftTile = collidable["previousLeftTile"];
@@ -197,8 +197,8 @@ export default class CollidableTest extends Test {
 		let currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayLength(1, App.COLLIDABLES_MAP[tileKey]!);
-			this.assertArrayContains(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayLength(1, App.getInstance().getCollidablesMap().get(tileKey)!);
+			this.assertArrayContains(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 
 		collidable["checkForCollidableAndRemove"]();
@@ -206,8 +206,8 @@ export default class CollidableTest extends Test {
 		currentTileKeys = collidable.getCurrentTileKeys();
 
 		for (const tileKey of currentTileKeys) {
-			this.assertArrayLength(0, App.COLLIDABLES_MAP[tileKey]!);
-			this.assertArrayDoesntContain(collidable, App.COLLIDABLES_MAP[tileKey]!);
+			this.assertArrayLength(0, App.getInstance().getCollidablesMap().get(tileKey)!);
+			this.assertArrayDoesntContain(collidable, App.getInstance().getCollidablesMap().get(tileKey)!);
 		}
 
 		this.assertEmpty(collidable._currentTileKeys);

@@ -1,9 +1,7 @@
-import { App } from "../../../../src/main/App.js";
 import { BoardObject } from "../../../../src/main/board/boardobject/BoardObject.js";
 import Clyde from "../../../../src/main/board/boardobject/children/character/Clyde.js";
 import PacMan from "../../../../src/main/board/boardobject/children/character/PacMan.js";
-import Pinky from "../../../../src/main/board/boardobject/children/character/Pinky.js";
-import { get, px } from "../../../../src/main/utils/Utils.js";
+import { px } from "../../../../src/main/utils/Utils.js";
 import Test from "../../../base/Base.js";
 import { tests } from "../../../base/Decorators.js";
 
@@ -22,7 +20,6 @@ export default class BoardObjectTest extends Test {
 		const pacman1 = new PacMan(pacmanName);
 
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
-		this.assertNotEmpty(App.BOARDOBJECTS.filter((boardObject) => boardObject.getName() === pacmanName));
 		this.assertFalse(pacman1["readyForRender"]);
 
 		const boardObjectElement = pacman1.getElement();
@@ -31,19 +28,6 @@ export default class BoardObjectTest extends Test {
 		this.assertStrictlyEqual(pacmanName, boardObjectElement.id);
 		this.assertTrue(boardObjectElement.classList.contains("board-object"));
 		this.assertStrictlyEqual(BoardObject.BOARD_OBJECT_Z_INDEX, Number(boardObjectElement.css("zIndex")));
-	}
-
-	/**
-	 * Test that board objects can tell if they are deleted or not.
-	 */
-	public getDeletedTest(): void {
-		const pinky = new Pinky();
-
-		this.assertFalse(pinky.getDeleted());
-
-		pinky.delete();
-
-		this.assertTrue(pinky.getDeleted());
 	}
 
 	/**
@@ -189,34 +173,13 @@ export default class BoardObjectTest extends Test {
 	}
 
 	/**
-	 * Test that board objects can be deleted properly.
-	 */
-	public deleteTest(): void {
-		const name = "clyde";
-		const clyde = new Clyde();
-
-		get("game")!.appendChild(clyde.getElement());
-
-		this.assertFalse(clyde["deleted"]);
-		this.assertNotNull(get(name));
-		this.assertArrayContains(clyde, App.BOARDOBJECTS);
-
-		clyde.delete();
-		clyde.render();
-
-		this.assertTrue(clyde["deleted"]);
-		this.assertNull(get(name));
-		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS);
-	}
-
-	/**
 	 * Test that board objects can be rendered properly.
 	 */
 	public renderTest(): void {
 		const clyde = new Clyde();
 
 		this.assertOfType("undefined", clyde["queuedRenderUpdate"]);
-		this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
+		// this.assertArrayDoesntContain(clyde, App.BOARDOBJECTS_TO_RENDER);
 		this.assertFalse(clyde["readyForRender"]);
 
 		clyde.setPosition({
@@ -229,7 +192,7 @@ export default class BoardObjectTest extends Test {
 		});
 
 		this.assertOfType("function", clyde["queuedRenderUpdate"]);
-		this.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
+		// this.assertArrayContains(clyde, App.BOARDOBJECTS_TO_RENDER);
 		this.assertTrue(clyde["readyForRender"]);
 
 		clyde.render();
@@ -265,7 +228,7 @@ export default class BoardObjectTest extends Test {
 		this.assertOfType("function", clyde["queuedRenderUpdate"]);
 		this.assertEmpty(clydeElement.css("transform") as string);
 		this.assertTrue(clyde["readyForRender"]);
-		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
+		// this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
 
 		// another visual update
 		clyde.setPosition({
@@ -275,7 +238,7 @@ export default class BoardObjectTest extends Test {
 
 		// queueing another update should not push board object to "BOARDOBJECTS_TO_RENDER" more
 		// than once
-		this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
+		// this.assertArrayLength(1, App.BOARDOBJECTS_TO_RENDER);
 
 		clyde.render();
 

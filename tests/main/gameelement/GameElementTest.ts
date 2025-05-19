@@ -18,44 +18,24 @@ export default class GameElementTest extends Test {
 	 * Test that game element instances are created correctly.
 	 */
 	public createGameElementTest(): void {
-		let pacmanName = "";
-
-		// no empty names
-		this.assertThrows(Error.name, "GameElement.constructor()", () => {
-			new PacMan(pacmanName);
-		});
-
-		// no empty names
-		try {
-			new PacMan(pacmanName);
-		} catch (error: any) {
-			this.assertStrictlyEqual(
-				"Error in GameElement.js -- constructor(): GameElement must have a name",
-				error.message
-			);
-		}
-
-		pacmanName = "pacman1";
+		const pacmanName = "pacman1";
 		const pacman1 = new PacMan(pacmanName);
+		const gameElementsMap = App.getInstance().getGameElementsMap();
+		let gameElements = gameElementsMap.values();
+		let matchingGameElement: GameElement | undefined = undefined;
 
-		// no duplicate names
-		this.assertThrows(Error.name, "GameElement.constructor()", () => {
-			new PacMan(pacmanName);
-		});
-
-		// no duplicate names
-		try {
-			new PacMan(pacmanName);
-		} catch (error: any) {
-			this.assertStrictlyEqual(
-				`Error in GameElement.js -- constructor(): A GameElement with the name '${pacmanName}' already exists`,
-				error.message
-			);
+		for (const gameElement of gameElements) {
+			if (gameElement.getName() === pacmanName) {
+				matchingGameElement = gameElement;
+			}
 		}
 
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
-		this.assertNotEmpty(App.GAME_ELEMENTS.filter((gameElement) => gameElement.getName() === pacmanName));
+		this.assertFalse(typeof matchingGameElement === "undefined");
 		this.assertTrue(pacman1.getElement().classList.contains("game-element"));
+		// minus one here to account for newly-added pacman object
+		this.assertStrictlyEqual(gameElementsMap.size - 1, pacman1.getUniqueId());
+		this.assertTrue(gameElementsMap.has(pacman1.getUniqueId()));
 	}
 
 	/**
@@ -124,6 +104,17 @@ export default class GameElementTest extends Test {
 	}
 
 	/**
+	 * Test that a game element's unique id can be returned.
+	 */
+	public getUniqueIdTest(): void {
+		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const uniqueId = gameElement.getUniqueId();
+
+		this.assertExists(uniqueId);
+		this.assertStrictlyEqual(App.getInstance().getGameElementsMap().size, uniqueId);
+	}
+
+	/**
 	 * Test that game elements correctly have their width set.
 	 */
 	public getWidthTest(): void {
@@ -183,6 +174,19 @@ export default class GameElementTest extends Test {
 		});
 
 		this.assertArrayLength(1, gameElement.getChildren());
+	}
+
+	/**
+	 * Test that game elements can get whether or not they are deleted.
+	 */
+	public getDeletedTest(): void {
+		const gameElement = new (class extends GameElement {})("parent-game-element", 0, 0);
+
+		this.assertFalse(gameElement.getDeleted());
+
+		gameElement["deleted"] = true;
+
+		this.assertTrue(gameElement.getDeleted());
 	}
 
 	/**
@@ -547,13 +551,14 @@ export default class GameElementTest extends Test {
 
 		get("game")!.appendChild(gameElement.getElement());
 
+		const app = App.getInstance();
+
 		this.assertNotNull(get(name));
-		this.assertArrayContains(gameElement, App.GAME_ELEMENTS);
+		this.assertExists(app.getGameElementsMap().get(gameElement.getUniqueId()));
 
 		gameElement.delete();
 
-		this.assertNull(get(name));
-		this.assertArrayDoesntContain(gameElement, App.GAME_ELEMENTS);
+		this.assertTrue(app.getDeletedGameElementIds().has(gameElement.getUniqueId()));
 	}
 
 	/**

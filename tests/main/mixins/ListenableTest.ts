@@ -12,7 +12,7 @@ export default class ListenableTest extends Test {
 	public deleteTest(): void {
 		const listenable = new (class extends MakeListenable(BoardObject) {
 			constructor() {
-				super("test listenable");
+				super("test listenable", 0, 0);
 			}
 		})();
 		let changedValue = 1;
@@ -46,7 +46,7 @@ export default class ListenableTest extends Test {
 	public addEventListenerTest(): void {
 		const listenable = new (class extends MakeListenable(BoardObject) {
 			constructor() {
-				super("test listenable");
+				super("test listenable", 0, 0);
 			}
 		})();
 		let changedValue = 1;

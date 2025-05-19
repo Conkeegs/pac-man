@@ -1,6 +1,5 @@
 "use strict";
 
-import { App } from "../App.js";
 import Debugging from "../Debugging.js";
 import AssetRegistry from "../assets/AssetRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
@@ -149,9 +148,11 @@ export default class Board extends GameElement {
 	private constructor() {
 		super("board", WIDTH, HEIGHT);
 
-		if (App.isRunning()) {
-			App.destroy();
-		}
+		// const app = App.getInstance();
+
+		// if (app.isRunning()) {
+		// 	app.destroy();
+		// }
 	}
 
 	/**
@@ -448,7 +449,6 @@ export default class Board extends GameElement {
 	public override delete(): void {
 		this.turns = [];
 		this.wallElements = [];
-		Board.instance = undefined;
 
 		super.delete();
 	}

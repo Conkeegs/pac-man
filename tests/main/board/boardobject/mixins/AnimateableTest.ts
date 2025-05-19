@@ -1,4 +1,3 @@
-import { App } from "../../../../../src/main/App.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import { ANIMATION_TYPE } from "../../../../../src/main/board/boardobject/mixins/Animateable.js";
@@ -12,11 +11,7 @@ export default class AnimateableTest extends Test {
 	/**
 	 * Test that animateables can be created correctly.
 	 */
-	public createAnimateableTest(): void {
-		const animateable = new PacMan();
-
-		this.assertArrayContains(animateable, App.ANIMATEABLES);
-	}
+	public createAnimateableTest(): void {}
 
 	/**
 	 * Test that animateables can play their animations correctly.
@@ -56,7 +51,6 @@ export default class AnimateableTest extends Test {
 	public deleteTest(): void {
 		const animateable = new PacMan();
 
-		this.assertArrayContains(animateable, App.ANIMATEABLES);
 		this.assertOfType("undefined", animateable["_animationIntervalId"]);
 
 		animateable.playAnimation();
@@ -66,7 +60,6 @@ export default class AnimateableTest extends Test {
 		animateable.delete();
 
 		this.assertOfType("undefined", animateable["_animationIntervalId"]);
-		this.assertArrayDoesntContain(animateable, App.ANIMATEABLES);
 	}
 
 	/**

@@ -1,4 +1,3 @@
-import { App } from "../../../App.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { BoardObject } from "../BoardObject.js";
 
@@ -28,17 +27,6 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		 * "between" the two teleporters.
 		 */
 		_shouldInterpolate: boolean = true;
-
-		/**
-		 * Creates a `TickableClass` instance.
-		 *
-		 * @param args arguments passed to the board object's constructor
-		 */
-		constructor(...args: any[]) {
-			super(...args);
-
-			App.TICKABLES.push(this as Tickable);
-		}
 
 		/**
 		 * Get whether or not this board object should interpolate.
@@ -82,8 +70,6 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 			super.delete();
 
 			this._framesUpdating = 0;
-
-			App.TICKABLES.splice(App.TICKABLES.indexOf(this as unknown as Tickable), 1);
 		}
 	}
 

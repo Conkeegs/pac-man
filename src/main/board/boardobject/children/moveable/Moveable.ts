@@ -154,8 +154,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		this.speed = speed;
 		// faster board objects have larger distances per-frame
 		this.distancePerFrame = speed * millisToSeconds(App.DESIRED_MS_PER_FRAME);
-
-		App.MOVEABLES.push(this);
 	}
 
 	/**
@@ -231,6 +229,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		this.moving = false;
 		this.currentDirection = undefined;
 
+		App.getInstance().getMovingMoveableIds().delete(this.getUniqueId());
+
 		return false;
 	}
 
@@ -262,6 +262,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		this.moving = true;
 		this.lastMoveCode = direction;
+
+		App.getInstance().getMovingMoveableIds().add(this.getUniqueId());
 	}
 
 	/**
@@ -300,7 +302,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		super.delete();
 
 		this.stopMoving();
-		App.MOVEABLES.splice(App.MOVEABLES.indexOf(this), 1);
 	}
 
 	/**

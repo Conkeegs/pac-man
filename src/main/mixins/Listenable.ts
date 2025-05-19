@@ -1,4 +1,4 @@
-import { App } from "../App.js";
+import { App, type EventListenerData } from "../App.js";
 import type { GameElement } from "../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../types.js";
 
@@ -18,7 +18,7 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 		/**
 		 * Event listeners registered for this game element.
 		 */
-		_EVENT_LISTENERS: typeof App.EVENT_LISTENERS = [];
+		_EVENT_LISTENERS: EventListenerData[] = [];
 
 		/**
 		 * Creates a `ListenableClass` instance.
@@ -67,7 +67,7 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 				callback,
 			});
 
-			App.addEventListenerToElement(eventName, element, callback);
+			App.getInstance().addEventListenerToElement(eventName, element, callback);
 		}
 	}
 

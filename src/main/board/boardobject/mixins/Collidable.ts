@@ -96,7 +96,6 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 				offsetY: paddingVertical,
 				gameElement: this.collisionBox,
 			});
-			App.COLLIDABLES.push(this);
 		}
 
 		/**
@@ -179,7 +178,6 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		public override delete(): void {
 			this.checkForCollidableAndRemove();
 			super.delete();
-			App.COLLIDABLES.splice(App.COLLIDABLES.indexOf(this), 1);
 		}
 
 		/**
@@ -228,17 +226,18 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 			this.checkForCollidableAndRemove();
 
 			const collisionBoxTileKeys = collisionBox.findTileKeys();
+			const collidableMap = App.getInstance().getCollidablesMap();
 
 			for (let i = 0; i < collisionBoxTileKeys.length; i++) {
 				const tileKey = collisionBoxTileKeys[i]!;
 
 				// create a new mapping for the new tile key, if there isn't one yet
-				if (!defined(App.COLLIDABLES_MAP[tileKey])) {
-					App.COLLIDABLES_MAP[tileKey] = [];
+				if (!collidableMap.has(tileKey)) {
+					collidableMap.set(tileKey, []);
 				}
 
 				// push "collidable" into its own position-based group
-				App.COLLIDABLES_MAP[tileKey].push(this);
+				collidableMap.get(tileKey)!.push(this);
 				this._currentTileKeys.push(tileKey);
 			}
 		}
@@ -256,7 +255,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 
 			// find all tiles the collision box is in and remove it
 			for (let i = 0; i < currentTileKeysLength; i++) {
-				let positionCollidables = App.COLLIDABLES_MAP[currentTileKeys[i]!];
+				let positionCollidables = App.getInstance().getCollidablesMap().get(currentTileKeys[i]!);
 
 				if (defined(positionCollidables) && positionCollidables.includes(this)) {
 					positionCollidables.splice(positionCollidables.indexOf(this), 1);

@@ -121,14 +121,17 @@ export default class MoveableTest extends Test {
 	 */
 	public stopMovingTest(): void {
 		const pacman = new PacMan();
+		const movingMoveableIdsSet = App.getInstance().getMovingMoveableIds();
 
 		this.assertFalse(pacman.isMoving());
+		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		const movementDirection = MovementDirection.UP;
 
 		pacman.startMoving(movementDirection);
 
 		this.assertTrue(pacman.isMoving());
+		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		pacman.setPosition({ x: 500, y: 700 });
 		pacman.stopMoving();
@@ -137,7 +140,7 @@ export default class MoveableTest extends Test {
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertDoesntExist(pacman["lastMoveCode"]);
 		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
-		this.assertArrayDoesntContain(pacman, App.COLLIDABLES_MAP[pacman["getCollidablePositionKey"]()]!);
+		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 		this.assertDoesntExist(pacman["_animationIntervalId"]);
 		this.assertDoesntExist(pacman.getCurrentDirection());
 	}
@@ -147,8 +150,10 @@ export default class MoveableTest extends Test {
 	 */
 	public startMovingTest(): void {
 		const pacman = new PacMan();
+		const movingMoveableIdsSet = App.getInstance().getMovingMoveableIds();
 
 		this.assertFalse(pacman.isMoving());
+		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		const movementDirection = MovementDirection.UP;
 		const turn = new Turn("test-turn", [movementDirection]);
@@ -169,6 +174,7 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
 		this.assertOfType("number", pacman["_animationIntervalId"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
+		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		pacman.stopMoving();
 		pacman.startMoving(movementDirection, {
@@ -185,6 +191,7 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
 		this.assertStrictlyEqual(turnCenterPosition.x - pacman.getWidth()! / 2, position.x);
 		this.assertStrictlyEqual(turnCenterPosition.y - pacman.getHeight()! / 2, position.y);
+		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		pacman.stopMoving();
 	}
@@ -334,15 +341,14 @@ export default class MoveableTest extends Test {
 	public deleteTest(): void {
 		const moveable = new Pinky();
 
-		moveable["moving"] = true;
-
-		this.assertArrayContains(moveable, App.MOVEABLES);
+		moveable.startMoving(MovementDirection.RIGHT);
 
 		moveable.delete();
 
-		// each delete should stop moveable from moving
+		// each delete should stop moveable from moving and remove it from
+		// moveables set
 		this.assertFalse(moveable["moving"]);
-		this.assertArrayDoesntContain(moveable, App.MOVEABLES);
+		this.assertFalse(App.getInstance().getMovingMoveableIds().has(moveable.getUniqueId()));
 	}
 
 	/**

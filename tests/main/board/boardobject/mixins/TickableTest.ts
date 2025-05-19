@@ -1,4 +1,3 @@
-import { App } from "../../../../../src/main/App.js";
 import Board from "../../../../../src/main/board/Board.js";
 import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObject.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
@@ -13,11 +12,7 @@ export default class TickableTest extends Test {
 	/**
 	 * Test that tickables are created correctly.
 	 */
-	public createCollidableTest(): void {
-		const collidable = new PacMan();
-
-		this.assertArrayContains(collidable, App.TICKABLES);
-	}
+	public createCollidableTest(): void {}
 
 	/**
 	 * Test if tickables can get whether or not they should interpolate.
@@ -72,7 +67,7 @@ export default class TickableTest extends Test {
 	public deleteTest(): void {
 		const collidable = new (class extends MakeTickable(BoardObject) {
 			constructor() {
-				super("test tickable");
+				super("test tickable", 0, 0);
 			}
 
 			public override interpolate() {}
@@ -81,11 +76,9 @@ export default class TickableTest extends Test {
 		collidable.tick();
 
 		this.assertStrictlyEqual(1, collidable["_framesUpdating"]);
-		this.assertArrayContains(collidable, App.TICKABLES);
 
 		collidable.delete();
 
 		this.assertStrictlyEqual(0, collidable["_framesUpdating"]);
-		this.assertArrayDoesntContain(collidable, App.TICKABLES);
 	}
 }

@@ -106,6 +106,11 @@ export abstract class GameElement {
 	 * The game element's unique name and HTML id.
 	 */
 	private readonly name: string;
+	private readonly uniqueId: number;
+	/**
+	 * Whether or not this game element is marked as deleted.
+	 */
+	private deleted: boolean = false;
 
 	/**
 	 * Creates a game element.
@@ -121,22 +126,30 @@ export abstract class GameElement {
 				DebugWindow.error("GameElement.js", "constructor", "GameElement must have a name");
 			}
 
-			if (App.GAME_ELEMENTS.findIndex((gameElement) => gameElement.getName() === name) !== -1) {
-				DebugWindow.error(
-					"GameElement.js",
-					"constructor",
-					`A GameElement with the name '${name}' already exists`
-				);
+			let gameElements = App.getInstance().getGameElementsMap().values();
+
+			for (const gameElement of gameElements) {
+				if (gameElement.getName() === name) {
+					DebugWindow.error(
+						"GameElement.js",
+						"constructor",
+						`A GameElement with the name '${name}' already exists`
+					);
+				}
 			}
 		}
 		// #!END_DEBUG
 
 		this.name = name;
+
+		const gameElementsMap = App.getInstance().getGameElementsMap();
+
+		this.uniqueId = gameElementsMap.size + 1;
 		this._width = width;
 		this._height = height;
 
 		// keep track of this game element so we can clean it up later, if needed
-		App.GAME_ELEMENTS.push(this);
+		gameElementsMap.set(this.uniqueId, this);
 
 		this.element = create({ name: "div", id: name, classes: ["game-element"] });
 		this.element.classList.add("game-element", this.constructor.name.toLowerCase() || "base-game-element");
@@ -178,6 +191,16 @@ export abstract class GameElement {
 	 */
 	public getName() {
 		return this.name;
+	}
+
+	/**
+	 * Gets the unique number-id of this game element. Primarily used for indexing into
+	 * the `gameElementsMap` of the `App` class.
+	 *
+	 * @returns unique number-id of this game element
+	 */
+	public getUniqueId(): number {
+		return this.uniqueId;
 	}
 
 	/**
@@ -227,6 +250,15 @@ export abstract class GameElement {
 	 */
 	public getChildren(): Child[] {
 		return this.children;
+	}
+
+	/**
+	 * Get whether or not this game element is marked as deleted
+	 *
+	 * @returns whether or not this game element is marked as deleted
+	 */
+	public getDeleted(): boolean {
+		return this.deleted;
 	}
 
 	/**
@@ -347,9 +379,9 @@ export abstract class GameElement {
 	 * Deletes this game element from the game.
 	 */
 	public delete(): void {
-		this.element.remove();
+		this.deleted = true;
 
-		App.GAME_ELEMENTS.splice(App.GAME_ELEMENTS.indexOf(this), 1);
+		App.getInstance().getDeletedGameElementIds().add(this.getUniqueId());
 	}
 
 	/**

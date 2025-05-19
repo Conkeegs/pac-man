@@ -23,9 +23,9 @@ export enum State {
 
 // if (Debugging.isEnabled()) {
 // 	pausePlayButton.onClick(() => {
-// 		App.GAME_PAUSED = !App.GAME_PAUSED;
+// 		App.gamePaused = !App.gamePaused;
 
-// 		if (App.GAME_PAUSED) {
+// 		if (App.gamePaused) {
 // 			App.stopGame(true);
 // 			pausePlayButton.setText("Play");
 // 			pausePlayButton.setPaused();

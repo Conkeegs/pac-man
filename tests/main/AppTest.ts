@@ -4,8 +4,11 @@ import { BoardObject } from "../../src/main/board/boardobject/BoardObject.js";
 import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
 import Moveable from "../../src/main/board/boardobject/children/moveable/Moveable.js";
 import MovementDirection from "../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import MakeAnimateable, { type Animateable } from "../../src/main/board/boardobject/mixins/Animateable.js";
 import MakeCollidable, { type Collidable } from "../../src/main/board/boardobject/mixins/Collidable.js";
 import CollisionBox from "../../src/main/gameelement/CollisionBox.js";
+import { GameElement } from "../../src/main/gameelement/GameElement.js";
+import type { AbstractConstructor } from "../../src/main/types.js";
 import { cloneInstance, create, get } from "../../src/main/utils/Utils.js";
 import Test from "../base/Base.js";
 
@@ -41,67 +44,176 @@ export default class AppTest extends Test {
 	 * Test that app can start running the game correctly.
 	 */
 	public async runTest(): Promise<void> {
-		await App.run();
+		const app = App.getInstance();
 
-		this.assertTrue(App["board"] instanceof Board);
-		this.assertFalse(App.GAME_PAUSED);
+		// app["startGame"] = () => 0;
+
+		await app.run();
+
+		this.assertTrue(app["board"] instanceof Board);
+		this.assertFalse(app["gamePaused"]);
 
 		window.dispatchEvent(new FocusEvent("blur"));
 
-		this.assertTrue(App.GAME_PAUSED);
+		this.assertTrue(app["gamePaused"]);
 
 		window.dispatchEvent(new FocusEvent("focus"));
 
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(app["gamePaused"]);
 
-		this.assertOfType("number", App["animationFrameId"]);
-		this.assertTrue(App["running"]);
+		this.assertOfType("number", app["animationFrameId"]);
+		this.assertTrue(app["running"]);
+	}
+
+	/**
+	 * Test that the singleton App can get its instance.
+	 */
+	public getInstanceTest(): void {
+		this.assertInstanceOf(App as unknown as AbstractConstructor<App>, App.getInstance());
+	}
+
+	/**
+	 * Test that the app can gets its map of game elements.
+	 */
+	public getGameElementsMapTest(): void {
+		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const gameElementsMap = App.getInstance().getGameElementsMap();
+
+		this.assertStrictlyEqual(1, gameElementsMap.size);
+		this.assertTrue(gameElementsMap.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of game deleted game element ids.
+	 */
+	public getDeletedGameElementIdsTest(): void {
+		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+
+		gameElement.delete();
+
+		const deletedGameElementIds = App.getInstance().getDeletedGameElementIds();
+
+		this.assertStrictlyEqual(1, deletedGameElementIds.size);
+		this.assertTrue(deletedGameElementIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of to-be-rendered game element ids.
+	 */
+	public getToRenderGameElementIdsTest(): void {
+		const gameElement = new (class extends BoardObject {})("test-board-object", 0, 0);
+
+		gameElement["queueRenderUpdate"](() => {});
+
+		const toRenderGameElementIds = App.getInstance().getToRenderGameElementIds();
+
+		this.assertStrictlyEqual(1, toRenderGameElementIds.size);
+		this.assertTrue(toRenderGameElementIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of moving game element ids.
+	 */
+	public getMovingMoveableIdsTest(): void {
+		const gameElement = new (class extends Moveable {})("test-moveable", 0, 0, 0);
+
+		gameElement.startMoving(MovementDirection.RIGHT);
+
+		const movingMoveableIds = App.getInstance().getMovingMoveableIds();
+
+		this.assertStrictlyEqual(1, movingMoveableIds.size);
+		this.assertTrue(movingMoveableIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of animating game element ids.
+	 */
+	public getAnimateableGameElementIdsTest(): void {
+		const gameElement = new (class extends MakeAnimateable(BoardObject) {
+			override _NUM_ANIMATION_STATES: number = 1;
+		})("test-moveable", 0, 0);
+		const animateableGameElementIds = App.getInstance().getAnimateableGameElementIds();
+
+		this.assertStrictlyEqual(1, animateableGameElementIds.size);
+		this.assertTrue(animateableGameElementIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its map tile keys to collidables.
+	 */
+	public getCollidablesMapTest(): void {
+		const gameElement = new (class extends MakeCollidable(BoardObject) {
+			public override canBeCollidedByTypes: string[] = [];
+			override onCollision(): void {}
+		})("test-moveable", 0, 0);
+		const collidablesMap = App.getInstance().getCollidablesMap();
+
+		this.assertStrictlyEqual(1, collidablesMap.size);
+
+		const tileKey = gameElement.getCollisionBox().findTileKeys()[0]!;
+
+		this.assertTrue(collidablesMap.has(tileKey));
+		this.assertStrictlyEqual(gameElement, collidablesMap.get(tileKey)!.values().next().value);
+	}
+
+	/**
+	 * Test that the app can tell when the game is paused.
+	 */
+	public getPausedTest(): void {
+		const app = App.getInstance();
+
+		this.assertFalse(app.getPaused());
+
+		app["stopGame"](true);
+
+		this.assertTrue(app.getPaused());
 	}
 
 	/**
 	 * Test that app can destroy itself correctly.
 	 */
 	public async destroyTest(): Promise<void> {
-		await App.run();
+		const app = App.getInstance();
 
-		// queue render update for a single board object so that render array is not empty
-		App.ANIMATEABLES[0]!["queueRenderUpdate"](() => {});
+		await app.run();
 
-		this.assertNotEmpty(Object.keys(App.COLLIDABLES_MAP));
-		this.assertNotEmpty(App.EVENT_LISTENERS);
-		this.assertNotEmpty(App.ANIMATEABLES);
-		this.assertNotEmpty(App.BOARDOBJECTS);
-		this.assertNotEmpty(App.CHARACTERS);
-		this.assertNotEmpty(App.MOVEABLES);
-		this.assertNotEmpty(App.TICKABLES);
-		this.assertNotEmpty(App.COLLIDABLES);
-		this.assertNotEmpty(App.BOARDOBJECTS_TO_RENDER);
-		this.assertTrue(App["running"]);
-		this.assertTrue(App["board"] instanceof Board);
+		const gameElementsMap = app.getGameElementsMap();
+		let animateableGameElementIdValues = app.getAnimateableGameElementIds().values();
+
+		// queue render update for a single board object
+		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as BoardObject)["queueRenderUpdate"](
+			() => {}
+		);
+
+		this.assertTrue(app.getCollidablesMap().size > 0);
+		this.assertNotEmpty(app["eventListeners"]);
+		this.assertTrue(app["running"]);
+		this.assertTrue(app["board"] instanceof Board);
 		this.assertNotEmpty(get("game")!.innerHTML);
-		this.assertOfType("number", App["animationFrameId"]);
+		this.assertOfType("number", app["animationFrameId"]);
 
-		App.destroy();
+		app.destroy();
 
-		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
-			this.assertOfType("undefined", App.ANIMATEABLES[i]!._animationIntervalId);
+		animateableGameElementIdValues = app.getAnimateableGameElementIds().values();
+		let animateableGameElementId = animateableGameElementIdValues.next();
+
+		while (!animateableGameElementId.done) {
+			this.assertOfType(
+				"undefined",
+				(gameElementsMap.get(animateableGameElementId.value) as Animateable)._animationIntervalId
+			);
+
+			animateableGameElementId = animateableGameElementIdValues.next();
 		}
 
-		this.assertEmpty(Object.keys(App.COLLIDABLES_MAP));
-		this.assertEmpty(App.EVENT_LISTENERS);
-		this.assertEmpty(App.ANIMATEABLES);
-		this.assertEmpty(App.BOARDOBJECTS);
-		this.assertEmpty(App.CHARACTERS);
-		this.assertEmpty(App.MOVEABLES);
-		this.assertEmpty(App.TICKABLES);
-		this.assertEmpty(App.COLLIDABLES);
-		this.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
-		this.assertFalse(App["running"]);
-		this.assertFalse(App["board"] instanceof Board);
+		this.assertEmpty(Object.keys(app["collidablesMap"]));
+		this.assertEmpty(app["eventListeners"]);
+		this.assertFalse(app["running"]);
+		this.assertFalse(app["board"] instanceof Board);
 		this.assertEmpty(get("game")!.innerHTML);
-		this.assertOfType("undefined", App["animationFrameId"]);
-		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertOfType("undefined", app["animationFrameId"]);
+		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
+		this.assertFalse(app["gamePaused"]);
 	}
 
 	/**
@@ -109,22 +221,23 @@ export default class AppTest extends Test {
 	 */
 	public startGameTest(): void {
 		const pacman = new PacMan();
+		const app = App.getInstance();
 
 		pacman.startMoving(MovementDirection.RIGHT);
 
-		App["startGame"]();
+		app["startGame"]();
 
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(app["gamePaused"]);
 		this.assertOfType("number", pacman._animationIntervalId);
 
-		App["stopGame"](true);
+		app["stopGame"](true);
 
-		this.assertTrue(App.GAME_PAUSED);
+		this.assertTrue(app["gamePaused"]);
 		this.assertOfType("undefined", pacman._animationIntervalId);
 
-		App["startGame"]();
+		app["startGame"]();
 
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(app["gamePaused"]);
 		this.assertOfType("number", pacman._animationIntervalId);
 	}
 
@@ -133,26 +246,27 @@ export default class AppTest extends Test {
 	 */
 	public stopGameTest(): void {
 		const pacman = new PacMan();
+		const app = App.getInstance();
 
 		pacman.startMoving(MovementDirection.RIGHT);
 
-		App["startGame"]();
+		app["startGame"]();
 
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(app["gamePaused"]);
 		this.assertOfType("number", pacman._animationIntervalId);
-		this.assertOfType("number", App["deltaTimeAccumulator"]);
+		this.assertOfType("number", app["deltaTimeAccumulator"]);
 
-		App["stopGame"](true);
+		app["stopGame"](true);
 
-		this.assertTrue(App.GAME_PAUSED);
+		this.assertTrue(app["gamePaused"]);
 		this.assertOfType("undefined", pacman._animationIntervalId);
-		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
-		App["startGame"]();
+		app["startGame"]();
 
-		this.assertFalse(App.GAME_PAUSED);
+		this.assertFalse(app["gamePaused"]);
 		this.assertOfType("number", pacman._animationIntervalId);
-		this.assertOfType("number", App["deltaTimeAccumulator"]);
+		this.assertOfType("number", app["deltaTimeAccumulator"]);
 	}
 
 	/**
@@ -160,28 +274,29 @@ export default class AppTest extends Test {
 	 */
 	public updateGameTest(): void {
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
+		const app = App.getInstance();
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		// app not running so nothing should happen
-		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
-		App["running"] = true;
-		App.GAME_PAUSED = true;
+		app["running"] = true;
+		app["gamePaused"] = true;
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		// app paused so nothing should happen
-		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
-		App.GAME_PAUSED = false;
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["gamePaused"] = false;
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		// accumulator should be 0 since falsy "lastTimestamp"
-		this.assertStrictlyEqual(0, App["deltaTimeAccumulator"]);
+		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
 		let movingMoveables: (Moveable & Collidable)[] = [];
 		const moveableCount = 10;
@@ -191,7 +306,7 @@ export default class AppTest extends Test {
 		for (let i = 0; i < moveableCount; i++) {
 			const collidableMoveable = new CollidableMoveableTester(`test-moveable-${i}`, 10, 10, 10);
 
-			// mark as deleted to test skipping collision checking and interpolation
+			// mark as deleted to test skipping collision checking
 			collidableMoveable["deleted"] = true;
 
 			collidableMoveable.startMoving(MovementDirection.RIGHT);
@@ -202,8 +317,8 @@ export default class AppTest extends Test {
 		// updateGame will attempt to perform physics & state updates more than once to
 		// catchup. since we're setting the deltaTimeAccumulator here to our DESIRED_MS_PER_FRAME
 		// multiplied by 4, the updateGame function should update each moveable 3 times in one run
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME * 4;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME * 4;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			const distance3Times = moveable.getDistancePerFrame() * 3;
@@ -213,38 +328,40 @@ export default class AppTest extends Test {
 			// render() calls should have happened too, so transform is updated
 			this.assertStrictlyEqual(distance3Times, moveable.getTransform().x);
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertOfType("undefined", moveable["wasInterpolated" as keyof Moveable]);
+			this.assertTrue(moveable["wasInterpolated" as keyof Moveable]);
 		}
 
-		this.assertEmpty(App.BOARDOBJECTS_TO_RENDER);
+		this.assertStrictlyEqual(0, app.getToRenderGameElementIds().size);
+		this.assertStrictlyEqual(0, app.getDeletedGameElementIds().size);
 
 		// test that moveables that aren't moving don't collide or interpolate
 		for (const moveable of movingMoveables) {
 			moveable["deleted"] = false;
-			moveable["moving"] = false;
+			moveable.stopMoving();
 
+			Object.defineProperty(moveable, "wasInterpolated", { value: false, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertOfType("undefined", moveable["wasInterpolated" as keyof Moveable]);
+			this.assertFalse(moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		// moveables that are moving should interpolate, but if they aren't collidable, they shouldn't
 		// collide with anything
 		for (const moveable of movingMoveables) {
-			moveable["moving"] = true;
+			moveable.startMoving(MovementDirection.RIGHT);
 
 			moveable.setPosition({ x: 0, y: 0 });
 			Object.defineProperty(moveable, "onCollision", { value: undefined, writable: true });
 		}
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
@@ -261,17 +378,16 @@ export default class AppTest extends Test {
 		}
 
 		// test that collidables that are deleted after they tick are not involved in collisions
-		// any longer and do not interpolate
+		// any longer
 		collidedWithTester["onCollision"] = (withCollidable) => {
 			withCollidable["deleted"] = true;
 		};
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		for (const moveable of movingMoveables) {
@@ -280,7 +396,7 @@ export default class AppTest extends Test {
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
-		// test that collidables collide properly but if they are deleted after collision, they don't
+		// test that collidables collide properly but if they are deleted after collision, they still
 		// interpolate
 		collidedWithTester["onCollision"] = (withCollidable) => {
 			Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
@@ -288,17 +404,18 @@ export default class AppTest extends Test {
 			withCollidable["deleted"] = true;
 		};
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
+			this.assertStrictlyEqual(true, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		// test that moveables collide, but if they are marked as "shouldn't interpolate", they don't interpolate
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
+			Object.defineProperty(moveable, "wasInterpolated", { value: false, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 
 			moveable["deleted"] = false;
@@ -309,8 +426,8 @@ export default class AppTest extends Test {
 			Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
 		};
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -328,8 +445,8 @@ export default class AppTest extends Test {
 			moveable["_shouldInterpolate"] = true;
 		}
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -344,25 +461,25 @@ export default class AppTest extends Test {
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		App["updateGame"](0, 0, 0);
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
 			this.assertStrictlyEqual(true, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
-		App.MOVEABLES = [];
+		// App.MOVEABLES = [];
 
 		const currentTimestamp = 5;
 
 		// update function will "catchup" 3 times due to this accumulator value
-		App["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME * 4;
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME * 4;
 
 		// lastTimestamp should always be returned as equal to currentTimestamp
 		// and the new frameCount will be the one passed in here incremented 3 times
 		// (due to above deltaTimeAccumulator value)
-		const gameUpdateData = App["updateGame"](0, currentTimestamp, 0);
+		const gameUpdateData = app["updateGame"](0, currentTimestamp, 0);
 
 		this.assertStrictlyEqual(currentTimestamp, gameUpdateData.lastTimestamp);
 		this.assertStrictlyEqual(3, gameUpdateData.newFrameCount);
@@ -372,13 +489,15 @@ export default class AppTest extends Test {
 	 * Test that app can tell whether it is running or not.
 	 */
 	public async isRunningTest(): Promise<void> {
-		await App.run();
+		const app = App.getInstance();
 
-		this.assertTrue(App.isRunning());
+		await app.run();
 
-		App.destroy();
+		this.assertTrue(app.isRunning());
 
-		this.assertFalse(App.isRunning());
+		app.destroy();
+
+		this.assertFalse(app.isRunning());
 	}
 
 	/**
@@ -389,14 +508,15 @@ export default class AppTest extends Test {
 			name: "div",
 		});
 		let changedVariable = 0;
+		const app = App.getInstance();
 
-		this.assertArrayLength(0, App.EVENT_LISTENERS);
+		this.assertArrayLength(0, app["eventListeners"]);
 
-		App.addEventListenerToElement("keydown", element, () => {
+		app.addEventListenerToElement("keydown", element, () => {
 			changedVariable++;
 		});
 
-		this.assertArrayLength(1, App.EVENT_LISTENERS);
+		this.assertArrayLength(1, app["eventListeners"]);
 		this.assertStrictlyEqual(0, changedVariable);
 
 		element.dispatchEvent(
@@ -424,7 +544,9 @@ export default class AppTest extends Test {
 			y: referenceCollidablePosition.y + 100,
 		});
 
-		App["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
+		const app = App.getInstance();
+
+		app["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
 
 		this.assertOfType("undefined", referenceCollidable["wasCollidedWith" as keyof Moveable]);
 
@@ -434,7 +556,7 @@ export default class AppTest extends Test {
 			y: referenceCollidablePosition.y,
 		});
 
-		App["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
+		app["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
 
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);
 
@@ -456,7 +578,7 @@ export default class AppTest extends Test {
 		// collidables it may have "tunneled" through
 		Object.defineProperty(referenceCollidable, "distancePerFrame", { value: referenceCollidable.getWidth() + 1 });
 
-		App["lookForCollisions"](referenceCollidable, oldCollisionBox);
+		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
 
 		// CCD should have found "collidedWithTester"
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);

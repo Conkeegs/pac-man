@@ -16,10 +16,6 @@ export abstract class BoardObject extends GameElement {
 	 * Whether or not this `BoardObject` is ready for visual updates.
 	 */
 	private readyForRender: true | false = false as const;
-	/**
-	 * Whether or not this board object is marked as deleted.
-	 */
-	private deleted: boolean = false;
 
 	/**
 	 * `z-index` CSS property of all `BoardObject` instances on the board.
@@ -36,24 +32,12 @@ export abstract class BoardObject extends GameElement {
 	constructor(name: string, width: number, height: number) {
 		super(name, width, height);
 
-		// keep track of this board object so we can clean it up later, if needed
-		App.BOARDOBJECTS.push(this);
-
 		const element = this.getElement();
 
 		element.css({
 			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX,
 		});
 		element.classList.add("board-object");
-	}
-
-	/**
-	 * Get whether or not this board object is marked as deleted
-	 *
-	 * @returns whether or not this board object is marked as deleted
-	 */
-	public getDeleted(): boolean {
-		return this.deleted;
 	}
 
 	/**
@@ -122,20 +106,6 @@ export abstract class BoardObject extends GameElement {
 		}
 
 		this.setTransformY(y);
-	}
-
-	/**
-	 * Deletes this boardobject off of the game's board.
-	 */
-	public override delete(): void {
-		this.queueRenderUpdate(() => {
-			this.getElement().remove();
-		});
-
-		App.GAME_ELEMENTS.splice(App.GAME_ELEMENTS.indexOf(this), 1);
-		App.BOARDOBJECTS.splice(App.BOARDOBJECTS.indexOf(this), 1);
-
-		this.deleted = true;
 	}
 
 	/**
@@ -209,7 +179,7 @@ export abstract class BoardObject extends GameElement {
 		// check if already pushed, otherwise board object will render same updates more
 		// than once for no reason
 		if (!this.readyForRender) {
-			App.BOARDOBJECTS_TO_RENDER.push(this);
+			App.getInstance().getToRenderGameElementIds().add(this.getUniqueId());
 
 			this.readyForRender = true;
 		}

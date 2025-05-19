@@ -2,16 +2,14 @@
 
 import RunTests from "../../tests/RunTests.js";
 import Board from "./board/Board.js";
-import { BoardObject } from "./board/boardobject/BoardObject.js";
-import type Character from "./board/boardobject/children/character/Character.js";
+import type { BoardObject } from "./board/boardobject/BoardObject.js";
 import Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
-import type { Tickable } from "./board/boardobject/mixins/Tickable.js";
 import Debugging from "./Debugging.js";
 import CollisionBox from "./gameelement/CollisionBox.js";
 import { GameElement, type Position } from "./gameelement/GameElement.js";
-import { cloneInstance, create, defined, get, uniqueId } from "./utils/Utils.js";
+import { cloneInstance, create, get, uniqueId } from "./utils/Utils.js";
 
 /**
  * Represents important data to keep track of before ticking
@@ -58,96 +56,92 @@ type CCDData = {
 };
 
 /**
+ * Represents data about event listener registered in the app.
+ */
+export type EventListenerData = {
+	/**
+	 * Name of the event.
+	 */
+	eventName: keyof HTMLElementEventMap;
+	/**
+	 * HTMLElement or window object that the event is registered on.
+	 */
+	element: HTMLElement | Window;
+	/**
+	 * Callback registered for the event.
+	 *
+	 * @param event DOM event to be fired
+	 * @returns
+	 */
+	callback: (event: Event) => void;
+};
+
+/**
  * This class loads the game's UI before initializing the board.
  */
 export class App {
 	/**
+	 * The singleton-instance of the app.
+	 */
+	private static instance: App | undefined;
+	/**
 	 * The current animation frame requested by the DOM for the game's loop.
 	 */
-	private static animationFrameId: number | undefined;
+	private animationFrameId: number | undefined;
 	/**
 	 * Increments by the number of milliseconds it takes to render each frame, every frame.
 	 */
-	private static deltaTimeAccumulator: number = 0;
+	private deltaTimeAccumulator: number = 0;
+	/**
+	 * The board that the game displays on.
+	 */
+	private board: Board | undefined;
+	/**
+	 * Whether or not the app is currently running.
+	 */
+	private running: boolean = false;
+	/**
+	 * Whether or not the game is currently paused.
+	 */
+	private gamePaused: boolean = false;
+	/**
+	 * `Map` of classes that extends the `GameElement` class so we can add/remove them when needed,
+	 * and also check for duplicates since each of them have unique `name` properties.
+	 */
+	private gameElementsMap: Map<number, GameElement> = new Map();
+	/**
+	 * Ids of game elements that are marked as delete currently.
+	 */
+	private deletedGameElementIds: Set<number> = new Set();
+	/**
+	 * Ids of game elements that are queued to be rendered.
+	 */
+	private toRenderGameElementIds: Set<number> = new Set();
+	/**
+	 * Ids of game elements that are currently moving.
+	 */
+	private movingMoveableIds: Set<number> = new Set();
+	/**
+	 * Ids of game elements that are animateable.
+	 */
+	private animateableGameElementIds: Set<number> = new Set();
+	/**
+	 * Event listeners registered in the app.
+	 */
+	private eventListeners: EventListenerData[] = [];
+	/**
+	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
+	 * and make sure collision detection for characters is optimized into "groups".
+	 */
+	private collidablesMap: Map<string, Collidable[]> = new Map();
 	/**
 	 * The desired frames-per-second that the game should update at.
 	 */
 	private static readonly DESIRED_FPS: 30 = 30;
 	/**
-	 * The board that the game displays on.
-	 */
-	private static board: Board | undefined;
-	/**
-	 * Whether or not the app is currently running.
-	 */
-	private static running: boolean = false;
-
-	/**
 	 * The rough amount of milliseconds that should pass before the game updates each frame.
 	 */
 	public static readonly DESIRED_MS_PER_FRAME: number = 1000 / App.DESIRED_FPS;
-	/**
-	 * Whether or not the game is currently paused.
-	 */
-	public static GAME_PAUSED: boolean = false;
-	/**
-	 * An array of classes that extends the `GameElement` class so we can add/remove them when needed,
-	 * and also check for duplicates since each of them have unique `name` properties.
-	 */
-	public static GAME_ELEMENTS: GameElement[] = [];
-	/**
-	 * An array of classes that extends the `BoardObject` class so we can add/remove them when needed.
-	 */
-	public static BOARDOBJECTS: BoardObject[] = [];
-	/**
-	 * An array of classes that extends the `Character` class so we can add/remove them when needed.
-	 */
-	public static CHARACTERS: Character[] = [];
-	/**
-	 * An array of classes that extend the `Moveable` class so we can add/remove them when needed.
-	 */
-	public static MOVEABLES: Moveable[] = [];
-	/**
-	 * An array of classes that extend the `Animateable` class so we can add/remove them when needed.
-	 */
-	public static ANIMATEABLES: Animateable[] = [];
-	/**
-	 * An array of classes that use the `Tickable` mixin..
-	 */
-	public static TICKABLES: Tickable[] = [];
-	/**
-	 * An array of classes that use the `Collidable` mixin..
-	 */
-	public static COLLIDABLES: Collidable[] = [];
-	/**
-	 * An array of `BoardObject`s objects to render CSS changes to the screen for.
-	 */
-	public static BOARDOBJECTS_TO_RENDER: BoardObject[] = [];
-	/**
-	 * Event listeners registered in the app.
-	 */
-	public static EVENT_LISTENERS: {
-		/**
-		 * Name of the event.
-		 */
-		eventName: keyof HTMLElementEventMap;
-		/**
-		 * HTMLElement or window object that the event is registered on.
-		 */
-		element: HTMLElement | Window;
-		/**
-		 * Callback registered for the event.
-		 *
-		 * @param event DOM event to be fired
-		 * @returns
-		 */
-		callback: (event: Event) => void;
-	}[] = [];
-	/**
-	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
-	 * and make sure collision detection for characters is optimized into "groups".
-	 */
-	public static COLLIDABLES_MAP: { [tileKey: string]: Collidable[] } = {};
 
 	// #!DEBUG
 	/**
@@ -161,34 +155,120 @@ export class App {
 	// #!END_DEBUG
 
 	/**
+	 * Creates the singleton app instance.
+	 */
+	private constructor() {}
+
+	/**
+	 * Get the singleton app instance.
+	 *
+	 * @returns the singleton app instance
+	 */
+	public static getInstance(): App {
+		return App.instance || (App.instance = new this());
+	}
+
+	/**
+	 * Gets the map of game elements in the app.
+	 *
+	 * @returns map of game elements in the app
+	 */
+	public getGameElementsMap(): Map<number, GameElement> {
+		return this.gameElementsMap;
+	}
+
+	/**
+	 * Get the ids of game elements marked as deleted.
+	 *
+	 * @returns set ids of game elements marked as deleted
+	 */
+	public getDeletedGameElementIds(): Set<number> {
+		return this.deletedGameElementIds;
+	}
+
+	/**
+	 * Get the ids of game elements queued for rendering.
+	 *
+	 * @returns set of ids of game elements queued for rendering
+	 */
+	public getToRenderGameElementIds(): Set<number> {
+		return this.toRenderGameElementIds;
+	}
+
+	/**
+	 * Get the set of ids of game elements that are moving.
+	 *
+	 * @returns set of ids of game elements that are moving
+	 */
+	public getMovingMoveableIds(): Set<number> {
+		return this.movingMoveableIds;
+	}
+
+	/**
+	 * Get the set of ids of game elements that are animateable.
+	 *
+	 * @returns set of ids of game elements that are animateable
+	 */
+	public getAnimateableGameElementIds(): Set<number> {
+		return this.animateableGameElementIds;
+	}
+
+	/**
+	 * Get the map of tilekeys to collidables to better-optimize collision
+	 * detection.
+	 *
+	 * @returns map of tilekeys to collidables
+	 */
+	public getCollidablesMap(): Map<string, Collidable[]> {
+		return this.collidablesMap;
+	}
+
+	/**
+	 * Get whether or not the game is paused.
+	 *
+	 * @returns whether or not the game is paused
+	 */
+	public getPaused(): boolean {
+		return this.gamePaused;
+	}
+
+	/**
+	 * Whether the app is currently running or not.
+	 *
+	 * @returns boolean if the app is running or not
+	 */
+	public isRunning(): boolean {
+		return this.running;
+	}
+
+	/**
 	 * Loads app's resources, loads the board, and starts running the game.
 	 */
-	public static async run(): Promise<void> {
-		if (App.running) {
+	public async run(): Promise<void> {
+		if (this.running) {
 			return;
 		}
 
-		App.board = Board.getInstance();
-		const board = App.board;
+		this.board = Board.getInstance();
 
-		await board.create();
+		await this.board.create();
 
 		// put the game in a "paused" state upon exiting the window
-		App.addEventListenerToElement("blur", window, () => {
+		this.addEventListenerToElement("blur", window, () => {
 			// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
-			if (!App.GAME_PAUSED) {
-				App.stopGame(true);
+			if (!this.gamePaused) {
+				this.stopGame(true);
 			}
 		});
 
 		// put the game in a "unpaused" state upon opening the window
-		App.addEventListenerToElement("focus", window, () => {
-			App.animationFrameId = App.startGame();
+		this.addEventListenerToElement("focus", window, () => {
+			this.animationFrameId = this.startGame();
 		});
 
 		// initial start of the game
-		App.animationFrameId = App.startGame();
-		App.running = true;
+		this.animationFrameId = this.startGame();
+		this.running = true;
 
 		// #!DEBUG
 		if (Debugging.isEnabled()) {
@@ -200,31 +280,28 @@ export class App {
 	/**
 	 * Destroys the application and the resources it's using.
 	 */
-	public static destroy(): void {
-		App.stopGame();
+	public destroy(): void {
+		this.stopGame();
+		Board.getInstance().delete();
 
-		Object.removeAllKeys(App.COLLIDABLES_MAP);
+		this.gameElementsMap.clear();
+		this.collidablesMap.clear();
+		this.deletedGameElementIds.clear();
+		this.toRenderGameElementIds.clear();
+		this.movingMoveableIds.clear();
+		this.animateableGameElementIds.clear();
 
-		for (let i = 0; i < App.EVENT_LISTENERS.length; i++) {
-			const eventListenerInfo = App.EVENT_LISTENERS[i]!;
+		for (let i = 0; i < this.eventListeners.length; i++) {
+			const eventListenerInfo = this.eventListeners[i]!;
 
 			eventListenerInfo.element.removeEventListener(eventListenerInfo.eventName, eventListenerInfo.callback);
 		}
 
-		App.EVENT_LISTENERS.length = 0;
-		App.ANIMATEABLES.length = 0;
-		App.GAME_ELEMENTS = [];
-		App.BOARDOBJECTS.length = 0;
-		App.CHARACTERS.length = 0;
-		App.MOVEABLES.length = 0;
-		App.TICKABLES.length = 0;
-		App.COLLIDABLES.length = 0;
-		App.BOARDOBJECTS_TO_RENDER.length = 0;
-		App.running = false;
-		App.GAME_PAUSED = false;
-
-		Board.getInstance().delete();
-		App.board = undefined;
+		this.eventListeners.length = 0;
+		this.running = false;
+		this.gamePaused = false;
+		this.board = undefined;
+		App.instance = undefined;
 
 		get("game")!.removeAllChildren();
 	}
@@ -232,25 +309,32 @@ export class App {
 	/**
 	 * Starts the main gameloop.
 	 */
-	private static startGame(): number {
-		if (App.GAME_PAUSED) {
-			App.GAME_PAUSED = false;
+	private startGame(): number {
+		if (this.gamePaused) {
+			this.gamePaused = false;
+
+			const animateableGameElementIdValues = this.animateableGameElementIds.values();
+			let animateableGameElementId = animateableGameElementIdValues.next();
 
 			// play every animateable's animations again upon starting the game from a paused state
-			for (let i = 0; i < App.ANIMATEABLES.length; i++) {
-				const animateable = App.ANIMATEABLES[i]!;
+			while (!animateableGameElementId.done) {
+				const animateable = this.gameElementsMap.get(animateableGameElementId.value)! as Animateable;
 
 				// moveables base their animation states on their current direction, so errors
 				// will happen if we try and play their animations while they are "stopped"
 				if (animateable instanceof Moveable && !animateable.isMoving()) {
+					animateableGameElementId = animateableGameElementIdValues.next();
+
 					continue;
 				}
 
 				animateable.playAnimation();
+
+				animateableGameElementId = animateableGameElementIdValues.next();
 			}
 		}
 
-		return requestAnimationFrame((timeStamp) => App.gameLoop(0, timeStamp, 0));
+		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0));
 	}
 
 	/**
@@ -258,21 +342,26 @@ export class App {
 	 *
 	 * @param paused whether or not the game stopped because it paused (defaults to `false`)
 	 */
-	private static stopGame(paused: boolean = false): void {
-		cancelAnimationFrame(App.animationFrameId!);
+	private stopGame(paused: boolean = false): void {
+		cancelAnimationFrame(this.animationFrameId!);
 
-		App.animationFrameId = undefined;
+		this.animationFrameId = undefined;
 
 		// don't reset these variables on pause so the game can properly be un-paused without
 		// losing state
 		if (!paused) {
-			App.deltaTimeAccumulator = 0;
+			this.deltaTimeAccumulator = 0;
 		} else {
-			App.GAME_PAUSED = true;
+			this.gamePaused = true;
 		}
 
-		for (let i = 0; i < App.ANIMATEABLES.length; i++) {
-			App.ANIMATEABLES[i]!.stopAnimation();
+		const animateableGameElementIdValues = this.animateableGameElementIds.values();
+		let animateableGameElementId = animateableGameElementIdValues.next();
+
+		while (!animateableGameElementId.done) {
+			(this.gameElementsMap.get(animateableGameElementId.value)! as Animateable).stopAnimation();
+
+			animateableGameElementId = animateableGameElementIdValues.next();
 		}
 	}
 
@@ -283,17 +372,17 @@ export class App {
 	 * @param currentTimestamp the current timestamp of the game in milliseconds
 	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
 	 */
-	private static gameLoop(lastTimestamp: number, currentTimestamp: number, frameCount: number): void {
-		if (!App.running || App.GAME_PAUSED) {
+	private gameLoop(lastTimestamp: number, currentTimestamp: number, frameCount: number): void {
+		if (!this.running || this.gamePaused) {
 			return;
 		}
 
 		console.log("IN GAMELOOP");
 
-		const gameUpdateData = App.updateGame(lastTimestamp, currentTimestamp, frameCount);
+		const gameUpdateData = this.updateGame(lastTimestamp, currentTimestamp, frameCount);
 
-		App.animationFrameId = requestAnimationFrame((timeStampNew) =>
-			App.gameLoop(gameUpdateData.lastTimestamp, timeStampNew, gameUpdateData.newFrameCount)
+		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
+			this.gameLoop(gameUpdateData.lastTimestamp, timeStampNew, gameUpdateData.newFrameCount)
 		);
 	}
 
@@ -306,7 +395,7 @@ export class App {
 	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
 	 * @returns game state data to be used in the next loop of the game
 	 */
-	private static updateGame(lastTimestamp: number, currentTimestamp: number, frameCount: number): GameUpdateData {
+	private updateGame(lastTimestamp: number, currentTimestamp: number, frameCount: number): GameUpdateData {
 		let deltaTime = currentTimestamp - lastTimestamp;
 
 		// prevent spiral of death
@@ -321,32 +410,35 @@ export class App {
 			lastTimestamp = currentTimestamp;
 		}
 
-		App.deltaTimeAccumulator += deltaTime;
+		this.deltaTimeAccumulator += deltaTime;
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
 		// keep track of old moveable data so we can use it later (after ticking)
-		let oldMoveableData: { [index: number]: OldMoveableData } = {};
-		/**
-		 * Find an array of moveables that are currently moving, and save their current positions in memory.
-		 */
-		let movingMoveables: Moveable[] = App.MOVEABLES.filter((moveable, index) => {
-			if (moveable.isMoving()) {
-				oldMoveableData[index] = {
-					position: { ...moveable.getPosition() },
-					...(typeof moveable["onCollision" as keyof typeof moveable] === "function" && {
-						collisionBox: cloneInstance((moveable as Moveable & Collidable).getCollisionBox()),
-					}),
-				};
+		const oldMoveableData: OldMoveableData[] = [];
+		const movingMoveables: Moveable[] = [];
+		const movingMoveableIdValues = this.movingMoveableIds.values();
+		let movingMoveableId = movingMoveableIdValues.next();
+		const gameElementsMap = this.gameElementsMap;
 
-				return true;
-			}
+		// find all moveables that are currently moving, and save their current positions in memory
+		while (!movingMoveableId.done) {
+			const movingMoveable = gameElementsMap.get(movingMoveableId.value)! as Moveable;
 
-			return;
-		});
-		let movingMoveablesLength = movingMoveables.length;
+			movingMoveables.push(movingMoveable);
+			oldMoveableData.push({
+				position: { ...movingMoveable.getPosition() },
+				...(typeof movingMoveable["onCollision" as keyof typeof movingMoveable] === "function" && {
+					collisionBox: cloneInstance((movingMoveable as Moveable & Collidable).getCollisionBox()),
+				}),
+			});
+
+			movingMoveableId = movingMoveableIdValues.next();
+		}
+
+		const movingMoveablesLength = movingMoveables.length;
 
 		// tick board objects and check for collisions. fixed timestep
-		while (App.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
+		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
 
@@ -360,19 +452,16 @@ export class App {
 					continue;
 				}
 
-				App.lookForCollisions(moveable as unknown as Moveable & Collidable, oldMoveableData[i]!.collisionBox!);
+				this.lookForCollisions(moveable as unknown as Moveable & Collidable, oldMoveableData[i]!.collisionBox!);
 			}
 
 			frameCount++;
-			App.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
+			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 		}
-
-		movingMoveables = movingMoveables.filter((moveable) => !moveable.getDeleted());
-		movingMoveablesLength = movingMoveables.length;
 
 		// check for needed interpolations of board objects
 		if (movingMoveablesLength) {
-			const alpha = App.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
+			const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
@@ -402,32 +491,39 @@ export class App {
 			}
 		}
 
-		const boardObjectsToRenderCount = App.BOARDOBJECTS_TO_RENDER.length;
+		const toRenderGameElementIds = this.toRenderGameElementIds;
+		const toRenderGameElementIdValues = toRenderGameElementIds.values();
+		let toRenderGameElementId = toRenderGameElementIdValues.next();
 
-		// render board objects
-		for (let i = 0; i < boardObjectsToRenderCount; i++) {
-			const boardObject = App.BOARDOBJECTS_TO_RENDER[i];
+		// find all game elements that are currently marked as "to-render" and render them
+		while (!toRenderGameElementId.done) {
+			(gameElementsMap.get(toRenderGameElementId.value)! as BoardObject).render();
 
-			// if (!defined(boardObject)) {
-			// 	continue;
-			// }
-
-			(boardObject as BoardObject).render();
+			toRenderGameElementId = toRenderGameElementIdValues.next();
 		}
 
-		App.BOARDOBJECTS_TO_RENDER = [];
+		toRenderGameElementIds.clear();
+
+		const deletedGameElementIds = this.deletedGameElementIds;
+		const deletedGameElementIdValues = deletedGameElementIds.values();
+		let deletedGameElementId = deletedGameElementIdValues.next();
+
+		// find all game elements that are currently marked as deleted, and remove them from DOM
+		while (!deletedGameElementId.done) {
+			const idValue = deletedGameElementId.value;
+			const deletedGameElement = gameElementsMap.get(idValue)!;
+
+			deletedGameElement.getElement().remove();
+			gameElementsMap.delete(idValue);
+
+			deletedGameElementId = deletedGameElementIdValues.next();
+		}
+
+		deletedGameElementIds.clear();
+
 		lastTimestamp = currentTimestamp;
 
 		return { lastTimestamp, newFrameCount: frameCount };
-	}
-
-	/**
-	 * Whether the app is currently running or not.
-	 *
-	 * @returns boolean if the app is running or not
-	 */
-	public static isRunning(): boolean {
-		return App.running;
 	}
 
 	/**
@@ -437,7 +533,7 @@ export class App {
 	 * @param element HTMLElement or the window object, which will have the event registered on it
 	 * @param callback function to call when event is triggered
 	 */
-	public static addEventListenerToElement<K extends keyof HTMLElementEventMap>(
+	public addEventListenerToElement<K extends keyof HTMLElementEventMap>(
 		eventName: K,
 		element: HTMLElement | Window,
 		callback: (event: Event) => void
@@ -445,7 +541,7 @@ export class App {
 		element.addEventListener(eventName, callback);
 
 		// add to listing so we can clean up event listeners upon app destruction
-		App.EVENT_LISTENERS.push({
+		this.eventListeners.push({
 			eventName,
 			element,
 			callback,
@@ -460,8 +556,8 @@ export class App {
 	 * @param collidable a moveable, collidable board object
 	 * @param oldCollisionBox the old state of `collidable`'s collision box before ticking
 	 */
-	private static lookForCollisions(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
-		const collidablesMap = App.COLLIDABLES_MAP;
+	private lookForCollisions(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
+		const collidablesMap = this.collidablesMap;
 		const tileKeys = collidable.getCurrentTileKeys();
 		let positionCollidables: Collidable[] = [];
 
@@ -469,7 +565,7 @@ export class App {
 		for (let i = 0; i < tileKeys.length; i++) {
 			const tileKey = tileKeys[i]!;
 
-			positionCollidables = positionCollidables.concat(collidablesMap[tileKey]!);
+			positionCollidables = positionCollidables.concat(collidablesMap.get(tileKey)!);
 		}
 
 		// initial check for collisions between passed-in collidable and other collidables
@@ -498,11 +594,11 @@ export class App {
 			const sweptTileKey = sweptTileKeys[i]!;
 
 			// create a new mapping for the new tile key, if there isn't one yet
-			if (!defined(App.COLLIDABLES_MAP[sweptTileKey])) {
-				App.COLLIDABLES_MAP[sweptTileKey] = [];
+			if (!collidablesMap.has(sweptTileKey)) {
+				collidablesMap.set(sweptTileKey, []);
 			}
 
-			positionCollidables = positionCollidables.concat(collidablesMap[sweptTileKey]!);
+			positionCollidables = positionCollidables.concat(collidablesMap.get(sweptTileKey)!);
 		}
 
 		// check for collisions between collidable and other collidables
@@ -577,12 +673,12 @@ export class App {
 // run the game if not in testing mode
 if (!App.TESTING) {
 	// #!END_DEBUG
-	App.run();
+	App.getInstance().run();
 	// #!DEBUG
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
 
-	button.onclick = () => new RunTests("AppTest");
+	button.onclick = () => new RunTests("ListenableTest");
 
 	document.body.prepend(button);
 }

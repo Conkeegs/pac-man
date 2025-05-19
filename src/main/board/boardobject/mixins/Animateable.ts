@@ -120,7 +120,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		constructor(...args: any[]) {
 			super(...args);
 
-			App.ANIMATEABLES.push(this as Animateable);
+			App.getInstance().getAnimateableGameElementIds().add(this.getUniqueId());
 		}
 
 		/**
@@ -154,8 +154,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 			this.stopAnimation();
 
 			super.delete();
-
-			App.ANIMATEABLES.splice(App.ANIMATEABLES.indexOf(this as Animateable), 1);
+			App.getInstance().getAnimateableGameElementIds().delete(this.getUniqueId());
 		}
 
 		/**

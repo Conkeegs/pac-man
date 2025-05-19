@@ -1,4 +1,5 @@
 import { App } from "../src/main/App.js";
+import Board from "../src/main/board/Board.js";
 import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import Test from "./base/Base.js";
@@ -171,6 +172,8 @@ export default class RunTests {
 		const testClass = mapping.test;
 		const testClassName = testClass.getName();
 		const testFunctionCountTotal = this.testFunctionCountTotal;
+		const app = App.getInstance();
+		const board = Board.getInstance();
 
 		try {
 			if (this.runTestsCount !== 0) {
@@ -186,8 +189,8 @@ export default class RunTests {
 
 				await (testClass[functionName as keyof Test] as () => void | Promise<void>)();
 
-				// destroy app resources after each test
-				App.destroy();
+				// destroy app and board resources after each test
+				app.destroy();
 
 				Logger.log(
 					`${++testFunctionCount + ")"} ${functionName} successful - ${++this
@@ -241,6 +244,8 @@ export default class RunTests {
 				severity: "failure",
 			});
 			console.log(error);
+		} finally {
+			app.destroy();
 		}
 	}
 }

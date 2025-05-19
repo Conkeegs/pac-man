@@ -136,7 +136,7 @@ export default class PacMan extends MakeListenable(Character) {
 	private handleKeyDown(event: Event): void {
 		// make sure we are currently listening for movement inputs before continuing and that
 		// the game is not paused
-		if (this.listenForKeydown === false || App.GAME_PAUSED) {
+		if (this.listenForKeydown === false || App.getInstance().getPaused()) {
 			return;
 		}
 
