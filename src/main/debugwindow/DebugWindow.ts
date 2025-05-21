@@ -17,7 +17,7 @@ export default class DebugWindow {
 	 */
 	static error(filename: string, method: string, reason: string) {
 		if (App.DEBUG) {
-			App.destroy();
+			App.getInstance().destroy();
 
 			throw new Error(`Error in ${filename} -- ${method}(): ${reason}`);
 		}
