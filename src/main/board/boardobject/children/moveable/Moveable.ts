@@ -317,14 +317,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		filter: (turn: Turn) => boolean,
 		callback?: ((turn: Turn) => unknown) | undefined
 	): Turn | undefined {
+		const turnValidators = this.turnValidators;
+		const currentDirection = this.currentDirection as keyof typeof turnValidators;
 		// find turns "ahead" of board object and that fit the "filter"
 		const filteredTurns = Board.getInstance()
 			.getTurns()
 			.filter((turn) => {
-				if (
-					this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn) &&
-					filter(turn)
-				) {
+				if (turnValidators[currentDirection](turn) && filter(turn)) {
 					// run callback if our filter passes, and it's defined
 					if (callback) {
 						callback(turn);
@@ -335,8 +334,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 				return false;
 			});
-
-		const currentDirection = this.currentDirection;
 
 		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
 		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this

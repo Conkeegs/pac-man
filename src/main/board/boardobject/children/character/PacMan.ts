@@ -133,7 +133,7 @@ export default class PacMan extends MakeListenable(Character) {
 	 *
 	 * @param event keyboard event from user
 	 */
-	private handleKeyDown(event: Event): void {
+	private handleKeyDown(event: KeyboardEvent): void {
 		// make sure we are currently listening for movement inputs before continuing and that
 		// the game is not paused
 		if (this.listenForKeydown === false || App.getInstance().getPaused()) {
@@ -142,8 +142,7 @@ export default class PacMan extends MakeListenable(Character) {
 
 		event.stopImmediatePropagation();
 
-		let inputDirection =
-			PacMan.keyEventDirectionMap[(event as KeyboardEvent).code as keyof typeof PacMan.keyEventDirectionMap];
+		let inputDirection = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
 		const isMoving = this.isMoving();
 
 		const lastMoveCode = this.lastMoveCode;
@@ -237,9 +236,8 @@ export default class PacMan extends MakeListenable(Character) {
 	 *
 	 * @param event keyboard event from user
 	 */
-	private handleKeyUp(event: Event): void {
-		let moveCode =
-			PacMan.keyEventDirectionMap[(event as KeyboardEvent).code as keyof typeof PacMan.keyEventDirectionMap];
+	private handleKeyUp(event: KeyboardEvent): void {
+		let moveCode = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
 
 		// check for user releasing a valid movement key, and let PacMan class know that it can
 		// once again start listening for more movement inputs. this prevents user from mashing
@@ -256,9 +254,9 @@ export default class PacMan extends MakeListenable(Character) {
 		const documentBody = document.body;
 
 		// listen for movement keys for PacMan
-		this._addEventListener("keydown", this.handleKeyDown.bind(this), documentBody);
+		this._addEventListener("keydown", this.handleKeyDown.bind(this) as (event: Event) => void, documentBody);
 		// listen for user releasing a movement key
-		this._addEventListener("keyup", this.handleKeyUp.bind(this), documentBody);
+		this._addEventListener("keyup", this.handleKeyUp.bind(this) as (event: Event) => void, documentBody);
 	}
 
 	/**

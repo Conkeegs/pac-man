@@ -382,14 +382,7 @@ export default class Board extends GameElement {
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
 	public async createMainBoardObjects(): Promise<void> {
-		const turnData = await this.loadTurnData();
-
-		for (let turn of turnData) {
-			const turnBoardObject = new Turn(`turn-${uniqueId()}`, turn.directions);
-
-			this.turns.push(turnBoardObject);
-			this.placeBoardObject(turnBoardObject, turn.tileX, turn.tileY, true);
-		}
+		await this.placeTurnBoardObjects();
 
 		const foodPositions: Position[] = [];
 		const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
@@ -508,6 +501,21 @@ export default class Board extends GameElement {
 		boardObject.render();
 
 		this.getElement().appendChild(boardObject.getElement());
+	}
+
+	/**
+	 * Create and store board's `Food` board objects.
+	 */
+	private async placeTurnBoardObjects(): Promise<void> {
+		const turnData = await this.loadTurnData();
+
+		for (let i = 0; i < turnData.length; i++) {
+			const turn = turnData[i]!;
+			const turnBoardObject = new Turn(`turn-${i}`, turn.directions);
+
+			this.turns.push(turnBoardObject);
+			this.placeBoardObject(turnBoardObject, turn.tileX, turn.tileY, true);
+		}
 	}
 
 	/**

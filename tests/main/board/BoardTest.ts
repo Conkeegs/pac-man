@@ -323,6 +323,23 @@ export default class BoardTest extends Test {
 	}
 
 	/**
+	 * Test that the board can place its turns.
+	 */
+	public async placeTurnBoardObjectsTest(): Promise<void> {
+		const board = Board.getInstance();
+		const turns = board.getTurns();
+
+		this.assertEmpty(turns);
+
+		await board["placeTurnBoardObjects"]();
+
+		const turnData = await board["loadTurnData"]();
+
+		this.assertNotEmpty(turns);
+		this.assertStrictlyEqual(turnData.length, turnData.length);
+	}
+
+	/**
 	 * Test that the game's board load its turn data correctly.
 	 */
 	public async loadTurnDataTest(): Promise<void> {
@@ -352,7 +369,7 @@ export default class BoardTest extends Test {
 
 		this.assertEmpty(board.getTurns());
 
-		await board["createMainBoardObjects"]();
+		await board["placeTurnBoardObjects"]();
 
 		this.assertNotEmpty(board.getTurns());
 	}

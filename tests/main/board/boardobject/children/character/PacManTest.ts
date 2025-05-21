@@ -52,12 +52,15 @@ export default class PacManTest extends Test {
 	 */
 	public async tickTest(): Promise<void> {
 		const pacman = new PacMan();
+		const board = Board.getInstance();
 
 		pacman.startMoving(MovementDirection.RIGHT);
-		await Board.getInstance()["loadTurnData"]();
+		await board["placeTurnBoardObjects"]();
 		pacman.setCurrentDirection(MovementDirection.RIGHT);
+		// place at default position so turns are properly found
+		board["placeBoardObject"](pacman, Board["PACMAN_SPAWN_X"], Board["PACMAN_SPAWN_Y"]);
 
-		const turnWithNoRightDirection = Board.getInstance()
+		const turnWithNoRightDirection = board
 			.getTurns()
 			.find((turn) => !turn.getDirections().includes(MovementDirection.RIGHT))!;
 		const turnWithNoRightDirectionCenterPosition = turnWithNoRightDirection.getCenterPosition();
@@ -80,12 +83,12 @@ export default class PacManTest extends Test {
 	public async handleKeyDownTest(): Promise<void> {
 		const pacman = new PacMan();
 
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyD",
 			})
 		);
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyD",
 			})
@@ -96,12 +99,12 @@ export default class PacManTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(MovementDirection.RIGHT, pacman.getCurrentDirection());
 
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyA",
 			})
 		);
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyA",
 			})
@@ -121,12 +124,12 @@ export default class PacManTest extends Test {
 		});
 		pacman["nearestStoppingTurn"] = nearestStoppingTurn;
 
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyW",
 			})
 		);
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyW",
 			})
@@ -136,7 +139,7 @@ export default class PacManTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(MovementDirection.UP, pacman.getCurrentDirection());
 
-		await Board.getInstance()["loadTurnData"]();
+		await Board.getInstance()["placeTurnBoardObjects"]();
 
 		const turnWithLeftDirection = Board.getInstance()
 			.getTurns()
@@ -147,12 +150,12 @@ export default class PacManTest extends Test {
 			x: turnWithLeftDirectionCenterPosition.x - pacman.getWidth() / 2,
 			y: turnWithLeftDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyA",
 			})
 		);
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyA",
 			})
@@ -172,12 +175,12 @@ export default class PacManTest extends Test {
 			y: turnWithDownDirectionCenterPosition.y - pacman.getHeight() / 2,
 		});
 
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyS",
 			})
 		);
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyS",
 			})
@@ -206,7 +209,7 @@ export default class PacManTest extends Test {
 
 		this.assertTrue(pacman["listenForKeydown"]);
 
-		document.body.dispatchEvent(
+		pacman["handleKeyDown"](
 			new KeyboardEvent("keydown", {
 				code: "KeyD",
 			})
@@ -215,7 +218,7 @@ export default class PacManTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertFalse(pacman["listenForKeydown"]);
 
-		document.body.dispatchEvent(
+		pacman["handleKeyUp"](
 			new KeyboardEvent("keyup", {
 				code: "KeyD",
 			})
