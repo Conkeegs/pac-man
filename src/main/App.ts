@@ -575,7 +575,7 @@ export class App {
 
 		// if the collidable doesn't move a greater distance than its collision box each frame,
 		// we can stop here
-		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
+		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth()) || collidable.getDeleted()) {
 			return;
 		}
 
@@ -654,7 +654,9 @@ export class App {
 				// filter out the current board object we're operating on
 				otherCollidable.getName() === collidable.getName() ||
 				// if the collided-with boardobject doesn't allow collidable to collide with it, skip
-				!otherCollidable.canBeCollidedBy(collidable.constructor.name)
+				!otherCollidable.canBeCollidedBy(collidable.constructor.name) ||
+				collidable.getDeleted() ||
+				otherCollidable.getDeleted()
 			) {
 				continue;
 			}

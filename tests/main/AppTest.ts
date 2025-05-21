@@ -35,6 +35,20 @@ class CollidedWithTester extends MakeCollidable(BoardObject) {
 		Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
 	}
 }
+/**
+ * Mock `Collidable` class for testing that will mark any collidables that collide with it
+ * as deleted.
+ */
+class CollidedWithTesterDeletes extends MakeCollidable(BoardObject) {
+	public override canBeCollidedByTypes: string[] = [CollidableMoveableTester.name];
+
+	override onCollision(withCollidable: Collidable): void {
+		// this shouldn't happen with "deleted" collidables
+		Object.defineProperty(this, "wasCollidedWith", { value: true, writable: true });
+		Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
+		withCollidable["deleted"] = true;
+	}
+}
 
 /**
  * Tests functionality of `src\main\board\boardobject\children\character\Inky.ts` instances.
@@ -563,7 +577,8 @@ export default class AppTest extends Test {
 		const oldCollisionBox = cloneInstance(referenceCollidableCollisionBox);
 
 		// reset this
-		Object.defineProperty(referenceCollidable, "wasCollidedWith", { value: false });
+		Object.defineProperty(referenceCollidable, "wasCollidedWith", { value: false, writable: true });
+		Object.defineProperty(collidedWithTester, "wasCollidedWith", { value: false, writable: true });
 		// set this collidable "in between" our old collision box and the new one for CCD testing
 		collidedWithTester.setPosition({
 			x: referenceCollidablePosition.x + 50,
@@ -577,6 +592,26 @@ export default class AppTest extends Test {
 		// make distance per frame larger than dimensions of collidable, so we use CCD to look for
 		// collidables it may have "tunneled" through
 		Object.defineProperty(referenceCollidable, "distancePerFrame", { value: referenceCollidable.getWidth() + 1 });
+		// mark deleted so collision detection does not happen
+		referenceCollidable["deleted"] = true;
+
+		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
+
+		// should not happen since reference collidable marked deleted
+		this.assertStrictlyEqual(false, referenceCollidable["wasCollidedWith" as keyof Moveable]);
+		this.assertStrictlyEqual(false, collidedWithTester["wasCollidedWith" as keyof Collidable]);
+
+		referenceCollidable["deleted"] = false;
+		// mark deleted so collision does not happen, once again
+		collidedWithTester["deleted"] = true;
+
+		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
+
+		// should not happen since collidedWithTester collidable marked deleted
+		this.assertStrictlyEqual(false, referenceCollidable["wasCollidedWith" as keyof Moveable]);
+		this.assertStrictlyEqual(false, collidedWithTester["wasCollidedWith" as keyof Collidable]);
+
+		collidedWithTester["deleted"] = false;
 
 		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
 
@@ -598,12 +633,41 @@ export default class AppTest extends Test {
 		this.assertOfType("undefined", referenceCollidable["wasCollidedWith" as keyof Moveable]);
 
 		positionCollidables.push(
-			new CollidedWithTester("collided-with-tester-1", 10, 10),
-			new CollidedWithTester("collided-with-tester-2", 10, 10),
-			new CollidedWithTester("collided-with-tester-3", 10, 10)
+			new CollidedWithTesterDeletes("collided-with-tester-1", 10, 10),
+			new CollidedWithTesterDeletes("collided-with-tester-2", 10, 10),
+			new CollidedWithTesterDeletes("collided-with-tester-3", 10, 10)
 		);
 
+		const firstCollidable = positionCollidables[0]!;
+		const secondCollidable = positionCollidables[1]!;
 		const lastCollidable = positionCollidables[2]!;
+
+		// mark as deleted so collisions don't happen
+		referenceCollidable["deleted"] = true;
+
+		App["checkForCollision"](referenceCollidable, positionCollidables);
+
+		// shouldn't happen since reference collidable marked as deleted
+		this.assertOfType("undefined", referenceCollidable["wasCollidedWith" as keyof Moveable]);
+		this.assertOfType("undefined", firstCollidable["wasCollidedWith" as keyof Collidable]);
+		this.assertOfType("undefined", secondCollidable["wasCollidedWith" as keyof Collidable]);
+		this.assertOfType("undefined", lastCollidable["wasCollidedWith" as keyof Collidable]);
+
+		referenceCollidable["deleted"] = false;
+		// mark as deleted so collisions don't happen, once again
+		lastCollidable["deleted"] = true;
+
+		App["checkForCollision"](referenceCollidable, positionCollidables);
+
+		// shouldn't happen since lastCollidable collidable marked as deleted
+		this.assertOfType("undefined", lastCollidable["wasCollidedWith" as keyof Collidable]);
+
+		Object.defineProperty(firstCollidable, "wasCollidedWith", { value: false, writable: true });
+		Object.defineProperty(secondCollidable, "wasCollidedWith", { value: false, writable: true });
+		Object.defineProperty(lastCollidable, "wasCollidedWith", { value: false, writable: true });
+
+		referenceCollidable["deleted"] = false;
+		lastCollidable["deleted"] = false;
 
 		// move last collidable closest to center, so this one should collide with
 		// the reference collidable first
@@ -616,12 +680,13 @@ export default class AppTest extends Test {
 
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);
 		this.assertStrictlyEqual(true, lastCollidable["wasCollidedWith" as keyof Collidable]);
+		this.assertStrictlyEqual(false, firstCollidable["wasCollidedWith" as keyof Collidable]);
+		this.assertStrictlyEqual(false, secondCollidable["wasCollidedWith" as keyof Collidable]);
+
+		referenceCollidable["deleted"] = false;
 
 		Object.defineProperty(referenceCollidable, "wasCollidedWith", { value: false, writable: true });
 		Object.defineProperty(lastCollidable, "wasCollidedWith", { value: false, writable: true });
-
-		const firstCollidable = positionCollidables[0]!;
-
 		// now this first collidable is closest, so should collide with our reference collidable
 		firstCollidable.setPosition({
 			x: 5,
@@ -637,7 +702,8 @@ export default class AppTest extends Test {
 		});
 
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);
+		this.assertStrictlyEqual(false, lastCollidable["wasCollidedWith" as keyof Collidable]);
 		this.assertStrictlyEqual(true, firstCollidable["wasCollidedWith" as keyof Collidable]);
-		this.assertStrictlyEqual(true, lastCollidable["wasCollidedWith" as keyof Collidable]);
+		this.assertStrictlyEqual(false, secondCollidable["wasCollidedWith" as keyof Collidable]);
 	}
 }
