@@ -67,7 +67,7 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 				callback,
 			});
 
-			App.getInstance().addEventListenerToElement(eventName, element, callback);
+			App.getInstance().addEventListenerToElement(eventName, callback, element);
 		}
 	}
 

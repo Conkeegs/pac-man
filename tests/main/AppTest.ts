@@ -526,9 +526,13 @@ export default class AppTest extends Test {
 
 		this.assertArrayLength(0, app["eventListeners"]);
 
-		app.addEventListenerToElement("keydown", element, () => {
-			changedVariable++;
-		});
+		app.addEventListenerToElement(
+			"keydown",
+			() => {
+				changedVariable++;
+			},
+			element
+		);
 
 		this.assertArrayLength(1, app["eventListeners"]);
 		this.assertStrictlyEqual(0, changedVariable);

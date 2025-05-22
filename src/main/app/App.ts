@@ -254,7 +254,7 @@ export class App {
 		await this.board.create();
 
 		// put the game in a "paused" state upon exiting the window
-		this.addEventListenerToElement("blur", window, () => {
+		this.addEventListenerToElement("blur", () => {
 			// make sure game isn't already paused to prevent overwrite of "pauseplaybutton" behavior
 			if (!this.gamePaused) {
 				this.stopGame(true);
@@ -262,7 +262,7 @@ export class App {
 		});
 
 		// put the game in a "unpaused" state upon opening the window
-		this.addEventListenerToElement("focus", window, () => {
+		this.addEventListenerToElement("focus", () => {
 			this.animationFrameId = this.startGame();
 		});
 
@@ -535,8 +535,8 @@ export class App {
 	 */
 	public addEventListenerToElement<K extends keyof HTMLElementEventMap>(
 		eventName: K,
-		element: HTMLElement | Window,
-		callback: (event: Event) => void
+		callback: (event: Event) => void,
+		element: HTMLElement | Window = window
 	): void {
 		element.addEventListener(eventName, callback);
 
