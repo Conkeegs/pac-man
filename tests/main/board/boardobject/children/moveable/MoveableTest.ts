@@ -328,11 +328,33 @@ export default class MoveableTest extends Test {
 		};
 		const oldPositionX = oldPosition.x;
 		const alpha = 0.5;
+		const newPosition: Position = {
+			x: moveablePosition.x + 100,
+			y: moveablePosition.y + 100,
+		};
+
+		// set position to some distance ahead by 100 pixels
+		moveable.setPosition(newPosition);
+
+		const newPositionX = newPosition.x;
 
 		moveable.startMoving(MovementDirection.RIGHT);
+
+		// handler function shouldn't be found so shouldn't interpolate yet
+		moveable["currentDirection"] = undefined;
+
 		moveable.interpolate(alpha, oldPosition);
 
-		this.assertStrictlyEqual(oldPositionX * alpha + oldPositionX * (1.0 - alpha), moveable.getTransform().x);
+		const expected = newPositionX * alpha + oldPositionX * (1.0 - alpha);
+
+		this.assertNotStrictlyEqual(expected, moveable.getTransform().x);
+
+		// now handler function should be found and interpolation should work
+		moveable["currentDirection"] = MovementDirection.RIGHT;
+
+		moveable.interpolate(alpha, oldPosition);
+
+		this.assertStrictlyEqual(expected, moveable.getTransform().x);
 	}
 
 	/**

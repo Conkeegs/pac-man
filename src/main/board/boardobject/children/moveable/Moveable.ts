@@ -285,11 +285,16 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		const directionalPositionKey = this.directionalPositionKeys[
 			direction as keyof typeof this.directionalPositionKeys
 		] as "x" | "y";
+		const handler = this.directionalTransformSetters[direction as keyof typeof this.directionalTransformSetters];
+
+		if (!handler) {
+			return;
+		}
 
 		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
 		// exceeded "MS_PER_FRAME"
-		this.directionalTransformSetters[direction as keyof typeof this.directionalTransformSetters].bind(this)(
-			this.getPosition()![directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha)
+		handler.bind(this)(
+			this.getPosition()[directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha)
 		);
 	}
 
