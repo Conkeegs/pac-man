@@ -225,7 +225,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		this.dequeueTurns();
 		this.lastMoveCode = undefined;
 		this._framesUpdating = 0;
-
 		this.moving = false;
 		this.currentDirection = undefined;
 
@@ -259,7 +258,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		// set this board object's current direction since we now know that it's going to start moving
 		this.currentDirection = direction;
-
 		this.moving = true;
 		this.lastMoveCode = direction;
 
