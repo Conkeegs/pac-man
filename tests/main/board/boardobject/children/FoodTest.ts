@@ -1,4 +1,4 @@
-import { App } from "../../../../../src/main/App.js";
+import { App } from "../../../../../src/main/app/App.js";
 import Food from "../../../../../src/main/board/boardobject/children/Food.js";
 import type { Position } from "../../../../../src/main/gameelement/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";

@@ -1,4 +1,4 @@
-import { App, type EventListenerData } from "../App.js";
+import { App, type EventListenerData } from "../app/App.js";
 import type { GameElement } from "../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../types.js";
 

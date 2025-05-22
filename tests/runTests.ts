@@ -1,4 +1,4 @@
-import { App } from "../src/main/App.js";
+import { App } from "../src/main/app/App.js";
 import Board from "../src/main/board/Board.js";
 import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";

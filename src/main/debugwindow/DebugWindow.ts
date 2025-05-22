@@ -1,7 +1,7 @@
 // #!DEBUG
 "use strict";
 
-import { App } from "../App.js";
+import { App } from "../app/App.js";
 /**
  * Represents the debug window that shows up next to the board when the `DEBUG` app flag is set.
  * It logs important information about the game.

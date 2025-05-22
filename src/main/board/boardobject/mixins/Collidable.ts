@@ -1,4 +1,4 @@
-import { App } from "../../../App.js";
+import { App } from "../../../app/App.js";
 import CollisionBox from "../../../gameelement/CollisionBox.js";
 import type { Position } from "../../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";

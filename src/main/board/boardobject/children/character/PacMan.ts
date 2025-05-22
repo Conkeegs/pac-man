@@ -1,8 +1,7 @@
 "use strict";
 
-import { App } from "../../../../App.js";
+import { App } from "../../../../app/App.js";
 import AssetRegistry, { type ASSET_LIST } from "../../../../assets/AssetRegistry.js";
-import { GameElement } from "../../../../gameelement/GameElement.js";
 import MakeListenable from "../../../../mixins/Listenable.js";
 import { defined, exists, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
@@ -214,21 +213,14 @@ export default class PacMan extends MakeListenable(Character) {
 
 		// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
 		// PacMan hasn't arrived in its threshold yet
-		if (nearestTurnableTurn) {
-			// if there is a turnable turn at this moment, just immediately move PacMan in that direction
-			if (GameElement.positionsEqual(this.getCenterPosition(), nearestTurnableTurn.getCenterPosition())) {
-				this.startMoving(inputDirection, {
-					fromTurn: nearestTurnableTurn,
-				});
-
-				return;
-			}
-
-			// PacMan is going to move, so set his last move code
-			this.lastMoveCode = inputDirection;
-
-			this.queueTurn(inputDirection, nearestTurnableTurn);
+		if (!nearestTurnableTurn) {
+			return;
 		}
+
+		// PacMan is going to move, so set his last move code
+		this.lastMoveCode = inputDirection;
+
+		this.queueTurn(inputDirection, nearestTurnableTurn);
 	}
 
 	/**

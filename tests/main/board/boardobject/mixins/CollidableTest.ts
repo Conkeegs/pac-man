@@ -1,4 +1,4 @@
-import { App } from "../../../../../src/main/App.js";
+import { App } from "../../../../../src/main/app/App.js";
 import Inky from "../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Turn from "../../../../../src/main/board/boardobject/children/Turn.js";

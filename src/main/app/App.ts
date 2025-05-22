@@ -1,15 +1,15 @@
 "use strict";
 
-import RunTests from "../../tests/RunTests.js";
-import Board from "./board/Board.js";
-import type { BoardObject } from "./board/boardobject/BoardObject.js";
-import Moveable from "./board/boardobject/children/moveable/Moveable.js";
-import type { Animateable } from "./board/boardobject/mixins/Animateable.js";
-import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
-import Debugging from "./Debugging.js";
-import CollisionBox from "./gameelement/CollisionBox.js";
-import { GameElement, type Position } from "./gameelement/GameElement.js";
-import { cloneInstance, create, get, uniqueId } from "./utils/Utils.js";
+import RunTests from "../../../tests/RunTests.js";
+import Board from "../board/Board.js";
+import type { BoardObject } from "../board/boardobject/BoardObject.js";
+import Moveable from "../board/boardobject/children/moveable/Moveable.js";
+import type { Animateable } from "../board/boardobject/mixins/Animateable.js";
+import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
+import Debugging from "../Debugging.js";
+import CollisionBox from "../gameelement/CollisionBox.js";
+import { GameElement, type Position } from "../gameelement/GameElement.js";
+import { cloneInstance, create, get, uniqueId } from "../utils/Utils.js";
 
 /**
  * Represents important data to keep track of before ticking

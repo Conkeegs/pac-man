@@ -1,4 +1,4 @@
-import { App } from "../../../../App.js";
+import { App } from "../../../../app/App.js";
 import type { Position } from "../../../../gameelement/GameElement.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";

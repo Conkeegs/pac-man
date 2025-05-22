@@ -1,6 +1,6 @@
 "use strict";
 
-import { App } from "../../App.js";
+import { App } from "../../app/App.js";
 import { GameElement, type Position, type Transform } from "../../gameelement/GameElement.js";
 import { px } from "../../utils/Utils.js";
 

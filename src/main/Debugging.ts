@@ -1,6 +1,6 @@
 // #!DEBUG
 
-import { App } from "./App.js";
+import { App } from "./app/App.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import type { GameElement } from "./gameelement/GameElement.js";
 import { create, px } from "./utils/Utils.js";

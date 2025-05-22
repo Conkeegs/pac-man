@@ -1,4 +1,4 @@
-import { App } from "../../../../App.js";
+import { App } from "../../../../app/App.js";
 import Debugging from "../../../../Debugging.js";
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
 import { TILESIZE } from "../../../../utils/Globals.js";

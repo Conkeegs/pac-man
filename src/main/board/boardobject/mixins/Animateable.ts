@@ -1,4 +1,4 @@
-import { App } from "../../../App.js";
+import { App } from "../../../app/App.js";
 import AssetRegistry, { type ASSET_LIST } from "../../../assets/AssetRegistry.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
