@@ -381,6 +381,12 @@ export abstract class GameElement {
 	public delete(): void {
 		this.deleted = true;
 
+		const children = this.children;
+
+		for (let i = 0; i < children.length; i++) {
+			children[i]!.gameElement.delete();
+		}
+
 		App.getInstance().getDeletedGameElementIds().add(this.getUniqueId());
 	}
 

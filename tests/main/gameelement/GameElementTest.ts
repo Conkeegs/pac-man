@@ -549,6 +549,13 @@ export default class GameElementTest extends Test {
 			}
 		})();
 
+		gameElement["addChild"]({
+			gameElement: new (class extends GameElement {
+				constructor() {
+					super("test-child", 0, 0);
+				}
+			})(),
+		});
 		get("game")!.appendChild(gameElement.getElement());
 
 		const app = App.getInstance();
@@ -558,7 +565,10 @@ export default class GameElementTest extends Test {
 
 		gameElement.delete();
 
-		this.assertTrue(app.getDeletedGameElementIds().has(gameElement.getUniqueId()));
+		const deletedGameElementIds = app.getDeletedGameElementIds();
+
+		this.assertTrue(deletedGameElementIds.has(gameElement.getUniqueId()));
+		this.assertTrue(deletedGameElementIds.has(gameElement.getChildren()[0]!.gameElement.getUniqueId()));
 	}
 
 	/**
