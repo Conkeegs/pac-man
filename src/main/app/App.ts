@@ -77,7 +77,7 @@ export type EventListenerData = {
 };
 
 /**
- * This class loads the game's UI before initializing the board.
+ * Source of truth for the game. Controls the gameloop, event listeners, etc.
  */
 export class App {
 	/**
