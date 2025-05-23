@@ -89,7 +89,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	/**
 	 * The last direction this board object moved in.
 	 */
-	protected lastMoveCode: MovementDirection | undefined;
+	protected lastMovementDirection: MovementDirection | undefined;
 	/**
 	 * A queue of turns that a board object wants to make in the future. This suggests that the board object isn't
 	 * within distance of the turn yet, and so must queue the turn. The length of this array
@@ -180,8 +180,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 *
 	 * @returns the last `MovementDirection` this board object moved in
 	 */
-	public getLastMoveCode(): MovementDirection | undefined {
-		return this.lastMoveCode;
+	public getLastMovementDirection(): MovementDirection | undefined {
+		return this.lastMovementDirection;
 	}
 
 	/**
@@ -223,7 +223,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	public stopMoving(): boolean {
 		this.dequeueTurns();
-		this.lastMoveCode = undefined;
+		this.lastMovementDirection = undefined;
 		this._framesUpdating = 0;
 		this.moving = false;
 		this.currentDirection = undefined;
@@ -259,7 +259,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		// set this board object's current direction since we now know that it's going to start moving
 		this.currentDirection = direction;
 		this.moving = true;
-		this.lastMoveCode = direction;
+		this.lastMovementDirection = direction;
 
 		App.getInstance().getMovingMoveableIds().add(this.getUniqueId());
 	}

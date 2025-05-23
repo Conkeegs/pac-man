@@ -144,14 +144,14 @@ export default class PacMan extends MakeListenable(Character) {
 		let inputDirection = PacMan.keyEventDirectionMap[event.code as keyof typeof PacMan.keyEventDirectionMap];
 		const isMoving = this.isMoving();
 
-		const lastMoveCode = this.lastMoveCode;
+		const lastMovementDirection = this.lastMovementDirection;
 		const currentDirection = this.getCurrentDirection();
 
 		// make sure the key pressed is a valid key that moves PacMan and that he isn't trying to move in the same direction
 		// as the one he was just traveling in
 		if (
 			!exists(inputDirection) ||
-			(isMoving && (lastMoveCode === inputDirection || currentDirection === inputDirection))
+			(isMoving && (lastMovementDirection === inputDirection || currentDirection === inputDirection))
 		) {
 			return;
 		}
@@ -161,7 +161,7 @@ export default class PacMan extends MakeListenable(Character) {
 		this.listenForKeydown = false;
 
 		// let PacMan immediately start moving (left or right) if he has just spawned
-		if (this.spawning && !defined(lastMoveCode) && isMoving === false) {
+		if (this.spawning && !defined(lastMovementDirection) && isMoving === false) {
 			if (PacMan.SPAWN_MOVECODES.includes(inputDirection)) {
 				this.startMoving(inputDirection);
 			}

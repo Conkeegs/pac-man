@@ -59,13 +59,13 @@ export default class MoveableTest extends Test {
 	public getLastMoveCodeTest(): void {
 		const pacman = new PacMan();
 
-		this.assertDoesntExist(pacman.getLastMoveCode());
+		this.assertDoesntExist(pacman.getLastMovementDirection());
 
 		const movementDirection = MovementDirection.UP;
 
-		pacman["lastMoveCode"] = movementDirection;
+		pacman["lastMovementDirection"] = movementDirection;
 
-		this.assertStrictlyEqual(movementDirection, pacman["lastMoveCode"]);
+		this.assertStrictlyEqual(movementDirection, pacman["lastMovementDirection"]);
 	}
 
 	/**
@@ -138,7 +138,7 @@ export default class MoveableTest extends Test {
 
 		this.assertFalse(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
-		this.assertDoesntExist(pacman["lastMoveCode"]);
+		this.assertDoesntExist(pacman["lastMovementDirection"]);
 		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
 		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 		this.assertDoesntExist(pacman["_animationIntervalId"]);
@@ -173,7 +173,7 @@ export default class MoveableTest extends Test {
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
 		this.assertOfType("number", pacman["_animationIntervalId"]);
-		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
+		this.assertStrictlyEqual(movementDirection, pacman.getLastMovementDirection());
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		pacman.stopMoving();
@@ -188,7 +188,7 @@ export default class MoveableTest extends Test {
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
 		this.assertOfType("number", pacman["_animationIntervalId"]);
-		this.assertStrictlyEqual(movementDirection, pacman.getLastMoveCode());
+		this.assertStrictlyEqual(movementDirection, pacman.getLastMovementDirection());
 		this.assertStrictlyEqual(turnCenterPosition.x - pacman.getWidth()! / 2, position.x);
 		this.assertStrictlyEqual(turnCenterPosition.y - pacman.getHeight()! / 2, position.y);
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));

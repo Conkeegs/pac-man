@@ -190,7 +190,7 @@ export default class PacManTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		// queued turn, so we haven't started moving "down" yet and should still be moving left
 		this.assertStrictlyEqual(MovementDirection.LEFT, pacman.getCurrentDirection());
-		this.assertStrictlyEqual(pacman.getLastMoveCode(), MovementDirection.DOWN);
+		this.assertStrictlyEqual(pacman.getLastMovementDirection(), MovementDirection.DOWN);
 		this.assertNotEmpty(pacman["turnQueue"]);
 
 		const queuedTurn = pacman["turnQueue"][0]!;
