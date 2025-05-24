@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = config({
 	target: "browser",
 	entry: {
-		web: path.join(__dirname, "dist", "main", "App.js"),
+		web: path.join(__dirname, "dist", "main", "app", "App.js"),
 	},
 	output: {
 		path: path.join(__dirname, "dist"),
