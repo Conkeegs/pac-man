@@ -1,16 +1,21 @@
-import { App } from "../../src/main/app/App.js";
-import Board from "../../src/main/board/Board.js";
-import { BoardObject } from "../../src/main/board/boardobject/BoardObject.js";
-import PacMan from "../../src/main/board/boardobject/children/character/PacMan.js";
-import Moveable from "../../src/main/board/boardobject/children/moveable/Moveable.js";
-import MovementDirection from "../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import MakeAnimateable, { type Animateable } from "../../src/main/board/boardobject/mixins/Animateable.js";
-import MakeCollidable, { type Collidable } from "../../src/main/board/boardobject/mixins/Collidable.js";
-import CollisionBox from "../../src/main/gameelement/CollisionBox.js";
-import { GameElement } from "../../src/main/gameelement/GameElement.js";
-import type { AbstractConstructor } from "../../src/main/types.js";
-import { cloneInstance, create, get } from "../../src/main/utils/Utils.js";
-import Test from "../base/Base.js";
+import { App } from "../../../src/main/app/App.ts";
+import InputHandler from "../../../src/main/app/InputHandler.ts";
+import Board from "../../../src/main/board/Board.ts";
+import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.ts";
+import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.ts";
+import MakeControllable, {
+	type Controllable,
+} from "../../../src/main/board/boardobject/children/moveable/mixins/Controllable.ts";
+import Moveable from "../../../src/main/board/boardobject/children/moveable/Moveable.js";
+import MovementDirection from "../../../src/main/board/boardobject/children/moveable/MovementDirection.ts";
+import MakeAnimateable, { type Animateable } from "../../../src/main/board/boardobject/mixins/Animateable.ts";
+import MakeCollidable, { type Collidable } from "../../../src/main/board/boardobject/mixins/Collidable.ts";
+import CollisionBox from "../../../src/main/gameelement/CollisionBox.ts";
+import { GameElement } from "../../../src/main/gameelement/GameElement.ts";
+import MakeListenable from "../../../src/main/mixins/Listenable.ts";
+import type { AbstractConstructor } from "../../../src/main/types.ts";
+import { cloneInstance, create, get } from "../../../src/main/utils/Utils.ts";
+import Test from "../../base/Base.ts";
 
 /**
  * Mock `Moveable` and `Collidable` class for testing.
@@ -60,10 +65,21 @@ export default class AppTest extends Test {
 	public async runTest(): Promise<void> {
 		const app = App.getInstance();
 
+		this.assertInstanceOf(InputHandler as unknown as AbstractConstructor<InputHandler>, app["inputHandler"]);
+
 		// app["startGame"] = () => 0;
 
 		await app.run();
 
+		const inputHandler = app["inputHandler"];
+		const eventListeners = app["eventListeners"];
+
+		this.assertExists(
+			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyDown"])
+		);
+		this.assertExists(
+			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyUp"])
+		);
 		this.assertTrue(app["board"] instanceof Board);
 		this.assertFalse(app["gamePaused"]);
 
@@ -150,6 +166,28 @@ export default class AppTest extends Test {
 
 		this.assertStrictlyEqual(1, animateableGameElementIds.size);
 		this.assertTrue(animateableGameElementIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of listenable game element ids.
+	 */
+	public getListenableGameElementIdsTest(): void {
+		const gameElement = new (class extends MakeListenable(BoardObject) {})("test-listenable", 0, 0);
+		const listenableGameElementIds = App.getInstance().getListenableGameElementIds();
+
+		this.assertStrictlyEqual(1, listenableGameElementIds.size);
+		this.assertTrue(listenableGameElementIds.has(gameElement.getUniqueId()));
+	}
+
+	/**
+	 * Test that the app can gets its set of controllable game element ids.
+	 */
+	public getControllableGameElementIdsTest(): void {
+		const gameElement = new (class extends MakeControllable(Moveable) {})("test-listenable", 0, 0, 0);
+		const controllableGameElementIds = App.getInstance().getControllableGameElementIds();
+
+		this.assertStrictlyEqual(1, controllableGameElementIds.size);
+		this.assertTrue(controllableGameElementIds.has(gameElement.getUniqueId()));
 	}
 
 	/**
@@ -311,6 +349,21 @@ export default class AppTest extends Test {
 
 		// accumulator should be 0 since falsy "lastTimestamp"
 		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
+
+		const currentInputCode = "KeyD";
+		const controllable = new (class extends MakeControllable(Moveable) {
+			public override handleInput(currentInputCode: string): void {
+				Object.defineProperty(this, "currentInputCode", { value: currentInputCode, writable: true });
+				Object.defineProperty(this, "inputWasHandled", { value: true, writable: true });
+			}
+		})("test-controllable", 0, 0, 0);
+
+		app["inputHandler"]["currentKeyCode"] = currentInputCode;
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
+
+		this.assertStrictlyEqual(currentInputCode, controllable["currentInputCode" as keyof Controllable]);
+		this.assertTrue(controllable["inputWasHandled" as keyof Controllable]);
 
 		let movingMoveables: (Moveable & Collidable)[] = [];
 		const moveableCount = 10;

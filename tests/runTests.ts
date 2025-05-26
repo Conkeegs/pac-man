@@ -4,7 +4,7 @@ import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
-import AppTest from "./main/AppTest.js";
+import AppTest from "./main/app/AppTest.js";
 import AssetRegistryTest from "./main/assets/AssetRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
