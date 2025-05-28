@@ -1,10 +1,10 @@
 import { App } from "../src/main/app/App.js";
-import Board from "../src/main/board/Board.js";
 import Logger from "../src/main/Logger.js";
 import { pluralize } from "../src/main/utils/Utils.js";
 import Test from "./base/Base.js";
 import TestException from "./base/TestException.js";
 import AppTest from "./main/app/AppTest.js";
+import InputHandlerTest from "./main/app/InputHandlerTest.js";
 import AssetRegistryTest from "./main/assets/AssetRegistryTest.js";
 import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
@@ -87,6 +87,7 @@ export default class RunTests {
 		new TeleporterTest(),
 		new TurnTest(),
 		new CollisionBoxTest(),
+		new InputHandlerTest(),
 	];
 
 	/**
@@ -173,7 +174,6 @@ export default class RunTests {
 		const testClassName = testClass.getName();
 		const testFunctionCountTotal = this.testFunctionCountTotal;
 		const app = App.getInstance();
-		const board = Board.getInstance();
 
 		try {
 			if (this.runTestsCount !== 0) {

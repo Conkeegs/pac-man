@@ -40,6 +40,29 @@ export default class CharacterTest extends Test {
 	}
 
 	/**
+	 * Test that characters set their current direction properly.
+	 */
+	public setCurrentDirectionTest(): void {
+		const character = new PacMan();
+
+		// do this so pacman's animation image name is found, based on his current
+		// direction he's facing
+		character["_animationFrame"]++;
+
+		const direction = MovementDirection.RIGHT;
+
+		character.setCurrentDirection(direction);
+
+		this.assertStrictlyEqual(direction, character["currentDirection"]);
+		this.assertStrictlyEqual(
+			character.getElement().css("backgroundImage"),
+			`url(\"${AssetRegistry.getImageSrc(
+				`${character.defaultAnimationImageName()}-${direction}` as keyof AssetRegistry
+			)}\")`
+		);
+	}
+
+	/**
 	 * Test that characters can stop moving correctly.
 	 */
 	public stopMovingTest(): void {

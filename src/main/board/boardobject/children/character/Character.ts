@@ -61,6 +61,18 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	}
 
 	/**
+	 * Sets the new direction for this character to move. Also takes care of updating
+	 * the animation image for convenience.
+	 *
+	 * @param direction new direction for this character to move
+	 */
+	public override setCurrentDirection(direction: MovementDirection): void {
+		super.setCurrentDirection(direction);
+
+		this.updateAnimationImage();
+	}
+
+	/**
 	 * Stop moving this character and cancels this its current animation frame.
 	 *
 	 */

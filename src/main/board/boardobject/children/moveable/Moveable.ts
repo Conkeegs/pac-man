@@ -226,7 +226,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		this.lastMovementDirection = undefined;
 		this._framesUpdating = 0;
 		this.moving = false;
-		this.currentDirection = undefined;
 
 		App.getInstance().getMovingMoveableIds().delete(this.getUniqueId());
 
@@ -316,17 +315,19 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param callback any logic to run when a turn falls under `filter`'s criteria
 	 * @returns the closest turn to this board object that falls under `filter`'s criteria
 	 */
-	public findNearestTurnWhere(
+	public findNearestTurnForDirectionWhere(
 		filter: (turn: Turn) => boolean,
+		direction: MovementDirection,
 		callback?: ((turn: Turn) => unknown) | undefined
 	): Turn | undefined {
+		direction = direction as keyof typeof turnValidators;
+
 		const turnValidators = this.turnValidators;
-		const currentDirection = this.currentDirection as keyof typeof turnValidators;
 		// find turns "ahead" of board object and that fit the "filter"
 		const filteredTurns = Board.getInstance()
 			.getTurns()
 			.filter((turn) => {
-				if (turnValidators[currentDirection](turn) && filter(turn)) {
+				if (turnValidators[direction](turn) && filter(turn)) {
 					// run callback if our filter passes, and it's defined
 					if (callback) {
 						callback(turn);
@@ -342,7 +343,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
 		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
 		// "start" of the "filteredTurns" array
-		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
+		if (direction === MovementDirection.LEFT || direction === MovementDirection.UP) {
 			filteredTurns.reverse();
 		}
 

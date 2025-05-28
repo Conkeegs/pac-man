@@ -1,3 +1,4 @@
+import { App } from "../../../src/main/app/App.js";
 import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.js";
 import MakeListenable from "../../../src/main/mixins/Listenable.js";
 import Test from "../../base/Base.js";
@@ -6,6 +7,15 @@ import Test from "../../base/Base.js";
  * Tests functionality of `Listenable` instances.
  */
 export default class ListenableTest extends Test {
+	/**
+	 * Test that listenables are created correctly.
+	 */
+	public createListenableTest(): void {
+		const listenable = new (class extends MakeListenable(BoardObject) {})("test-listenable", 0, 0);
+
+		this.assertTrue(App.getInstance().getListenableGameElementIds().has(listenable.getUniqueId()));
+	}
+
 	/**
 	 * Test that listenables can be deleted correctly.
 	 */
@@ -16,6 +26,7 @@ export default class ListenableTest extends Test {
 			}
 		})();
 		let changedValue = 1;
+		const listenableGameElementIds = App.getInstance().getListenableGameElementIds();
 
 		listenable._addEventListener("keydown", () => {
 			changedValue++;
@@ -24,6 +35,7 @@ export default class ListenableTest extends Test {
 			changedValue++;
 		});
 
+		this.assertTrue(listenableGameElementIds.has(listenable.getUniqueId()));
 		this.assertStrictlyEqual(1, changedValue);
 		this.assertArrayLength(2, listenable._EVENT_LISTENERS);
 
@@ -38,6 +50,7 @@ export default class ListenableTest extends Test {
 		// event listener should not be registered anymore so it should not increment "changedValue"
 		this.assertStrictlyEqual(3, changedValue);
 		this.assertArrayLength(0, listenable._EVENT_LISTENERS);
+		this.assertFalse(listenableGameElementIds.has(listenable.getUniqueId()));
 	}
 
 	/**

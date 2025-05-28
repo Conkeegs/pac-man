@@ -3,6 +3,7 @@
 import RunTests from "../../../tests/RunTests.js";
 import Board from "../board/Board.js";
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
+import type { Controllable } from "../board/boardobject/children/moveable/mixins/Controllable.js";
 import Moveable from "../board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "../board/boardobject/mixins/Animateable.js";
 import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
@@ -10,6 +11,7 @@ import Debugging from "../Debugging.js";
 import CollisionBox from "../gameelement/CollisionBox.js";
 import { GameElement, type Position } from "../gameelement/GameElement.js";
 import { cloneInstance, create, get, uniqueId } from "../utils/Utils.js";
+import InputHandler from "./InputHandler.js";
 
 /**
  * Represents important data to keep track of before ticking
@@ -126,6 +128,14 @@ export class App {
 	 */
 	private animateableGameElementIds: Set<number> = new Set();
 	/**
+	 * Ids of game elements that have event listeners.
+	 */
+	private listenableGameElementIds: Set<number> = new Set();
+	/**
+	 * Ids of game elements that are controllable.
+	 */
+	private controllableGameElementIds: Set<number> = new Set();
+	/**
 	 * Event listeners registered in the app.
 	 */
 	private eventListeners: EventListenerData[] = [];
@@ -138,6 +148,11 @@ export class App {
 	 * The desired frames-per-second that the game should update at.
 	 */
 	private static readonly DESIRED_FPS: 30 = 30;
+	/**
+	 * Input handler for the game.
+	 */
+	private inputHandler: InputHandler;
+
 	/**
 	 * The rough amount of milliseconds that should pass before the game updates each frame.
 	 */
@@ -157,7 +172,9 @@ export class App {
 	/**
 	 * Creates the singleton app instance.
 	 */
-	private constructor() {}
+	private constructor() {
+		this.inputHandler = InputHandler.getInstance();
+	}
 
 	/**
 	 * Get the singleton app instance.
@@ -214,6 +231,24 @@ export class App {
 	}
 
 	/**
+	 * Get the set of ids of game elements that are listenable.
+	 *
+	 * @returns set of ids of game elements that are listenable
+	 */
+	public getListenableGameElementIds(): Set<number> {
+		return this.listenableGameElementIds;
+	}
+
+	/**
+	 * Get ids of game elements that are controllable.
+	 *
+	 * @returns game element ids that are controllable
+	 */
+	public getControllableGameElementIds(): Set<number> {
+		return this.controllableGameElementIds;
+	}
+
+	/**
 	 * Get the map of tilekeys to collidables to better-optimize collision
 	 * detection.
 	 *
@@ -248,6 +283,8 @@ export class App {
 		if (this.running) {
 			return;
 		}
+
+		this.inputHandler.startListening();
 
 		this.board = Board.getInstance();
 
@@ -296,6 +333,8 @@ export class App {
 
 			eventListenerInfo.element.removeEventListener(eventListenerInfo.eventName, eventListenerInfo.callback);
 		}
+
+		InputHandler.destroy();
 
 		this.eventListeners.length = 0;
 		this.running = false;
@@ -410,6 +449,22 @@ export class App {
 			lastTimestamp = currentTimestamp;
 		}
 
+		const gameElementsMap = this.gameElementsMap;
+		const controllableGameElementIdValues = this.controllableGameElementIds.values();
+		let controllableGameElementId = controllableGameElementIdValues.next();
+
+		// find all game elements that are currently marked controllable and handle their input
+		// logic
+		while (!controllableGameElementId.done) {
+			const currentKeyCode = this.inputHandler.getCurrentKeyCode();
+
+			if (currentKeyCode) {
+				(gameElementsMap.get(controllableGameElementId.value)! as Controllable).handleInput(currentKeyCode);
+			}
+
+			controllableGameElementId = controllableGameElementIdValues.next();
+		}
+
 		this.deltaTimeAccumulator += deltaTime;
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
@@ -418,7 +473,6 @@ export class App {
 		const movingMoveables: Moveable[] = [];
 		const movingMoveableIdValues = this.movingMoveableIds.values();
 		let movingMoveableId = movingMoveableIdValues.next();
-		const gameElementsMap = this.gameElementsMap;
 
 		// find all moveables that are currently moving, and save their current positions in memory
 		while (!movingMoveableId.done) {

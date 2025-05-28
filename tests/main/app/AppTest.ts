@@ -1,21 +1,21 @@
-import { App } from "../../../src/main/app/App.ts";
-import InputHandler from "../../../src/main/app/InputHandler.ts";
-import Board from "../../../src/main/board/Board.ts";
-import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.ts";
-import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.ts";
+import { App } from "../../../src/main/app/App.js";
+import InputHandler from "../../../src/main/app/InputHandler.js";
+import Board from "../../../src/main/board/Board.js";
+import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.js";
+import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import MakeControllable, {
 	type Controllable,
-} from "../../../src/main/board/boardobject/children/moveable/mixins/Controllable.ts";
+} from "../../../src/main/board/boardobject/children/moveable/mixins/Controllable.js";
 import Moveable from "../../../src/main/board/boardobject/children/moveable/Moveable.js";
-import MovementDirection from "../../../src/main/board/boardobject/children/moveable/MovementDirection.ts";
-import MakeAnimateable, { type Animateable } from "../../../src/main/board/boardobject/mixins/Animateable.ts";
-import MakeCollidable, { type Collidable } from "../../../src/main/board/boardobject/mixins/Collidable.ts";
-import CollisionBox from "../../../src/main/gameelement/CollisionBox.ts";
-import { GameElement } from "../../../src/main/gameelement/GameElement.ts";
-import MakeListenable from "../../../src/main/mixins/Listenable.ts";
-import type { AbstractConstructor } from "../../../src/main/types.ts";
-import { cloneInstance, create, get } from "../../../src/main/utils/Utils.ts";
-import Test from "../../base/Base.ts";
+import MovementDirection from "../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
+import MakeAnimateable, { type Animateable } from "../../../src/main/board/boardobject/mixins/Animateable.js";
+import MakeCollidable, { type Collidable } from "../../../src/main/board/boardobject/mixins/Collidable.js";
+import CollisionBox from "../../../src/main/gameelement/CollisionBox.js";
+import { GameElement } from "../../../src/main/gameelement/GameElement.js";
+import MakeListenable from "../../../src/main/mixins/Listenable.js";
+import type { AbstractConstructor } from "../../../src/main/types.js";
+import { cloneInstance, create, get } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
 
 /**
  * Mock `Moveable` and `Collidable` class for testing.

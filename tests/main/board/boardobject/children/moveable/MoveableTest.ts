@@ -54,9 +54,9 @@ export default class MoveableTest extends Test {
 	}
 
 	/**
-	 * Test that moveables can get their last movement code correctly.
+	 * Test that moveables can get their last movement direction correctly.
 	 */
-	public getLastMoveCodeTest(): void {
+	public getLastMovementDirectionTest(): void {
 		const pacman = new PacMan();
 
 		this.assertDoesntExist(pacman.getLastMovementDirection());
@@ -142,7 +142,6 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
 		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 		this.assertDoesntExist(pacman["_animationIntervalId"]);
-		this.assertDoesntExist(pacman.getCurrentDirection());
 	}
 
 	/**
@@ -495,7 +494,7 @@ export default class MoveableTest extends Test {
 	/**
 	 * Test that moveables can find the nearest turn to them where a certain condition is met correctly.
 	 */
-	public async findNearestTurnWhereTest(): Promise<void> {
+	public async findNearestTurnForDirectionWhereTest(): Promise<void> {
 		const moveable = new PacMan();
 		let direction = MovementDirection.RIGHT;
 
@@ -520,8 +519,9 @@ export default class MoveableTest extends Test {
 
 		Board.getInstance()["turns"] = [turn1, turn2];
 
-		let nearestTurn = moveable["findNearestTurnWhere"](
-			(turn) => turn.getPosition().x === moveableCenterPosition.x + 40
+		let nearestTurn = moveable["findNearestTurnForDirectionWhere"](
+			(turn) => turn.getPosition().x === moveableCenterPosition.x + 40,
+			direction
 		)!;
 		let nearestTurnPosition = nearestTurn.getPosition();
 		let actualNearestTurnPosition = Board.getInstance().getTurns()[0]!.getPosition();
@@ -548,8 +548,9 @@ export default class MoveableTest extends Test {
 
 		Board.getInstance()["turns"] = [turn3, turn4];
 
-		nearestTurn = moveable["findNearestTurnWhere"](
-			(turn) => turn.getPosition().y === moveableCenterPosition.y - 40
+		nearestTurn = moveable["findNearestTurnForDirectionWhere"](
+			(turn) => turn.getPosition().y === moveableCenterPosition.y - 40,
+			direction
 		)!;
 		nearestTurnPosition = nearestTurn.getPosition();
 		actualNearestTurnPosition = Board.getInstance().getTurns()[1]!.getPosition();

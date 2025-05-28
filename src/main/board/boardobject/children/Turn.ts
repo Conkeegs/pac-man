@@ -64,7 +64,7 @@ export default class Turn extends MakeCollidable(BoardObject) {
 
 			if (GameElement.positionsEqual(position, queuedTurnInfoTurn.getPosition())) {
 				collidableMoveable.startMoving(queuedTurnInfo.direction, {
-					fromTurn: queuedTurnInfoTurn,
+					fromTurn: this,
 				});
 
 				return;
@@ -75,29 +75,36 @@ export default class Turn extends MakeCollidable(BoardObject) {
 			return;
 		}
 
-		// look for a nearest "stopping" turn after we've made sure that we aren't within a queued-turn's range. this way,
-		// pacman doesn't just stop and cancel valid queued-turns.
-		const pacmanNearestStoppingTurn = collidableMoveable.getNearestStoppingTurn();
+		const currentDirection = collidableMoveable.getCurrentDirection()!;
 
-		if (
-			!pacmanNearestStoppingTurn ||
-			!GameElement.positionsEqual(position, pacmanNearestStoppingTurn.getPosition())
-		) {
+		if (Moveable.canTurnWithMoveDirection(currentDirection, this)) {
+			// const currentInputDirection = collidableMoveable.getCurrentInputDirection()!;
+
+			// if (
+			// 	currentDirection != currentInputDirection &&
+			// 	Moveable.canTurnWithMoveDirection(currentInputDirection, this)
+			// ) {
+			// 	collidableMoveable.startMoving(currentInputDirection, {
+			// 		fromTurn: this,
+			// 	});
+			// }
+
 			return;
 		}
 
-		const pacmanAnimationFrame = collidableMoveable._animationFrame;
+		// we know at this point that pacman must stop at this turn.
 
 		// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
 		// when users are against walls does not make a visual change
-		if (pacmanAnimationFrame === 1) {
+		if (collidableMoveable._animationFrame === 1) {
 			collidableMoveable._animationFrame++;
 
 			collidableMoveable.updateAnimationImage();
 		}
 
 		collidableMoveable.stopMoving();
+		collidableMoveable.setStoppedAtTurn(this);
 		// snap pacman to "stop" location to keep collision detection consistent
-		collidableMoveable.offsetPositionToTurn(pacmanNearestStoppingTurn);
+		collidableMoveable.offsetPositionToTurn(this);
 	}
 }

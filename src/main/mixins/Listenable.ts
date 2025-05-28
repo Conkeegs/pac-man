@@ -27,6 +27,8 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 		 */
 		constructor(...args: any[]) {
 			super(...args);
+
+			App.getInstance().getListenableGameElementIds().add(this.getUniqueId());
 		}
 
 		/**
@@ -43,6 +45,7 @@ export default function MakeListenable<TBase extends AbstractConstructor<GameEle
 
 			eventListeners.length = 0;
 
+			App.getInstance().getListenableGameElementIds().delete(this.getUniqueId());
 			super.delete();
 		}
 

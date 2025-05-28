@@ -52,11 +52,12 @@ export default class TurnTest extends Test {
 			y: 500,
 		};
 
+		collidableMoveable["currentDirection"] = MovementDirection.UP;
+
 		testTurn.setPosition({
 			x: testPosition.x,
 			y: testPosition.y,
 		});
-		collidableMoveable["nearestStoppingTurn"] = testTurn;
 		testTurn.onCollision(collidableMoveable);
 
 		const turnCenterPosition = testTurn.getCenterPosition();
@@ -69,5 +70,6 @@ export default class TurnTest extends Test {
 				y: turnCenterPosition.y - collidableMoveable.getHeight()! / 2,
 			})
 		);
+		this.assertStrictlyEqual(testTurn, collidableMoveable["stoppedAtTurn"]);
 	}
 }
