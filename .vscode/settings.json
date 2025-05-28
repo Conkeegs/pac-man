@@ -10,6 +10,7 @@
         "Collidable",
         "COLLIDABLES",
         "Doesnt",
+        "listenables",
         "MILLIS",
         "MOVECODES",
         "PACMAN",
