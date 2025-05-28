@@ -1,6 +1,6 @@
 "use strict";
 
-import RunTests from "../../../tests/RunTests.js";
+import RunTests from "../../../tests/runTests.js";
 import Board from "../board/Board.js";
 import type { BoardObject } from "../board/boardobject/BoardObject.js";
 import type { Controllable } from "../board/boardobject/children/moveable/mixins/Controllable.js";
