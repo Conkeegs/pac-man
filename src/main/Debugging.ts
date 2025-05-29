@@ -1,48 +1,13 @@
 // #!DEBUG
 
 import { App } from "./app/App.js";
+import Board from "./board/Board.js";
+import { BoardObject } from "./board/boardobject/BoardObject.js";
+import BoardText from "./board/boardobject/children/BoardText.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import type { GameElement } from "./gameelement/GameElement.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
 import { create, px } from "./utils/Utils.js";
-
-// #!DEBUG
-/**
- * Creates horizontal and vertical lines that form squares for each tile in debug mode.
- */
-// private debug_createGrid() {
-// 	const element = this.getElement();
-
-// 	for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-// 		this.placeBoardObject(
-// 			new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
-// 			i,
-// 			0
-// 		);
-
-// 		element.appendChild(
-// 			create({ name: "div", classes: ["grid-vert"] }).css({
-// 				left: px(left),
-// 				height: px(HEIGHT + TILESIZE),
-// 				zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-// 			}) as HTMLElement
-// 		);
-// 	}
-
-// 	for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
-// 		// store as variable so we can use it to offset the text, based on the number of characters
-// 		this.placeBoardObject(new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
-
-// 		element.appendChild(
-// 			create({ name: "div", classes: ["grid-horiz"] }).css({
-// 				left: px(-TILESIZE),
-// 				top: px(top + TILESIZE),
-// 				width: px(WIDTH + TILESIZE),
-// 				zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-// 			}) as HTMLElement
-// 		);
-// 	}
-// }
-// // #!END_DEBUG
 
 // // #!DEBUG
 // /**
@@ -147,6 +112,44 @@ export default abstract class Debugging {
 				zIndex: 500,
 			});
 			collidableElement.appendChild(collisionBoxElement);
+		}
+	}
+
+	/**
+	 * Creates horizontal and vertical lines that form squares for each tile in debug mode.
+	 */
+	public static showBoardGrid() {
+		const board = Board.getInstance();
+		const boardElement = board.getElement();
+
+		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
+			board["placeBoardObject"](
+				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
+				i,
+				0
+			);
+
+			boardElement.appendChild(
+				create({ name: "div", classes: ["grid-vert"] }).css({
+					left: px(left),
+					height: px(HEIGHT + TILESIZE),
+					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
+				}) as HTMLElement
+			);
+		}
+
+		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
+			// store as variable so we can use it to offset the text, based on the number of characters
+			board["placeBoardObject"](new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
+
+			boardElement.appendChild(
+				create({ name: "div", classes: ["grid-horiz"] }).css({
+					left: px(-TILESIZE),
+					top: px(top + TILESIZE),
+					width: px(WIDTH + TILESIZE),
+					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
+				}) as HTMLElement
+			);
 		}
 	}
 }
