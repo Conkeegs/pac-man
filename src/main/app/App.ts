@@ -310,6 +310,7 @@ export class App {
 		// #!DEBUG
 		if (Debugging.isEnabled()) {
 			Debugging.showHitBoxes();
+			Debugging.showBoardGrid();
 		}
 		// #!END_DEBUG
 	}
