@@ -9,6 +9,7 @@
         "BOARDOBJECTS",
         "Collidable",
         "COLLIDABLES",
+        "controllables",
         "Doesnt",
         "listenables",
         "MILLIS",

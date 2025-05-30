@@ -19,7 +19,7 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 	abstract class ControllableClass extends Base {
 		_currentInputDirection: MovementDirection | undefined;
 		/**
-		 * All supported keyboard keys for moving PacMan, mapped to their respective movement directions.
+		 * All supported keyboard keys for moving controllables, mapped to their respective movement directions.
 		 */
 		private static KEYCODE_DIRECTION_MAP = {
 			ArrowLeft: MovementDirection.LEFT,
@@ -78,19 +78,19 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 			}
 
 			if (
-				// check if the new direction that PacMan is trying to move in is the opposite of the direction
-				// he is currently moving in
+				// check if the new direction that controllable is trying to move in is the opposite of the direction
+				// it is currently moving in
 				currentInputDirection ==
 				Moveable.directionOpposites[currentDirection as keyof typeof Moveable.directionOpposites]
 			) {
-				// we don't need to provide the "fromTurn" parameter here since PacMan is only turning around
+				// we don't need to provide the "fromTurn" parameter here since controllable is only turning around
 				// in the opposite direction instead of a 90-degree angle
 				this.startMoving(currentInputDirection);
 
 				return;
 			}
 
-			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan
+			// filter down the selection of turns we have to choose from to only the ones "ahead" of this controllable
 			const nearestTurnableTurn = this.findNearestTurnForDirectionWhere(
 				(turn) => Moveable.canTurnWithMoveDirection(currentInputDirection, turn),
 				currentDirection
@@ -101,7 +101,7 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 			}
 
 			// if the nearest turn allows the moveCode that the user has entered, queue the turn for the future since
-			// PacMan hasn't arrived in its threshold yet
+			// this controllable hasn't arrived in its threshold yet
 			this.queueTurn(currentInputDirection, nearestTurnableTurn);
 		}
 
