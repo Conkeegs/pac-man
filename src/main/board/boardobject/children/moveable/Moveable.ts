@@ -271,15 +271,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * Stops this board object from moving.
 	 *
 	 */
-	public stopMoving(): boolean {
+	public stopMoving(): void {
 		this.dequeueTurns();
 		this.lastMovementDirection = undefined;
 		this._framesTicking = 0;
 		this.moving = false;
 
 		App.getInstance().getMovingMoveableIds().delete(this.getUniqueId());
-
-		return false;
 	}
 
 	/**

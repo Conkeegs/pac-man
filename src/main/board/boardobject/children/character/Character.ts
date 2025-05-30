@@ -76,11 +76,9 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * Stop moving this character and cancels this its current animation frame.
 	 *
 	 */
-	public override stopMoving(): boolean {
+	public override stopMoving(): void {
 		super.stopMoving();
 		this.stopAnimation();
-
-		return false;
 	}
 
 	/**
