@@ -90,8 +90,7 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 				return;
 			}
 
-			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan and also directly within the
-			// turn threshold
+			// filter down the selection of turns we have to choose from to only the ones "ahead" of PacMan
 			const nearestTurnableTurn = this.findNearestTurnForDirectionWhere(
 				(turn) => Moveable.canTurnWithMoveDirection(currentInputDirection, turn),
 				currentDirection
