@@ -139,7 +139,7 @@ export default class MoveableTest extends Test {
 		this.assertFalse(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertDoesntExist(pacman["lastMovementDirection"]);
-		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(0, pacman["_framesTicking"]);
 		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 		this.assertDoesntExist(pacman["_animationIntervalId"]);
 	}
@@ -222,7 +222,7 @@ export default class MoveableTest extends Test {
 
 		pacman.stopMoving();
 
-		this.assertStrictlyEqual(0, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(0, pacman["_framesTicking"]);
 
 		// finally, we want to test that moveables move a certain amount every tick(), depending
 		// on the direction they are moving and that the frame count increases for the moveable.
@@ -245,7 +245,7 @@ export default class MoveableTest extends Test {
 			originalPosition.y - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().y
 		);
-		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
 
 		// test the "DOWN" direction
 		movementDirection = MovementDirection.DOWN;
@@ -266,7 +266,7 @@ export default class MoveableTest extends Test {
 			originalPosition.y + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().y
 		);
-		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
 
 		// test the "LEFT" direction
 		movementDirection = MovementDirection.LEFT;
@@ -287,7 +287,7 @@ export default class MoveableTest extends Test {
 			originalPosition.x - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().x
 		);
-		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
 
 		// test the "RIGHT" direction
 		movementDirection = MovementDirection.RIGHT;
@@ -308,7 +308,7 @@ export default class MoveableTest extends Test {
 			originalPosition.x + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
 			pacman.getPosition().x
 		);
-		this.assertStrictlyEqual(1, pacman["_framesUpdating"]);
+		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
 	}
 
 	/**

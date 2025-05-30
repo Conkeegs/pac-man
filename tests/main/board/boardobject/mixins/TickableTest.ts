@@ -54,11 +54,11 @@ export default class TickableTest extends Test {
 
 		collidable.startMoving(MovementDirection.RIGHT);
 
-		this.assertStrictlyEqual(0, collidable._framesUpdating);
+		this.assertStrictlyEqual(0, collidable._framesTicking);
 
 		collidable.tick();
 
-		this.assertStrictlyEqual(1, collidable._framesUpdating);
+		this.assertStrictlyEqual(1, collidable._framesTicking);
 	}
 
 	/**
@@ -75,10 +75,10 @@ export default class TickableTest extends Test {
 
 		collidable.tick();
 
-		this.assertStrictlyEqual(1, collidable["_framesUpdating"]);
+		this.assertStrictlyEqual(1, collidable["_framesTicking"]);
 
 		collidable.delete();
 
-		this.assertStrictlyEqual(0, collidable["_framesUpdating"]);
+		this.assertStrictlyEqual(0, collidable["_framesTicking"]);
 	}
 }
