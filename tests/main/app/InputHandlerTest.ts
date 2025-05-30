@@ -36,6 +36,38 @@ export default class InputHandlerTest extends Test {
 	}
 
 	/**
+	 * Test that the input handler can get whether or not it's listening for
+	 * key down events.
+	 */
+	public getListenForKeydownTest(): void {
+		const inputHandler = App.getInstance()["inputHandler"]!;
+
+		this.assertTrue(inputHandler["listenForKeydown"]);
+
+		inputHandler["handleKeyDown"](
+			new KeyboardEvent("keydown", {
+				code: "KeyD",
+			})
+		);
+
+		this.assertFalse(inputHandler["listenForKeydown"]);
+	}
+
+	/**
+	 * Test that the input handler can get whether or not it's listening for
+	 * input.
+	 */
+	public getIsListeningTest(): void {
+		const inputHandler = App.getInstance()["inputHandler"]!;
+
+		this.assertFalse(inputHandler.getIsListening());
+
+		inputHandler.startListening();
+
+		this.assertTrue(inputHandler.getIsListening());
+	}
+
+	/**
 	 * Test that the input handler can handle key down events.
 	 */
 	public handleKeyDownTest(): void {
@@ -81,21 +113,11 @@ export default class InputHandlerTest extends Test {
 		const inputHandler = app["inputHandler"]!;
 		const eventListeners = app["eventListeners"];
 
-		this.assertDoesntExist(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyDown"])
-		);
-		this.assertDoesntExist(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyUp"])
-		);
+		this.assertArrayLength(0, eventListeners);
 
 		inputHandler.startListening();
 
-		this.assertExists(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyDown"])
-		);
-		this.assertExists(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyUp"])
-		);
+		this.assertArrayLength(2, eventListeners);
 	}
 
 	/**

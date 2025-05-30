@@ -10,6 +10,10 @@ export default class InputHandler {
 	 */
 	private listenForKeydown: boolean = true;
 	/**
+	 * Whether or not this input handler is currently listening
+	 */
+	private isListening: boolean = false;
+	/**
 	 * The singleton-instance of the input handler.
 	 */
 	private static instance: InputHandler | undefined;
@@ -35,6 +39,24 @@ export default class InputHandler {
 	 */
 	public getCurrentKeyCode(): string | undefined {
 		return this.currentKeyCode;
+	}
+
+	/**
+	 * Gets the current key code entered by the player.
+	 *
+	 * @returns current key code entered by the player
+	 */
+	public getListenForKeydown(): boolean {
+		return this.listenForKeydown;
+	}
+
+	/**
+	 * Get whether or not this input handler is currently listening.
+	 *
+	 * @returns whether or not this input handler is currently listening
+	 */
+	public getIsListening(): boolean {
+		return this.isListening;
 	}
 
 	/**
@@ -73,8 +95,10 @@ export default class InputHandler {
 	public startListening(): void {
 		const app = App.getInstance();
 
-		app.addEventListenerToElement("keydown", this.handleKeyDown as (event: Event) => void);
-		app.addEventListenerToElement("keyup", this.handleKeyUp);
+		app.addEventListenerToElement("keydown", this.handleKeyDown.bind(this) as (event: Event) => void);
+		app.addEventListenerToElement("keyup", this.handleKeyUp.bind(this));
+
+		this.isListening = true;
 	}
 
 	/**

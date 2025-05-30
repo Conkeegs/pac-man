@@ -199,10 +199,12 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can tick each frame correctly.
 	 */
 	public async tickTest(): Promise<void> {
-		await Board.getInstance()["placeTurnBoardObjects"]();
+		const board = Board.getInstance();
+
+		await board["placeTurnBoardObjects"]();
 
 		const pacman = new PacMan();
-		const turn = Board.getInstance().getTurns()[0]!;
+		const turn = board.getTurnMap().values().next().value!;
 		const turnCenterPosition = turn.getCenterPosition();
 		const turnFirstDirection = turn.getDirections()[0]!;
 
@@ -382,7 +384,7 @@ export default class MoveableTest extends Test {
 
 		this.assertArrayLength(0, moveable["turnQueue"]);
 
-		const turn = Board.getInstance().getTurns()[0]!;
+		const turn = Board.getInstance().getTurnMap().values().next().value!;
 
 		moveable["queueTurn"](turn.getDirections()[0]!, turn);
 
@@ -417,78 +419,15 @@ export default class MoveableTest extends Test {
 		await Board.getInstance()["placeTurnBoardObjects"]();
 
 		const moveable = new PacMan();
-		const turnData = Board.getInstance().getTurns()[0]!;
+		const turn = Board.getInstance().getTurnMap().values().next().value!;
 
-		moveable["offsetPositionToTurn"](turnData);
+		moveable["offsetPositionToTurn"](turn);
 
 		const moveablePosition = moveable.getPosition();
-		const turnCenterPosition = turnData.getCenterPosition();
+		const turnCenterPosition = turn.getCenterPosition();
 
 		this.assertStrictlyEqual(turnCenterPosition.x - moveable.getWidth() / 2, moveablePosition.x);
 		this.assertStrictlyEqual(turnCenterPosition.y - moveable.getHeight() / 2, moveablePosition.y);
-	}
-
-	/**
-	 * Test that moveables can find the nearest turn to them correctly.
-	 */
-	public async findNearestTurnTest(): Promise<void> {
-		const moveable = new PacMan();
-		let direction = MovementDirection.RIGHT;
-
-		moveable.setPosition({
-			x: 300,
-			y: 400,
-		});
-		moveable.startMoving(direction);
-
-		const moveableCenterPosition = moveable.getCenterPosition();
-		const turn1 = new Turn("turn-1", [direction]);
-		const turn2 = new Turn("turn-2", [direction]);
-
-		turn1.setPosition({
-			x: moveableCenterPosition.x + 40,
-			y: moveableCenterPosition.y - turn1.getHeight() / 2,
-		});
-		turn2.setPosition({
-			x: moveableCenterPosition.x + 60,
-			y: moveableCenterPosition.y - turn2.getHeight() / 2,
-		});
-
-		Board.getInstance()["turns"] = [turn1, turn2];
-
-		let nearestTurn = moveable["findNearestTurn"]()!;
-		let nearestTurnPosition = nearestTurn.getPosition();
-		let actualNearestTurnPosition = Board.getInstance().getTurns()[0]!.getPosition();
-
-		// nearest turn should be one that is least pixels away horizontally
-		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
-		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
-
-		direction = MovementDirection.UP;
-
-		moveable.startMoving(direction);
-
-		const turn3 = new Turn("turn-3", [direction]);
-		const turn4 = new Turn("turn-4", [direction]);
-
-		turn3.setPosition({
-			x: moveableCenterPosition.x - turn3.getWidth() / 2,
-			y: moveableCenterPosition.y - 60,
-		});
-		turn4.setPosition({
-			x: moveableCenterPosition.x - turn4.getWidth() / 2,
-			y: moveableCenterPosition.y - 40,
-		});
-
-		Board.getInstance()["turns"] = [turn3, turn4];
-
-		nearestTurn = moveable["findNearestTurn"]()!;
-		nearestTurnPosition = nearestTurn.getPosition();
-		actualNearestTurnPosition = Board.getInstance().getTurns()[1]!.getPosition();
-
-		// nearest turn should be one that is least pixels away vertically
-		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
-		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
 	}
 
 	/**
@@ -513,18 +452,23 @@ export default class MoveableTest extends Test {
 			y: moveableCenterPosition.y - turn1.getHeight() / 2,
 		});
 		turn2.setPosition({
-			x: moveableCenterPosition.x + 60,
+			x: moveableCenterPosition.x + 100,
 			y: moveableCenterPosition.y - turn2.getHeight() / 2,
 		});
 
-		Board.getInstance()["turns"] = [turn1, turn2];
+		const turnMap = Board.getInstance().getTurnMap();
+
+		turnMap.set(Board.tileKeyFromPosition(turn1.getCenterPosition()), turn1);
+		turnMap.set(Board.tileKeyFromPosition(turn2.getCenterPosition()), turn2);
 
 		let nearestTurn = moveable["findNearestTurnForDirectionWhere"](
 			(turn) => turn.getPosition().x === moveableCenterPosition.x + 40,
 			direction
 		)!;
 		let nearestTurnPosition = nearestTurn.getPosition();
-		let actualNearestTurnPosition = Board.getInstance().getTurns()[0]!.getPosition();
+		let actualNearestTurnPosition = turnMap
+			.get(Board.tileKeyFromPosition(turn1.getCenterPosition()))!
+			.getPosition();
 
 		// nearest turn should be one that is least pixels away horizontally and fits filter
 		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
@@ -546,14 +490,46 @@ export default class MoveableTest extends Test {
 			y: moveableCenterPosition.y - 40,
 		});
 
-		Board.getInstance()["turns"] = [turn3, turn4];
+		turnMap.set(Board.tileKeyFromPosition(turn3.getCenterPosition()), turn3);
+		turnMap.set(Board.tileKeyFromPosition(turn4.getCenterPosition()), turn4);
 
 		nearestTurn = moveable["findNearestTurnForDirectionWhere"](
 			(turn) => turn.getPosition().y === moveableCenterPosition.y - 40,
 			direction
 		)!;
 		nearestTurnPosition = nearestTurn.getPosition();
-		actualNearestTurnPosition = Board.getInstance().getTurns()[1]!.getPosition();
+		actualNearestTurnPosition = turnMap.get(Board.tileKeyFromPosition(turn4.getCenterPosition()))!.getPosition();
+
+		// nearest turn should be one that is least pixels away vertically and fits filter
+		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
+		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
+
+		direction = MovementDirection.DOWN;
+
+		moveable.startMoving(direction);
+
+		const turn5 = new Turn("turn-5", [direction]);
+		const turn6 = new Turn("turn-6", [direction]);
+
+		// moveable is moving down now, so this turn should be found to be closest
+		turn5.setPosition({
+			x: moveableCenterPosition.x - turn5.getWidth() / 2,
+			y: moveableCenterPosition.y + 40,
+		});
+		turn6.setPosition({
+			x: moveableCenterPosition.x - turn6.getWidth() / 2,
+			y: moveableCenterPosition.y + 60,
+		});
+
+		turnMap.set(Board.tileKeyFromPosition(turn5.getCenterPosition()), turn5);
+		turnMap.set(Board.tileKeyFromPosition(turn6.getCenterPosition()), turn6);
+
+		nearestTurn = moveable["findNearestTurnForDirectionWhere"](
+			(turn) => turn.getPosition().y === moveableCenterPosition.y + 40,
+			direction
+		)!;
+		nearestTurnPosition = nearestTurn.getPosition();
+		actualNearestTurnPosition = turnMap.get(Board.tileKeyFromPosition(turn5.getCenterPosition()))!.getPosition();
 
 		// nearest turn should be one that is least pixels away vertically and fits filter
 		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);

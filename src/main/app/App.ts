@@ -453,13 +453,14 @@ export class App {
 		const gameElementsMap = this.gameElementsMap;
 		const controllableGameElementIdValues = this.controllableGameElementIds.values();
 		let controllableGameElementId = controllableGameElementIdValues.next();
+		const inputHandler = this.inputHandler;
 
 		// find all game elements that are currently marked controllable and handle their input
 		// logic
 		while (!controllableGameElementId.done) {
-			const currentKeyCode = this.inputHandler.getCurrentKeyCode();
+			const currentKeyCode = inputHandler.getCurrentKeyCode();
 
-			if (currentKeyCode) {
+			if (!inputHandler.getListenForKeydown() && currentKeyCode) {
 				(gameElementsMap.get(controllableGameElementId.value)! as Controllable).handleInput(currentKeyCode);
 			}
 

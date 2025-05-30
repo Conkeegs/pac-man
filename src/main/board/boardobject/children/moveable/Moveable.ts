@@ -1,5 +1,11 @@
 import { App } from "../../../../app/App.js";
 import type { Position } from "../../../../gameelement/GameElement.js";
+import {
+	MAX_PLAYABLE_TILE_X,
+	MAX_PLAYABLE_TILE_Y,
+	MIN_PLAYABLE_TILE_X,
+	MIN_PLAYABLE_TILE_Y,
+} from "../../../../utils/Globals.js";
 import { millisToSeconds } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
 import { BoardObject } from "../../BoardObject.js";
@@ -80,6 +86,50 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		[MovementDirection.RIGHT]: this.setTransformX,
 		[MovementDirection.UP]: this.setTransformY,
 		[MovementDirection.DOWN]: this.setTransformY,
+	};
+	/**
+	 * Initial tile number based on this moveable's direction. Used when searching
+	 * for nearest turns to this moveable.
+	 */
+	private initialTileNumMap = {
+		[MovementDirection.LEFT]: () => Board.calcTileNumX(this.getCenterPosition().x),
+		[MovementDirection.RIGHT]: () => Board.calcTileNumX(this.getCenterPosition().x),
+		[MovementDirection.UP]: () => Board.calcTileNumY(this.getCenterPosition().y),
+		[MovementDirection.DOWN]: () => Board.calcTileNumY(this.getCenterPosition().y),
+	};
+	/**
+	 * Compares current tile number to the max/min tile that includes turns. based on this
+	 * moveable's direction. Used when searching for nearest turns to this moveable.
+	 */
+	private tileNumComparatorMap = {
+		[MovementDirection.LEFT]: (tileX: number) => tileX >= MIN_PLAYABLE_TILE_X,
+		[MovementDirection.RIGHT]: (tileX: number) => tileX <= MAX_PLAYABLE_TILE_X,
+		[MovementDirection.UP]: (tileY: number) => tileY <= MAX_PLAYABLE_TILE_Y,
+		[MovementDirection.DOWN]: (tileY: number) => tileY > MIN_PLAYABLE_TILE_Y,
+	};
+	/**
+	 * Updates tile number based on this moveable's direction. Used when searching
+	 * for nearest turns to this moveable.
+	 */
+	private tileNumUpdaterMap = {
+		[MovementDirection.LEFT]: (tileX: number) => tileX - 1,
+		[MovementDirection.RIGHT]: (tileX: number) => tileX + 1,
+		[MovementDirection.UP]: (tileY: number) => tileY + 1,
+		[MovementDirection.DOWN]: (tileY: number) => tileY - 1,
+	};
+	/**
+	 * Creates a tile key for a turn based on moveable's direction. Used when searching
+	 * for nearest turns to this moveable.
+	 */
+	private turnTileKeyMap = {
+		[MovementDirection.LEFT]: (tileX: number) =>
+			Board.createTileKey(tileX, Board.calcTileNumY(this.getCenterPosition().y)),
+		[MovementDirection.RIGHT]: (tileX: number) =>
+			Board.createTileKey(tileX, Board.calcTileNumY(this.getCenterPosition().y)),
+		[MovementDirection.UP]: (tileY: number) =>
+			Board.createTileKey(Board.calcTileNumX(this.getCenterPosition().x), tileY),
+		[MovementDirection.DOWN]: (tileY: number) =>
+			Board.createTileKey(Board.calcTileNumX(this.getCenterPosition().x), tileY),
 	};
 
 	/**
@@ -317,37 +367,26 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	public findNearestTurnForDirectionWhere(
 		filter: (turn: Turn) => boolean,
-		direction: MovementDirection,
-		callback?: ((turn: Turn) => unknown) | undefined
+		direction: MovementDirection
 	): Turn | undefined {
-		direction = direction as keyof typeof turnValidators;
+		const turnMap = Board.getInstance().getTurnMap();
 
-		const turnValidators = this.turnValidators;
-		// find turns "ahead" of board object and that fit the "filter"
-		const filteredTurns = Board.getInstance()
-			.getTurns()
-			.filter((turn) => {
-				if (turnValidators[direction](turn) && filter(turn)) {
-					// run callback if our filter passes, and it's defined
-					if (callback) {
-						callback(turn);
-					}
+		// find nearest turn based on the movement direction of this moveable
+		for (
+			let tile = this.initialTileNumMap[direction as keyof typeof this.initialTileNumMap]();
+			this.tileNumComparatorMap[direction as keyof typeof this.tileNumComparatorMap](tile);
+			tile = this.tileNumUpdaterMap[direction as keyof typeof this.tileNumUpdaterMap](tile)
+		) {
+			const turn = turnMap.get(this.turnTileKeyMap[direction as keyof typeof this.turnTileKeyMap](tile));
 
-					return true;
-				}
+			if (!turn || !this.turnValidators[direction as keyof typeof this.turnValidators](turn) || !filter(turn)) {
+				continue;
+			}
 
-				return false;
-			});
-
-		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
-		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
-		// "start" of the "filteredTurns" array
-		if (direction === MovementDirection.LEFT || direction === MovementDirection.UP) {
-			filteredTurns.reverse();
+			return turn;
 		}
 
-		return filteredTurns[0];
+		return undefined;
 	}
 
 	/**
@@ -404,30 +443,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			direction,
 			turn,
 		});
-	}
-
-	/**
-	 * This method will return the "closest" turn to this board object, based on the current direction it is moving.
-	 *
-	 * @returns the closest turn to this board object
-	 */
-	protected findNearestTurn(): Turn | undefined {
-		// find turns "ahead" of board object
-		const filteredTurns = Board.getInstance()
-			.getTurns()
-			.filter((turn) => this.turnValidators[this.currentDirection as keyof typeof this.turnValidators](turn));
-
-		const currentDirection = this.currentDirection;
-
-		// turns are always ordered from left-to-right, starting from the top-left of the board and ending at the bottom-right, so
-		// reverse the array here so that when we call "find()" on "filteredTurns" in order to find the first turn that allows this
-		// board object to turn (given the current direction), we find the closest turn to the board object, instead of a turn that may be at the
-		// "start" of the "filteredTurns" array
-		if (currentDirection === MovementDirection.LEFT || currentDirection === MovementDirection.UP) {
-			filteredTurns.reverse();
-		}
-
-		return filteredTurns[0];
 	}
 
 	/**

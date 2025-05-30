@@ -266,7 +266,7 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(1, inkyCount);
 		this.assertStrictlyEqual(1, pinkyCount);
 		this.assertStrictlyEqual(1, clydeCount);
-		this.assertNotEmpty(board.getTurns());
+		this.assertTrue(board.getTurnMap().size > 0);
 	}
 
 	/**
@@ -278,13 +278,13 @@ export default class BoardTest extends Test {
 		await board.create();
 
 		this.assertFalse(board.getElement().childElementCount === 0);
-		this.assertNotEmpty(board.getTurns());
+		this.assertTrue(board.getTurnMap().size > 0);
 		this.assertTrue(Board["instance"] instanceof Board);
 
 		board.delete();
 
 		this.assertEmpty(board.getElement());
-		this.assertEmpty(board["turns"]);
+		this.assertStrictlyEqual(0, board.getTurnMap().size);
 	}
 
 	/**
@@ -327,7 +327,7 @@ export default class BoardTest extends Test {
 	 */
 	public async placeTurnBoardObjectsTest(): Promise<void> {
 		const board = Board.getInstance();
-		const turns = board.getTurns();
+		const turns = board.getTurnMap();
 
 		this.assertEmpty(turns);
 
@@ -335,7 +335,7 @@ export default class BoardTest extends Test {
 
 		const turnData = await board["loadTurnData"]();
 
-		this.assertNotEmpty(turns);
+		this.assertTrue(turns.size > 0);
 		this.assertStrictlyEqual(turnData.length, turnData.length);
 	}
 
@@ -364,13 +364,14 @@ export default class BoardTest extends Test {
 	/**
 	 * Test that the board can get its turns correctly.
 	 */
-	public async getTurnsTest(): Promise<void> {
+	public async getTurnMapTest(): Promise<void> {
 		const board = Board.getInstance();
+		const turnMap = board.getTurnMap();
 
-		this.assertEmpty(board.getTurns());
+		this.assertStrictlyEqual(0, turnMap.size);
 
 		await board["placeTurnBoardObjects"]();
 
-		this.assertNotEmpty(board.getTurns());
+		this.assertTrue(turnMap.size > 0);
 	}
 }

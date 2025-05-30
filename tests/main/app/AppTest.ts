@@ -71,15 +71,7 @@ export default class AppTest extends Test {
 
 		await app.run();
 
-		const inputHandler = app["inputHandler"];
-		const eventListeners = app["eventListeners"];
-
-		this.assertExists(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyDown"])
-		);
-		this.assertExists(
-			eventListeners.find((eventListenerData) => eventListenerData.callback === inputHandler["handleKeyUp"])
-		);
+		this.assertTrue(app["inputHandler"].getIsListening());
 		this.assertTrue(app["board"] instanceof Board);
 		this.assertFalse(app["gamePaused"]);
 
@@ -359,6 +351,18 @@ export default class AppTest extends Test {
 		})("test-controllable", 0, 0, 0);
 
 		app["inputHandler"]["currentKeyCode"] = currentInputCode;
+		// if input handler is listening for keydown events, the user is not currently
+		// giving input, so handleInput should not be called
+		app["inputHandler"]["listenForKeydown"] = true;
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0);
+
+		this.assertOfType("undefined", controllable["currentInputCode" as keyof Controllable]);
+		this.assertOfType("undefined", controllable["inputWasHandled" as keyof Controllable]);
+
+		// handleInput should now be called since this being false means the user is currently
+		// giving keydown input
+		app["inputHandler"]["listenForKeydown"] = false;
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
 		app["updateGame"](0, 0, 0);
 

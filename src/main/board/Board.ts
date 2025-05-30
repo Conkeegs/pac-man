@@ -127,7 +127,7 @@ export default class Board extends GameElement {
 	/**
 	 * The turns on the board.
 	 */
-	private turns: Turn[] = [];
+	private turnMap: Map<string, Turn> = new Map();
 
 	/**
 	 * The default background color of the board.
@@ -161,12 +161,12 @@ export default class Board extends GameElement {
 	}
 
 	/**
-	 * Get all of the board's turns.
+	 * Get the map of the board's turns.
 	 *
-	 * @returns this board's turns
+	 * @returns map of the board's turns
 	 */
-	public getTurns(): Turn[] {
-		return this.turns;
+	public getTurnMap(): Map<string, Turn> {
+		return this.turnMap;
 	}
 
 	/**
@@ -314,14 +314,14 @@ export default class Board extends GameElement {
 	}
 
 	/**
-	 * Returns a formatted string of form `"x-y"` for the passed-in x and y pixels offsets.
+	 * Returns a formatted string of form `"x-y"` for the passed-in x and y tile numbers.
 	 *
-	 * @param x horizontal x-offset in pixels
-	 * @param y vertical y-offset in pixels
+	 * @param tileX horizontal x tile
+	 * @param tileY vertical y tile
 	 * @returns
 	 */
-	public static createTileKey(xPixels: number, yPixels: number): string {
-		return `${xPixels}-${yPixels}`;
+	public static createTileKey(tileX: number, tileY: number): string {
+		return `${tileX}-${tileY}`;
 	}
 
 	/**
@@ -470,7 +470,7 @@ export default class Board extends GameElement {
 	 * Destroys the board and the resources it's using.
 	 */
 	public override delete(): void {
-		this.turns = [];
+		this.turnMap.clear();
 
 		super.delete();
 	}
@@ -512,9 +512,11 @@ export default class Board extends GameElement {
 		for (let i = 0; i < turnData.length; i++) {
 			const turn = turnData[i]!;
 			const turnBoardObject = new Turn(`turn-${i}`, turn.directions);
+			const tileX = turn.tileX;
+			const tileY = turn.tileY;
 
-			this.turns.push(turnBoardObject);
-			this.placeBoardObject(turnBoardObject, turn.tileX, turn.tileY, true);
+			this.turnMap.set(Board.createTileKey(tileX, tileY), turnBoardObject);
+			this.placeBoardObject(turnBoardObject, tileX, tileY, true);
 		}
 	}
 
