@@ -176,8 +176,6 @@ export abstract class BoardObject extends GameElement {
 	 * @param updateCallback callback that will update this board object's CSS
 	 */
 	private queueRenderUpdate(updateCallback: () => void): void {
-		// check if already pushed, otherwise board object will render same updates more
-		// than once for no reason
 		if (!this.readyForRender) {
 			App.getInstance().getToRenderGameElementIds().add(this.getUniqueId());
 
