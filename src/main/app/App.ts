@@ -160,10 +160,6 @@ export class App {
 
 	// #!DEBUG
 	/**
-	 * Whether the game is in debug mode or not.
-	 */
-	public static DEBUG: boolean = true;
-	/**
 	 * Whether or not the app is in testing mode.
 	 */
 	public static TESTING: boolean = true;

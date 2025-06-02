@@ -16,11 +16,11 @@ export default class DebugWindow {
 	 * @param reason
 	 */
 	static error(filename: string, method: string, reason: string) {
-		if (App.DEBUG) {
-			App.getInstance().destroy();
+		// if (App.DEBUG) {
+		App.getInstance().destroy();
 
-			throw new Error(`Error in ${filename} -- ${method}(): ${reason}`);
-		}
+		throw new Error(`Error in ${filename} -- ${method}(): ${reason}`);
+		// }
 	}
 }
 // #!END_DEBUG
