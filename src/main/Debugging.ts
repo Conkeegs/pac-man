@@ -89,29 +89,10 @@ export default abstract class Debugging {
 		}
 
 		for (let i = 0; i < collidables.length; i++) {
-			const collidable = collidables[i]!;
-			const collisionBox = collidable.getCollisionBox();
-			// create outlined box that is same width/height of collision box
-			const collisionBoxElement = create({
-				name: "div",
-			}).css({
-				width: px(collisionBox.getWidth()),
-				height: px(collisionBox.getHeight()),
+			// const collidable = collidables[i]!;
+			collidables[i]!.getCollisionBox().getElement().css({
 				border: "2px solid red",
-				position: "absolute",
-				right: 0,
-				left: 0,
-				top: 0,
-				bottom: 0,
-				margin: "auto",
-			}) as HTMLElement;
-			const collidableElement = collidable.getElement();
-			// some collidables (like turns) may need to be displayed higher
-			// since they're usually just invisible
-			collidableElement.css({
-				zIndex: 500,
 			});
-			collidableElement.appendChild(collisionBoxElement);
 		}
 	}
 
