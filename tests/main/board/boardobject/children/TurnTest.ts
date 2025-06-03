@@ -46,6 +46,10 @@ export default class TurnTest extends Test {
 		// valid turn allows collidableMoveable to start moving in one of its directions
 		this.assertTrue(collidableMoveable.isMoving());
 		this.assertStrictlyEqual(movementDirection, collidableMoveable.getCurrentDirection());
+		this.assertTrue(collidableMoveable["shouldRender"]);
+
+		// reset this
+		collidableMoveable["shouldRender"] = false;
 
 		const testPosition: Position = {
 			x: 300,
@@ -71,5 +75,6 @@ export default class TurnTest extends Test {
 			})
 		);
 		this.assertStrictlyEqual(testTurn, collidableMoveable["stoppedAtTurn"]);
+		this.assertTrue(collidableMoveable["shouldRender"]);
 	}
 }

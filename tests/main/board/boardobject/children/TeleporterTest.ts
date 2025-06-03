@@ -82,6 +82,10 @@ export default class TeleporterTest extends Test {
 		this.assertStrictlyEqual(teleporter1Position.x + teleporter1.getWidth(), collidableMoveablePosition.x);
 		this.assertStrictlyEqual(teleporter1Position.y, collidableMoveablePosition.y);
 		this.assertFalse(collidableMoveable.getShouldInterpolate());
+		this.assertTrue(collidableMoveable["shouldRender"]);
+
+		// reset this
+		collidableMoveable["shouldRender"] = false;
 
 		collidableMoveable.startMoving(MovementDirection.LEFT);
 		teleporter1.onCollision(collidableMoveable);
@@ -91,5 +95,6 @@ export default class TeleporterTest extends Test {
 
 		this.assertStrictlyEqual(teleporter2Position.x - collidableMoveable.getWidth(), collidableMoveablePosition.x);
 		this.assertStrictlyEqual(teleporter2Position.y, collidableMoveablePosition.y);
+		this.assertTrue(collidableMoveable["shouldRender"]);
 	}
 }

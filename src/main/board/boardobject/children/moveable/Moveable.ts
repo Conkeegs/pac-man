@@ -301,6 +301,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		if (fromTurn) {
 			// snap to turn-position to keep collision detection consistent
 			this.offsetPositionToTurn(fromTurn);
+			this.queueRenderUpdate();
 		}
 
 		// set this board object's current direction since we now know that it's going to start moving
@@ -321,6 +322,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		}
 
 		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
+		this.queueRenderUpdate();
 		super.tick();
 	}
 

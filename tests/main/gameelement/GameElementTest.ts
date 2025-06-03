@@ -1,5 +1,6 @@
 import { App } from "../../../src/main/app/App.js";
 import Board from "../../../src/main/board/Board.js";
+import Clyde from "../../../src/main/board/boardobject/children/character/Clyde.js";
 import Inky from "../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import Food from "../../../src/main/board/boardobject/children/Food.js";
@@ -201,97 +202,54 @@ export default class GameElementTest extends Test {
 		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
-		gameElement.setPosition(
-			{
-				x: offset,
-				y: offset,
-			},
-			{
-				modifyTransform: false,
-			}
-		);
+		gameElement.setPosition({
+			x: offset,
+			y: offset,
+		});
 
 		let position = gameElement.getPosition();
-		let transform = gameElement.getTransform();
 
-		// css should not be same since not changed and transform should still be 0 since not changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		const olderOffset = 600;
 
-		gameElement.setPosition(
-			{
-				x: olderOffset,
-				y: olderOffset,
-			},
-			{
-				modifyCss: true,
-				modifyTransform: false,
-			}
-		);
+		gameElement.setPosition({
+			x: olderOffset,
+			y: olderOffset,
+		});
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should be same since changed and transform should still be 0 since not changed
 		this.assertStrictlyEqual(olderOffset, position.x);
 		this.assertStrictlyEqual(olderOffset, position.y);
-		this.assertStrictlyEqual(px(olderOffset), htmlElement.css("top"));
-		this.assertStrictlyEqual(px(olderOffset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		const oldOffset = 700;
 
-		gameElement.setPosition(
-			{
-				x: oldOffset,
-				y: oldOffset,
-			},
-			{
-				modifyTransform: true,
-			}
-		);
+		gameElement.setPosition({
+			x: oldOffset,
+			y: oldOffset,
+		});
 
 		position = gameElement.getPosition();
-		const oldTransform = gameElement.getTransform();
 
 		// css should not be same since not changed and transform should be changed
 		this.assertStrictlyEqual(oldOffset, position.x);
 		this.assertStrictlyEqual(oldOffset, position.y);
-		this.assertNotStrictlyEqual(px(oldOffset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(oldOffset), htmlElement.css("left"));
-		this.assertStrictlyEqual(oldOffset, oldTransform.x);
-		this.assertStrictlyEqual(oldOffset, oldTransform.y);
 
 		offset = 800;
 
-		gameElement.setPosition(
-			{
-				x: offset,
-				y: offset,
-			},
-			{
-				modifyCss: true,
-				modifyTransform: true,
-			}
-		);
+		gameElement.setPosition({
+			x: offset,
+			y: offset,
+		});
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should same since changed and transform should be changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
 
 		offset = 600;
 		const childOffsetX = 10;
@@ -308,7 +266,6 @@ export default class GameElementTest extends Test {
 		});
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 		const child = gameElement.getChildren()[0]!.gameElement;
 		const childPosition = child.getPosition();
 		const childTransform = child.getTransform();
@@ -316,12 +273,10 @@ export default class GameElementTest extends Test {
 		// children should get same position + child offsets
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
 		this.assertStrictlyEqual(offset + childOffsetX, childPosition.x);
 		this.assertStrictlyEqual(offset + childOffsetY, childPosition.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childTransform.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childTransform.y);
+		this.assertStrictlyEqual(childOffsetX, childTransform.x);
+		this.assertStrictlyEqual(childOffsetY, childTransform.y);
 	}
 
 	/**
@@ -336,73 +291,43 @@ export default class GameElementTest extends Test {
 		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
-		gameElement.setPositionX(offset, {
-			modifyTransform: false,
-		});
+		gameElement.setPositionX(offset);
 
 		let position = gameElement.getPosition();
-		let transform = gameElement.getTransform();
 
 		// css should not be same since not changed and transform should still be 0 since not changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		offset = 600;
 
-		gameElement.setPositionX(offset, {
-			modifyCss: true,
-			modifyTransform: false,
-		});
+		gameElement.setPositionX(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should be same since changed and transform should still be 0 since not changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		offset = 700;
 
-		gameElement.setPositionX(offset, {
-			modifyTransform: true,
-		});
+		gameElement.setPositionX(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should not be same since not changed and transform should be changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertNotStrictlyEqual(offset, transform.y);
 
 		offset = 800;
 
-		gameElement.setPositionX(offset, {
-			modifyCss: true,
-			modifyTransform: true,
-		});
+		gameElement.setPositionX(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should same since changed and transform should be changed
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertNotStrictlyEqual(offset, transform.y);
 
 		offset = 600;
 		const childOffsetX = 10;
@@ -415,7 +340,6 @@ export default class GameElementTest extends Test {
 		gameElement.setPositionX(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 		const child = gameElement.getChildren()[0]!.gameElement;
 		const childPosition = child.getPosition();
 		const childTransform = child.getTransform();
@@ -423,12 +347,10 @@ export default class GameElementTest extends Test {
 		// children should get same position + child offsets
 		this.assertStrictlyEqual(offset, position.x);
 		this.assertNotStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(offset, transform.x);
-		this.assertNotStrictlyEqual(offset, transform.y);
 		this.assertStrictlyEqual(offset + childOffsetX, childPosition.x);
 		this.assertNotStrictlyEqual(offset, childPosition.y);
-		this.assertStrictlyEqual(offset + childOffsetX, childTransform.x);
-		this.assertNotStrictlyEqual(offset, childTransform.y);
+		this.assertStrictlyEqual(childOffsetX, childTransform.x);
+		this.assertStrictlyEqual(0, childTransform.y);
 	}
 
 	/**
@@ -443,73 +365,43 @@ export default class GameElementTest extends Test {
 		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
-		gameElement.setPositionY(offset, {
-			modifyTransform: false,
-		});
+		gameElement.setPositionY(offset);
 
 		let position = gameElement.getPosition();
-		let transform = gameElement.getTransform();
 
 		// css should not be same since not changed and transform should still be 0 since not changed
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		offset = 600;
 
-		gameElement.setPositionY(offset, {
-			modifyCss: true,
-			modifyTransform: false,
-		});
+		gameElement.setPositionY(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should be same since changed and transform should still be 0 since not changed
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertStrictlyEqual(0, transform.x);
-		this.assertStrictlyEqual(0, transform.y);
 
 		offset = 700;
 
-		gameElement.setPositionY(offset, {
-			modifyTransform: true,
-		});
+		gameElement.setPositionY(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should not be same since not changed and transform should be changed
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertNotStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
 
 		offset = 800;
 
-		gameElement.setPositionY(offset, {
-			modifyCss: true,
-			modifyTransform: true,
-		});
+		gameElement.setPositionY(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 
 		// css should same since changed and transform should be changed
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertStrictlyEqual(px(offset), htmlElement.css("top"));
-		this.assertNotStrictlyEqual(px(offset), htmlElement.css("left"));
-		this.assertNotStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
 
 		offset = 600;
 		const childOffsetY = 10;
@@ -522,7 +414,6 @@ export default class GameElementTest extends Test {
 		gameElement.setPositionY(offset);
 
 		position = gameElement.getPosition();
-		transform = gameElement.getTransform();
 		const child = gameElement.getChildren()[0]!.gameElement;
 		const childPosition = child.getPosition();
 		const childTransform = child.getTransform();
@@ -530,12 +421,52 @@ export default class GameElementTest extends Test {
 		// children should get same position + child offsets
 		this.assertNotStrictlyEqual(offset, position.x);
 		this.assertStrictlyEqual(offset, position.y);
-		this.assertNotStrictlyEqual(offset, transform.x);
-		this.assertStrictlyEqual(offset, transform.y);
 		this.assertNotStrictlyEqual(offset, childPosition.x);
 		this.assertStrictlyEqual(offset + childOffsetY, childPosition.y);
-		this.assertNotStrictlyEqual(offset, childTransform.x);
-		this.assertStrictlyEqual(offset + childOffsetY, childTransform.y);
+		this.assertStrictlyEqual(0, childTransform.x);
+		this.assertStrictlyEqual(childOffsetY, childTransform.y);
+	}
+
+	/**
+	 * Test that game elements can be rendered properly.
+	 */
+	public renderTest(): void {
+		const clyde = new Clyde();
+
+		this.assertFalse(clyde["shouldRender"]);
+
+		const newPosition: Position = {
+			x: 900,
+			y: 300,
+		};
+
+		clyde.setPosition(newPosition);
+		clyde.queueRenderUpdate();
+
+		this.assertTrue(clyde["shouldRender"]);
+		this.assertFalse(GameElement.positionsEqual(newPosition, clyde.getTransform()));
+
+		clyde.render();
+
+		this.assertTrue(GameElement.positionsEqual(newPosition, clyde.getTransform()));
+		this.assertFalse(clyde["shouldRender"]);
+	}
+
+	/**
+	 * Test that game elements can render CSS changes properly to the screen.
+	 */
+	public queueRenderUpdateTest(): void {
+		const toRenderGameElementIds = App.getInstance().getToRenderGameElementIds();
+		const clyde = new Clyde();
+		const uniqueId = clyde.getUniqueId();
+
+		this.assertFalse(clyde["shouldRender"]);
+		this.assertFalse(toRenderGameElementIds.has(uniqueId));
+
+		clyde.queueRenderUpdate();
+
+		this.assertTrue(clyde["shouldRender"]);
+		this.assertTrue(toRenderGameElementIds.has(uniqueId));
 	}
 
 	/**
@@ -755,12 +686,29 @@ export default class GameElementTest extends Test {
 			gameElement: childGameElement,
 		});
 
-		const children = gameElement.getChildren();
+		let children = gameElement.getChildren();
 		const firstChild = children[0]!;
 
 		this.assertArrayLength(1, children);
 		this.assertStrictlyEqual(offsetX, firstChild.offsetX);
 		this.assertStrictlyEqual(offsetY, firstChild.offsetY);
 		this.assertStrictlyEqual(childGameElement, firstChild.gameElement);
+		this.assertTrue(GameElement.positionsEqual({ x: offsetX, y: offsetY }, firstChild.gameElement.getTransform()));
+
+		const secondChildGameElement = new (class extends GameElement {})("child-game-element-2", 0, 0);
+
+		// test that offsets default to 0 when not provided
+		gameElement["addChild"]({
+			gameElement: secondChildGameElement,
+		});
+
+		children = gameElement.getChildren();
+		const secondChild = children[1]!;
+
+		this.assertArrayLength(2, children);
+		this.assertStrictlyEqual(0, secondChild.offsetX);
+		this.assertStrictlyEqual(0, secondChild.offsetY);
+		this.assertStrictlyEqual(secondChildGameElement, secondChild.gameElement);
+		this.assertTrue(GameElement.positionsEqual({ x: 0, y: 0 }, secondChild.gameElement.getTransform()));
 	}
 }

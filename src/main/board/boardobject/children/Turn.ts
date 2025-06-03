@@ -106,5 +106,6 @@ export default class Turn extends MakeCollidable(BoardObject) {
 		collidableMoveable.setStoppedAtTurn(this);
 		// snap pacman to "stop" location to keep collision detection consistent
 		collidableMoveable.offsetPositionToTurn(this);
+		collidableMoveable.queueRenderUpdate();
 	}
 }

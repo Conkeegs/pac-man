@@ -32,20 +32,6 @@ export type Transform = {
 };
 
 /**
- * Options for setting game element's position.
- */
-export type PositionSetOptions = {
-	/**
-	 * Whether or not to modify this game element's physical CSS position.
-	 */
-	modifyCss?: boolean;
-	/**
-	 * Whether or not to modify this game element's CSS transform offset.
-	 */
-	modifyTransform?: boolean;
-};
-
-/**
  * Represents data about a child `GameElement` instance that another
  * `GameElement` instance may be the parent of.
  */
@@ -111,6 +97,10 @@ export abstract class GameElement {
 	 * Whether or not this game element is marked as deleted.
 	 */
 	private deleted: boolean = false;
+	/**
+	 * Whether or not this game element is ready for visual updates.
+	 */
+	private shouldRender: true | false = false as const;
 
 	/**
 	 * Creates a game element.
@@ -265,80 +255,37 @@ export abstract class GameElement {
 	 * Sets this game element's position.
 	 *
 	 * @param position the new position of the game element
-	 * @param options options for customizing how game element's position is set
 	 */
-	public setPosition(
-		position: Position,
-		options: PositionSetOptions | undefined = {
-			modifyCss: false,
-			modifyTransform: true,
-		}
-	): void {
-		const positionX = position.x;
-		const positionY = position.y;
+	public setPosition(position: Position): void {
 		const children = this.children;
 
 		for (let i = 0; i < children.length; i++) {
 			const child = children[i]!;
 
-			child.gameElement.setPosition(
-				{
-					x: positionX + (child.offsetX ?? 0),
-					y: positionY + (child.offsetY ?? 0),
-				},
-				options
-			);
-		}
-
-		if (options.modifyCss) {
-			this.element.css({
-				left: px(positionX),
-				top: px(positionY),
+			child.gameElement.setPosition({
+				x: position.x + (child.offsetX ?? 0),
+				y: position.y + (child.offsetY ?? 0),
 			});
 		}
 
 		this.position = position;
-
-		if (options.modifyTransform ?? true) {
-			this.setTransform({
-				x: positionX,
-				y: positionY,
-			});
-		}
 	}
 
 	/**
 	 * Sets this game element's `x` position.
 	 *
 	 * @param x the new `x` position of the game element
-	 * @param options  options for customizing how character's position is set
 	 */
-	public setPositionX(
-		x: number,
-		options: PositionSetOptions | undefined = {
-			modifyCss: false,
-			modifyTransform: true,
-		}
-	): void {
+	public setPositionX(x: number): void {
 		const children = this.children;
 
 		for (let i = 0; i < children.length; i++) {
 			const child = children[i]!;
 
-			child.gameElement.setPositionX(x + (child.offsetX ?? 0)), options;
-		}
-
-		if (options.modifyCss) {
-			this.element.css({
-				left: px(x),
-			});
+			child.gameElement.setPositionX(x + (child.offsetX ?? 0));
 		}
 
 		this.position.x = x;
-
-		if (options.modifyTransform ?? true) {
-			this.setTransformX(x);
-		}
 	}
 
 	/**
@@ -347,31 +294,36 @@ export abstract class GameElement {
 	 * @param y the new `y` position of the game element
 	 * @param options  options for customizing how character's position is set
 	 */
-	public setPositionY(
-		y: number,
-		options: PositionSetOptions | undefined = {
-			modifyCss: false,
-			modifyTransform: true,
-		}
-	): void {
+	public setPositionY(y: number): void {
 		const children = this.children;
 
 		for (let i = 0; i < children.length; i++) {
 			const child = children[i]!;
 
-			child.gameElement.setPositionY(y + (child.offsetY ?? 0), options);
-		}
-
-		if (options.modifyCss) {
-			this.element.css({
-				top: px(y),
-			});
+			child.gameElement.setPositionY(y + (child.offsetY ?? 0));
 		}
 
 		this.position.y = y;
+	}
 
-		if (options.modifyTransform ?? true) {
-			this.setTransformY(y);
+	/**
+	 * Renders CSS changes of this board object to the screen.
+	 */
+	public render(): void {
+		this.setTransform(this.getPosition());
+
+		this.shouldRender = false;
+	}
+
+	/**
+	 * Queues a render update for this game element that updates its CSS.
+	 *
+	 */
+	public queueRenderUpdate(): void {
+		if (!this.shouldRender) {
+			App.getInstance().getToRenderGameElementIds().add(this.getUniqueId());
+
+			this.shouldRender = true;
 		}
 	}
 
@@ -491,7 +443,17 @@ export abstract class GameElement {
 	 * and optional x and y pixel-offsets
 	 */
 	protected addChild(child: Child): void {
+		child.offsetX = child.offsetX ?? 0;
+		child.offsetY = child.offsetY ?? 0;
+
 		this.children.push(child);
-		this.getElement().appendChild(child.gameElement.getElement());
+
+		const childGameElement = child.gameElement;
+
+		childGameElement.setTransform({
+			x: child.offsetX,
+			y: child.offsetY,
+		});
+		this.getElement().appendChild(childGameElement.getElement());
 	}
 }

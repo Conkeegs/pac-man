@@ -191,6 +191,7 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(turnCenterPosition.x - pacman.getWidth()! / 2, position.x);
 		this.assertStrictlyEqual(turnCenterPosition.y - pacman.getHeight()! / 2, position.y);
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
+		this.assertTrue(pacman["shouldRender"]);
 
 		pacman.stopMoving();
 	}
@@ -217,6 +218,10 @@ export default class MoveableTest extends Test {
 
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(turnFirstDirection, pacman.getCurrentDirection());
+		this.assertTrue(pacman["shouldRender"]);
+
+		// reset this
+		pacman["shouldRender"] = false;
 
 		let movementDirection = MovementDirection.LEFT;
 
@@ -246,6 +251,10 @@ export default class MoveableTest extends Test {
 			pacman.getPosition().y
 		);
 		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertTrue(pacman["shouldRender"]);
+
+		// reset this
+		pacman["shouldRender"] = false;
 
 		// test the "DOWN" direction
 		movementDirection = MovementDirection.DOWN;
@@ -267,6 +276,10 @@ export default class MoveableTest extends Test {
 			pacman.getPosition().y
 		);
 		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertTrue(pacman["shouldRender"]);
+
+		// reset this
+		pacman["shouldRender"] = false;
 
 		// test the "LEFT" direction
 		movementDirection = MovementDirection.LEFT;
@@ -288,6 +301,10 @@ export default class MoveableTest extends Test {
 			pacman.getPosition().x
 		);
 		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertTrue(pacman["shouldRender"]);
+
+		// reset this
+		pacman["shouldRender"] = false;
 
 		// test the "RIGHT" direction
 		movementDirection = MovementDirection.RIGHT;
@@ -309,6 +326,7 @@ export default class MoveableTest extends Test {
 			pacman.getPosition().x
 		);
 		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertTrue(pacman["shouldRender"]);
 	}
 
 	/**
