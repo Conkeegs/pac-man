@@ -30,9 +30,9 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 	public override canBeCollidedByTypes: string[] = [PacMan.name];
 
 	/**
-	 * The directions that this board object must be moving in order to search for the nearest "teleport" position.
+	 * The directions that a moveable must be moving in order to teleport from this teleporter.
 	 */
-	private static readonly TELEPORTER_DIRECTIONS: MovementDirection[] = [
+	private static readonly ENTRANCE_DIRECTIONS: MovementDirection[] = [
 		MovementDirection.LEFT,
 		MovementDirection.RIGHT,
 	];
@@ -82,7 +82,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 		const linkedTeleporter = this.linkedTeleporter;
 		const currentDirection = collidableMoveable.getCurrentDirection()!;
 
-		if (!linkedTeleporter || !Teleporter.TELEPORTER_DIRECTIONS.includes(currentDirection)) {
+		if (!linkedTeleporter || !Teleporter.ENTRANCE_DIRECTIONS.includes(currentDirection)) {
 			return;
 		}
 
