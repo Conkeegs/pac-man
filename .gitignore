@@ -1,6 +1,5 @@
 .DS_Store
 ._*
-toDo.txt
 node_modules/**
 tsc-output.*
 dist/**

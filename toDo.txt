@@ -1,0 +1,67 @@
+CURRENT:
+    - controllable test
+
+ON DECK:
+    - animateables should be rendered in render() call
+    - is boardobject class needed anymore?...
+    - maybe turns should be positioned at the very end of tiles so there isn't such a sudden
+    "jerk" in characters' movements when they stop at a wall
+    - collision boxes with varying widths/heights
+    - timing decorator for all test methods
+    - debug helper class. get rid of all "debug" instances in app
+        - hitboxes should just give color to collisionbox boardobject, not currentCollidablePositionKey
+        a new div
+        - board grid
+        - board paths
+        - fps counter
+        - memory usage
+    - fix errors in test classes
+    - fix collision box size with pacman and turns
+    - fix tests looking for thrown errors, but errors only thrown when debuggin is enabled
+    - maybe put "checkForCollision()" from app in Collidable mixin class
+    - currentCollidablePositionKey should be returned in getter in Collidable mixin
+    - ghosts "jitter" when coming to a turn
+    - starting the game, tabbing out and waiting for a bit, and then entering back in will cause character animations
+    too mess up (ghosts). animations also start playing after a timer, and do not wait for game to be unpaused. maybe
+    playAnimation() being called more than once and it starts multiple intervals?...
+    - checkForCollision() should probably only increment through COLLIDABLES_MAP based
+    on direction board object is moving.
+    - reloading page from web console and then clicking into window causes frames to double in debug frame count?...
+    - characters shouldn't come to turn and if they go straight, "stop" moving and then "start" moving again
+
+EXTRA:
+    - DOM "window" references should only be used when they exist and in a browser context, otherwise use other methods?...
+    - write debug/warn logs where needed
+    - resource class for deleteable objects in the app class
+    - controller support
+    - throw error when turnQueue length > 1
+    - make sure widths and heights not bigger than tiles for boardobjects
+    - ghost-eating dots
+    - remake DebugWindow
+    - ghosts look for turn on their 10th frame, so they will phase through walls when on a very low fps
+    - all walls/main squares need "inner" elements so that they look hollow
+    - all walls need extra elements with clip-paths that make them look like they're "fused" into other walls
+    - look at global arrays/objects and see if their size can be reduced (for example render array can just contain callback functions,
+    game elements can just contain names to check for uniqueness).
+      maybe global arrays/objects should have a manager class for accessing their data
+    - prevent user highlighting on board
+    - pressing back and then going back to game causes fps increase. same with reloading from console and then tabbing to web screen
+    - maybe set _width and _height variables using css() method inside of base GameElement class
+
+    - importing non-ts files:
+        declare module "*!text" {
+            const content: string;
+            export default content;
+        }
+
+        // Some do it the other way around.
+        declare module "json!*" {
+            const value: any;
+            export default value;
+        }
+
+        import fileContent from "./xyz.txt!text";
+        import data from "json!http://example.com/data.json";
+        console.log(data, fileContent);
+    - running typescript from node:
+        npx ts-node src/foo.ts
