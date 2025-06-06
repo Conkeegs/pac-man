@@ -264,6 +264,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * Sets the current direction this character is moving.
 	 */
 	public setCurrentDirection(direction: MovementDirection): void {
+		this.dequeueTurns();
+
 		this.currentDirection = direction;
 	}
 
@@ -287,10 +289,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param options options that modify the way that this board object starts moving
 	 */
 	public startMoving(direction: MovementDirection, options?: StartMoveOptions) {
-		if (this.turnQueue.length) {
-			// reset turn queue each time we head in a new direction
-			this.dequeueTurns();
-		}
+		// reset turn queue each time we head in a new direction
+		this.dequeueTurns();
 
 		if (this.moving) {
 			this.stopMoving();
@@ -427,6 +427,13 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
+	 * Empties the turn queue for this board object.
+	 */
+	public dequeueTurns(): void {
+		this.turnQueue = [];
+	}
+
+	/**
 	 * Queues a turn for a future point in time so that when the board object reaches the threshold of the turn,
 	 * it will turn at it.
 	 *
@@ -434,10 +441,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param turn the turn location the board object wants to turn at in a future point in time
 	 */
 	protected queueTurn(direction: MovementDirection, turn: Turn): void {
-		if (this.turnQueue.length) {
-			// clear the queue if we're queueing a separate turn before another ones completes
-			this.dequeueTurns();
-		}
+		// clear the queue if we're queueing a separate turn before another one completes
+		this.dequeueTurns();
 
 		this.turnQueue.push({
 			direction,
@@ -455,13 +460,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	private distanceWithinDistancePerFrame(offset1: number, offset2: number): boolean {
 		return Math.abs(offset1 - offset2) <= this.distancePerFrame;
-	}
-
-	/**
-	 * Empties the turn queue for this board object.
-	 */
-	private dequeueTurns(): void {
-		this.turnQueue = [];
 	}
 
 	/**

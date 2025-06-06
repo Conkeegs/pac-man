@@ -37,16 +37,24 @@ export default class TurnTest extends Test {
 	 */
 	public onCollisionTest(): void {
 		const testTurn = new Turn("test-turn", [MovementDirection.LEFT, MovementDirection.RIGHT]);
+		let turnCenterPosition = testTurn.getCenterPosition();
 		const collidableMoveable = new PacMan();
 		const movementDirection = MovementDirection.RIGHT;
 
 		collidableMoveable["queueTurn"](movementDirection, testTurn);
 		testTurn.onCollision(collidableMoveable);
 
-		// valid turn allows collidableMoveable to start moving in one of its directions
-		this.assertTrue(collidableMoveable.isMoving());
 		this.assertStrictlyEqual(movementDirection, collidableMoveable.getCurrentDirection());
 		this.assertTrue(collidableMoveable["shouldRender"]);
+		this.assertTrue(
+			GameElement.positionsEqual(
+				{
+					x: turnCenterPosition.x - collidableMoveable.getWidth() / 2,
+					y: turnCenterPosition.y - collidableMoveable.getHeight() / 2,
+				},
+				collidableMoveable.getPosition()
+			)
+		);
 
 		// reset this
 		collidableMoveable["shouldRender"] = false;
@@ -64,7 +72,7 @@ export default class TurnTest extends Test {
 		});
 		testTurn.onCollision(collidableMoveable);
 
-		const turnCenterPosition = testTurn.getCenterPosition();
+		turnCenterPosition = testTurn.getCenterPosition();
 
 		this.assertStrictlyEqual(2, collidableMoveable._animationFrame);
 		this.assertFalse(collidableMoveable.isMoving());

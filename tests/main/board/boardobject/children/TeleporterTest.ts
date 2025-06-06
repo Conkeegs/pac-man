@@ -1,6 +1,7 @@
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import Teleporter from "../../../../../src/main/board/boardobject/children/Teleporter.js";
+import Turn from "../../../../../src/main/board/boardobject/children/Turn.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";
@@ -74,6 +75,7 @@ export default class TeleporterTest extends Test {
 		this.assertTrue(collidableMoveable.getShouldInterpolate());
 
 		collidableMoveable.startMoving(MovementDirection.RIGHT);
+		collidableMoveable["queueTurn"](MovementDirection.LEFT, new Turn("test-turn-1", [MovementDirection.LEFT]));
 		teleporter2.onCollision(collidableMoveable);
 
 		const teleporter1Position = teleporter1.getPosition();
@@ -83,11 +85,13 @@ export default class TeleporterTest extends Test {
 		this.assertStrictlyEqual(teleporter1Position.y, collidableMoveablePosition.y);
 		this.assertFalse(collidableMoveable.getShouldInterpolate());
 		this.assertTrue(collidableMoveable["shouldRender"]);
+		this.assertEmpty(collidableMoveable["turnQueue"]);
 
 		// reset this
 		collidableMoveable["shouldRender"] = false;
 
 		collidableMoveable.startMoving(MovementDirection.LEFT);
+		collidableMoveable["queueTurn"](MovementDirection.RIGHT, new Turn("test-turn-2", [MovementDirection.RIGHT]));
 		teleporter1.onCollision(collidableMoveable);
 
 		const teleporter2Position = teleporter2.getPosition();
@@ -96,5 +100,6 @@ export default class TeleporterTest extends Test {
 		this.assertStrictlyEqual(teleporter2Position.x - collidableMoveable.getWidth(), collidableMoveablePosition.x);
 		this.assertStrictlyEqual(teleporter2Position.y, collidableMoveablePosition.y);
 		this.assertTrue(collidableMoveable["shouldRender"]);
+		this.assertEmpty(collidableMoveable["turnQueue"]);
 	}
 }

@@ -113,9 +113,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 			y: linkedTeleporterPosition.y,
 		});
 		collidableMoveable.queueRenderUpdate();
-		// start moving board object in the same direction, again, because if we don't, the board object will still have "stale" data tied to it.
-		// for example, an "old" queued-turn, which was valid before the board object teleported, but invalid afterwards. it could also
-		// give pacman an invalid "nearestStoppingTurn", etc.
-		collidableMoveable.startMoving(currentDirection);
+		// dequeue any turns since object has teleported
+		collidableMoveable.dequeueTurns();
 	}
 }

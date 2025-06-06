@@ -85,13 +85,15 @@ export default class MoveableTest extends Test {
 	 */
 	public getTurnQueueTest(): void {
 		const moveable = new PacMan();
-		const turnQueue = moveable.getTurnQueue();
+		let turnQueue = moveable.getTurnQueue();
 
 		this.assertEmpty(turnQueue);
 
 		const testTurn = new Turn("test-turn", [MovementDirection.RIGHT]);
 
 		moveable["queueTurn"](MovementDirection.RIGHT, testTurn);
+
+		turnQueue = moveable.getTurnQueue();
 
 		this.assertStrictlyEqual(testTurn, turnQueue[0]!.turn);
 		this.assertStrictlyEqual(MovementDirection.RIGHT, turnQueue[0]!.direction);
@@ -653,8 +655,10 @@ export default class MoveableTest extends Test {
 		const moveable = new PacMan();
 		const direction = MovementDirection.LEFT;
 
+		moveable["queueTurn"](MovementDirection.RIGHT, new Turn("test-turn", [MovementDirection.RIGHT]));
 		moveable.setCurrentDirection(direction);
 
 		this.assertStrictlyEqual(direction, moveable.getCurrentDirection());
+		this.assertEmpty(moveable["turnQueue"]);
 	}
 }

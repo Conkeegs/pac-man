@@ -63,9 +63,9 @@ export default class Turn extends MakeCollidable(BoardObject) {
 			const queuedTurnInfoTurn = queuedTurnInfo.turn;
 
 			if (GameElement.positionsEqual(position, queuedTurnInfoTurn.getPosition())) {
-				collidableMoveable.startMoving(queuedTurnInfo.direction, {
-					fromTurn: this,
-				});
+				collidableMoveable.offsetPositionToTurn(this);
+				collidableMoveable.setCurrentDirection(queuedTurnInfo.direction);
+				collidableMoveable.queueRenderUpdate();
 
 				return;
 			}
