@@ -85,7 +85,7 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 			) {
 				// we don't need to provide the "fromTurn" parameter here since controllable is only turning around
 				// in the opposite direction instead of a 90-degree angle
-				this.startMoving(currentInputDirection);
+				this.setCurrentDirection(currentInputDirection);
 
 				return;
 			}
@@ -97,6 +97,8 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 			);
 
 			if (!nearestTurnableTurn) {
+				console.log("NO TURNABLE TURN");
+
 				return;
 			}
 

@@ -279,6 +279,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		this._framesTicking = 0;
 		this.moving = false;
 
+		// this.setShouldInterpolate(false);
 		App.getInstance().getMovingMoveableIds().delete(this.getUniqueId());
 	}
 

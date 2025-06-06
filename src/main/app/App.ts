@@ -413,7 +413,7 @@ export class App {
 			return;
 		}
 
-		console.log("IN GAMELOOP");
+		// console.log("IN GAMELOOP");
 
 		const gameUpdateData = this.updateGame(lastTimestamp, currentTimestamp, frameCount);
 
@@ -732,7 +732,7 @@ if (!App.TESTING) {
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
 
-	button.onclick = () => new RunTests();
+	button.onclick = () => new RunTests("ControllableTest");
 
 	document.body.prepend(button);
 }

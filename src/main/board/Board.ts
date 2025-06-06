@@ -5,9 +5,8 @@ import AssetRegistry from "../assets/AssetRegistry.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { GameElement, type Position } from "../gameelement/GameElement.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
+import { create, exists, fetchJSON, get, maybe, px } from "../utils/Utils.js";
 import { BoardObject } from "./boardobject/BoardObject.js";
-import Food from "./boardobject/children/Food.js";
 import Teleporter from "./boardobject/children/Teleporter.js";
 import Turn from "./boardobject/children/Turn.js";
 import Blinky from "./boardobject/children/character/Blinky.js";
@@ -384,44 +383,44 @@ export default class Board extends GameElement {
 	public async createMainBoardObjects(): Promise<void> {
 		await this.placeTurnBoardObjects();
 
-		const foodPositions: Position[] = [];
-		const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
+		// const foodPositions: Position[] = [];
+		// const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
 
-		// place all food on the board
-		for (const data of foodData) {
-			const x = data.x;
+		// // place all food on the board
+		// for (const data of foodData) {
+		// 	const x = data.x;
 
-			if (!Array.isArray(x)) {
-				const yValues = data.y as number[];
+		// 	if (!Array.isArray(x)) {
+		// 		const yValues = data.y as number[];
 
-				for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
-					// make sure food isn't already at the current position prevent overlaps
-					if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
-						this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i, true);
+		// 		for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
+		// 			// make sure food isn't already at the current position prevent overlaps
+		// 			if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
+		// 				this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i, true);
 
-						foodPositions.push({
-							x,
-							y: i,
-						});
-					}
-				}
-			} else {
-				const xValues = data.x as number[];
-				const y = data.y as number;
+		// 				foodPositions.push({
+		// 					x,
+		// 					y: i,
+		// 				});
+		// 			}
+		// 		}
+		// 	} else {
+		// 		const xValues = data.x as number[];
+		// 		const y = data.y as number;
 
-				for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
-					// make sure food isn't already at the current position prevent overlaps
-					if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
-						this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y, true);
+		// 		for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
+		// 			// make sure food isn't already at the current position prevent overlaps
+		// 			if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
+		// 				this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y, true);
 
-						foodPositions.push({
-							x: i,
-							y,
-						});
-					}
-				}
-			}
-		}
+		// 				foodPositions.push({
+		// 					x: i,
+		// 					y,
+		// 				});
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		this.placeBoardObject(new PacMan(), Board.PACMAN_SPAWN_X, Board.PACMAN_SPAWN_Y);
 
@@ -445,8 +444,8 @@ export default class Board extends GameElement {
 			new Pinky(),
 			// Board.PINKY_SPAWN_X,
 			// Board.PINKY_SPAWN_Y
-			Board.PACMAN_SPAWN_X,
-			Board.PINKY_SPAWN_Y
+			9,
+			Board.PACMAN_SPAWN_Y
 		);
 
 		this.placeBoardObject(

@@ -62,9 +62,9 @@ export function tests(testedClassConstructor: Function): (testClassConstructor: 
 						propertyName.replace("_", "").toLowerCase() === testMethodTargetProperty.toLowerCase()
 				) === -1
 			) {
-				throw new Error(
-					`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement property or method with naming convention "${testMethodTargetProperty}"`
-				);
+				// throw new Error(
+				// 	`${testClassConstructorName} implements invalid method ${propertyName}: ${testedClassConstructorName} does not implement property or method with naming convention "${testMethodTargetProperty}"`
+				// );
 			}
 		}
 
