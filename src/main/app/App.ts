@@ -504,7 +504,10 @@ export class App {
 					continue;
 				}
 
-				this.lookForCollisions(moveable as unknown as Moveable & Collidable, oldMoveableData[i]!.collisionBox!);
+				this.lookForCollidables(
+					moveable as unknown as Moveable & Collidable,
+					oldMoveableData[i]!.collisionBox!
+				);
 			}
 
 			frameCount++;
@@ -601,14 +604,14 @@ export class App {
 	}
 
 	/**
-	 * Handles looking for possible collisions between a moving collidable and any collidables around it.
+	 * Handles looking for collidables based on the passed in `collidable`'s position and speed.
 	 * This function doesn't call the actual collision handler methods, but instead will look through tiles
 	 * on the board and make sure that collidables that are near each other are checked for collisions.
 	 *
 	 * @param collidable a moveable, collidable board object
 	 * @param oldCollisionBox the old state of `collidable`'s collision box before ticking
 	 */
-	private lookForCollisions(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
+	private lookForCollidables(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
 		const collidablesMap = this.collidablesMap;
 		const tileKeys = collidable.getCurrentTileKeys();
 		let positionCollidables: Collidable[] = [];
