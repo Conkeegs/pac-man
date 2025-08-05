@@ -226,7 +226,7 @@ export default class BoardTest extends Test {
 	public async createMainBoardObjectsTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		await board.createMainBoardObjects();
+		await board["createMainBoardObjects"]();
 
 		let foodCount = 0;
 		let pacmanCount = 0;

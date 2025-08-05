@@ -732,7 +732,7 @@ if (!App.TESTING) {
 } else {
 	const button = create({ name: "button", html: "Run Tests" });
 
-	button.onclick = () => new RunTests("ControllableTest");
+	button.onclick = () => new RunTests();
 
 	document.body.prepend(button);
 }
