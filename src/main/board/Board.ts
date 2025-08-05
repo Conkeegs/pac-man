@@ -378,9 +378,18 @@ export default class Board extends GameElement {
 	}
 
 	/**
+	 * Destroys the board and the resources it's using.
+	 */
+	public override delete(): void {
+		this.turnMap.clear();
+
+		super.delete();
+	}
+
+	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
-	public async createMainBoardObjects(): Promise<void> {
+	private async createMainBoardObjects(): Promise<void> {
 		await this.placeTurnBoardObjects();
 
 		// const foodPositions: Position[] = [];
@@ -463,15 +472,6 @@ export default class Board extends GameElement {
 		rightTeleporter.link(leftTeleporter);
 		this.placeBoardObject(leftTeleporter, -1.5, 18.25);
 		this.placeBoardObject(rightTeleporter, 30.5, 18.25);
-	}
-
-	/**
-	 * Destroys the board and the resources it's using.
-	 */
-	public override delete(): void {
-		this.turnMap.clear();
-
-		super.delete();
 	}
 
 	/**
