@@ -91,9 +91,8 @@ export default class ControllableTest extends Test {
 		app["board"] = Board.getInstance();
 
 		app["board"].getTurnMap().set(Board.createTileKey(turnTileX, turnTileY), testTurn);
+		app["board"]["placeBoardObject"](controllable, turnTileX - 1, turnTileY, true);
 		app["board"]["placeBoardObject"](testTurn, turnTileX, turnTileY, true);
-
-		console.log("BEFORE CALL");
 
 		controllable.handleInput(code);
 
