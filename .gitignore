@@ -4,3 +4,4 @@ node_modules/**
 tsc-output.*
 dist/**
 src-copy
+toDo.txt

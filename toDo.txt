@@ -1,5 +1,5 @@
 CURRENT:
-    - controllable test
+    - 
 
 ON DECK:
     - animateables should be rendered in render() call
@@ -15,9 +15,8 @@ ON DECK:
         - board paths
         - fps counter
         - memory usage
-    - fix errors in test classes
     - fix collision box size with pacman and turns
-    - fix tests looking for thrown errors, but errors only thrown when debuggin is enabled
+    - fix tests looking for thrown errors, but errors only thrown when debugging is enabled
     - maybe put "checkForCollision()" from app in Collidable mixin class
     - currentCollidablePositionKey should be returned in getter in Collidable mixin
     - ghosts "jitter" when coming to a turn
