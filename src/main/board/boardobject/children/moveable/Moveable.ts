@@ -363,7 +363,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * passes `filter`'s criteria.
 	 *
 	 * @param filter given a turn, this function decides whether the turn falls under a specified criteria
-	 * @param callback any logic to run when a turn falls under `filter`'s criteria
+	 * @param direction direction used to search for relevant turns (i.e. to the "right" of a direction)
 	 * @returns the closest turn to this board object that falls under `filter`'s criteria
 	 */
 	public findNearestTurnForDirectionWhere(
