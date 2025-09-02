@@ -125,7 +125,7 @@ export default class AppTest extends Test {
 	public getToRenderGameElementIdsTest(): void {
 		const gameElement = new (class extends BoardObject {})("test-board-object", 0, 0);
 
-		gameElement["queueRenderUpdate"](() => {});
+		gameElement["queueRenderUpdate"]();
 
 		const toRenderGameElementIds = App.getInstance().getToRenderGameElementIds();
 
@@ -225,9 +225,7 @@ export default class AppTest extends Test {
 		let animateableGameElementIdValues = app.getAnimateableGameElementIds().values();
 
 		// queue render update for a single board object
-		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as BoardObject)["queueRenderUpdate"](
-			() => {}
-		);
+		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as BoardObject)["queueRenderUpdate"]();
 
 		this.assertTrue(app.getCollidablesMap().size > 0);
 		this.assertNotEmpty(app["eventListeners"]);
@@ -321,7 +319,7 @@ export default class AppTest extends Test {
 		const app = App.getInstance();
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		// app not running so nothing should happen
 		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
@@ -330,14 +328,14 @@ export default class AppTest extends Test {
 		app["gamePaused"] = true;
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		// app paused so nothing should happen
 		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
 		app["gamePaused"] = false;
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		// accumulator should be 0 since falsy "lastTimestamp"
 		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
@@ -355,7 +353,7 @@ export default class AppTest extends Test {
 		// giving input, so handleInput should not be called
 		app["inputHandler"]["listenForKeydown"] = true;
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		this.assertOfType("undefined", controllable["currentInputCode" as keyof Controllable]);
 		this.assertOfType("undefined", controllable["inputWasHandled" as keyof Controllable]);
@@ -364,7 +362,7 @@ export default class AppTest extends Test {
 		// giving keydown input
 		app["inputHandler"]["listenForKeydown"] = false;
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		this.assertStrictlyEqual(currentInputCode, controllable["currentInputCode" as keyof Controllable]);
 		this.assertTrue(controllable["inputWasHandled" as keyof Controllable]);
@@ -389,7 +387,7 @@ export default class AppTest extends Test {
 		// catchup. since we're setting the deltaTimeAccumulator here to our DESIRED_MS_PER_FRAME
 		// multiplied by 4, the updateGame function should update each moveable 3 times in one run
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME * 4;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			const distance3Times = moveable.getDistancePerFrame() * 3;
@@ -415,7 +413,7 @@ export default class AppTest extends Test {
 		}
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
@@ -432,7 +430,7 @@ export default class AppTest extends Test {
 		}
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
@@ -455,7 +453,7 @@ export default class AppTest extends Test {
 		};
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
@@ -476,7 +474,7 @@ export default class AppTest extends Test {
 		};
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -498,7 +496,7 @@ export default class AppTest extends Test {
 		};
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -517,7 +515,7 @@ export default class AppTest extends Test {
 		}
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -533,7 +531,7 @@ export default class AppTest extends Test {
 		}
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0);
+		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
@@ -550,10 +548,11 @@ export default class AppTest extends Test {
 		// lastTimestamp should always be returned as equal to currentTimestamp
 		// and the new frameCount will be the one passed in here incremented 3 times
 		// (due to above deltaTimeAccumulator value)
-		const gameUpdateData = app["updateGame"](0, currentTimestamp, 0);
+		const gameUpdateData = app["updateGame"](0, currentTimestamp, 0, 0);
 
 		this.assertStrictlyEqual(currentTimestamp, gameUpdateData.lastTimestamp);
-		this.assertStrictlyEqual(3, gameUpdateData.newFrameCount);
+		this.assertStrictlyEqual(1, gameUpdateData.newVariableFrameCount);
+		this.assertStrictlyEqual(3, gameUpdateData.newFixedFrameCount);
 	}
 
 	/**
@@ -621,7 +620,7 @@ export default class AppTest extends Test {
 
 		const app = App.getInstance();
 
-		app["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
+		app["lookForCollidables"](referenceCollidable, referenceCollidableCollisionBox);
 
 		this.assertOfType("undefined", referenceCollidable["wasCollidedWith" as keyof Moveable]);
 
@@ -631,7 +630,7 @@ export default class AppTest extends Test {
 			y: referenceCollidablePosition.y,
 		});
 
-		app["lookForCollisions"](referenceCollidable, referenceCollidableCollisionBox);
+		app["lookForCollidables"](referenceCollidable, referenceCollidableCollisionBox);
 
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);
 
@@ -656,7 +655,7 @@ export default class AppTest extends Test {
 		// mark deleted so collision detection does not happen
 		referenceCollidable["deleted"] = true;
 
-		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
+		app["lookForCollidables"](referenceCollidable, oldCollisionBox);
 
 		// should not happen since reference collidable marked deleted
 		this.assertStrictlyEqual(false, referenceCollidable["wasCollidedWith" as keyof Moveable]);
@@ -666,7 +665,7 @@ export default class AppTest extends Test {
 		// mark deleted so collision does not happen, once again
 		collidedWithTester["deleted"] = true;
 
-		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
+		app["lookForCollidables"](referenceCollidable, oldCollisionBox);
 
 		// should not happen since collidedWithTester collidable marked deleted
 		this.assertStrictlyEqual(false, referenceCollidable["wasCollidedWith" as keyof Moveable]);
@@ -674,7 +673,7 @@ export default class AppTest extends Test {
 
 		collidedWithTester["deleted"] = false;
 
-		app["lookForCollisions"](referenceCollidable, oldCollisionBox);
+		app["lookForCollidables"](referenceCollidable, oldCollisionBox);
 
 		// CCD should have found "collidedWithTester"
 		this.assertStrictlyEqual(true, referenceCollidable["wasCollidedWith" as keyof Moveable]);

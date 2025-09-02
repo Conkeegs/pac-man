@@ -37,9 +37,13 @@ type GameUpdateData = {
 	 */
 	lastTimestamp: number;
 	/**
-	 * The current frame iteration of the game.
+	 * The current variable frame iteration of the game.
 	 */
-	newFrameCount: number;
+	newVariableFrameCount: number;
+	/**
+	 * The current fixed frame iteration of the game.
+	 */
+	newFixedFrameCount: number;
 };
 
 /**
@@ -145,14 +149,14 @@ export class App {
 	 */
 	private collidablesMap: Map<string, Collidable[]> = new Map();
 	/**
-	 * The desired frames-per-second that the game should update at.
-	 */
-	private static readonly DESIRED_FPS: 30 = 30;
-	/**
 	 * Input handler for the game.
 	 */
 	private inputHandler: InputHandler;
 
+	/**
+	 * The desired frames-per-second that the game should update at.
+	 */
+	public static readonly DESIRED_FPS: 60 = 60;
 	/**
 	 * The rough amount of milliseconds that should pass before the game updates each frame.
 	 */
@@ -162,7 +166,7 @@ export class App {
 	/**
 	 * Whether or not the app is in testing mode.
 	 */
-	public static TESTING: boolean = true;
+	public static TESTING: boolean = false;
 	// #!END_DEBUG
 
 	/**
@@ -255,6 +259,15 @@ export class App {
 	}
 
 	/**
+	 * Get the board the app is displaying.
+	 *
+	 * @returns board game is displayed on
+	 */
+	public getBoard(): Board | undefined {
+		return this.board;
+	}
+
+	/**
 	 * Get whether or not the game is paused.
 	 *
 	 * @returns whether or not the game is paused
@@ -307,6 +320,7 @@ export class App {
 		if (Debugging.isEnabled()) {
 			Debugging.showHitBoxes();
 			Debugging.showBoardGrid();
+			Debugging.enableFpsCounter();
 		}
 		// #!END_DEBUG
 	}
@@ -370,7 +384,7 @@ export class App {
 			}
 		}
 
-		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0));
+		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0, 0));
 	}
 
 	/**
@@ -406,19 +420,30 @@ export class App {
 	 *
 	 * @param lastTimestamp the last `timeStamp` value
 	 * @param currentTimestamp the current timestamp of the game in milliseconds
-	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
+	 * @param variableFrameCount initial variable timestep counted frames
+	 * @param fixedFrameCount initial fixed timestep counted frames
 	 */
-	private gameLoop(lastTimestamp: number, currentTimestamp: number, frameCount: number): void {
+	private gameLoop(
+		lastTimestamp: number,
+		currentTimestamp: number,
+		variableFrameCount: number,
+		fixedFrameCount: number
+	): void {
 		if (!this.running || this.gamePaused) {
 			return;
 		}
 
 		// console.log("IN GAMELOOP");
 
-		const gameUpdateData = this.updateGame(lastTimestamp, currentTimestamp, frameCount);
+		const gameUpdateData = this.updateGame(lastTimestamp, currentTimestamp, variableFrameCount, fixedFrameCount);
 
 		this.animationFrameId = requestAnimationFrame((timeStampNew) =>
-			this.gameLoop(gameUpdateData.lastTimestamp, timeStampNew, gameUpdateData.newFrameCount)
+			this.gameLoop(
+				gameUpdateData.lastTimestamp,
+				timeStampNew,
+				gameUpdateData.newVariableFrameCount,
+				gameUpdateData.newFixedFrameCount
+			)
 		);
 	}
 
@@ -428,11 +453,23 @@ export class App {
 	 *
 	 * @param lastTimestamp the last `timeStamp` value
 	 * @param currentTimestamp the current timestamp of the game in milliseconds
-	 * @param frameCount the amount of frames rendered by the game (updated around every `DESIRED_MS_PER_FRAME` frames)
+	 * @param variableFrameCount the amount of frames rendered by the game, variable timestep
+	 * @param fixedFrameCount the amount of frames rendered by the game, fixed timestep
 	 * @returns game state data to be used in the next loop of the game
 	 */
-	private updateGame(lastTimestamp: number, currentTimestamp: number, frameCount: number): GameUpdateData {
+	private updateGame(
+		lastTimestamp: number,
+		currentTimestamp: number,
+		variableFrameCount: number,
+		fixedFrameCount: number
+	): GameUpdateData {
 		let deltaTime = currentTimestamp - lastTimestamp;
+
+		// #!DEBUG
+		if (Debugging.isEnabled()) {
+			Debugging.updateFpsCounter(deltaTime, variableFrameCount, fixedFrameCount);
+		}
+		// #!END_DEBUG
 
 		// prevent spiral of death
 		if (deltaTime > 250) {
@@ -510,7 +547,7 @@ export class App {
 				);
 			}
 
-			frameCount++;
+			fixedFrameCount++;
 			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 		}
 
@@ -578,7 +615,7 @@ export class App {
 
 		lastTimestamp = currentTimestamp;
 
-		return { lastTimestamp, newFrameCount: frameCount };
+		return { lastTimestamp, newVariableFrameCount: ++variableFrameCount, newFixedFrameCount: fixedFrameCount };
 	}
 
 	/**

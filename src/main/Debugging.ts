@@ -62,12 +62,58 @@ export default abstract class Debugging {
 	 * Whether or not debugging in the app is enabled.
 	 */
 	private static enabled: true | false = true as const;
+	private static fpsCounterAccumulator: number = 0;
+	private static lastVariableFrameCountDisplayed: number = 0;
+	private static lastFixedFrameCountDisplayed: number = 0;
+	private static variableFpsCounterText: BoardText | undefined;
+	private static fixedFpsCounterText: BoardText | undefined;
 
 	/**
 	 * Get whether or not debugging in the app is enabled.
 	 */
 	public static isEnabled(): true | false {
 		return Debugging.enabled;
+	}
+
+	/**
+	 * Creates necessary text for displaying frames-per-second.
+	 */
+	public static enableFpsCounter(): void {
+		Debugging.variableFpsCounterText = new BoardText({
+			name: "variable-fps-counter",
+			text: "",
+		});
+		Debugging.fixedFpsCounterText = new BoardText({
+			name: "fixed-fps-counter",
+			text: "",
+		});
+
+		App.getInstance().getBoard()?.["placeBoardObject"](Debugging.variableFpsCounterText, -5, 32);
+		App.getInstance().getBoard()?.["placeBoardObject"](Debugging.fixedFpsCounterText, -5, 31);
+	}
+
+	/**
+	 * Updates fps counter every frame.
+	 *
+	 * @param deltaTime time since last frame
+	 * @param variableFrameCount current variable-rate frame
+	 * @param fixedFrameCount current fixed-rate frame
+	 */
+	public static updateFpsCounter(deltaTime: number, variableFrameCount: number, fixedFrameCount: number): void {
+		Debugging.fpsCounterAccumulator += deltaTime;
+
+		if (Debugging.fpsCounterAccumulator >= 1000) {
+			Debugging.variableFpsCounterText?.setText(
+				`FPS(variable):${variableFrameCount - Debugging.lastVariableFrameCountDisplayed}`
+			);
+			Debugging.fixedFpsCounterText?.setText(
+				`FPS(fixed):${fixedFrameCount - Debugging.lastFixedFrameCountDisplayed}`
+			);
+
+			Debugging.fpsCounterAccumulator = 0;
+			Debugging.lastFixedFrameCountDisplayed = fixedFrameCount;
+			Debugging.lastVariableFrameCountDisplayed = variableFrameCount;
+		}
 	}
 
 	/**
