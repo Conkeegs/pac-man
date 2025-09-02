@@ -108,9 +108,7 @@ export default class CharacterTest extends Test {
 		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
-		pacman.startMoving(movementDirection, {
-			fromTurn: turn,
-		});
+		pacman.startMoving(movementDirection);
 
 		this.assertTrue(pacman.isMoving());
 

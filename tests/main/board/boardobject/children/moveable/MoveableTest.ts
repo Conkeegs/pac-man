@@ -178,22 +178,14 @@ export default class MoveableTest extends Test {
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
 		pacman.stopMoving();
-		pacman.startMoving(movementDirection, {
-			fromTurn: turn,
-		});
-
-		const position = pacman.getPosition();
-		const turnCenterPosition = turn.getCenterPosition();
+		pacman.startMoving(movementDirection);
 
 		this.assertTrue(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
 		this.assertOfType("number", pacman["_animationIntervalId"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMovementDirection());
-		this.assertStrictlyEqual(turnCenterPosition.x - pacman.getWidth()! / 2, position.x);
-		this.assertStrictlyEqual(turnCenterPosition.y - pacman.getHeight()! / 2, position.y);
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
-		this.assertTrue(pacman["shouldRender"]);
 
 		pacman.stopMoving();
 	}

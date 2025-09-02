@@ -5,7 +5,6 @@ import { defined, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.
 import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
 import type { Collidable } from "../../mixins/Collidable.js";
 import MakeControllable from "../moveable/mixins/Controllable.js";
-import type { StartMoveOptions } from "../moveable/Moveable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 import type Turn from "../Turn.js";
@@ -81,14 +80,14 @@ export default class PacMan extends MakeControllable(Character) {
 	 * Overrides `Character.startMoving()` since pacman needs to keep track of whether he's spawning or not.
 	 *
 	 */
-	public override startMoving(direction: MovementDirection, options?: StartMoveOptions): void {
+	public override startMoving(direction: MovementDirection): void {
 		if (this.spawning) {
 			this.spawning = false;
 		}
 
 		this.stoppedAtTurn = undefined;
 
-		super.startMoving(direction, options);
+		super.startMoving(direction);
 	}
 
 	/**

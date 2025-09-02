@@ -27,18 +27,6 @@ type MovementMethods = {
 };
 
 /**
- * Options that modify the way that this board object starts moving
- */
-export type StartMoveOptions = {
-	/**
-	 * Optional parameter which tells the location that the board object is turning at. This might not
-	 * be provided because it's possible that this board object is simply "turning around" in the opposite direction of
-	 * where it is currently heading, and not making a 90 degree turn.
-	 */
-	fromTurn?: Turn;
-};
-
-/**
  * Represents data present within a moveable's turn queue such as the direction it will turn
  * and the turn object at which it will turn.
  */
@@ -289,20 +277,12 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param direction the direction the board object is currently trying to move in
 	 * @param options options that modify the way that this board object starts moving
 	 */
-	public startMoving(direction: MovementDirection, options?: StartMoveOptions) {
+	public startMoving(direction: MovementDirection) {
 		// reset turn queue each time we head in a new direction
 		this.dequeueTurns();
 
 		if (this.moving) {
 			this.stopMoving();
-		}
-
-		const fromTurn = options?.fromTurn;
-
-		if (fromTurn) {
-			// snap to turn-position to keep collision detection consistent
-			this.offsetPositionToTurn(fromTurn);
-			this.queueRenderUpdate();
 		}
 
 		// set this board object's current direction since we now know that it's going to start moving

@@ -78,23 +78,12 @@ export default class Turn extends MakeCollidable(BoardObject) {
 		const currentDirection = collidableMoveable.getCurrentDirection()!;
 
 		if (Moveable.canTurnWithMoveDirection(currentDirection, this)) {
-			// const currentInputDirection = collidableMoveable.getCurrentInputDirection()!;
-
-			// if (
-			// 	currentDirection != currentInputDirection &&
-			// 	Moveable.canTurnWithMoveDirection(currentInputDirection, this)
-			// ) {
-			// 	collidableMoveable.startMoving(currentInputDirection, {
-			// 		fromTurn: this,
-			// 	});
-			// }
-
 			return;
 		}
 
 		// we know at this point that pacman must stop at this turn.
 
-		// don't allow pacman to stop against walls when his mouth is closed. otherwise, visually updating his rotation
+		// don't allow pacman to stop against walls when his mouth is closed. otherwise, updating his rotation
 		// when users are against walls does not make a visual change
 		if (collidableMoveable._animationFrame === 1) {
 			collidableMoveable._animationFrame++;

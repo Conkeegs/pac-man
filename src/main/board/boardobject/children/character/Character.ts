@@ -5,7 +5,7 @@ import Board from "../../../../board/Board.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import MakeAnimateable from "../../mixins/Animateable.js";
 import MakeCollidable from "../../mixins/Collidable.js";
-import Moveable, { type StartMoveOptions } from "../moveable/Moveable.js";
+import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 
 /**
@@ -84,8 +84,8 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	/**
 	 * Starts moving this character and plays its animation.
 	 */
-	public override startMoving(direction: MovementDirection, options?: StartMoveOptions) {
-		super.startMoving(direction, options);
+	public override startMoving(direction: MovementDirection) {
+		super.startMoving(direction);
 		// start playing this character's animations as they move.
 		this.playAnimation();
 	}

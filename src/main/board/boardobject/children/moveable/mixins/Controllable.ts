@@ -83,8 +83,6 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 				currentInputDirection ==
 				Moveable.directionOpposites[currentDirection as keyof typeof Moveable.directionOpposites]
 			) {
-				// we don't need to provide the "fromTurn" parameter here since controllable is only turning around
-				// in the opposite direction instead of a 90-degree angle
 				this.setCurrentDirection(currentInputDirection);
 
 				return;
