@@ -558,6 +558,10 @@ export class App {
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
 
+				if (moveable.getDeleted()) {
+					continue;
+				}
+
 				if (!moveable.getShouldInterpolate()) {
 					moveable.setShouldInterpolate(true);
 
@@ -667,7 +671,7 @@ export class App {
 
 		// if the collidable doesn't move a greater distance than its collision box each frame,
 		// we can stop here
-		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth()) || collidable.getDeleted()) {
+		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
 			return;
 		}
 

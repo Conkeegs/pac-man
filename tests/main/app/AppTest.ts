@@ -397,7 +397,7 @@ export default class AppTest extends Test {
 			// render() calls should have happened too, so transform is updated
 			this.assertStrictlyEqual(distance3Times, moveable.getTransform().x);
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertTrue(moveable["wasInterpolated" as keyof Moveable]);
+			this.assertOfType("undefined", moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		this.assertStrictlyEqual(0, app.getToRenderGameElementIds().size);
@@ -478,7 +478,7 @@ export default class AppTest extends Test {
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(true, moveable["wasInterpolated" as keyof Moveable]);
+			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		// test that moveables collide, but if they are marked as "shouldn't interpolate", they don't interpolate
