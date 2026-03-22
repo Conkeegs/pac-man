@@ -242,7 +242,7 @@ export default class AppTest extends Test {
 		while (!animateableGameElementId.done) {
 			this.assertOfType(
 				"undefined",
-				(gameElementsMap.get(animateableGameElementId.value) as Animateable)._animationIntervalId
+				(gameElementsMap.get(animateableGameElementId.value) as Animateable)._animationIntervalId,
 			);
 
 			animateableGameElementId = animateableGameElementIdValues.next();
@@ -587,7 +587,7 @@ export default class AppTest extends Test {
 			() => {
 				changedVariable++;
 			},
-			element
+			element,
 		);
 
 		this.assertArrayLength(1, app["eventListeners"]);
@@ -596,7 +596,7 @@ export default class AppTest extends Test {
 		element.dispatchEvent(
 			new KeyboardEvent("keydown", {
 				code: "KeyA",
-			})
+			}),
 		);
 
 		this.assertStrictlyEqual(1, changedVariable);
@@ -695,7 +695,7 @@ export default class AppTest extends Test {
 		positionCollidables.push(
 			new CollidedWithTesterDeletes("collided-with-tester-1", 10, 10),
 			new CollidedWithTesterDeletes("collided-with-tester-2", 10, 10),
-			new CollidedWithTesterDeletes("collided-with-tester-3", 10, 10)
+			new CollidedWithTesterDeletes("collided-with-tester-3", 10, 10),
 		);
 
 		const firstCollidable = positionCollidables[0]!;

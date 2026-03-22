@@ -427,7 +427,7 @@ export class App {
 		lastTimestamp: number,
 		currentTimestamp: number,
 		variableFrameCount: number,
-		fixedFrameCount: number
+		fixedFrameCount: number,
 	): void {
 		if (!this.running || this.gamePaused) {
 			return;
@@ -442,8 +442,8 @@ export class App {
 				gameUpdateData.lastTimestamp,
 				timeStampNew,
 				gameUpdateData.newVariableFrameCount,
-				gameUpdateData.newFixedFrameCount
-			)
+				gameUpdateData.newFixedFrameCount,
+			),
 		);
 	}
 
@@ -461,7 +461,7 @@ export class App {
 		lastTimestamp: number,
 		currentTimestamp: number,
 		variableFrameCount: number,
-		fixedFrameCount: number
+		fixedFrameCount: number,
 	): GameUpdateData {
 		let deltaTime = currentTimestamp - lastTimestamp;
 
@@ -543,7 +543,7 @@ export class App {
 
 				this.lookForCollidables(
 					moveable as unknown as Moveable & Collidable,
-					oldMoveableData[i]!.collisionBox!
+					oldMoveableData[i]!.collisionBox!,
 				);
 			}
 
@@ -628,7 +628,7 @@ export class App {
 	public addEventListenerToElement<K extends keyof HTMLElementEventMap>(
 		eventName: K,
 		callback: (event: Event) => void,
-		element: HTMLElement | Window = window
+		element: HTMLElement | Window = window,
 	): void {
 		element.addEventListener(eventName, callback);
 
@@ -678,7 +678,7 @@ export class App {
 			Math.min(oldCollisionBox.getLeft(), collisionBox.getLeft()),
 			Math.max(oldCollisionBox.getRight(), collisionBox.getRight()),
 			Math.min(oldCollisionBox.getTop(), collisionBox.getTop()),
-			Math.max(oldCollisionBox.getBottom(), collisionBox.getBottom())
+			Math.max(oldCollisionBox.getBottom(), collisionBox.getBottom()),
 		);
 		const sweptTileKeys = sweptCollisionBox.findTileKeys();
 
@@ -713,7 +713,7 @@ export class App {
 	private static checkForCollision(
 		collidable: Collidable,
 		positionCollidables: Collidable[],
-		ccdData?: CCDData
+		ccdData?: CCDData,
 	): void {
 		const positionCollidablesLength = positionCollidables.length;
 
