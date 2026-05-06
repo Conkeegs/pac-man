@@ -219,7 +219,7 @@ export default class CollisionBox extends GameElement {
 			Board.positionDistanceToLineSegment(position, topLeftCorner, topRightCorner),
 			Board.positionDistanceToLineSegment(position, topRightCorner, bottomRightCorner),
 			Board.positionDistanceToLineSegment(position, bottomRightCorner, bottomLeftCorner),
-			Board.positionDistanceToLineSegment(position, bottomLeftCorner, topLeftCorner)
+			Board.positionDistanceToLineSegment(position, bottomLeftCorner, topLeftCorner),
 		);
 	}
 

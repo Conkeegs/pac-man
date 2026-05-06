@@ -123,7 +123,7 @@ export abstract class GameElement {
 					DebugWindow.error(
 						"GameElement.js",
 						"constructor",
-						`A GameElement with the name '${name}' already exists`
+						`A GameElement with the name '${name}' already exists`,
 					);
 				}
 			}

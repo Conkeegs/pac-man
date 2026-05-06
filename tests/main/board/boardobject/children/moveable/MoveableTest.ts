@@ -25,7 +25,7 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
 		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable["distancePerFrame"]
+			moveable["distancePerFrame"],
 		);
 	}
 
@@ -76,7 +76,7 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable.getDistancePerFrame()
+			moveable.getDistancePerFrame(),
 		);
 	}
 
@@ -475,7 +475,7 @@ export default class MoveableTest extends Test {
 
 		let nearestTurn = moveable["findNearestTurnForDirectionWhere"](
 			(turn) => turn.getPosition().x === moveableCenterPosition.x + 40,
-			direction
+			direction,
 		)!;
 		let nearestTurnPosition = nearestTurn.getPosition();
 		let actualNearestTurnPosition = turnMap
@@ -507,7 +507,7 @@ export default class MoveableTest extends Test {
 
 		nearestTurn = moveable["findNearestTurnForDirectionWhere"](
 			(turn) => turn.getPosition().y === moveableCenterPosition.y - 40,
-			direction
+			direction,
 		)!;
 		nearestTurnPosition = nearestTurn.getPosition();
 		actualNearestTurnPosition = turnMap.get(Board.tileKeyFromPosition(turn4.getCenterPosition()))!.getPosition();
@@ -538,7 +538,7 @@ export default class MoveableTest extends Test {
 
 		nearestTurn = moveable["findNearestTurnForDirectionWhere"](
 			(turn) => turn.getPosition().y === moveableCenterPosition.y + 40,
-			direction
+			direction,
 		)!;
 		nearestTurnPosition = nearestTurn.getPosition();
 		actualNearestTurnPosition = turnMap.get(Board.tileKeyFromPosition(turn5.getCenterPosition()))!.getPosition();

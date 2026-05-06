@@ -22,7 +22,7 @@ type MovementMethods = {
 		/**
 		 * The amount of pixels to change the `translateX` or `translateY` value (negative or positive).
 		 */
-		amount: number
+		amount: number,
 	) => void;
 };
 
@@ -348,7 +348,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	public findNearestTurnForDirectionWhere(
 		filter: (turn: Turn) => boolean,
-		direction: MovementDirection
+		direction: MovementDirection,
 	): Turn | undefined {
 		const turnMap = Board.getInstance().getTurnMap();
 
