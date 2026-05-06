@@ -1,7 +1,7 @@
 import { App } from "../app/App.js";
 import Debugging from "../Debugging.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
-import { create, px } from "../utils/Utils.js";
+import { create, px, uniqueId } from "../utils/Utils.js";
 
 /**
  * Represents a game element's horizontal and vertical offsets in the game.
@@ -92,7 +92,7 @@ export abstract class GameElement {
 	 * The game element's unique name and HTML id.
 	 */
 	private readonly name: string;
-	private readonly uniqueId: number;
+	private readonly uniqueId: string;
 	/**
 	 * Whether or not this game element is marked as deleted.
 	 */
@@ -134,7 +134,7 @@ export abstract class GameElement {
 
 		const gameElementsMap = App.getInstance().getGameElementsMap();
 
-		this.uniqueId = gameElementsMap.size + 1;
+		this.uniqueId = uniqueId();
 		this._width = width;
 		this._height = height;
 
@@ -184,12 +184,12 @@ export abstract class GameElement {
 	}
 
 	/**
-	 * Gets the unique number-id of this game element. Primarily used for indexing into
+	 * Gets the unique string-id of this game element. Primarily used for indexing into
 	 * the `gameElementsMap` of the `App` class.
 	 *
 	 * @returns unique number-id of this game element
 	 */
-	public getUniqueId(): number {
+	public getUniqueId(): string {
 		return this.uniqueId;
 	}
 

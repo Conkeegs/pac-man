@@ -114,31 +114,31 @@ export class App {
 	 * `Map` of classes that extends the `GameElement` class so we can add/remove them when needed,
 	 * and also check for duplicates since each of them have unique `name` properties.
 	 */
-	private gameElementsMap: Map<number, GameElement> = new Map();
+	private gameElementsMap: Map<string, GameElement> = new Map();
 	/**
 	 * Ids of game elements that are marked as delete currently.
 	 */
-	private deletedGameElementIds: Set<number> = new Set();
+	private deletedGameElementIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that are queued to be rendered.
 	 */
-	private toRenderGameElementIds: Set<number> = new Set();
+	private toRenderGameElementIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that are currently moving.
 	 */
-	private movingMoveableIds: Set<number> = new Set();
+	private movingMoveableIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that are animateable.
 	 */
-	private animateableGameElementIds: Set<number> = new Set();
+	private animateableGameElementIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that have event listeners.
 	 */
-	private listenableGameElementIds: Set<number> = new Set();
+	private listenableGameElementIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that are controllable.
 	 */
-	private controllableGameElementIds: Set<number> = new Set();
+	private controllableGameElementIds: Set<string> = new Set();
 	/**
 	 * Event listeners registered in the app.
 	 */
@@ -190,7 +190,7 @@ export class App {
 	 *
 	 * @returns map of game elements in the app
 	 */
-	public getGameElementsMap(): Map<number, GameElement> {
+	public getGameElementsMap(): Map<string, GameElement> {
 		return this.gameElementsMap;
 	}
 
@@ -199,7 +199,7 @@ export class App {
 	 *
 	 * @returns set ids of game elements marked as deleted
 	 */
-	public getDeletedGameElementIds(): Set<number> {
+	public getDeletedGameElementIds(): Set<string> {
 		return this.deletedGameElementIds;
 	}
 
@@ -208,7 +208,7 @@ export class App {
 	 *
 	 * @returns set of ids of game elements queued for rendering
 	 */
-	public getToRenderGameElementIds(): Set<number> {
+	public getToRenderGameElementIds(): Set<string> {
 		return this.toRenderGameElementIds;
 	}
 
@@ -217,7 +217,7 @@ export class App {
 	 *
 	 * @returns set of ids of game elements that are moving
 	 */
-	public getMovingMoveableIds(): Set<number> {
+	public getMovingMoveableIds(): Set<string> {
 		return this.movingMoveableIds;
 	}
 
@@ -226,7 +226,7 @@ export class App {
 	 *
 	 * @returns set of ids of game elements that are animateable
 	 */
-	public getAnimateableGameElementIds(): Set<number> {
+	public getAnimateableGameElementIds(): Set<string> {
 		return this.animateableGameElementIds;
 	}
 
@@ -235,7 +235,7 @@ export class App {
 	 *
 	 * @returns set of ids of game elements that are listenable
 	 */
-	public getListenableGameElementIds(): Set<number> {
+	public getListenableGameElementIds(): Set<string> {
 		return this.listenableGameElementIds;
 	}
 
@@ -244,7 +244,7 @@ export class App {
 	 *
 	 * @returns game element ids that are controllable
 	 */
-	public getControllableGameElementIds(): Set<number> {
+	public getControllableGameElementIds(): Set<string> {
 		return this.controllableGameElementIds;
 	}
 
@@ -518,7 +518,7 @@ export class App {
 
 		const movingMoveablesLength = movingMoveables.length;
 		// keep track of old moveable data so we can use it later (after ticking)
-		const oldMoveableData: Map<number, OldMoveableData> = new Map();
+		const oldMoveableData: Map<string, OldMoveableData> = new Map();
 
 		// tick board objects and check for collisions. fixed timestep
 		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
