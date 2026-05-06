@@ -29,7 +29,7 @@ export const MAX_PLAYABLE_TILE_X: 27 = 27;
 /**
  * Smallest y-tile number that players can regularly play inside of.
  */
-export const MIN_PLAYABLE_TILE_Y: 3 = 3;
+export const MIN_PLAYABLE_TILE_Y: 2 = 2;
 /**
  * Highest y-tile number that players can regularly play inside of.
  */
