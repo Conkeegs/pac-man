@@ -10,7 +10,7 @@ import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
 import Debugging from "../Debugging.js";
 import CollisionBox from "../gameelement/CollisionBox.js";
 import { GameElement, type Position } from "../gameelement/GameElement.js";
-import { cloneInstance, create, get, uniqueId } from "../utils/Utils.js";
+import { create, defined, get, uniqueId } from "../utils/Utils.js";
 import InputHandler from "./InputHandler.js";
 
 /**
@@ -503,8 +503,6 @@ export class App {
 		this.deltaTimeAccumulator += deltaTime;
 
 		const DESIRED_MS_PER_FRAME = App.DESIRED_MS_PER_FRAME;
-		// keep track of old moveable data so we can use it later (after ticking)
-		const oldMoveableData: OldMoveableData[] = [];
 		const movingMoveables: Moveable[] = [];
 		const movingMoveableIdValues = this.movingMoveableIds.values();
 		let movingMoveableId = movingMoveableIdValues.next();
@@ -514,22 +512,23 @@ export class App {
 			const movingMoveable = gameElementsMap.get(movingMoveableId.value)! as Moveable;
 
 			movingMoveables.push(movingMoveable);
-			oldMoveableData.push({
-				position: { ...movingMoveable.getPosition() },
-				...(typeof movingMoveable["onCollision" as keyof typeof movingMoveable] === "function" && {
-					collisionBox: cloneInstance((movingMoveable as Moveable & Collidable).getCollisionBox()),
-				}),
-			});
 
 			movingMoveableId = movingMoveableIdValues.next();
 		}
 
 		const movingMoveablesLength = movingMoveables.length;
+		// keep track of old moveable data so we can use it later (after ticking)
+		const oldMoveableData: Map<number, OldMoveableData> = new Map();
 
 		// tick board objects and check for collisions. fixed timestep
 		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
+				const oldCollisionBox = (moveable as Moveable & Collidable).getCollisionBox().clone();
+
+				oldMoveableData.set(moveable.getUniqueId(), {
+					position: { ...moveable.getPosition() },
+				});
 
 				// if (!defined(moveable)) {
 				// 	continue;
@@ -541,10 +540,7 @@ export class App {
 					continue;
 				}
 
-				this.lookForCollidables(
-					moveable as unknown as Moveable & Collidable,
-					oldMoveableData[i]!.collisionBox!,
-				);
+				this.lookForCollidables(moveable as unknown as Moveable & Collidable, oldCollisionBox);
 			}
 
 			fixedFrameCount++;
@@ -568,11 +564,11 @@ export class App {
 					continue;
 				}
 
-				const currentMoveableData = oldMoveableData[i]!;
+				const currentMoveableData = oldMoveableData.get(moveable.getUniqueId());
 
-				// if (!defined(currentMoveableData)) {
-				// 	continue;
-				// }
+				if (!defined(currentMoveableData)) {
+					continue;
+				}
 
 				const oldMoveablePosition = currentMoveableData.position;
 
@@ -672,6 +668,8 @@ export class App {
 		// if the collidable doesn't move a greater distance than its collision box each frame,
 		// we can stop here
 		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
+			oldCollisionBox.delete();
+
 			return;
 		}
 
@@ -720,12 +718,14 @@ export class App {
 		ccdData?: CCDData,
 	): void {
 		const positionCollidablesLength = positionCollidables.length;
+		const oldCollisionBox = ccdData?.oldCollisionBox;
 
 		if (!positionCollidablesLength) {
+			oldCollisionBox?.delete();
+
 			return;
 		}
 
-		const oldCollisionBox = ccdData?.oldCollisionBox;
 		// if ccdData is provided, use the center position of the old collision box
 		// position as the reference point. otherwise, just use collidable's center.
 		const sortPosition = !oldCollisionBox ? collidable.getCenterPosition() : oldCollisionBox.getCenterPosition();
@@ -764,6 +764,8 @@ export class App {
 				otherCollidable.onCollision(collidable);
 			}
 		}
+
+		oldCollisionBox?.delete();
 	}
 }
 

@@ -224,6 +224,15 @@ export default class CollisionBox extends GameElement {
 	}
 
 	/**
+	 * Creates a new `CollisionBox` with the same bounds as this one.
+	 *
+	 * @returns cloned `CollisionBox`
+	 */
+	public clone(): CollisionBox {
+		return new CollisionBox(`${this.getName()}-clone`, this.left, this.right, this.top, this.bottom);
+	}
+
+	/**
 	 * Find all of the tile keys that this collision box is contained in.
 	 *
 	 * @returns all of the tile keys that this collision box is contained in
