@@ -221,7 +221,7 @@ export default class MoveableTest extends Test {
 
 		pacman.stopMoving();
 
-		this.assertStrictlyEqual(0, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(0, pacman["_tickCount"]);
 
 		// finally, we want to test that moveables move a certain amount every tick(), depending
 		// on the direction they are moving and that the frame count increases for the moveable.
@@ -242,9 +242,9 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(
 			originalPosition.y - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().y
+			pacman.getPosition().y,
 		);
-		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
 		// reset this
@@ -267,9 +267,9 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(
 			originalPosition.y + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().y
+			pacman.getPosition().y,
 		);
-		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
 		// reset this
@@ -292,9 +292,9 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(
 			originalPosition.x - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().x
+			pacman.getPosition().x,
 		);
-		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
 		// reset this
@@ -317,9 +317,9 @@ export default class MoveableTest extends Test {
 
 		this.assertStrictlyEqual(
 			originalPosition.x + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().x
+			pacman.getPosition().x,
 		);
-		this.assertStrictlyEqual(1, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 	}
 
