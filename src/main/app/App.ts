@@ -524,6 +524,11 @@ export class App {
 		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
+
+				if (moveable.getDeleted()) {
+					continue;
+				}
+
 				const oldCollisionBox = (moveable as Moveable & Collidable).getCollisionBox().clone();
 
 				oldMoveableData.set(moveable.getUniqueId(), {
