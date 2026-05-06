@@ -103,6 +103,14 @@ export abstract class GameElement {
 	private shouldRender: true | false = false as const;
 
 	/**
+	 * Simply returns the opposite position key.
+	 */
+	public static readonly positionKeyOpposites = {
+		x: "y",
+		y: "x",
+	} as const;
+
+	/**
 	 * Creates a game element.
 	 *
 	 * @param name the name/HTML id of the game element
@@ -309,8 +317,8 @@ export abstract class GameElement {
 	/**
 	 * Renders CSS changes of this board object to the screen.
 	 */
-	public render(): void {
-		this.setTransform(this.getPosition());
+	public render(position?: Position): void {
+		this.setTransform(position ?? this.position);
 
 		this.shouldRender = false;
 	}

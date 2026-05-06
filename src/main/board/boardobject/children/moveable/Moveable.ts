@@ -1,5 +1,4 @@
 import { App } from "../../../../app/App.js";
-import type { Position } from "../../../../gameelement/GameElement.js";
 import {
 	MAX_PLAYABLE_TILE_X,
 	MAX_PLAYABLE_TILE_Y,
@@ -56,24 +55,6 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		[MovementDirection.RIGHT]: this.moveRight,
 		[MovementDirection.UP]: this.moveUp,
 		[MovementDirection.DOWN]: this.moveDown,
-	};
-	/**
-	 * The key used to index into a given `Position` object, given the direction this board object is moving.
-	 */
-	private directionalPositionKeys = {
-		[MovementDirection.LEFT]: "x",
-		[MovementDirection.RIGHT]: "x",
-		[MovementDirection.UP]: "y",
-		[MovementDirection.DOWN]: "y",
-	};
-	/**
-	 * The proper method to set this board object's position, based on the direction it is moving.
-	 */
-	private directionalTransformSetters = {
-		[MovementDirection.LEFT]: this.setTransformX,
-		[MovementDirection.RIGHT]: this.setTransformX,
-		[MovementDirection.UP]: this.setTransformY,
-		[MovementDirection.DOWN]: this.setTransformY,
 	};
 	/**
 	 * Initial tile number based on this moveable's direction. Used when searching
@@ -176,6 +157,18 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 		[MovementDirection.RIGHT]: MovementDirection.LEFT,
 		[MovementDirection.UP]: MovementDirection.DOWN,
 		[MovementDirection.DOWN]: MovementDirection.UP,
+	};
+
+	/**
+	 * The key used to index into a given `Position` object, given the direction this board object is moving.
+	 */
+	public static readonly directionalPositionKeys: {
+		[key in Exclude<MovementDirection, MovementDirection.STOP>]: "x" | "y";
+	} = {
+		[MovementDirection.LEFT]: "x",
+		[MovementDirection.RIGHT]: "x",
+		[MovementDirection.UP]: "y",
+		[MovementDirection.DOWN]: "y",
 	};
 
 	/**
@@ -308,32 +301,11 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
-	 * @inheritdoc
-	 */
-	public override interpolate(alpha: number, oldPosition: Position): void {
-		const direction = this.currentDirection;
-		const directionalPositionKey = this.directionalPositionKeys[
-			direction as keyof typeof this.directionalPositionKeys
-		] as "x" | "y";
-		const handler = this.directionalTransformSetters[direction as keyof typeof this.directionalTransformSetters];
-
-		if (!handler) {
-			return;
-		}
-
-		// interpolate to make movement smooth, and to make up for the amount of milliseconds "deltaTimeAccumulator" has
-		// exceeded "MS_PER_FRAME"
-		handler.bind(this)(
-			this.getPosition()[directionalPositionKey] * alpha + oldPosition[directionalPositionKey] * (1.0 - alpha)
-		);
-	}
-
-	/**
 	 * Deletes this moveable and makes sure that it's also removed from the moveables array.
 	 */
 	public override delete(): void {
+		App.getInstance().getMovingMoveableIds().delete(this.getUniqueId());
 		super.delete();
-
 		this.stopMoving();
 	}
 

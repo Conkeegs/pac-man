@@ -55,12 +55,15 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 
 		/**
 		 * Logic to call to make up for lost milliseconds each frame due to differing system deltaTimes.
+		 * Blends between `newValue` and `oldValue`.
 		 *
 		 * @param alpha used to perform a linear interpolation between this board object's last state and current
 		 * state to get the current state to render
 		 * @param extraParams 0 or more optional parameters to pass each interpolation
 		 */
-		public abstract interpolate(alpha: number, ...extraParams: any[]): void;
+		public interpolate(alpha: number, newValue: number, oldValue: number): number {
+			return newValue * alpha + oldValue * (1.0 - alpha);
+		}
 
 		/**
 		 * Deletes this tickable and makes sure that it's also removed from the tickables array.

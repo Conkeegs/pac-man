@@ -541,7 +541,7 @@ export class App {
 
 				moveable.tick();
 
-				if (moveable.getDeleted() || typeof moveable["onCollision" as keyof typeof moveable] !== "function") {
+				if (typeof moveable["onCollision" as keyof typeof moveable] !== "function") {
 					continue;
 				}
 
@@ -552,6 +552,8 @@ export class App {
 			fixedFrameCount++;
 			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 		}
+
+		const toRenderGameElementIds = this.toRenderGameElementIds;
 
 		// check for needed interpolations of board objects
 		if (movingMoveablesLength) {
@@ -577,19 +579,33 @@ export class App {
 				}
 
 				const oldMoveablePosition = currentMoveableData.position;
+				const currentMoveablePosition = moveable.getPosition();
 
 				if (
 					// !defined(oldMoveablePosition) ||
-					GameElement.positionsEqual(oldMoveablePosition, moveable.getPosition())
+					GameElement.positionsEqual(oldMoveablePosition, currentMoveablePosition)
 				) {
 					continue;
 				}
 
-				moveable.interpolate(alpha, oldMoveablePosition);
+				const currentDirectionKey =
+					Moveable.directionalPositionKeys[
+						moveable.getCurrentDirection() as keyof typeof Moveable.directionalPositionKeys
+					];
+				const oppositeDirectionKey = GameElement.positionKeyOpposites[currentDirectionKey];
+
+				moveable.render({
+					[currentDirectionKey]: moveable.interpolate(
+						alpha,
+						oldMoveablePosition[currentDirectionKey],
+						currentMoveablePosition[currentDirectionKey],
+					),
+					[oppositeDirectionKey]: currentMoveablePosition[oppositeDirectionKey],
+				} as Position);
+				toRenderGameElementIds.delete(moveable.getUniqueId());
 			}
 		}
 
-		const toRenderGameElementIds = this.toRenderGameElementIds;
 		const toRenderGameElementIdValues = toRenderGameElementIds.values();
 		let toRenderGameElementId = toRenderGameElementIdValues.next();
 
