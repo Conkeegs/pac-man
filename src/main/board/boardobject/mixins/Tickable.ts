@@ -17,9 +17,9 @@ export type Tickable = InstanceType<ReturnType<typeof MakeTickable<typeof BoardO
 export default function MakeTickable<TBase extends AbstractConstructor<BoardObject>>(Base: TBase) {
 	abstract class TickableClass extends Base {
 		/**
-		 * The number of frames this board object has been ticking.
+		 * The number of times this game element has ticked so far.
 		 */
-		_framesTicking: number = 0;
+		_tickCount: number = 0;
 		/**
 		 * Whether or not this board object should interpolate its rendering for smoothness.
 		 * Useful for things like teleporters since we don't want board objects to interpolate
@@ -50,7 +50,7 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		 *
 		 */
 		public tick(): void {
-			this._framesTicking++;
+			this._tickCount++;
 		}
 
 		/**
@@ -68,7 +68,7 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		public override delete(): void {
 			super.delete();
 
-			this._framesTicking = 0;
+			this._tickCount = 0;
 		}
 	}
 

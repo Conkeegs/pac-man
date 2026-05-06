@@ -141,7 +141,7 @@ export default class MoveableTest extends Test {
 		this.assertFalse(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertDoesntExist(pacman["lastMovementDirection"]);
-		this.assertStrictlyEqual(0, pacman["_framesTicking"]);
+		this.assertStrictlyEqual(0, pacman["_tickCount"]);
 		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
 		this.assertDoesntExist(pacman["_animationIntervalId"]);
 	}

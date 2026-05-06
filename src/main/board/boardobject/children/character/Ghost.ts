@@ -39,7 +39,7 @@ export default abstract class Ghost extends Character {
 	 * @inheritdoc
 	 */
 	public override tick(): void {
-		if (this._framesTicking === 10) {
+		if (this._tickCount === 10) {
 			this.lookForTurn();
 		}
 
