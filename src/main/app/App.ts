@@ -546,6 +546,7 @@ export class App {
 				}
 
 				this.lookForCollidables(moveable as unknown as Moveable & Collidable, oldCollisionBox);
+				oldCollisionBox.delete();
 			}
 
 			fixedFrameCount++;
@@ -673,8 +674,6 @@ export class App {
 		// if the collidable doesn't move a greater distance than its collision box each frame,
 		// we can stop here
 		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
-			oldCollisionBox.delete();
-
 			return;
 		}
 
@@ -723,16 +722,14 @@ export class App {
 		ccdData?: CCDData,
 	): void {
 		const positionCollidablesLength = positionCollidables.length;
-		const oldCollisionBox = ccdData?.oldCollisionBox;
 
 		if (!positionCollidablesLength) {
-			oldCollisionBox?.delete();
-
 			return;
 		}
 
 		// if ccdData is provided, use the center position of the old collision box
 		// position as the reference point. otherwise, just use collidable's center.
+		const oldCollisionBox = ccdData?.oldCollisionBox;
 		const sortPosition = !oldCollisionBox ? collidable.getCenterPosition() : oldCollisionBox.getCenterPosition();
 
 		positionCollidables.sort((collidableA, collidableB) => {
@@ -769,8 +766,6 @@ export class App {
 				otherCollidable.onCollision(collidable);
 			}
 		}
-
-		oldCollisionBox?.delete();
 	}
 }
 
