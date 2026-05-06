@@ -390,6 +390,8 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @param turn the turn to snap this board object's physical to
 	 */
 	public offsetPositionToTurn(turn: Turn): void {
+		this.setShouldInterpolate(false);
+
 		const oldPosition = this.getPosition();
 		const turnCenterPosition = turn.getCenterPosition();
 		// find the "true" position x & y that the board object should be placed at when performing a turn (since
