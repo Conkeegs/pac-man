@@ -287,7 +287,6 @@ export default class GameElementTest extends Test {
 				super("test game element", 0, 0);
 			}
 		})();
-		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
 		gameElement.setPositionX(offset);
@@ -361,7 +360,6 @@ export default class GameElementTest extends Test {
 				super("test game element", 0, 0);
 			}
 		})();
-		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
 		gameElement.setPositionY(offset);
