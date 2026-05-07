@@ -392,7 +392,7 @@ export default class AppTest extends Test {
 		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
-			const distance3Times = moveable.getDistancePerFrame() * 3;
+			const distance3Times = moveable.getDistancePerTick() * 3;
 			const positionX = moveable.getPosition().x;
 
 			// make sure updates to movable happen 3 times
@@ -513,8 +513,8 @@ export default class AppTest extends Test {
 		// they don't interpolate
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			// distancePerFrame of zero means no movement/position changes
-			Object.defineProperty(moveable, "distancePerFrame", { value: 0, writable: true });
+			// distancePerTick of zero means no movement/position changes
+			Object.defineProperty(moveable, "distancePerTick", { value: 0, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 
 			moveable["_shouldInterpolate"] = true;
@@ -531,8 +531,8 @@ export default class AppTest extends Test {
 		// test that both collision and interpolation work at the same time
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			// distancePerFrame of zero means no movement/position changes
-			Object.defineProperty(moveable, "distancePerFrame", { value: 0.2, writable: true });
+			// distancePerTick of zero means no movement/position changes
+			Object.defineProperty(moveable, "distancePerTick", { value: 0.2, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
@@ -655,9 +655,9 @@ export default class AppTest extends Test {
 			x: referenceCollidablePosition.x + 100,
 			y: referenceCollidablePosition.y + 100,
 		});
-		// make distance per frame larger than dimensions of collidable, so we use CCD to look for
+		// make distance per tick larger than dimensions of collidable, so we use CCD to look for
 		// collidables it may have "tunneled" through
-		Object.defineProperty(referenceCollidable, "distancePerFrame", { value: referenceCollidable.getWidth() + 1 });
+		Object.defineProperty(referenceCollidable, "distancePerTick", { value: referenceCollidable.getWidth() + 1 });
 		// mark deleted so collision detection does not happen
 		referenceCollidable["deleted"] = true;
 

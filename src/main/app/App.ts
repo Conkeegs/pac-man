@@ -693,7 +693,7 @@ export class App {
 
 		// if the collidable doesn't move a greater distance than its collision box each frame,
 		// we can stop here
-		if (!(collidable.getDistancePerFrame() >= collisionBox.getWidth())) {
+		if (!(collidable.getDistancePerTick() >= collisionBox.getWidth())) {
 			return;
 		}
 

@@ -40,9 +40,9 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 */
 	private readonly speed: number;
 	/**
-	 * The number of pixels this board object moves per-frame.
+	 * The number of pixels this board object moves per tick.
 	 */
-	private readonly distancePerFrame: number;
+	private readonly distancePerTick: number;
 	/**
 	 * Determines if the board object is currently moving.
 	 */
@@ -184,7 +184,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 
 		this.speed = speed;
 		// faster board objects have larger distances per-frame
-		this.distancePerFrame = speed * millisToSeconds(App.DESIRED_MS_PER_FRAME);
+		this.distancePerTick = speed * millisToSeconds(App.DESIRED_MS_PER_FRAME);
 	}
 
 	/**
@@ -216,12 +216,12 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	}
 
 	/**
-	 * Get the number of pixels this moveable moves per-frame.
+	 * Get the number of pixels this moveable moves per-tick.
 	 *
-	 * @returns number of pixels moved per-frame
+	 * @returns number of pixels moved per-tick
 	 */
-	public getDistancePerFrame(): number {
-		return this.distancePerFrame;
+	public getDistancePerTick(): number {
+		return this.distancePerTick;
 	}
 
 	/**
@@ -295,7 +295,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 			return;
 		}
 
-		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerFrame);
+		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerTick);
 		this.queueRenderUpdate();
 		super.tick();
 	}
@@ -414,7 +414,7 @@ export default abstract class Moveable extends MakeTickable(BoardObject) {
 	 * @returns boolean indicating if they're within the collision threshold
 	 */
 	private distanceWithinDistancePerFrame(offset1: number, offset2: number): boolean {
-		return Math.abs(offset1 - offset2) <= this.distancePerFrame;
+		return Math.abs(offset1 - offset2) <= this.distancePerTick;
 	}
 
 	/**

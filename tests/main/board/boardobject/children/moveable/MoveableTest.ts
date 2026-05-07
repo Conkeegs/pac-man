@@ -24,7 +24,7 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
 		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable["distancePerFrame"],
+			moveable["distancePerTick"],
 		);
 	}
 
@@ -70,12 +70,12 @@ export default class MoveableTest extends Test {
 	/**
 	 * Test that moveables can get their last movement code correctly.
 	 */
-	public getDistancePerFrameTest(): void {
+	public getDistancePerTickTest(): void {
 		const moveable = new PacMan();
 
 		this.assertStrictlyEqual(
 			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable.getDistancePerFrame(),
+			moveable.getDistancePerTick(),
 		);
 	}
 
@@ -505,11 +505,11 @@ export default class MoveableTest extends Test {
 	 */
 	public distanceWithinDistancePerFrameTest(): void {
 		const moveable = new PacMan();
-		const distancePerFrame = moveable.getDistancePerFrame();
+		const distancePerTick = moveable.getDistancePerTick();
 
-		this.assertFalse(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame + 1));
-		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame - 1));
-		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerFrame));
+		this.assertFalse(moveable["distanceWithinDistancePerFrame"](0, distancePerTick + 1));
+		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerTick - 1));
+		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerTick));
 	}
 
 	/**
