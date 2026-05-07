@@ -3,6 +3,7 @@
 import { App } from "./app/App.js";
 import Board from "./board/Board.js";
 import BoardText from "./board/boardobject/children/BoardText.js";
+import type Moveable from "./board/boardobject/children/moveable/Moveable.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
 import { GameElement } from "./gameelement/GameElement.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
@@ -177,6 +178,66 @@ export default abstract class Debugging {
 				}) as HTMLElement,
 			);
 		}
+	}
+
+	/**
+	 * Enables a frame-stepping debug mode. Pressing `Backslash` toggles step mode
+	 * (pausing/resuming the normal gameloop). While in step mode, pressing `ArrowRight`
+	 * advances the game by one fixed-timestep frame and logs PacMan's position data
+	 * to help diagnose movement issues.
+	 */
+	private enableFrameStepMode(): void {
+		let stepMode = false;
+		let stepFrame = 0;
+		const app = App.getInstance();
+
+		app.addEventListenerToElement("keydown", (event) => {
+			const code = (event as KeyboardEvent).code;
+
+			if (code === "Backslash") {
+				stepMode = !stepMode;
+
+				if (stepMode) {
+					app["stopGame"](true);
+					stepFrame = 0;
+					console.log("[FrameStep] ON — press ArrowRight to advance one frame");
+				} else {
+					app["animationFrameId"] = app["startGame"]();
+					console.log("[FrameStep] OFF — gameloop resumed");
+				}
+
+				return;
+			}
+
+			if (code !== "ArrowRight" || !stepMode) {
+				return;
+			}
+
+			const now = performance.now();
+
+			app["updateGame"](now - App.DESIRED_MS_PER_FRAME, now, 0, 0);
+
+			stepFrame++;
+
+			for (const gameElement of app["gameElementsMap"].values()) {
+				if (gameElement.constructor.name !== "PacMan") {
+					continue;
+				}
+
+				const pacman = gameElement as Moveable;
+
+				console.log(`[FrameStep #${stepFrame}]`, {
+					position: { ...pacman.getPosition() },
+					transform: { ...pacman.getTransform() },
+					direction: (pacman as unknown as { currentDirection: unknown }).currentDirection,
+					isMoving: pacman.isMoving(),
+					distancePerTick: pacman.getDistancePerTick(),
+					deltaTimeAccumulator: app["deltaTimeAccumulator"],
+				});
+
+				break;
+			}
+		});
 	}
 }
 // #!END_DEBUG
