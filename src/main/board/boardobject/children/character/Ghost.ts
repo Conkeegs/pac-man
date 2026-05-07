@@ -47,7 +47,7 @@ export default abstract class Ghost extends Character {
 	}
 
 	private lookForTurn(): void {
-		const nearestTurn = this.findNearestTurn();
+		const nearestTurn = this.findNearestTurnForDirectionWhere(() => true, this.currentDirection!);
 
 		if (nearestTurn) {
 			const turnDirections = nearestTurn.getDirections();
