@@ -95,7 +95,7 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${Board.calcTileNumX(position1.x)}-${Board.calcTileNumY(position1.y)}`,
-			Board.tileKeyFromPosition(position1)
+			Board.tileKeyFromPosition(position1),
 		);
 
 		const position2: Position = {
@@ -105,7 +105,7 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${Board.calcTileNumX(position2.x)}-${Board.calcTileNumY(position2.y)}`,
-			Board.tileKeyFromPosition(position2)
+			Board.tileKeyFromPosition(position2),
 		);
 	}
 
@@ -221,12 +221,12 @@ export default class BoardTest extends Test {
 	}
 
 	/**
-	 * Test that the game's board can create & place the main board objects on itself.
+	 * Test that the game's board can create & place the main game elements on itself.
 	 */
-	public async createMainBoardObjectsTest(): Promise<void> {
+	public async createMainGameElementsTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		await board["createMainBoardObjects"]();
+		await board["createMainGameElements"]();
 
 		let foodCount = 0;
 		let pacmanCount = 0;
@@ -288,14 +288,14 @@ export default class BoardTest extends Test {
 	}
 
 	/**
-	 * Test that the game's board can place `BoardObject` instances on it.
+	 * Test that the game's board can place `GameElement` instances on it.
 	 */
-	public placeBoardObjectTest(): void {
+	public placeGameElementTest(): void {
 		const board = Board.getInstance();
 		const pacman = new PacMan();
 		const numTiles = 5;
 
-		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
+		Reflect.apply(board["placeGameElement"], board, [pacman, numTiles, numTiles]);
 
 		const pacmanPosition = pacman.getPosition();
 
@@ -307,31 +307,31 @@ export default class BoardTest extends Test {
 		const foodTileX = 2;
 		const foodTileY = 19;
 
-		// test board object centering in tiles
-		board["placeBoardObject"](food, foodTileX, foodTileY, true);
+		// test game element centering in tiles
+		board["placeGameElement"](food, foodTileX, foodTileY, true);
 
 		const foodPosition = food.getPosition();
 
 		this.assertStrictlyEqual(
 			Board.calcTileOffsetX(foodTileX) + (TILESIZE / 2 - food.getWidth() / 2),
-			foodPosition.x
+			foodPosition.x,
 		);
 		this.assertStrictlyEqual(
 			Board.calcTileOffsetY(foodTileY) + (TILESIZE / 2 - food.getWidth() / 2),
-			foodPosition.y
+			foodPosition.y,
 		);
 	}
 
 	/**
 	 * Test that the board can place its turns.
 	 */
-	public async placeTurnBoardObjectsTest(): Promise<void> {
+	public async placeTurnGameElementsTest(): Promise<void> {
 		const board = Board.getInstance();
 		const turns = board.getTurnMap();
 
 		this.assertEmpty(turns);
 
-		await board["placeTurnBoardObjects"]();
+		await board["placeTurnGameElements"]();
 
 		const turnData = await board["loadTurnData"]();
 
@@ -370,7 +370,7 @@ export default class BoardTest extends Test {
 
 		this.assertStrictlyEqual(0, turnMap.size);
 
-		await board["placeTurnBoardObjects"]();
+		await board["placeTurnGameElements"]();
 
 		this.assertTrue(turnMap.size > 0);
 	}

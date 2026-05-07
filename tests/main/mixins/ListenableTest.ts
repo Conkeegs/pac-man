@@ -1,5 +1,5 @@
 import { App } from "../../../src/main/app/App.js";
-import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.js";
+import { GameElement } from "../../../src/main/gameelement/GameElement.js";
 import MakeListenable from "../../../src/main/mixins/Listenable.js";
 import Test from "../../base/Base.js";
 
@@ -11,7 +11,7 @@ export default class ListenableTest extends Test {
 	 * Test that listenables are created correctly.
 	 */
 	public createListenableTest(): void {
-		const listenable = new (class extends MakeListenable(BoardObject) {})("test-listenable", 0, 0);
+		const listenable = new (class extends MakeListenable(GameElement) {})("test-listenable", 0, 0);
 
 		this.assertTrue(App.getInstance().getListenableGameElementIds().has(listenable.getUniqueId()));
 	}
@@ -20,7 +20,7 @@ export default class ListenableTest extends Test {
 	 * Test that listenables can be deleted correctly.
 	 */
 	public deleteTest(): void {
-		const listenable = new (class extends MakeListenable(BoardObject) {
+		const listenable = new (class extends MakeListenable(GameElement) {
 			constructor() {
 				super("test listenable", 0, 0);
 			}
@@ -57,7 +57,7 @@ export default class ListenableTest extends Test {
 	 * Test that listenables register event listeners correctly.
 	 */
 	public addEventListenerTest(): void {
-		const listenable = new (class extends MakeListenable(BoardObject) {
+		const listenable = new (class extends MakeListenable(GameElement) {
 			constructor() {
 				super("test listenable", 0, 0);
 			}

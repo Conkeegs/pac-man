@@ -1,7 +1,6 @@
 import { App } from "../../../src/main/app/App.js";
 import InputHandler from "../../../src/main/app/InputHandler.js";
 import Board from "../../../src/main/board/Board.js";
-import { BoardObject } from "../../../src/main/board/boardobject/BoardObject.js";
 import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
 import MakeControllable, {
 	type Controllable,
@@ -33,7 +32,7 @@ class CollidableMoveableTester extends MakeCollidable(Moveable) {
 /**
  * Mock `Collidable` class for testing.
  */
-class CollidedWithTester extends MakeCollidable(BoardObject) {
+class CollidedWithTester extends MakeCollidable(GameElement) {
 	public override canBeCollidedByTypes: string[] = [CollidableMoveableTester.name];
 
 	override onCollision(withCollidable: Collidable): void {
@@ -46,7 +45,7 @@ class CollidedWithTester extends MakeCollidable(BoardObject) {
  * Mock `Collidable` class for testing that will mark any collidables that collide with it
  * as deleted.
  */
-class CollidedWithTesterDeletes extends MakeCollidable(BoardObject) {
+class CollidedWithTesterDeletes extends MakeCollidable(GameElement) {
 	public override canBeCollidedByTypes: string[] = [CollidableMoveableTester.name];
 
 	override onCollision(withCollidable: Collidable): void {
@@ -58,7 +57,7 @@ class CollidedWithTesterDeletes extends MakeCollidable(BoardObject) {
 }
 
 /**
- * Tests functionality of `src\main\board\boardobject\children\character\Inky.ts` instances.
+ * Tests functionality of `src\main\board\gameelement\children\character\Inky.ts` instances.
  */
 export default class AppTest extends Test {
 	/**
@@ -125,7 +124,7 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of to-be-rendered game element ids.
 	 */
 	public getToRenderGameElementIdsTest(): void {
-		const gameElement = new (class extends BoardObject {})("test-board-object", 0, 0);
+		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
 
 		gameElement["queueRenderUpdate"]();
 
@@ -153,7 +152,7 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of animating game element ids.
 	 */
 	public getAnimateableGameElementIdsTest(): void {
-		const gameElement = new (class extends MakeAnimateable(BoardObject) {
+		const gameElement = new (class extends MakeAnimateable(GameElement) {
 			override _NUM_ANIMATION_STATES: number = 1;
 		})("test-moveable", 0, 0);
 		const animateableGameElementIds = App.getInstance().getAnimateableGameElementIds();
@@ -166,7 +165,7 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of listenable game element ids.
 	 */
 	public getListenableGameElementIdsTest(): void {
-		const gameElement = new (class extends MakeListenable(BoardObject) {})("test-listenable", 0, 0);
+		const gameElement = new (class extends MakeListenable(GameElement) {})("test-listenable", 0, 0);
 		const listenableGameElementIds = App.getInstance().getListenableGameElementIds();
 
 		this.assertStrictlyEqual(1, listenableGameElementIds.size);
@@ -188,7 +187,7 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its map tile keys to collidables.
 	 */
 	public getCollidablesMapTest(): void {
-		const gameElement = new (class extends MakeCollidable(BoardObject) {
+		const gameElement = new (class extends MakeCollidable(GameElement) {
 			public override canBeCollidedByTypes: string[] = [];
 			override onCollision(): void {}
 		})("test-moveable", 0, 0);
@@ -226,8 +225,8 @@ export default class AppTest extends Test {
 		const gameElementsMap = app.getGameElementsMap();
 		let animateableGameElementIdValues = app.getAnimateableGameElementIds().values();
 
-		// queue render update for a single board object
-		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as BoardObject)["queueRenderUpdate"]();
+		// queue render update for a single game element
+		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as GameElement)["queueRenderUpdate"]();
 
 		this.assertTrue(app.getCollidablesMap().size > 0);
 		this.assertNotEmpty(app["eventListeners"]);

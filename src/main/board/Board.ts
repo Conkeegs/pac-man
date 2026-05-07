@@ -6,7 +6,6 @@ import DebugWindow from "../debugwindow/DebugWindow.js";
 import { GameElement, type Position } from "../gameelement/GameElement.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
 import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
-import { BoardObject } from "./boardobject/BoardObject.js";
 import Food from "./boardobject/children/Food.js";
 import Teleporter from "./boardobject/children/Teleporter.js";
 import Turn from "./boardobject/children/Turn.js";
@@ -34,7 +33,7 @@ interface PathData {
 			 * The vertical number of the tile the node is located at.
 			 */
 			y: number;
-		}
+		},
 	];
 	/**
 	 * Each lines that connects to the circular nodes.
@@ -51,7 +50,7 @@ interface PathData {
 			 * line ends at. Can be more than one since all circular nodes extend out to two other circular nodes.
 			 */
 			to: number[];
-		}
+		},
 	];
 }
 
@@ -210,16 +209,16 @@ export default class Board extends GameElement {
 				top: px(Board.calcTileOffset(wallDataElement.styles.top)),
 				left: px(Board.calcTileOffset(wallDataElement.styles.left || 0)),
 				borderTopLeftRadius: px(
-					maybe(wallDataElement.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number
+					maybe(wallDataElement.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number,
 				),
 				borderTopRightRadius: px(
-					maybe(wallDataElement.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number
+					maybe(wallDataElement.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number,
 				),
 				borderBottomRightRadius: px(
-					maybe(wallDataElement.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number
+					maybe(wallDataElement.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number,
 				),
 				borderBottomLeftRadius: px(
-					maybe(wallDataElement.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number
+					maybe(wallDataElement.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number,
 				),
 			}) as HTMLElement;
 
@@ -227,7 +226,7 @@ export default class Board extends GameElement {
 			// like the character's "disappear" through them
 			if (wall.classList.contains("teleport-cover")) {
 				wall.css({
-					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 1,
+					zIndex: GameElement.GAME_ELEMENT_Z_INDEX + 1,
 				});
 			}
 
@@ -235,8 +234,8 @@ export default class Board extends GameElement {
 			element.appendChild(wall);
 		}
 
-		// place BoardObject instances on board
-		await this.createMainBoardObjects();
+		// place game element instances on board
+		await this.createMainGameElements();
 
 		get("middle-cover")!.css({
 			backgroundColor: Board.BACKGROUND_COLOR,
@@ -337,7 +336,7 @@ export default class Board extends GameElement {
 	public static positionDistanceToLineSegment(
 		position: Position,
 		segmentPointA: Position,
-		segmentPointB: Position
+		segmentPointB: Position,
 	): number {
 		const positionX = position.x;
 		const positionY = position.y;
@@ -390,8 +389,8 @@ export default class Board extends GameElement {
 	/**
 	 * Creates main objects on the board. This includes characters, items, and text.
 	 */
-	private async createMainBoardObjects(): Promise<void> {
-		await this.placeTurnBoardObjects();
+	private async createMainGameElements(): Promise<void> {
+		await this.placeTurnGameElements();
 
 		const foodPositions: Position[] = [];
 		const foodData: FoodData[] = await fetchJSON(AssetRegistry.getJsonSrc("food"));
@@ -406,7 +405,7 @@ export default class Board extends GameElement {
 				for (let i = yValues[0] as number; i <= (yValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === x && position.y === i) === -1) {
-						this.placeBoardObject(new Food(`food-horiz-${uniqueId()}`), x, i, true);
+						this.placeGameElement(new Food(`food-horiz-${uniqueId()}`), x, i, true);
 
 						foodPositions.push({
 							x,
@@ -421,7 +420,7 @@ export default class Board extends GameElement {
 				for (let i = xValues[0] as number; i <= (xValues[1] as number); i++) {
 					// make sure food isn't already at the current position prevent overlaps
 					if (foodPositions.findIndex((position) => position.x === i && position.y === y) === -1) {
-						this.placeBoardObject(new Food(`food-vert-${uniqueId()}`), i, y, true);
+						this.placeGameElement(new Food(`food-vert-${uniqueId()}`), i, y, true);
 
 						foodPositions.push({
 							x: i,
@@ -432,38 +431,38 @@ export default class Board extends GameElement {
 			}
 		}
 
-		this.placeBoardObject(new PacMan(), Board.PACMAN_SPAWN_X, Board.PACMAN_SPAWN_Y);
+		this.placeGameElement(new PacMan(), Board.PACMAN_SPAWN_X, Board.PACMAN_SPAWN_Y);
 
-		this.placeBoardObject(
+		this.placeGameElement(
 			new Blinky(),
 			// Board.BLINKY_SPAWN_X,
 			// Board.BLINKY_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.BLINKY_SPAWN_Y
+			Board.BLINKY_SPAWN_Y,
 		);
 
-		this.placeBoardObject(
+		this.placeGameElement(
 			new Inky(),
 			// Board.INKY_SPAWN_X,
 			// Board.INKY_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.INKY_SPAWN_Y
+			Board.INKY_SPAWN_Y,
 		);
 
-		this.placeBoardObject(
+		this.placeGameElement(
 			new Pinky(),
 			// Board.PINKY_SPAWN_X,
 			// Board.PINKY_SPAWN_Y
 			9,
-			Board.PACMAN_SPAWN_Y
+			Board.PACMAN_SPAWN_Y,
 		);
 
-		this.placeBoardObject(
+		this.placeGameElement(
 			new Clyde(),
 			// Board.CLYDE_SPAWN_X,
 			// Board.CLYDE_SPAWN_Y
 			Board.PACMAN_SPAWN_X,
-			Board.CLYDE_SPAWN_Y
+			Board.CLYDE_SPAWN_Y,
 		);
 
 		const leftTeleporter = new Teleporter("left-teleporter", MovementDirection.RIGHT);
@@ -471,52 +470,52 @@ export default class Board extends GameElement {
 
 		leftTeleporter.link(rightTeleporter);
 		rightTeleporter.link(leftTeleporter);
-		this.placeBoardObject(leftTeleporter, -1.5, 18.25);
-		this.placeBoardObject(rightTeleporter, 30.5, 18.25);
+		this.placeGameElement(leftTeleporter, -1.5, 18.25);
+		this.placeGameElement(rightTeleporter, 30.5, 18.25);
 	}
 
 	/**
-	 * Places a board object (characters, items, or text) at the given `x` and `y` tile offset.
+	 * Places a game element (characters, items, or text) at the given `x` and `y` tile offset.
 	 *
-	 * @param boardObject the board object to place
-	 * @param tileX the horizontal offset of the board object
-	 * @param tileY the vertical offset of the board object
-	 * @param center whether not not to center the board object in the tiles
+	 * @param gameElement the game element to place
+	 * @param tileX the horizontal offset of the game element
+	 * @param tileY the vertical offset of the game element
+	 * @param center whether not not to center the game element in the tiles
 	 */
-	private placeBoardObject(boardObject: BoardObject, tileX: number, tileY: number, center?: boolean) {
+	private placeGameElement(gameElement: GameElement, tileX: number, tileY: number, center?: boolean) {
 		let left = Board.calcTileOffsetX(tileX);
 		let top = Board.calcTileOffsetY(tileY);
 
 		if (center) {
-			const offset = TILESIZE / 2 - boardObject.getWidth() / 2;
+			const offset = TILESIZE / 2 - gameElement.getWidth() / 2;
 
 			left += offset;
 			top += offset;
 		}
 
-		boardObject.setPosition({
+		gameElement.setPosition({
 			x: left,
 			y: top,
 		});
-		boardObject.render();
+		gameElement.render();
 
-		this.getElement().appendChild(boardObject.getElement());
+		this.getElement().appendChild(gameElement.getElement());
 	}
 
 	/**
-	 * Create and store board's `Food` board objects.
+	 * Create and store board's `Food` game elements.
 	 */
-	private async placeTurnBoardObjects(): Promise<void> {
+	private async placeTurnGameElements(): Promise<void> {
 		const turnData = await this.loadTurnData();
 
 		for (let i = 0; i < turnData.length; i++) {
 			const turn = turnData[i]!;
-			const turnBoardObject = new Turn(`turn-${i}`, turn.directions);
+			const turnGameElement = new Turn(`turn-${i}`, turn.directions);
 			const tileX = turn.tileX;
 			const tileY = turn.tileY;
 
-			this.turnMap.set(Board.createTileKey(tileX, tileY), turnBoardObject);
-			this.placeBoardObject(turnBoardObject, tileX, tileY, true);
+			this.turnMap.set(Board.createTileKey(tileX, tileY), turnGameElement);
+			this.placeGameElement(turnGameElement, tileX, tileY, true);
 		}
 	}
 

@@ -1,14 +1,14 @@
+import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
-import { BoardObject } from "../BoardObject.js";
 import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
 import PacMan from "./character/PacMan.js";
 import type Moveable from "./moveable/Moveable.js";
 import MovementDirection from "./moveable/MovementDirection.js";
 
 /**
- * Represents a teleporter that is usable by `Moveable` board objects.
+ * Represents a teleporter that is usable by `Moveable` game elements.
  */
-export default class Teleporter extends MakeCollidable(BoardObject) {
+export default class Teleporter extends MakeCollidable(GameElement) {
 	/**
 	 * `Teleporter`s' width and height in pixels.
 	 */
@@ -67,7 +67,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 
 	/**
 	 * Links this teleporter to another teleporter so that they may be teleport `Moveable`
-	 * board objects to each other.
+	 * game elements to each other.
 	 *
 	 * @param teleporter the teleporter to link to
 	 */
@@ -86,7 +86,7 @@ export default class Teleporter extends MakeCollidable(BoardObject) {
 			return;
 		}
 
-		// teleporting board objects should not interpolate their positions, otherwise
+		// teleporting game elements should not interpolate their positions, otherwise
 		// they will appear to just move really fast instead of teleport
 		collidableMoveable.setShouldInterpolate(false);
 

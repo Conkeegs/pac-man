@@ -2,10 +2,9 @@
 
 import { App } from "./app/App.js";
 import Board from "./board/Board.js";
-import { BoardObject } from "./board/boardobject/BoardObject.js";
 import BoardText from "./board/boardobject/children/BoardText.js";
 import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
-import type { GameElement } from "./gameelement/GameElement.js";
+import { GameElement } from "./gameelement/GameElement.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
 import { create, px } from "./utils/Utils.js";
 
@@ -88,8 +87,8 @@ export default abstract class Debugging {
 			text: "",
 		});
 
-		App.getInstance().getBoard()?.["placeBoardObject"](Debugging.variableFpsCounterText, -5, 32);
-		App.getInstance().getBoard()?.["placeBoardObject"](Debugging.fixedFpsCounterText, -5, 31);
+		App.getInstance().getBoard()?.["placeGameElement"](Debugging.variableFpsCounterText, -5, 32);
+		App.getInstance().getBoard()?.["placeGameElement"](Debugging.fixedFpsCounterText, -5, 31);
 	}
 
 	/**
@@ -104,10 +103,10 @@ export default abstract class Debugging {
 
 		if (Debugging.fpsCounterAccumulator >= 1000) {
 			Debugging.variableFpsCounterText?.setText(
-				`FPS(variable):${variableFrameCount - Debugging.lastVariableFrameCountDisplayed}`
+				`FPS(variable):${variableFrameCount - Debugging.lastVariableFrameCountDisplayed}`,
 			);
 			Debugging.fixedFpsCounterText?.setText(
-				`FPS(fixed):${fixedFrameCount - Debugging.lastFixedFrameCountDisplayed}`
+				`FPS(fixed):${fixedFrameCount - Debugging.lastFixedFrameCountDisplayed}`,
 			);
 
 			Debugging.fpsCounterAccumulator = 0;
@@ -150,32 +149,32 @@ export default abstract class Debugging {
 		const boardElement = board.getElement();
 
 		for (let i = COLUMNS, left = 0; i >= 1; i--, left += TILESIZE) {
-			board["placeBoardObject"](
+			board["placeGameElement"](
 				new BoardText({ name: `grid-vert-num-${i}`, text: i.toString(), vertical: true }),
 				i,
-				0
+				0,
 			);
 
 			boardElement.appendChild(
 				create({ name: "div", classes: ["grid-vert"] }).css({
 					left: px(left),
 					height: px(HEIGHT + TILESIZE),
-					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-				}) as HTMLElement
+					zIndex: GameElement.GAME_ELEMENT_Z_INDEX + 2,
+				}) as HTMLElement,
 			);
 		}
 
 		for (let i = ROWS, top = 0; i >= 1; i--, top += TILESIZE) {
 			// store as variable so we can use it to offset the text, based on the number of characters
-			board["placeBoardObject"](new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
+			board["placeGameElement"](new BoardText({ name: `grid-horiz-num-${i}`, text: i.toString() }), 0, i);
 
 			boardElement.appendChild(
 				create({ name: "div", classes: ["grid-horiz"] }).css({
 					left: px(-TILESIZE),
 					top: px(top + TILESIZE),
 					width: px(WIDTH + TILESIZE),
-					zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
-				}) as HTMLElement
+					zIndex: GameElement.GAME_ELEMENT_Z_INDEX + 2,
+				}) as HTMLElement,
 			);
 		}
 	}

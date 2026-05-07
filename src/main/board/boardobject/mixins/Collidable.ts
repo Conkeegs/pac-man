@@ -1,29 +1,28 @@
 import { App } from "../../../app/App.js";
 import CollisionBox from "../../../gameelement/CollisionBox.js";
-import type { Position } from "../../../gameelement/GameElement.js";
+import type { GameElement, Position } from "../../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
-import { BoardObject } from "../BoardObject.js";
 
 /**
- * Gives `BoardObject` instances functionality that allows them to properly "collide" with
- * other board objects on the board.
+ * Gives `GameElement` instances functionality that allows them to properly "collide" with
+ * other game elements on the board.
  */
-export type Collidable = InstanceType<ReturnType<typeof MakeCollidable<typeof BoardObject>>>;
+export type Collidable = InstanceType<ReturnType<typeof MakeCollidable<typeof GameElement>>>;
 
 /**
- * Gives `BoardObject` instances functionality that allows it to properly "collide" with
- * other board objects on the board.
+ * Gives `GameElement` instances functionality that allows them to properly "collide" with
+ * other game elements on the board.
  *
- * @param Base a `BoardObject` instance
- * @param collisionBoxPercentage percent (out of 100) of board object's size that
+ * @param Base a `GameElement` instance
+ * @param collisionBoxPercentage percent (out of 100) of game element's size that
  * its collision box will be
- * @returns a `BoardObject` that is considered "collidable" in the game's physics
+ * @returns a `GameElement` that is considered "collidable" in the game's physics
  */
-export default function MakeCollidable<TBase extends AbstractConstructor<BoardObject>>(
+export default function MakeCollidable<TBase extends AbstractConstructor<GameElement>>(
 	Base: TBase,
-	collisionBoxPercentage: number | undefined = 100
+	collisionBoxPercentage: number | undefined = 100,
 ) {
 	abstract class CollidableClass extends Base {
 		/**
@@ -57,7 +56,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		_collisionBoxPercentage: number;
 
 		/**
-		 * The types of `BoardObject` sub-classes that this collidable can
+		 * The types of `GameElement` sub-classes that this collidable can
 		 * be "collided by".
 		 */
 		public abstract canBeCollidedByTypes: string[];
@@ -65,7 +64,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		/**
 		 * Creates a `CollidableClass` instance.
 		 *
-		 * @param args arguments passed to the board object's constructor
+		 * @param args arguments passed to the game element's constructor
 		 */
 		constructor(...args: any[]) {
 			super(...args);
@@ -87,7 +86,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 				collidablePositionX + paddingHorizontal,
 				collidablePositionX + collidableWidth - paddingHorizontal,
 				collidablePositionY + paddingVertical,
-				collidablePositionY + collidableHeight - paddingVertical
+				collidablePositionY + collidableHeight - paddingVertical,
 			);
 
 			this.updateTileKeys();
@@ -173,7 +172,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		abstract onCollision(withCollidable: CollidableClass): void;
 
 		/**
-		 * Deletes this board object and makes sure that it's also removed from the collidables map.
+		 * Deletes this game element and makes sure that it's also removed from the collidables map.
 		 */
 		public override delete(): void {
 			this.checkForCollidableAndRemove();
@@ -192,9 +191,9 @@ export default function MakeCollidable<TBase extends AbstractConstructor<BoardOb
 		}
 
 		/**
-		 * Every `BoardObject` class that implements the `Collidable` interface should call this method every time
+		 * Every `GameElement` class that implements the `Collidable` interface should call this method every time
 		 * they update their position. This makes sure that the `COLLIDABLES_MAP` stores `collidable` in its own "group",
-		 * based on its current x and y position. This reduces the number of `BoardObject`s we need to run collision detection
+		 * based on its current x and y position. This reduces the number of `GameElement`s we need to run collision detection
 		 * against.
 		 *
 		 */

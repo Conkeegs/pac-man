@@ -2,15 +2,15 @@
 
 import Debugging from "../../../Debugging.js";
 import DebugWindow from "../../../debugwindow/DebugWindow.js";
+import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
-import { BoardObject } from "../BoardObject.js";
 
 /**
  * Represents text on the board.
  */
-export default class BoardText extends BoardObject {
+export default class BoardText extends GameElement {
 	/**
 	 * `BoardText`s' width and height in pixels.
 	 */
@@ -66,15 +66,15 @@ export default class BoardText extends BoardObject {
 				DebugWindow.error(
 					"BoardText.js",
 					"constructor",
-					`fontsize cannot be greater than tile size: ${px(TILESIZE)}.`
+					`fontsize cannot be greater than tile size: ${px(TILESIZE)}.`,
 				);
 			}
 		}
 		// #!END_DEBUG
 
-		// display text above board objects
+		// display text above game elements
 		this.getElement().css({
-			zIndex: BoardObject.BOARD_OBJECT_Z_INDEX + 2,
+			zIndex: GameElement.GAME_ELEMENT_Z_INDEX + 2,
 		});
 
 		this.color = data.color || "white";

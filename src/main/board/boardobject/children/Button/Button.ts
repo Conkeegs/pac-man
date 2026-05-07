@@ -1,16 +1,16 @@
 import { App } from "../../../../app/App.js";
 import Debugging from "../../../../Debugging.js";
 import DebugWindow from "../../../../debugwindow/DebugWindow.js";
+import { GameElement } from "../../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../../utils/Globals.js";
 import { create, px } from "../../../../utils/Utils.js";
 import Board from "../../../Board.js";
-import { BoardObject } from "../../BoardObject.js";
 import BoardText from "../BoardText.js";
 
 /**
  * Represents a clickable button on the board.
  */
-export default class Button extends BoardObject {
+export default class Button extends GameElement {
 	/**
 	 * `Button`s' initial width in pixels.
 	 */
@@ -101,7 +101,7 @@ export default class Button extends BoardObject {
 				height: px(height - Button.CLIP_PATH_PIXEL_PADDING),
 				width: px(this.getWidth() - Button.CLIP_PATH_PIXEL_PADDING),
 				backgroundColor: boardBackgroundColor,
-			}) as HTMLDivElement
+			}) as HTMLDivElement,
 		);
 	}
 

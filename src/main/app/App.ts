@@ -2,7 +2,6 @@
 
 import RunTests from "../../../tests/runTests.js";
 import Board from "../board/Board.js";
-import type { BoardObject } from "../board/boardobject/BoardObject.js";
 import type { Controllable } from "../board/boardobject/children/moveable/mixins/Controllable.js";
 import Moveable from "../board/boardobject/children/moveable/Moveable.js";
 import type { Animateable } from "../board/boardobject/mixins/Animateable.js";
@@ -15,15 +14,15 @@ import InputHandler from "./InputHandler.js";
 
 /**
  * Represents important data to keep track of before ticking
- * any boardobjects.
+ * any game elements.
  */
 type OldMoveableData = {
 	/**
-	 * Old position of the board object.
+	 * Old position of the game element.
 	 */
 	position: Position;
 	/**
-	 * Old collision box of the board object.
+	 * Old collision box of the game element.
 	 */
 	collisionBox?: CollisionBox;
 };
@@ -144,7 +143,7 @@ export class App {
 	 */
 	private eventListeners: EventListenerData[] = [];
 	/**
-	 * A map of `BoardObject` classes that implement the `Collidable` interface so we can add/remove them when needed,
+	 * A map of `GameElement` classes that implement the `Collidable` interface so we can add/remove them when needed,
 	 * and make sure collision detection for characters is optimized into "groups".
 	 */
 	private collidablesMap: Map<string, Collidable[]> = new Map();
@@ -477,7 +476,7 @@ export class App {
 		}
 
 		// prevents "deltaTime" from being very large at the start and causing position calculations to move
-		// board objects very large distances
+		// game elements very large distances
 		if (!lastTimestamp) {
 			deltaTime = 0;
 			lastTimestamp = currentTimestamp;
@@ -520,7 +519,7 @@ export class App {
 		// keep track of old moveable data so we can use it later (after ticking)
 		const oldMoveableData: Map<string, OldMoveableData> = new Map();
 
-		// tick board objects and check for collisions. fixed timestep
+		// tick game elements and check for collisions. fixed timestep
 		while (this.deltaTimeAccumulator >= DESIRED_MS_PER_FRAME) {
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
@@ -559,7 +558,7 @@ export class App {
 
 		const toRenderGameElementIds = this.toRenderGameElementIds;
 
-		// check for needed interpolations of board objects
+		// check for needed interpolations of game elements
 		if (movingMoveablesLength) {
 			const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 
@@ -615,7 +614,7 @@ export class App {
 
 		// find all game elements that are currently marked as "to-render" and render them
 		while (!toRenderGameElementId.done) {
-			(gameElementsMap.get(toRenderGameElementId.value)! as BoardObject).render();
+			(gameElementsMap.get(toRenderGameElementId.value)! as GameElement).render();
 
 			toRenderGameElementId = toRenderGameElementIdValues.next();
 		}
@@ -671,7 +670,7 @@ export class App {
 	 * This function doesn't call the actual collision handler methods, but instead will look through tiles
 	 * on the board and make sure that collidables that are near each other are checked for collisions.
 	 *
-	 * @param collidable a moveable, collidable board object
+	 * @param collidable a moveable, collidable game element
 	 * @param oldCollisionBox the old state of `collidable`'s collision box before ticking
 	 */
 	private lookForCollidables(collidable: Moveable & Collidable, oldCollisionBox: CollisionBox): void {
@@ -769,9 +768,9 @@ export class App {
 
 			if (
 				// !defined(otherCollidable) ||
-				// filter out the current board object we're operating on
+				// filter out the current game element we're operating on
 				otherCollidable.getName() === collidable.getName() ||
-				// if the collided-with boardobject doesn't allow collidable to collide with it, skip
+				// if the collided-with game element doesn't allow collidable to collide with it, skip
 				!otherCollidable.canBeCollidedBy(collidable.constructor.name) ||
 				collidable.getDeleted() ||
 				otherCollidable.getDeleted()

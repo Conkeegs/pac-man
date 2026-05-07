@@ -1,6 +1,5 @@
 import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
-import { BoardObject } from "../BoardObject.js";
 import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
 import Blinky from "./character/Blinky.js";
 import Clyde from "./character/Clyde.js";
@@ -15,7 +14,7 @@ import type MovementDirection from "./moveable/MovementDirection.js";
  * and also includes an array of `MovementDirection` values to tell the character
  * what directions it can turn when it reaches the given turn coordinates.
  */
-export default class Turn extends MakeCollidable(BoardObject) {
+export default class Turn extends MakeCollidable(GameElement) {
 	/**
 	 * `Turn`s' width and height in pixels.
 	 */

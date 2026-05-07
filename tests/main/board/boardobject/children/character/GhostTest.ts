@@ -4,7 +4,7 @@ import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
 /**
- * Tests functionality of `src\main\board\boardobject\children\character\Ghost.ts` instances.
+ * Tests functionality of `src\main\board\gameelement\children\character\Ghost.ts` instances.
  */
 @tests(Ghost)
 export default class GhostTest extends Test {

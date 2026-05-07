@@ -35,6 +35,7 @@ export default class GameElementTest extends Test {
 		this.assertFalse(typeof matchingGameElement === "undefined");
 		this.assertTrue(pacman1.getElement().classList.contains("game-element"));
 		this.assertTrue(gameElementsMap.has(pacman1.getUniqueId()));
+		this.assertStrictlyEqual(GameElement.GAME_ELEMENT_Z_INDEX, Number(pacman1.getElement().css("zIndex")));
 	}
 
 	/**
@@ -52,7 +53,7 @@ export default class GameElementTest extends Test {
 		const board = Board.getInstance();
 		const numTiles = 5;
 
-		Reflect.apply(board["placeBoardObject"], board, [pacman, numTiles, numTiles]);
+		Reflect.apply(board["placeGameElement"], board, [pacman, numTiles, numTiles]);
 
 		position = pacman.getPosition();
 

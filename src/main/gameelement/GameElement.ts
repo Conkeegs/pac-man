@@ -109,6 +109,10 @@ export abstract class GameElement {
 		x: "y",
 		y: "x",
 	} as const;
+	/**
+	 * `z-index` CSS property of all `GameElement` instances on the board.
+	 */
+	public static readonly GAME_ELEMENT_Z_INDEX: 0 = 0;
 
 	/**
 	 * Creates a game element.
@@ -149,9 +153,11 @@ export abstract class GameElement {
 		// keep track of this game element so we can clean it up later, if needed
 		gameElementsMap.set(this.uniqueId, this);
 
-		this.element = create({ name: "div", id: name, classes: ["game-element"] });
-		this.element.classList.add("game-element", this.constructor.name.toLowerCase() || "base-game-element");
+		this.element = create({ name: "div", id: name, classes: ["game-element"] }).css({
+			zIndex: GameElement.GAME_ELEMENT_Z_INDEX,
+		}) as HTMLElement;
 
+		this.element.classList.add("game-element", this.constructor.name.toLowerCase() || "base-game-element");
 		this.setDimensions(width, height);
 	}
 
@@ -315,7 +321,7 @@ export abstract class GameElement {
 	}
 
 	/**
-	 * Renders CSS changes of this board object to the screen.
+	 * Renders CSS changes of this game element to the screen.
 	 */
 	public render(position?: Position): void {
 		this.setTransform(position ?? this.position);

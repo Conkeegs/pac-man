@@ -71,7 +71,7 @@ HTMLElement.prototype.css = function (style: string | CSSStyleDeclaration | obje
 		DebugWindow.error(
 			"Utils.js",
 			"css()",
-			`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`
+			`HTMLElement.css() function not given an object or a string. Given '${typeOfStyle}'`,
 		);
 	}
 	// #!END_DEBUG
@@ -393,7 +393,7 @@ export function insertDivAtPosition(
 	x: number,
 	y: number,
 	color: string | undefined = "purple",
-	scale: number = 10
+	scale: number = 10,
 ): void {
 	get("board")!.appendChild(
 		create({
@@ -407,7 +407,7 @@ export function insertDivAtPosition(
 			backgroundColor: color,
 			height: px(scale),
 			width: px(scale),
-		}) as HTMLElement
+		}) as HTMLElement,
 	);
 }
 
@@ -424,7 +424,7 @@ export function originalPacManSpeedToNewSpeed(speed: number): number {
 }
 
 /**
- * Generates an _almost_ random string. Good enough for creating unique `BoardObject` names.
+ * Generates an _almost_ random string. Good enough for creating unique `GameElement` names.
  *
  * @returns
  */

@@ -13,7 +13,7 @@ import { tests } from "../../../../base/Decorators.js";
 @tests(Turn)
 export default class TurnTest extends Test {
 	/**
-	 * Test creating a turn board object.
+	 * Test creating a turn game element.
 	 */
 	public createTurnTest(): void {
 		const testTurn = new Turn("test-turn", [MovementDirection.LEFT, MovementDirection.RIGHT]);
@@ -52,8 +52,8 @@ export default class TurnTest extends Test {
 					x: turnCenterPosition.x - collidableMoveable.getWidth() / 2,
 					y: turnCenterPosition.y - collidableMoveable.getHeight() / 2,
 				},
-				collidableMoveable.getPosition()
-			)
+				collidableMoveable.getPosition(),
+			),
 		);
 
 		// reset this
@@ -80,7 +80,7 @@ export default class TurnTest extends Test {
 			GameElement.positionsEqual(collidableMoveable.getPosition(), {
 				x: turnCenterPosition.x - collidableMoveable.getWidth()! / 2,
 				y: turnCenterPosition.y - collidableMoveable.getHeight()! / 2,
-			})
+			}),
 		);
 		this.assertStrictlyEqual(testTurn, collidableMoveable["stoppedAtTurn"]);
 		this.assertTrue(collidableMoveable["shouldRender"]);

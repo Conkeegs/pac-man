@@ -1,13 +1,13 @@
 import AssetRegistry from "../../../assets/AssetRegistry.js";
+import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
-import { BoardObject } from "../BoardObject.js";
 import MakeCollidable from "../mixins/Collidable.js";
 import PacMan from "./character/PacMan.js";
 
 /**
  * Represents food that PacMan collects.
  */
-export default class Food extends MakeCollidable(BoardObject) {
+export default class Food extends MakeCollidable(GameElement) {
 	/**
 	 * `Food`s' width and height in pixels.
 	 */

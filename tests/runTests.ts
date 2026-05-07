@@ -6,7 +6,6 @@ import TestException from "./base/TestException.js";
 import AppTest from "./main/app/AppTest.js";
 import InputHandlerTest from "./main/app/InputHandlerTest.js";
 import AssetRegistryTest from "./main/assets/AssetRegistryTest.js";
-import BoardObjectTest from "./main/board/boardobject/BoardObjectTest.js";
 import BoardTextTest from "./main/board/boardobject/children/BoardTextTest.js";
 import BlinkyTest from "./main/board/boardobject/children/character/BlinkyTest.js";
 import CharacterTest from "./main/board/boardobject/children/character/CharacterTest.js";
@@ -67,7 +66,6 @@ export default class RunTests {
 	private static readonly TEST_CLASSES: Test[] = [
 		new AssetRegistryTest(),
 		new BoardTest(),
-		new BoardObjectTest(),
 		new PathNodeTest(),
 		new FoodTest(),
 		new BoardTextTest(),
@@ -136,7 +134,7 @@ export default class RunTests {
 				throw new Error(
 					`Specified test method ${
 						specificClassAndFunctionSplit![1]
-					} does not exist on testing class: ${test.getName()}`
+					} does not exist on testing class: ${test.getName()}`,
 				);
 			}
 
@@ -197,12 +195,12 @@ export default class RunTests {
 				Logger.log(
 					`${++testFunctionCount + ")"} ${functionName} successful - ${++this
 						.testFunctionCountCurrent}/${testFunctionCountTotal} (${Math.ceil(
-						(this.testFunctionCountCurrent / testFunctionCountTotal) * 100
+						(this.testFunctionCountCurrent / testFunctionCountTotal) * 100,
 					)}%)`,
 					{
 						severity: "success",
 						tabbed: true,
-					}
+					},
 				);
 
 				if (testClass.getCurrentAssertionCount() === 0) {

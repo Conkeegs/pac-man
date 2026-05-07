@@ -195,7 +195,7 @@ export default class MoveableTest extends Test {
 	public async tickTest(): Promise<void> {
 		const board = Board.getInstance();
 
-		await board["placeTurnBoardObjects"]();
+		await board["placeTurnGameElements"]();
 
 		const pacman = new PacMan();
 		const turn = board.getTurnMap().values().next().value!;
@@ -342,7 +342,7 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can queue turns correctly.
 	 */
 	public async queueTurnTest(): Promise<void> {
-		await Board.getInstance()["placeTurnBoardObjects"]();
+		await Board.getInstance()["placeTurnGameElements"]();
 
 		const moveable = new PacMan();
 
@@ -380,7 +380,7 @@ export default class MoveableTest extends Test {
 	 * Test that moveables can have their positions set to a turn's position correctly.
 	 */
 	public async offsetPositionToTurnTest(): Promise<void> {
-		await Board.getInstance()["placeTurnBoardObjects"]();
+		await Board.getInstance()["placeTurnGameElements"]();
 
 		const moveable = new PacMan();
 		const turn = Board.getInstance().getTurnMap().values().next().value!;

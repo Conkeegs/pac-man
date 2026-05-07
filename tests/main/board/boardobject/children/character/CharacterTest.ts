@@ -11,7 +11,7 @@ import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 
 /**
- * Tests functionality of `src\main\board\boardobject\children\character\Character.ts` instances.
+ * Tests functionality of `src\main\board\gameelement\children\character\Character.ts` instances.
  */
 @tests(Character)
 export default class CharacterTest extends Test {
@@ -26,7 +26,7 @@ export default class CharacterTest extends Test {
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
 		this.assertStrictlyEqual(
 			`url(\"${AssetRegistry.getImageSrc("pacman-1")}\")`,
-			pacmanElement.css("backgroundImage")
+			pacmanElement.css("backgroundImage"),
 		);
 	}
 
@@ -57,8 +57,8 @@ export default class CharacterTest extends Test {
 		this.assertStrictlyEqual(
 			character.getElement().css("backgroundImage"),
 			`url(\"${AssetRegistry.getImageSrc(
-				`${character.defaultAnimationImageName()}-${direction}` as keyof AssetRegistry
-			)}\")`
+				`${character.defaultAnimationImageName()}-${direction}` as keyof AssetRegistry,
+			)}\")`,
 		);
 	}
 
@@ -123,7 +123,7 @@ export default class CharacterTest extends Test {
 
 		this.assertStrictlyEqual(
 			inky._getCurrentAnimationImageName(),
-			`${inky.defaultAnimationImageName()}-${inky.getCurrentDirection()}`
+			`${inky.defaultAnimationImageName()}-${inky.getCurrentDirection()}`,
 		);
 	}
 }

@@ -1,10 +1,9 @@
 import Board from "../../../../../src/main/board/Board.js";
-import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObject.js";
 import Inky from "../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import MakeTickable from "../../../../../src/main/board/boardobject/mixins/Tickable.js";
-import type { Position } from "../../../../../src/main/gameelement/GameElement.js";
+import { GameElement, type Position } from "../../../../../src/main/gameelement/GameElement.js";
 import Test from "../../../../base/Base.js";
 
 /**
@@ -101,7 +100,7 @@ export default class TickableTest extends Test {
 	 * Test that tickables can delete themselves correctly.
 	 */
 	public deleteTest(): void {
-		const collidable = new (class extends MakeTickable(BoardObject) {
+		const collidable = new (class extends MakeTickable(GameElement) {
 			constructor() {
 				super("test tickable", 0, 0);
 			}

@@ -1,24 +1,24 @@
 import { App } from "../../../app/App.js";
 import AssetRegistry, { type ASSET_LIST } from "../../../assets/AssetRegistry.js";
+import type { GameElement } from "../../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";
 import { defined } from "../../../utils/Utils.js";
-import { BoardObject } from "../BoardObject.js";
 
 /**
- * Gives `BoardObject` instances functionality that allows them to be animated.
+ * Gives `GameElement` instances functionality that allows them to be animated.
  */
-export type Animateable = InstanceType<ReturnType<typeof MakeAnimateable<typeof BoardObject>>>;
+export type Animateable = InstanceType<ReturnType<typeof MakeAnimateable<typeof GameElement>>>;
 
 /**
- * The possible directions that a board object's animation can play in.
+ * The possible directions that a game element's animation can play in.
  */
 export enum ANIMATION_DIRECTION {
 	/**
-	 * Represents the forward direction of a board object's animation.
+	 * Represents the forward direction of a game element's animation.
 	 */
 	FORWARDS,
 	/**
-	 * Represents the backward direction of a board object's animation.
+	 * Represents the backward direction of a game element's animation.
 	 */
 	BACKWARDS,
 }
@@ -28,55 +28,55 @@ export enum ANIMATION_DIRECTION {
  */
 export enum ANIMATION_TYPE {
 	/**
-	 * Repeats this board object's animations from the starting frame when the max frames
+	 * Repeats this game element's animations from the starting frame when the max frames
 	 * are reached.
 	 */
 	REPEAT,
 	/**
-	 * When this board object's max animation state is reached, it will play the animation
+	 * When this game element's max animation state is reached, it will play the animation
 	 * backwards, then forwards again, looping it back and forth.
 	 */
 	LOOP,
 }
 
 /**
- * Gives `BoardObject` instances functionality that allows them to be animated.
+ * Gives `GameElement` instances functionality that allows them to be animated.
  *
- * @param Base a `BoardObject` instance
- * @param animationType style in which this board object will animate
- * @returns a `BoardObject` that is going to be animated
+ * @param Base a `GameElement` instance
+ * @param animationType style in which this game element will animate
+ * @returns a `GameElement` that is going to be animated
  */
-export default function MakeAnimateable<TBase extends AbstractConstructor<BoardObject>>(
+export default function MakeAnimateable<TBase extends AbstractConstructor<GameElement>>(
 	Base: TBase,
-	animationType: ANIMATION_TYPE = ANIMATION_TYPE.REPEAT
+	animationType: ANIMATION_TYPE = ANIMATION_TYPE.REPEAT,
 ) {
 	abstract class AnimateableClass extends Base {
 		/**
-		 * The id of the `setInterval()` call made for animating this board object.
+		 * The id of the `setInterval()` call made for animating this game element.
 		 */
 		_animationIntervalId: number | undefined;
 		/**
-		 * The maximum number of different animation states this board object can be in.
+		 * The maximum number of different animation states this game element can be in.
 		 */
 		abstract readonly _NUM_ANIMATION_STATES: number;
 		/**
-		 * How long each animation state for this board object lasts.
+		 * How long each animation state for this game element lasts.
 		 */
 		_ANIMATION_STATE_MILLIS: number = 100;
 		/**
-		 * The current animation frame this board object is on.
+		 * The current animation frame this game element is on.
 		 */
 		_animationFrame: number = 1;
 		/**
-		 * The direction (forwards or backwards) that this board object's animation is currently playing in.
+		 * The direction (forwards or backwards) that this game element's animation is currently playing in.
 		 */
 		_animationDirection: ANIMATION_DIRECTION = ANIMATION_DIRECTION.FORWARDS;
 		/**
-		 * Style in which this board object will animate.
+		 * Style in which this game element will animate.
 		 */
 		_animationType: ANIMATION_TYPE = animationType;
 		/**
-		 * Functions that will handle changing this board object's animation state, based
+		 * Functions that will handle changing this game element's animation state, based
 		 * on the animation type that is uses.
 		 */
 		_animationTypeHandlers: { [key in ANIMATION_TYPE]: () => void } = {
@@ -115,7 +115,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		/**
 		 * Creates a `AnimateableClass` instance.
 		 *
-		 * @param args arguments passed to the board object's constructor
+		 * @param args arguments passed to the game element's constructor
 		 */
 		constructor(...args: any[]) {
 			super(...args);
@@ -124,7 +124,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Sets an interval that starts playing this board object's animations by referencing its different
+		 * Sets an interval that starts playing this game element's animations by referencing its different
 		 * animation images.
 		 */
 		public playAnimation(): void {
@@ -134,12 +134,12 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 
 			this._animationIntervalId = window.setInterval(
 				this._updateAnimationState.bind(this),
-				this._ANIMATION_STATE_MILLIS
+				this._ANIMATION_STATE_MILLIS,
 			);
 		}
 
 		/**
-		 * Cancels the interval that changes this board object 's animation images.
+		 * Cancels the interval that changes this game element 's animation images.
 		 */
 		public stopAnimation(): void {
 			clearInterval(this._animationIntervalId);
@@ -148,7 +148,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Deletes this board object and makes sure that it's also removed from the animateables array.
+		 * Deletes this game element and makes sure that it's also removed from the animateables array.
 		 */
 		public override delete(): void {
 			this.stopAnimation();
@@ -158,10 +158,10 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Returns a string that combines this board object's name and current animation frame so
+		 * Returns a string that combines this game element's name and current animation frame so
 		 * we can properly access this animateable's image in the image registry.
 		 *
-		 * @returns string that combines this board object's name and current animation frame
+		 * @returns string that combines this game element's name and current animation frame
 		 */
 		public defaultAnimationImageName(): keyof ASSET_LIST["image"] {
 			return `${this.getName()}-${this._animationFrame}` as keyof ASSET_LIST["image"];
@@ -180,7 +180,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Returns this board object's image source-name, based on its current animation frame, and
+		 * Returns this game element's image source-name, based on its current animation frame, and
 		 * other factors in its implementation.
 		 */
 		_getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
@@ -188,7 +188,7 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Updates this board object's animation state, based on its current animation image name.
+		 * Updates this game element's animation state, based on its current animation image name.
 		 */
 		_updateAnimationState(): void {
 			this._animationTypeHandlers[this._animationType].bind(this)();
@@ -204,9 +204,9 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<BoardO
 		}
 
 		/**
-		 * Set the style in which this board object will animate.
+		 * Set the style in which this game element will animate.
 		 *
-		 * @param animationType new style in which this board object will animate
+		 * @param animationType new style in which this game element will animate
 		 */
 		_setAnimationType(animationType: ANIMATION_TYPE): void {
 			this._animationType = animationType;

@@ -1,52 +1,52 @@
+import type { GameElement } from "../../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../../types.js";
-import { BoardObject } from "../BoardObject.js";
 
 /**
- * Gives `BoardObject` instances functionality that allows them to properly "tick" each frame
+ * Gives `GameElement` instances functionality that allows them to properly "tick" each frame
  * of the game.
  */
-export type Tickable = InstanceType<ReturnType<typeof MakeTickable<typeof BoardObject>>>;
+export type Tickable = InstanceType<ReturnType<typeof MakeTickable<typeof GameElement>>>;
 
 /**
- * Gives `BoardObject` instances functionality that allows it to properly "tick" each frame
+ * Gives `GameElement` instances functionality that allows it to properly "tick" each frame
  * of the game.
  *
- * @param Base a `BoardObject` instance
- * @returns a `BoardObject` that is considered "tickable" each frame
+ * @param Base a `GameElement` instance
+ * @returns a `GameElement` that is considered "tickable" each frame
  */
-export default function MakeTickable<TBase extends AbstractConstructor<BoardObject>>(Base: TBase) {
+export default function MakeTickable<TBase extends AbstractConstructor<GameElement>>(Base: TBase) {
 	abstract class TickableClass extends Base {
 		/**
 		 * The number of times this game element has ticked so far.
 		 */
 		_tickCount: number = 0;
 		/**
-		 * Whether or not this board object should interpolate its rendering for smoothness.
-		 * Useful for things like teleporters since we don't want board objects to interpolate
+		 * Whether or not this game element should interpolate its rendering for smoothness.
+		 * Useful for things like teleporters since we don't want game elements to interpolate
 		 * "between" the two teleporters.
 		 */
 		_shouldInterpolate: boolean = true;
 
 		/**
-		 * Get whether or not this board object should interpolate.
+		 * Get whether or not this game element should interpolate.
 		 *
-		 * @returns whether or not this board object should interpolate
+		 * @returns whether or not this game element should interpolate
 		 */
 		public getShouldInterpolate(): boolean {
 			return this._shouldInterpolate;
 		}
 
 		/**
-		 * Set whether or not this board object should interpolate.
+		 * Set whether or not this game element should interpolate.
 		 *
-		 * @param shouldInterpolate whether or not this board object should interpolate
+		 * @param shouldInterpolate whether or not this game element should interpolate
 		 */
 		public setShouldInterpolate(shouldInterpolate: boolean): void {
 			this._shouldInterpolate = shouldInterpolate;
 		}
 
 		/**
-		 * Logic to call every frame for this board object.
+		 * Logic to call every frame for this game element.
 		 *
 		 */
 		public tick(): void {
@@ -57,7 +57,7 @@ export default function MakeTickable<TBase extends AbstractConstructor<BoardObje
 		 * Logic to call to make up for lost milliseconds each frame due to differing system deltaTimes.
 		 * Blends between `newValue` and `oldValue`.
 		 *
-		 * @param alpha used to perform a linear interpolation between this board object's last state and current
+		 * @param alpha used to perform a linear interpolation between this game element's last state and current
 		 * state to get the current state to render
 		 * @param extraParams 0 or more optional parameters to pass each interpolation
 		 */

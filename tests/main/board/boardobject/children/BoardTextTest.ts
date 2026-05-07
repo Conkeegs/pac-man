@@ -1,12 +1,12 @@
-import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObject.js";
 import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.js";
+import { GameElement } from "../../../../../src/main/gameelement/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";
 import { tests } from "../../../../base/Decorators.js";
 
 /**
- * Tests the functionality of `src\main\board\boardobject\children\BoardText.js`.
+ * Tests the functionality of `src\main\board\gameelement\children\BoardText.js`.
  */
 @tests(BoardText)
 export default class BoardTextTest extends Test {
@@ -23,7 +23,7 @@ export default class BoardTextTest extends Test {
 		let boardTextElement = boardText.getElement();
 
 		this.assertStrictlyEqual(TILESIZE, boardText.getFontSize());
-		this.assertStrictlyEqual(String(BoardObject.BOARD_OBJECT_Z_INDEX + 2), boardTextElement.css("zIndex"));
+		this.assertStrictlyEqual(String(GameElement.GAME_ELEMENT_Z_INDEX + 2), boardTextElement.css("zIndex"));
 		this.assertStrictlyEqual("white", boardText.getColor());
 		this.assertFalse(boardText.isVertical());
 		this.assertStrictlyEqual(text, boardText.getText());
@@ -138,7 +138,7 @@ export default class BoardTextTest extends Test {
 
 		this.assertStrictlyEqual(
 			newText.length,
-			boardTextElement.getElementsByClassName("board-text-container").length
+			boardTextElement.getElementsByClassName("board-text-container").length,
 		);
 
 		boardTextChildren = boardTextElement.children;
@@ -189,7 +189,7 @@ export default class BoardTextTest extends Test {
 
 		this.assertStrictlyEqual(
 			newText.length,
-			boardTextElement.getElementsByClassName("board-text-container").length
+			boardTextElement.getElementsByClassName("board-text-container").length,
 		);
 
 		boardTextChildren = boardTextElement.children;

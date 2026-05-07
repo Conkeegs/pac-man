@@ -1,14 +1,14 @@
 "use strict";
 
+import { GameElement } from "../../../gameelement/GameElement.js";
 import { TILESIZE } from "../../../utils/Globals.js";
 import { create, px } from "../../../utils/Utils.js";
 import Board from "../../Board.js";
-import { BoardObject } from "../BoardObject.js";
 
 /**
  * Represents a circular node at each location on the board where characters can turn.
  */
-export default class PathNode extends BoardObject {
+export default class PathNode extends GameElement {
 	/**
 	 * `PathNode`s' width and height in pixels.
 	 */
@@ -31,7 +31,7 @@ export default class PathNode extends BoardObject {
 				width: childDimensionsPixels,
 				height: childDimensionsPixels,
 				backgroundColor: color,
-			}) as HTMLElement
+			}) as HTMLElement,
 		);
 	}
 }
