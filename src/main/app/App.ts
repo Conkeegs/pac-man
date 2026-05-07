@@ -541,12 +541,16 @@ export class App {
 
 				moveable.tick();
 
+				const oldCollisionBoxUniqueId = oldCollisionBox.getUniqueId();
+
 				if (typeof moveable["onCollision" as keyof typeof moveable] !== "function") {
+					gameElementsMap.delete(oldCollisionBoxUniqueId);
+
 					continue;
 				}
 
 				this.lookForCollidables(moveable as unknown as Moveable & Collidable, oldCollisionBox);
-				oldCollisionBox.delete();
+				gameElementsMap.delete(oldCollisionBoxUniqueId);
 			}
 
 			fixedFrameCount++;

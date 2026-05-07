@@ -24,8 +24,10 @@ class CollidableMoveableTester extends MakeCollidable(Moveable) {
 	public override canBeCollidedByTypes: string[] = [];
 
 	override onCollision(): void {}
-	override interpolate(): void {
+	override interpolate(): number {
 		Object.defineProperty(this, "wasInterpolated", { value: true, writable: true });
+
+		return 0;
 	}
 }
 /**
@@ -375,8 +377,8 @@ export default class AppTest extends Test {
 		for (let i = 0; i < moveableCount; i++) {
 			const collidableMoveable = new CollidableMoveableTester(`test-moveable-${i}`, 10, 10, 10);
 
-			// mark as deleted to test skipping collision checking
-			collidableMoveable["deleted"] = true;
+			// remove onCollision method to test skipping collision checking
+			collidableMoveable["onCollision"] = undefined as unknown as () => void;
 
 			collidableMoveable.startMoving(MovementDirection.RIGHT);
 			movingMoveables.push(collidableMoveable);
@@ -391,13 +393,17 @@ export default class AppTest extends Test {
 
 		for (const moveable of movingMoveables) {
 			const distance3Times = moveable.getDistancePerFrame() * 3;
+			const positionX = moveable.getPosition().x;
 
 			// make sure updates to movable happen 3 times
-			this.assertStrictlyEqual(distance3Times, moveable.getPosition().x);
+			this.assertStrictlyEqual(distance3Times, positionX);
 			// render() calls should have happened too, so transform is updated
-			this.assertStrictlyEqual(distance3Times, moveable.getTransform().x);
+			this.assertStrictlyEqual(
+				moveable.interpolate(app["deltaTimeAccumulator"] / DESIRED_MS_PER_FRAME, distance3Times, positionX),
+				moveable.getTransform().x,
+			);
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertOfType("undefined", moveable["wasInterpolated" as keyof Moveable]);
+			this.assertTrue(moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		this.assertStrictlyEqual(0, app.getToRenderGameElementIds().size);

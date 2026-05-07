@@ -1,6 +1,5 @@
 import { App } from "../../../../../../src/main/app/App.js";
 import Board from "../../../../../../src/main/board/Board.js";
-import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import Pinky from "../../../../../../src/main/board/boardobject/children/character/Pinky.js";
 import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
@@ -321,53 +320,6 @@ export default class MoveableTest extends Test {
 		);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
-	}
-
-	/**
-	 * Test that moveables can interpolate their positions each frame correctly.
-	 */
-	public interpolateTest(): void {
-		const moveable = new Inky();
-
-		moveable.setPosition({
-			x: 300,
-			y: 400,
-		});
-
-		const moveablePosition = moveable.getPosition();
-		const oldPosition: Position = {
-			x: moveablePosition.x,
-			y: moveablePosition.y,
-		};
-		const oldPositionX = oldPosition.x;
-		const alpha = 0.5;
-		const newPosition: Position = {
-			x: moveablePosition.x + 100,
-			y: moveablePosition.y + 100,
-		};
-
-		// set position to some distance ahead by 100 pixels
-		moveable.setPosition(newPosition);
-
-		const newPositionX = newPosition.x;
-
-		moveable.startMoving(MovementDirection.RIGHT);
-
-		// handler function shouldn't be found so shouldn't interpolate yet
-		moveable["currentDirection"] = undefined;
-
-		moveable.interpolate(alpha, oldPosition);
-
-		const expected = newPositionX * alpha + oldPositionX * (1.0 - alpha);
-
-		this.assertNotStrictlyEqual(expected, moveable.getTransform().x);
-
-		// now handler function should be found and interpolation should work
-		moveable["currentDirection"] = MovementDirection.RIGHT;
-
-		moveable.interpolate(alpha, oldPosition);
-
-		this.assertStrictlyEqual(expected, moveable.getTransform().x);
 	}
 
 	/**

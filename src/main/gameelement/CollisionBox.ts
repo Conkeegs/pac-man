@@ -1,4 +1,5 @@
 import Board from "../board/Board.js";
+import { uniqueId } from "../utils/Utils.js";
 import { GameElement, type Position } from "./GameElement.js";
 
 /**
@@ -229,7 +230,7 @@ export default class CollisionBox extends GameElement {
 	 * @returns cloned `CollisionBox`
 	 */
 	public clone(): CollisionBox {
-		return new CollisionBox(`${this.getName()}-clone`, this.left, this.right, this.top, this.bottom);
+		return new CollisionBox(`${this.getName()}-clone-${uniqueId()}`, this.left, this.right, this.top, this.bottom);
 	}
 
 	/**

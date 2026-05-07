@@ -1,8 +1,10 @@
 import Board from "../../../../../src/main/board/Board.js";
 import { BoardObject } from "../../../../../src/main/board/boardobject/BoardObject.js";
+import Inky from "../../../../../src/main/board/boardobject/children/character/Inky.js";
 import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
 import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
 import MakeTickable from "../../../../../src/main/board/boardobject/mixins/Tickable.js";
+import type { Position } from "../../../../../src/main/gameelement/GameElement.js";
 import Test from "../../../../base/Base.js";
 
 /**
@@ -62,6 +64,40 @@ export default class TickableTest extends Test {
 	}
 
 	/**
+	 * Test that game elements can interpolate their positions each frame correctly.
+	 */
+	public interpolateTest(): void {
+		const tickable = new Inky();
+
+		tickable.setPosition({
+			x: 300,
+			y: 400,
+		});
+
+		const moveablePosition = tickable.getPosition();
+		const oldPosition: Position = {
+			x: moveablePosition.x,
+			y: moveablePosition.y,
+		};
+		const oldPositionX = oldPosition.x;
+		const alpha = 0.5;
+		const newPosition: Position = {
+			x: moveablePosition.x + 100,
+			y: moveablePosition.y + 100,
+		};
+
+		// set position to some distance ahead by 100 pixels
+		tickable.setPosition(newPosition);
+
+		const newPositionX = newPosition.x;
+
+		this.assertStrictlyEqual(
+			newPositionX * alpha + oldPositionX * (1.0 - alpha),
+			tickable.interpolate(alpha, newPositionX, oldPositionX),
+		);
+	}
+
+	/**
 	 * Test that tickables can delete themselves correctly.
 	 */
 	public deleteTest(): void {
@@ -70,7 +106,9 @@ export default class TickableTest extends Test {
 				super("test tickable", 0, 0);
 			}
 
-			public override interpolate() {}
+			public override interpolate() {
+				return 0;
+			}
 		})();
 
 		collidable.tick();

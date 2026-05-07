@@ -34,8 +34,6 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(pacmanName, pacman1.getName());
 		this.assertFalse(typeof matchingGameElement === "undefined");
 		this.assertTrue(pacman1.getElement().classList.contains("game-element"));
-		// minus one here to account for newly-added pacman object
-		this.assertStrictlyEqual(gameElementsMap.size - 1, pacman1.getUniqueId());
 		this.assertTrue(gameElementsMap.has(pacman1.getUniqueId()));
 	}
 
@@ -112,7 +110,7 @@ export default class GameElementTest extends Test {
 		const uniqueId = gameElement.getUniqueId();
 
 		this.assertExists(uniqueId);
-		this.assertStrictlyEqual(App.getInstance().getGameElementsMap().size, uniqueId);
+		this.assertOfType("string", uniqueId);
 	}
 
 	/**
@@ -528,7 +526,7 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(JSON.stringify({ x: newTransformX, y: newTransformY }), JSON.stringify(transform));
 		this.assertStrictlyEqual(
 			`translate(${px(newTransformX)}, ${px(newTransformY)})`,
-			gameElement.getElement().css("transform")
+			gameElement.getElement().css("transform"),
 		);
 	}
 
@@ -559,7 +557,7 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(JSON.stringify({ x: newTransformX, y: newTransformY }), JSON.stringify(transform));
 		this.assertStrictlyEqual(
 			`translate(${px(newTransformX)}, ${px(newTransformY)})`,
-			gameElement.getElement().css("transform")
+			gameElement.getElement().css("transform"),
 		);
 	}
 
@@ -590,7 +588,7 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(JSON.stringify({ x: newTransformX, y: newTransformY }), JSON.stringify(transform));
 		this.assertStrictlyEqual(
 			`translate(${px(newTransformX)}, ${px(newTransformY)})`,
-			gameElement.getElement().css("transform")
+			gameElement.getElement().css("transform"),
 		);
 	}
 
