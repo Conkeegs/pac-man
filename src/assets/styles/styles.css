@@ -61,7 +61,7 @@ body {
     text-align: center;
 }
 
-.board-object {
+.game-element {
     &.button {
         /* border: 1px solid white; */
         transition: color var(--defaultTransitionTime);
