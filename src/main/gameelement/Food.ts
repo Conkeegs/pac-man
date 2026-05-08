@@ -1,8 +1,8 @@
-import AssetRegistry from "../../../assets/AssetRegistry.js";
-import { GameElement } from "../../../gameelement/GameElement.js";
-import { TILESIZE } from "../../../utils/Globals.js";
-import MakeCollidable from "../mixins/Collidable.js";
+import AssetRegistry from "../assets/AssetRegistry.js";
+import { TILESIZE } from "../utils/Globals.js";
 import PacMan from "./character/PacMan.js";
+import { GameElement } from "./GameElement.js";
+import MakeCollidable from "./mixins/Collidable.js";
 
 /**
  * Represents food that PacMan collects.

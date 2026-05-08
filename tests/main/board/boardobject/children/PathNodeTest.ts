@@ -1,5 +1,5 @@
-import Board from "../../../../../src/main/board/Board.js";
-import PathNode from "../../../../../src/main/board/boardobject/children/PathNode.js";
+import Board from "../../../../../src/main/Board.js";
+import PathNode from "../../../../../src/main/gameelement/PathNode.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";
@@ -39,7 +39,7 @@ export default class PathNodeTest extends Test {
 
 		this.assertStrictlyEqual(
 			backgroundColor,
-			(pathNode2.getElement().firstElementChild as HTMLDivElement).css("backgroundColor")
+			(pathNode2.getElement().firstElementChild as HTMLDivElement).css("backgroundColor"),
 		);
 	}
 }

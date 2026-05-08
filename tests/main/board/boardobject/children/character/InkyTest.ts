@@ -1,4 +1,4 @@
-import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
+import Inky from "../../../../../../src/main/gameelement/character/Inky.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

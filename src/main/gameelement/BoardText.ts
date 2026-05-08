@@ -1,11 +1,11 @@
 "use strict";
 
-import Debugging from "../../../Debugging.js";
-import DebugWindow from "../../../debugwindow/DebugWindow.js";
-import { GameElement } from "../../../gameelement/GameElement.js";
-import { TILESIZE } from "../../../utils/Globals.js";
-import { create, px } from "../../../utils/Utils.js";
-import Board from "../../Board.js";
+import Board from "../Board.js";
+import Debugging from "../Debugging.js";
+import DebugWindow from "../debugwindow/DebugWindow.js";
+import { TILESIZE } from "../utils/Globals.js";
+import { create, px } from "../utils/Utils.js";
+import { GameElement } from "./GameElement.js";
 
 /**
  * Represents text on the board.

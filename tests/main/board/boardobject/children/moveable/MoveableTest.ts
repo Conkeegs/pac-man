@@ -1,11 +1,11 @@
 import { App } from "../../../../../../src/main/app/App.js";
-import Board from "../../../../../../src/main/board/Board.js";
-import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
-import Pinky from "../../../../../../src/main/board/boardobject/children/character/Pinky.js";
-import Moveable from "../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
-import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
+import Board from "../../../../../../src/main/Board.js";
+import PacMan from "../../../../../../src/main/gameelement/character/PacMan.js";
+import Pinky from "../../../../../../src/main/gameelement/character/Pinky.js";
 import type { Position } from "../../../../../../src/main/gameelement/GameElement.js";
+import Moveable from "../../../../../../src/main/gameelement/moveable/Moveable.js";
+import MovementDirection from "../../../../../../src/main/gameelement/moveable/MovementDirection.js";
+import Turn from "../../../../../../src/main/gameelement/Turn.js";
 import { millisToSeconds } from "../../../../../../src/main/utils/Utils.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";

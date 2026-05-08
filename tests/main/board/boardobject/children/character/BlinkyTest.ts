@@ -1,4 +1,4 @@
-import Blinky from "../../../../../../src/main/board/boardobject/children/character/Blinky.js";
+import Blinky from "../../../../../../src/main/gameelement/character/Blinky.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

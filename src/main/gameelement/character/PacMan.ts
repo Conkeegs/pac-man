@@ -1,13 +1,13 @@
 "use strict";
 
-import AssetRegistry, { type ASSET_LIST } from "../../../../assets/AssetRegistry.js";
-import { defined, originalPacManSpeedToNewSpeed } from "../../../../utils/Utils.js";
-import { ANIMATION_TYPE } from "../../mixins/Animateable.js";
-import type { Collidable } from "../../mixins/Collidable.js";
+import AssetRegistry, { type ASSET_LIST } from "../../assets/AssetRegistry.js";
+import { defined, originalPacManSpeedToNewSpeed } from "../../utils/Utils.js";
+import { ANIMATION_TYPE } from "../mixins/Animateable.js";
+import type { Collidable } from "../mixins/Collidable.js";
 import MakeControllable from "../moveable/mixins/Controllable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
-import type Turn from "../Turn.js";
+import Turn from "../Turn.js";
 import Blinky from "./Blinky.js";
 import Character from "./Character.js";
 import Clyde from "./Clyde.js";

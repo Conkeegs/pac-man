@@ -1,6 +1,6 @@
-import PacMan from "../../../../../src/main/board/boardobject/children/character/PacMan.js";
-import MovementDirection from "../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import { ANIMATION_TYPE } from "../../../../../src/main/board/boardobject/mixins/Animateable.js";
+import PacMan from "../../../../../src/main/gameelement/character/PacMan.js";
+import { ANIMATION_TYPE } from "../../../../../src/main/gameelement/mixins/Animateable.js";
+import MovementDirection from "../../../../../src/main/gameelement/moveable/MovementDirection.js";
 import { getImageSrc } from "../../../../../src/main/utils/Utils.js";
 import Test from "../../../../base/Base.js";
 
@@ -70,7 +70,7 @@ export default class AnimateableTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${animateable.getName()}-${animateable._animationFrame}`,
-			animateable.defaultAnimationImageName()
+			animateable.defaultAnimationImageName(),
 		);
 	}
 
@@ -86,7 +86,7 @@ export default class AnimateableTest extends Test {
 
 		this.assertStrictlyEqual(
 			`${animateable.getName()}-${animateable._animationFrame}-${direction}`,
-			animateable._getCurrentAnimationImageName()
+			animateable._getCurrentAnimationImageName(),
 		);
 	}
 
@@ -108,7 +108,7 @@ export default class AnimateableTest extends Test {
 		this.assertNotStrictlyEqual(newBackgroundImage, originalBackgroundImage);
 		this.assertStrictlyEqual(
 			`url("https://localhost/projects/pac-man/${getImageSrc(imageName)}")`,
-			newBackgroundImage
+			newBackgroundImage,
 		);
 	}
 

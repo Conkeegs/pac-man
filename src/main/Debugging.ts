@@ -1,11 +1,11 @@
 // #!DEBUG
 
 import { App } from "./app/App.js";
-import Board from "./board/Board.js";
-import BoardText from "./board/boardobject/children/BoardText.js";
-import type Moveable from "./board/boardobject/children/moveable/Moveable.js";
-import type { Collidable } from "./board/boardobject/mixins/Collidable.js";
+import Board from "./Board.js";
+import BoardText from "./gameelement/BoardText.js";
 import { GameElement } from "./gameelement/GameElement.js";
+import type { Collidable } from "./gameelement/mixins/Collidable.js";
+import Moveable from "./gameelement/moveable/Moveable.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
 import { create, px } from "./utils/Utils.js";
 

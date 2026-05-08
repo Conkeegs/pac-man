@@ -1,5 +1,5 @@
-import Ghost from "../../../../../../src/main/board/boardobject/children/character/Ghost.js";
-import Inky from "../../../../../../src/main/board/boardobject/children/character/Inky.js";
+import Ghost from "../../../../../../src/main/gameelement/character/Ghost.js";
+import Inky from "../../../../../../src/main/gameelement/character/Inky.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

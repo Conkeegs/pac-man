@@ -1,20 +1,20 @@
 "use strict";
 
-import Debugging from "../Debugging.js";
-import AssetRegistry from "../assets/AssetRegistry.js";
-import DebugWindow from "../debugwindow/DebugWindow.js";
-import { GameElement, type Position } from "../gameelement/GameElement.js";
-import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../utils/Globals.js";
-import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "../utils/Utils.js";
-import Food from "./boardobject/children/Food.js";
-import Teleporter from "./boardobject/children/Teleporter.js";
-import Turn from "./boardobject/children/Turn.js";
-import Blinky from "./boardobject/children/character/Blinky.js";
-import Clyde from "./boardobject/children/character/Clyde.js";
-import Inky from "./boardobject/children/character/Inky.js";
-import PacMan from "./boardobject/children/character/PacMan.js";
-import Pinky from "./boardobject/children/character/Pinky.js";
-import MovementDirection from "./boardobject/children/moveable/MovementDirection.js";
+import Debugging from "./Debugging.js";
+import AssetRegistry from "./assets/AssetRegistry.js";
+import DebugWindow from "./debugwindow/DebugWindow.js";
+import Food from "./gameelement/Food.js";
+import { GameElement, type Position } from "./gameelement/GameElement.js";
+import Teleporter from "./gameelement/Teleporter.js";
+import Turn from "./gameelement/Turn.js";
+import Blinky from "./gameelement/character/Blinky.js";
+import Clyde from "./gameelement/character/Clyde.js";
+import Inky from "./gameelement/character/Inky.js";
+import PacMan from "./gameelement/character/PacMan.js";
+import Pinky from "./gameelement/character/Pinky.js";
+import MovementDirection from "./gameelement/moveable/MovementDirection.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
+import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "./utils/Utils.js";
 
 /**
  * Represents the white lines between each "turn" node when in debug mode.

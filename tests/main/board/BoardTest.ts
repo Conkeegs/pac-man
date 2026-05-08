@@ -1,7 +1,7 @@
 import { App } from "../../../src/main/app/App.js";
-import Board from "../../../src/main/board/Board.js";
-import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
-import Food from "../../../src/main/board/boardobject/children/Food.js";
+import Board from "../../../src/main/Board.js";
+import PacMan from "../../../src/main/gameelement/character/PacMan.js";
+import Food from "../../../src/main/gameelement/Food.js";
 import type { Position } from "../../../src/main/gameelement/GameElement.js";
 import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
 import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";

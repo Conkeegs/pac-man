@@ -1,10 +1,10 @@
 "use strict";
 
-import type { ASSET_LIST } from "../../../../assets/AssetRegistry.js";
-import Board from "../../../../board/Board.js";
-import { TILESIZE } from "../../../../utils/Globals.js";
-import MakeAnimateable from "../../mixins/Animateable.js";
-import MakeCollidable from "../../mixins/Collidable.js";
+import Board from "../../Board.js";
+import type { ASSET_LIST } from "../../assets/AssetRegistry.js";
+import { TILESIZE } from "../../utils/Globals.js";
+import MakeAnimateable from "../mixins/Animateable.js";
+import MakeCollidable from "../mixins/Collidable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 

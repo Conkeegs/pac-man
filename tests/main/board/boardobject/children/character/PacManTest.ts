@@ -1,7 +1,7 @@
-import PacMan from "../../../../../../src/main/board/boardobject/children/character/PacMan.js";
-import MovementDirection from "../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import Turn from "../../../../../../src/main/board/boardobject/children/Turn.js";
-import { ANIMATION_TYPE } from "../../../../../../src/main/board/boardobject/mixins/Animateable.js";
+import PacMan from "../../../../../../src/main/gameelement/character/PacMan.js";
+import { ANIMATION_TYPE } from "../../../../../../src/main/gameelement/mixins/Animateable.js";
+import MovementDirection from "../../../../../../src/main/gameelement/moveable/MovementDirection.js";
+import Turn from "../../../../../../src/main/gameelement/Turn.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

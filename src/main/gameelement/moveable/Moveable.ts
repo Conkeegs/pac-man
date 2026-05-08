@@ -1,14 +1,14 @@
-import { App } from "../../../../app/App.js";
-import { GameElement } from "../../../../gameelement/GameElement.js";
+import { App } from "../../app/App.js";
+import Board from "../../Board.js";
 import {
 	MAX_PLAYABLE_TILE_X,
 	MAX_PLAYABLE_TILE_Y,
 	MIN_PLAYABLE_TILE_X,
 	MIN_PLAYABLE_TILE_Y,
-} from "../../../../utils/Globals.js";
-import { millisToSeconds } from "../../../../utils/Utils.js";
-import Board from "../../../Board.js";
-import MakeTickable from "../../mixins/Tickable.js";
+} from "../../utils/Globals.js";
+import { millisToSeconds } from "../../utils/Utils.js";
+import { GameElement } from "../GameElement.js";
+import MakeTickable from "../mixins/Tickable.js";
 import type Turn from "../Turn.js";
 import MovementDirection from "./MovementDirection.js";
 

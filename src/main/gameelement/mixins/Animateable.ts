@@ -1,8 +1,8 @@
-import { App } from "../../../app/App.js";
-import AssetRegistry, { type ASSET_LIST } from "../../../assets/AssetRegistry.js";
-import type { GameElement } from "../../../gameelement/GameElement.js";
-import type { AbstractConstructor } from "../../../types.js";
-import { defined } from "../../../utils/Utils.js";
+import { App } from "../../app/App.js";
+import AssetRegistry, { type ASSET_LIST } from "../../assets/AssetRegistry.js";
+import type { GameElement } from "../../gameelement/GameElement.js";
+import type { AbstractConstructor } from "../../types.js";
+import { defined } from "../../utils/Utils.js";
 
 /**
  * Gives `GameElement` instances functionality that allows them to be animated.

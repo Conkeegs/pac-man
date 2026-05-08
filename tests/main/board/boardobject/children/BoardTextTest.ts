@@ -1,4 +1,4 @@
-import BoardText from "../../../../../src/main/board/boardobject/children/BoardText.js";
+import BoardText from "../../../../../src/main/gameelement/BoardText.js";
 import { GameElement } from "../../../../../src/main/gameelement/GameElement.js";
 import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
 import { px } from "../../../../../src/main/utils/Utils.js";

@@ -1,9 +1,9 @@
 import { App } from "../../../src/main/app/App.js";
-import Board from "../../../src/main/board/Board.js";
-import Clyde from "../../../src/main/board/boardobject/children/character/Clyde.js";
-import Inky from "../../../src/main/board/boardobject/children/character/Inky.js";
-import PacMan from "../../../src/main/board/boardobject/children/character/PacMan.js";
-import Food from "../../../src/main/board/boardobject/children/Food.js";
+import Board from "../../../src/main/Board.js";
+import Clyde from "../../../src/main/gameelement/character/Clyde.js";
+import Inky from "../../../src/main/gameelement/character/Inky.js";
+import PacMan from "../../../src/main/gameelement/character/PacMan.js";
+import Food from "../../../src/main/gameelement/Food.js";
 import { GameElement, type Position } from "../../../src/main/gameelement/GameElement.js";
 import { ROWS, TILESIZE } from "../../../src/main/utils/Globals.js";
 import { get, px } from "../../../src/main/utils/Utils.js";

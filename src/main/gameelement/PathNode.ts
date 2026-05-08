@@ -1,9 +1,9 @@
 "use strict";
 
-import { GameElement } from "../../../gameelement/GameElement.js";
-import { TILESIZE } from "../../../utils/Globals.js";
-import { create, px } from "../../../utils/Utils.js";
-import Board from "../../Board.js";
+import Board from "../Board.js";
+import { GameElement } from "../gameelement/GameElement.js";
+import { TILESIZE } from "../utils/Globals.js";
+import { create, px } from "../utils/Utils.js";
 
 /**
  * Represents a circular node at each location on the board where characters can turn.

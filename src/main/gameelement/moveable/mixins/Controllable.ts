@@ -1,6 +1,6 @@
-import { App } from "../../../../../app/App.js";
-import type { AbstractConstructor } from "../../../../../types.js";
-import { defined } from "../../../../../utils/Utils.js";
+import { App } from "../../../app/App.js";
+import type { AbstractConstructor } from "../../../types.js";
+import { defined } from "../../../utils/Utils.js";
 import Moveable from "../Moveable.js";
 import MovementDirection from "../MovementDirection.js";
 
@@ -91,7 +91,7 @@ export default function MakeControllable<TBase extends AbstractConstructor<Movea
 			// filter down the selection of turns we have to choose from to only the ones "ahead" of this controllable
 			const nearestTurnableTurn = this.findNearestTurnForDirectionWhere(
 				(turn) => Moveable.canTurnWithMoveDirection(currentInputDirection, turn),
-				currentDirection
+				currentDirection,
 			);
 
 			if (!nearestTurnableTurn) {

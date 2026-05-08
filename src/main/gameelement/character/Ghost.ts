@@ -1,4 +1,4 @@
-import { getRandomInt } from "../../../../utils/Utils.js";
+import { getRandomInt } from "../../utils/Utils.js";
 import Character from "./Character.js";
 import PacMan from "./PacMan.js";
 

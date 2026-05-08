@@ -1,7 +1,7 @@
-import { GameElement } from "../../../gameelement/GameElement.js";
-import { TILESIZE } from "../../../utils/Globals.js";
-import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
+import { GameElement } from "../gameelement/GameElement.js";
+import { TILESIZE } from "../utils/Globals.js";
 import PacMan from "./character/PacMan.js";
+import MakeCollidable, { type Collidable } from "./mixins/Collidable.js";
 import type Moveable from "./moveable/Moveable.js";
 import MovementDirection from "./moveable/MovementDirection.js";
 

@@ -1,4 +1,4 @@
-import Clyde from "../../../../../../src/main/board/boardobject/children/character/Clyde.js";
+import Clyde from "../../../../../../src/main/gameelement/character/Clyde.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

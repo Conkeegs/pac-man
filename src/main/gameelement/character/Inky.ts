@@ -1,4 +1,4 @@
-import AssetRegistry from "../../../../assets/AssetRegistry.js";
+import AssetRegistry from "../../assets/AssetRegistry.js";
 import Ghost from "./Ghost.js";
 
 /**

@@ -1,4 +1,4 @@
-import Pinky from "../../../../../../src/main/board/boardobject/children/character/Pinky.js";
+import Pinky from "../../../../../../src/main/gameelement/character/Pinky.js";
 import Test from "../../../../../base/Base.js";
 import { tests } from "../../../../../base/Decorators.js";
 

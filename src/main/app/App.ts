@@ -1,14 +1,14 @@
 "use strict";
 
 import RunTests from "../../../tests/runTests.js";
-import Board from "../board/Board.js";
-import type { Controllable } from "../board/boardobject/children/moveable/mixins/Controllable.js";
-import Moveable from "../board/boardobject/children/moveable/Moveable.js";
-import type { Animateable } from "../board/boardobject/mixins/Animateable.js";
-import type { Collidable } from "../board/boardobject/mixins/Collidable.js";
+import Board from "../Board.js";
 import Debugging from "../Debugging.js";
 import CollisionBox from "../gameelement/CollisionBox.js";
 import { GameElement, type Position } from "../gameelement/GameElement.js";
+import type { Animateable } from "../gameelement/mixins/Animateable.js";
+import type { Collidable } from "../gameelement/mixins/Collidable.js";
+import type { Controllable } from "../gameelement/moveable/mixins/Controllable.js";
+import Moveable from "../gameelement/moveable/Moveable.js";
 import { create, defined, get, uniqueId } from "../utils/Utils.js";
 import InputHandler from "./InputHandler.js";
 

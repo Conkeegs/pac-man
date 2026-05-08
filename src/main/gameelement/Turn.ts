@@ -1,11 +1,11 @@
-import { GameElement } from "../../../gameelement/GameElement.js";
-import { TILESIZE } from "../../../utils/Globals.js";
-import MakeCollidable, { type Collidable } from "../mixins/Collidable.js";
+import { GameElement } from "../gameelement/GameElement.js";
+import { TILESIZE } from "../utils/Globals.js";
 import Blinky from "./character/Blinky.js";
 import Clyde from "./character/Clyde.js";
 import Inky from "./character/Inky.js";
 import PacMan from "./character/PacMan.js";
 import Pinky from "./character/Pinky.js";
+import MakeCollidable, { type Collidable } from "./mixins/Collidable.js";
 import Moveable from "./moveable/Moveable.js";
 import type MovementDirection from "./moveable/MovementDirection.js";
 

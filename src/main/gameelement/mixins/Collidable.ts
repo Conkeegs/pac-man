@@ -1,9 +1,9 @@
-import { App } from "../../../app/App.js";
-import CollisionBox from "../../../gameelement/CollisionBox.js";
-import type { GameElement, Position } from "../../../gameelement/GameElement.js";
-import type { AbstractConstructor } from "../../../types.js";
-import { defined } from "../../../utils/Utils.js";
+import { App } from "../../app/App.js";
 import Board from "../../Board.js";
+import type { AbstractConstructor } from "../../types.js";
+import { defined } from "../../utils/Utils.js";
+import CollisionBox from "../CollisionBox.js";
+import type { GameElement, Position } from "../GameElement.js";
 
 /**
  * Gives `GameElement` instances functionality that allows them to properly "collide" with

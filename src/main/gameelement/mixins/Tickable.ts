@@ -1,5 +1,5 @@
-import type { GameElement } from "../../../gameelement/GameElement.js";
-import type { AbstractConstructor } from "../../../types.js";
+import type { GameElement } from "../../gameelement/GameElement.js";
+import type { AbstractConstructor } from "../../types.js";
 
 /**
  * Gives `GameElement` instances functionality that allows them to properly "tick" each frame

@@ -1,9 +1,9 @@
 import { App } from "../../../../../../../src/main/app/App.js";
-import Board from "../../../../../../../src/main/board/Board.js";
-import MakeControllable from "../../../../../../../src/main/board/boardobject/children/moveable/mixins/Controllable.js";
-import Moveable from "../../../../../../../src/main/board/boardobject/children/moveable/Moveable.js";
-import MovementDirection from "../../../../../../../src/main/board/boardobject/children/moveable/MovementDirection.js";
-import Turn from "../../../../../../../src/main/board/boardobject/children/Turn.js";
+import Board from "../../../../../../../src/main/Board.js";
+import MakeControllable from "../../../../../../../src/main/gameelement/moveable/mixins/Controllable.js";
+import Moveable from "../../../../../../../src/main/gameelement/moveable/Moveable.js";
+import MovementDirection from "../../../../../../../src/main/gameelement/moveable/MovementDirection.js";
+import Turn from "../../../../../../../src/main/gameelement/Turn.js";
 import Test from "../../../../../../base/Base.js";
 
 /**
