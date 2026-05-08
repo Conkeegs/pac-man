@@ -1,10 +1,10 @@
-import { App } from "../../../../../src/main/app/App.js";
-import Food from "../../../../../src/main/gameelement/Food.js";
-import type { Position } from "../../../../../src/main/gameelement/GameElement.js";
-import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
-import { hexToRgb, px } from "../../../../../src/main/utils/Utils.js";
-import Test from "../../../../base/Base.js";
-import { tests } from "../../../../base/Decorators.js";
+import { App } from "../../../src/main/app/App.js";
+import Food from "../../../src/main/gameelement/Food.js";
+import type { Position } from "../../../src/main/gameelement/GameElement.js";
+import { TILESIZE } from "../../../src/main/utils/Globals.js";
+import { hexToRgb, px } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests functionality of `Food` instances.

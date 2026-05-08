@@ -1,12 +1,12 @@
-import { App } from "../../../src/main/app/App.js";
-import Board from "../../../src/main/Board.js";
-import PacMan from "../../../src/main/gameelement/character/PacMan.js";
-import Food from "../../../src/main/gameelement/Food.js";
-import type { Position } from "../../../src/main/gameelement/GameElement.js";
-import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../../src/main/utils/Globals.js";
-import { get, hexToRgb, px } from "../../../src/main/utils/Utils.js";
-import Test from "../../base/Base.js";
-import { tests } from "../../base/Decorators.js";
+import { App } from "../../src/main/app/App.js";
+import Board from "../../src/main/Board.js";
+import PacMan from "../../src/main/gameelement/character/PacMan.js";
+import Food from "../../src/main/gameelement/Food.js";
+import type { Position } from "../../src/main/gameelement/GameElement.js";
+import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
+import { get, hexToRgb, px } from "../../src/main/utils/Utils.js";
+import Test from "../base/Base.js";
+import { tests } from "../base/Decorators.js";
 
 /**
  * Tests the `src\main\board\Board.ts` class.

@@ -1,9 +1,9 @@
-import BoardText from "../../../../../src/main/gameelement/BoardText.js";
-import { GameElement } from "../../../../../src/main/gameelement/GameElement.js";
-import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
-import { px } from "../../../../../src/main/utils/Utils.js";
-import Test from "../../../../base/Base.js";
-import { tests } from "../../../../base/Decorators.js";
+import BoardText from "../../../src/main/gameelement/BoardText.js";
+import { GameElement } from "../../../src/main/gameelement/GameElement.js";
+import { TILESIZE } from "../../../src/main/utils/Globals.js";
+import { px } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests the functionality of `src\main\board\gameelement\children\BoardText.js`.

@@ -1,16 +1,14 @@
 import { App } from "../../../src/main/app/App.js";
 import InputHandler from "../../../src/main/app/InputHandler.js";
-import Board from "../../../src/main/board/Board.js";
-import MakeControllable, {
-	type Controllable,
-} from "../../../src/main/board/gameelement/children/moveable/mixins/Controllable.js";
-import Moveable from "../../../src/main/board/gameelement/children/moveable/Moveable.js";
-import MovementDirection from "../../../src/main/board/gameelement/children/moveable/MovementDirection.js";
-import MakeAnimateable, { type Animateable } from "../../../src/main/board/gameelement/mixins/Animateable.js";
-import MakeCollidable, { type Collidable } from "../../../src/main/board/gameelement/mixins/Collidable.js";
+import Board from "../../../src/main/Board.js";
 import PacMan from "../../../src/main/gameelement/character/PacMan.js";
 import CollisionBox from "../../../src/main/gameelement/CollisionBox.js";
 import { GameElement } from "../../../src/main/gameelement/GameElement.js";
+import MakeAnimateable, { type Animateable } from "../../../src/main/gameelement/mixins/Animateable.js";
+import MakeCollidable, { type Collidable } from "../../../src/main/gameelement/mixins/Collidable.js";
+import MakeControllable, { type Controllable } from "../../../src/main/gameelement/moveable/mixins/Controllable.js";
+import Moveable from "../../../src/main/gameelement/moveable/Moveable.js";
+import MovementDirection from "../../../src/main/gameelement/moveable/MovementDirection.js";
 import MakeListenable from "../../../src/main/mixins/Listenable.js";
 import type { AbstractConstructor } from "../../../src/main/types.js";
 import { cloneInstance, create, get } from "../../../src/main/utils/Utils.js";

@@ -1,9 +1,9 @@
-import Board from "../../../../../src/main/Board.js";
-import PathNode from "../../../../../src/main/gameelement/PathNode.js";
-import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
-import { px } from "../../../../../src/main/utils/Utils.js";
-import Test from "../../../../base/Base.js";
-import { tests } from "../../../../base/Decorators.js";
+import Board from "../../../src/main/Board.js";
+import PathNode from "../../../src/main/gameelement/PathNode.js";
+import { TILESIZE } from "../../../src/main/utils/Globals.js";
+import { px } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests the functionality of a `PathNode` instance.

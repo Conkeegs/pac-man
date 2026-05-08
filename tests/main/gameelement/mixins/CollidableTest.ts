@@ -1,9 +1,9 @@
-import { App } from "../../../../../src/main/app/App.js";
-import Turn from "../../../../../src/main/gameelement/Turn.js";
-import Inky from "../../../../../src/main/gameelement/character/Inky.js";
-import PacMan from "../../../../../src/main/gameelement/character/PacMan.js";
-import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
-import Test from "../../../../base/Base.js";
+import { App } from "../../../../src/main/app/App.js";
+import Turn from "../../../../src/main/gameelement/Turn.js";
+import Inky from "../../../../src/main/gameelement/character/Inky.js";
+import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
+import { TILESIZE } from "../../../../src/main/utils/Globals.js";
+import Test from "../../../base/Base.js";
 
 /**
  * Tests functionality of `Collidable` instances.

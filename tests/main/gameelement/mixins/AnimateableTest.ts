@@ -1,8 +1,8 @@
-import PacMan from "../../../../../src/main/gameelement/character/PacMan.js";
-import { ANIMATION_TYPE } from "../../../../../src/main/gameelement/mixins/Animateable.js";
-import MovementDirection from "../../../../../src/main/gameelement/moveable/MovementDirection.js";
-import { getImageSrc } from "../../../../../src/main/utils/Utils.js";
-import Test from "../../../../base/Base.js";
+import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
+import { ANIMATION_TYPE } from "../../../../src/main/gameelement/mixins/Animateable.js";
+import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
+import { getImageSrc } from "../../../../src/main/utils/Utils.js";
+import Test from "../../../base/Base.js";
 
 /**
  * Tests functionality of `Animateable` instances.

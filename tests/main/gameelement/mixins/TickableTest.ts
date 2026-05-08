@@ -1,10 +1,10 @@
-import Board from "../../../../../src/main/Board.js";
-import Inky from "../../../../../src/main/gameelement/character/Inky.js";
-import PacMan from "../../../../../src/main/gameelement/character/PacMan.js";
-import { GameElement, type Position } from "../../../../../src/main/gameelement/GameElement.js";
-import MakeTickable from "../../../../../src/main/gameelement/mixins/Tickable.js";
-import MovementDirection from "../../../../../src/main/gameelement/moveable/MovementDirection.js";
-import Test from "../../../../base/Base.js";
+import Board from "../../../../src/main/Board.js";
+import Inky from "../../../../src/main/gameelement/character/Inky.js";
+import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
+import { GameElement, type Position } from "../../../../src/main/gameelement/GameElement.js";
+import MakeTickable from "../../../../src/main/gameelement/mixins/Tickable.js";
+import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
+import Test from "../../../base/Base.js";
 
 /**
  * Tests functionality of `Tickable` instances.

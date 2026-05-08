@@ -1,4 +1,4 @@
-import Board from "../../../src/main/board/Board.js";
+import Board from "../../../src/main/Board.js";
 import CollisionBox from "../../../src/main/gameelement/CollisionBox.js";
 import type { Position } from "../../../src/main/gameelement/GameElement.js";
 import Test from "../../base/Base.js";
@@ -224,7 +224,7 @@ export default class CollisionBoxTest extends Test {
 			positionX + offsetX,
 			positionX + 5,
 			positionY,
-			positionY + 5
+			positionY + 5,
 		);
 
 		this.assertStrictlyEqual(offsetX, collisionBox.findDistanceToPosition(position));
@@ -237,7 +237,7 @@ export default class CollisionBoxTest extends Test {
 			positionX - offsetX,
 			positionX - 5,
 			positionY,
-			positionY + 5
+			positionY + 5,
 		);
 
 		this.assertStrictlyEqual(offsetX, collisionBox.findDistanceToPosition(position));
@@ -252,7 +252,7 @@ export default class CollisionBoxTest extends Test {
 			positionX,
 			positionX + 5,
 			positionY - offsetY - 5,
-			positionY - offsetY
+			positionY - offsetY,
 		);
 
 		this.assertStrictlyEqual(offsetY, collisionBox.findDistanceToPosition(position));
@@ -265,7 +265,7 @@ export default class CollisionBoxTest extends Test {
 			positionX,
 			positionX + 5,
 			positionY + offsetY,
-			positionY + offsetY + 5
+			positionY + offsetY + 5,
 		);
 
 		this.assertStrictlyEqual(offsetY, collisionBox.findDistanceToPosition(position));
@@ -283,7 +283,7 @@ export default class CollisionBoxTest extends Test {
 			Board.calcTileOffsetX(1),
 			Board.calcTileOffsetX(3),
 			Board.calcTileOffsetY(3),
-			Board.calcTileOffsetY(1)
+			Board.calcTileOffsetY(1),
 		);
 		const tileKeys = collisionBox.findTileKeys();
 

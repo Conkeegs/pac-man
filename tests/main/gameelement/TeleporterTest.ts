@@ -1,11 +1,11 @@
-import PacMan from "../../../../../src/main/gameelement/character/PacMan.js";
-import MovementDirection from "../../../../../src/main/gameelement/moveable/MovementDirection.js";
-import Teleporter from "../../../../../src/main/gameelement/Teleporter.js";
-import Turn from "../../../../../src/main/gameelement/Turn.js";
-import { TILESIZE } from "../../../../../src/main/utils/Globals.js";
-import { px } from "../../../../../src/main/utils/Utils.js";
-import Test from "../../../../base/Base.js";
-import { tests } from "../../../../base/Decorators.js";
+import PacMan from "../../../src/main/gameelement/character/PacMan.js";
+import MovementDirection from "../../../src/main/gameelement/moveable/MovementDirection.js";
+import Teleporter from "../../../src/main/gameelement/Teleporter.js";
+import Turn from "../../../src/main/gameelement/Turn.js";
+import { TILESIZE } from "../../../src/main/utils/Globals.js";
+import { px } from "../../../src/main/utils/Utils.js";
+import Test from "../../base/Base.js";
+import { tests } from "../../base/Decorators.js";
 
 /**
  * Tests functionality of `Teleporter` instances.

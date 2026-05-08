@@ -1,4 +1,4 @@
-import Board from "../board/Board.js";
+import Board from "../Board.js";
 import { uniqueId } from "../utils/Utils.js";
 import { GameElement, type Position } from "./GameElement.js";
 
