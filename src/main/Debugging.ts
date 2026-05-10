@@ -186,7 +186,7 @@ export default abstract class Debugging {
 	 * advances the game by one fixed-timestep frame and logs PacMan's position data
 	 * to help diagnose movement issues.
 	 */
-	private enableFrameStepMode(): void {
+	public static enableFrameStepMode(): void {
 		let stepMode = false;
 		let stepFrame = 0;
 		const app = App.getInstance();
