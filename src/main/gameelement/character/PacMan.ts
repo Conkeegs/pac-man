@@ -1,6 +1,5 @@
 "use strict";
 
-import AssetRegistry from "../../assets/AssetRegistry.js";
 import { defined, originalPacManSpeedToNewSpeed } from "../../utils/Utils.js";
 import { ANIMATION_TYPE, SPRITE_SHEET_TILE_DIMENSIONS, type AnimationState } from "../mixins/Animateable.js";
 import type { Collidable } from "../mixins/Collidable.js";
@@ -47,7 +46,7 @@ export default class PacMan extends MakeControllable(Character) {
 	 * @param name unique name of pacman instance, defaults to just "pacman"
 	 */
 	constructor(name: string = "pacman") {
-		super(name, PacMan.PACMAN_SPEED * 0.8, AssetRegistry.getImageSrc("pacman-1"));
+		super(name, PacMan.PACMAN_SPEED * 0.8);
 
 		this._setAnimationType(ANIMATION_TYPE.LOOP);
 	}

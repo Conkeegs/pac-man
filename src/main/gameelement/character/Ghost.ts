@@ -18,10 +18,9 @@ export default abstract class Ghost extends Character {
 	 *
 	 * @param name
 	 * @param speed
-	 * @param source
 	 */
-	constructor(name: string, speed: number, source: string) {
-		super(name, speed, source);
+	constructor(name: string, speed: number) {
+		super(name, speed);
 
 		this.getElement().classList.add("ghost");
 

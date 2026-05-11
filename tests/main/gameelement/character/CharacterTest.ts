@@ -30,15 +30,6 @@ export default class CharacterTest extends Test {
 	}
 
 	/**
-	 * Test that characters can get their image source correctly.
-	 */
-	public getSourceTest(): void {
-		const pacman = new PacMan();
-
-		this.assertStrictlyEqual(AssetRegistry.getImageSrc("pacman-1"), pacman.getSource());
-	}
-
-	/**
 	 * Test that characters set their current direction properly.
 	 */
 	public setCurrentDirectionTest(): void {

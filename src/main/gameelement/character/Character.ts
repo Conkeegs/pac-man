@@ -15,10 +15,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * `Character`s' width and height in pixels.
 	 */
 	private static CHARACTER_DIMENSIONS: number;
-	/**
-	 * The path to the character's picture file.
-	 */
-	private readonly source: string;
 	abstract override readonly _ANIMATION_STATE_SETS: AnimationStateMap &
 		Record<Exclude<MovementDirection, MovementDirection.STOP>, ReadonlyArray<AnimationState>>;
 	abstract override _ANIMATION_STATE_MILLIS: number;
@@ -43,27 +39,11 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 *
 	 * @param name
 	 * @param speed
-	 * @param source the path to the character's picture file
 	 */
-	constructor(name: string, speed: number, source: string) {
+	constructor(name: string, speed: number) {
 		Character.CHARACTER_DIMENSIONS = TILESIZE + Board.calcTileOffset(0.5);
 
 		super(name, Character.CHARACTER_DIMENSIONS, Character.CHARACTER_DIMENSIONS, speed);
-
-		this.source = source;
-
-		this.getElement().css({
-			backgroundImage: `url(${source})`,
-		});
-	}
-
-	/**
-	 * Gets the path to the character's picture file.
-	 *
-	 * @returns the path to the character's picture file
-	 */
-	public getSource() {
-		return this.source;
 	}
 
 	/**
