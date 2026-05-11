@@ -679,7 +679,7 @@ export class App {
 
 		const collisionBox = collidable.getCollisionBox();
 
-		// if the collidable doesn't move a greater distance than its collision box each frame,
+		// if the collidable doesn't move a greater distance than its collision box each tick,
 		// we can stop here
 		if (!(collidable.getDistancePerTick() >= collisionBox.getWidth())) {
 			return;
