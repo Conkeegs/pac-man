@@ -279,7 +279,8 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 		}
 
 		// set this game element's current direction since we now know that it's going to start moving
-		this.currentDirection = direction;
+		this.setCurrentDirection(direction);
+
 		this.moving = true;
 		this.lastMovementDirection = direction;
 
