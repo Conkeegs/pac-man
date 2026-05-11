@@ -292,8 +292,6 @@ export class App {
 			return;
 		}
 
-		this.inputHandler.startListening();
-
 		this.board = Board.getInstance();
 
 		await this.board.create();
@@ -322,6 +320,8 @@ export class App {
 			Debugging.enableFpsCounter();
 		}
 		// #!END_DEBUG
+
+		this.inputHandler.startListening();
 	}
 
 	/**
