@@ -18,7 +18,8 @@
         "Teleporter",
         "Tickable",
         "TICKABLES",
-        "TILESIZE"
+        "TILESIZE",
+        "gameloop"
     ],
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "editor.formatOnSave": true,
