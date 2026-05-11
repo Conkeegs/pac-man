@@ -55,15 +55,23 @@ export default class Turn extends MakeCollidable(GameElement) {
 	 */
 	public override onCollision(collidableMoveable: Moveable & Collidable): void {
 		const position = this.getPosition();
-		const queuedTurnInfo = collidableMoveable.getTurnQueue()[0]!;
+		const queuedTurnInfo = collidableMoveable.getTurnQueue()[0];
+		const currentDirection = collidableMoveable.getCurrentDirection();
 
 		// check the turn queue for any queued turns
 		if (queuedTurnInfo) {
+			const queuedTurnDirection = queuedTurnInfo.direction;
+
+			// heading straight, don't need to do any processing
+			if (queuedTurnDirection == currentDirection) {
+				return;
+			}
+
 			const queuedTurnInfoTurn = queuedTurnInfo.turn;
 
 			if (GameElement.positionsEqual(position, queuedTurnInfoTurn.getPosition())) {
 				collidableMoveable.offsetPositionToTurn(this);
-				collidableMoveable.setCurrentDirection(queuedTurnInfo.direction);
+				collidableMoveable.setCurrentDirection(queuedTurnDirection);
 				collidableMoveable.queueRenderUpdate();
 
 				return;
@@ -74,9 +82,7 @@ export default class Turn extends MakeCollidable(GameElement) {
 			return;
 		}
 
-		const currentDirection = collidableMoveable.getCurrentDirection()!;
-
-		if (Moveable.canTurnWithMoveDirection(currentDirection, this)) {
+		if (Moveable.canTurnWithMoveDirection(currentDirection!, this)) {
 			return;
 		}
 
