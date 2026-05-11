@@ -37,6 +37,7 @@ export default class PacMan extends MakeControllable(Character) {
 	 * Default speed of Pacman.
 	 */
 	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
+	private static readonly PACMAN_SPRITE_DIMENSIONS: 13 = 13;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];
 
@@ -61,8 +62,8 @@ export default class PacMan extends MakeControllable(Character) {
 				2 * SPRITE_SHEET_TILE_DIMENSIONS +
 				Character.CHARACTER_SPRITE_OFFSET,
 			y: Character.CHARACTER_SPRITE_OFFSET,
-			width: Character.CHARACTER_SPRITE_DIMENSIONS,
-			height: Character.CHARACTER_SPRITE_DIMENSIONS,
+			width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+			height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 		};
 	}
 
@@ -84,15 +85,15 @@ export default class PacMan extends MakeControllable(Character) {
 						SPRITE_SHEET_TILE_DIMENSIONS +
 						Character.CHARACTER_SPRITE_OFFSET,
 					y: Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 				// moving right and mouth all the way open
 				{
 					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
 					y: Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 			],
 			[MovementDirection.LEFT]: [
@@ -104,15 +105,15 @@ export default class PacMan extends MakeControllable(Character) {
 						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
 						Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 				// moving left and mouth all the way open
 				{
 					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 			],
 			[MovementDirection.UP]: [
@@ -124,15 +125,15 @@ export default class PacMan extends MakeControllable(Character) {
 						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
 						Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS * 2 + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 				// moving up and mouth all the way open
 				{
 					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS * 2 + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 			],
 			[MovementDirection.DOWN]: [
@@ -144,15 +145,15 @@ export default class PacMan extends MakeControllable(Character) {
 						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
 						Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS * 3 + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 				// moving down and mouth all the way open
 				{
 					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
 					y: SPRITE_SHEET_TILE_DIMENSIONS * 3 + Character.CHARACTER_SPRITE_OFFSET,
-					width: Character.CHARACTER_SPRITE_DIMENSIONS,
-					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+					width: PacMan.PACMAN_SPRITE_DIMENSIONS,
+					height: PacMan.PACMAN_SPRITE_DIMENSIONS,
 				},
 			],
 		};

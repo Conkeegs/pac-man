@@ -16,7 +16,12 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 */
 	private static CHARACTER_DIMENSIONS: number;
 	abstract override readonly _ANIMATION_STATE_SETS: AnimationStateMap &
-		Record<Exclude<MovementDirection, MovementDirection.STOP>, ReadonlyArray<AnimationState>>;
+		Partial<
+			Record<
+				MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN,
+				ReadonlyArray<AnimationState>
+			>
+		>;
 	abstract override _ANIMATION_STATE_MILLIS: number;
 
 	public abstract override canBeCollidedByTypes: string[];
@@ -29,10 +34,6 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * sprite sheet.
 	 */
 	public static readonly CHARACTER_SPRITE_OFFSET: 1 = 1;
-	/**
-	 * Height and width of each character on their sprite sheet.
-	 */
-	public static readonly CHARACTER_SPRITE_DIMENSIONS: 13 = 13;
 
 	/**
 	 * Creates a character.

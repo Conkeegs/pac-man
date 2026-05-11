@@ -1,4 +1,5 @@
 import { getRandomInt } from "../../utils/Utils.js";
+import MovementDirection from "../moveable/MovementDirection.js";
 import Character from "./Character.js";
 import PacMan from "./PacMan.js";
 
@@ -6,6 +7,8 @@ import PacMan from "./PacMan.js";
  * Represents any of the four ghosts on the board.
  */
 export default abstract class Ghost extends Character {
+	protected static readonly GHOST_SPRITE_DIMENSIONS: 14 = 14;
+
 	/**
 	 * @inheritdoc
 	 */
