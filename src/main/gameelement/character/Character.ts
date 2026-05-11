@@ -1,9 +1,8 @@
 "use strict";
 
 import Board from "../../Board.js";
-import type { ASSET_LIST } from "../../assets/AssetRegistry.js";
 import { TILESIZE } from "../../utils/Globals.js";
-import MakeAnimateable from "../mixins/Animateable.js";
+import MakeAnimateable, { type AnimationState, type AnimationStateMap } from "../mixins/Animateable.js";
 import MakeCollidable from "../mixins/Collidable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -20,17 +19,24 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	 * The path to the character's picture file.
 	 */
 	private readonly source: string;
-
-	/**
-	 * The maximum number of different animation states this character can be in.
-	 */
-	abstract override readonly _NUM_ANIMATION_STATES: number;
-	/**
-	 * How long each animation state for this character lasts.
-	 */
+	abstract override readonly _ANIMATION_STATE_SETS: AnimationStateMap &
+		Record<Exclude<MovementDirection, MovementDirection.STOP>, ReadonlyArray<AnimationState>>;
 	abstract override _ANIMATION_STATE_MILLIS: number;
 
 	public abstract override canBeCollidedByTypes: string[];
+	/**
+	 * Number of pixels from the left that the character's sprite sheet starts at.
+	 */
+	public static readonly CHARACTER_SPRITE_SHEET_OFFSET_X: 456 = 456;
+	/**
+	 * Number of pixels that each character is offset from the top and left side of their
+	 * sprite sheet.
+	 */
+	public static readonly CHARACTER_SPRITE_OFFSET: 1 = 1;
+	/**
+	 * Height and width of each character on their sprite sheet.
+	 */
+	public static readonly CHARACTER_SPRITE_DIMENSIONS: 13 = 13;
 
 	/**
 	 * Creates a character.
@@ -69,7 +75,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	public override setCurrentDirection(direction: MovementDirection): void {
 		super.setCurrentDirection(direction);
 
-		this.updateAnimationImage();
+		this._currentAnimationSet = direction;
 	}
 
 	/**
@@ -88,13 +94,5 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		super.startMoving(direction);
 		// start playing this character's animations as they move.
 		this.playAnimation();
-	}
-
-	/**
-	 * The the current animation image for this `Character` instance, combined with its current direction since
-	 * it is `Moveable`.
-	 */
-	override _getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
-		return `${this.defaultAnimationImageName()}-${this.currentDirection}` as keyof ASSET_LIST["image"];
 	}
 }

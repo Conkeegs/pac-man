@@ -84,10 +84,8 @@ export default class Turn extends MakeCollidable(GameElement) {
 
 		// don't allow pacman to stop against walls when his mouth is closed. otherwise, updating his rotation
 		// when users are against walls does not make a visual change
-		if (collidableMoveable._animationFrame === 1) {
-			collidableMoveable._animationFrame++;
-
-			collidableMoveable.updateAnimationImage();
+		if (collidableMoveable.getAnimationState() === 1) {
+			collidableMoveable.updateAnimationState();
 		}
 
 		collidableMoveable.stopMoving();

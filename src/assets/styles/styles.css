@@ -79,6 +79,11 @@ body {
             clip-path: var(--defaultClipPathPolygon);
         }
     }
+
+    &.animateable {
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+    }
 }
 
 .board-text-container {

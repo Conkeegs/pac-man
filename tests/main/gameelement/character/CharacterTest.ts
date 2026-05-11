@@ -1,7 +1,6 @@
 import AssetRegistry from "../../../../src/main/assets/AssetRegistry.js";
 import Board from "../../../../src/main/Board.js";
 import Character from "../../../../src/main/gameelement/character/Character.js";
-import Inky from "../../../../src/main/gameelement/character/Inky.js";
 import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
 import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
 import Turn from "../../../../src/main/gameelement/Turn.js";
@@ -44,22 +43,12 @@ export default class CharacterTest extends Test {
 	 */
 	public setCurrentDirectionTest(): void {
 		const character = new PacMan();
-
-		// do this so pacman's animation image name is found, based on his current
-		// direction he's facing
-		character["_animationFrame"]++;
-
 		const direction = MovementDirection.RIGHT;
 
 		character.setCurrentDirection(direction);
 
 		this.assertStrictlyEqual(direction, character["currentDirection"]);
-		this.assertStrictlyEqual(
-			character.getElement().css("backgroundImage"),
-			`url(\"${AssetRegistry.getImageSrc(
-				`${character.defaultAnimationImageName()}-${direction}` as keyof AssetRegistry,
-			)}\")`,
-		);
+		this.assertStrictlyEqual(direction, character["_currentAnimationSet"]);
 	}
 
 	/**
@@ -80,7 +69,6 @@ export default class CharacterTest extends Test {
 		pacman.stopMoving();
 
 		this.assertFalse(pacman.isMoving());
-		this.assertOfType("undefined", pacman._animationIntervalId);
 	}
 
 	/**
@@ -113,17 +101,5 @@ export default class CharacterTest extends Test {
 		this.assertTrue(pacman.isMoving());
 
 		pacman.stopMoving();
-	}
-
-	/**
-	 * Test that characters get their current animation image name correctly.
-	 */
-	public getCurrentAnimationImageNameTest(): void {
-		const inky = new Inky();
-
-		this.assertStrictlyEqual(
-			inky._getCurrentAnimationImageName(),
-			`${inky.defaultAnimationImageName()}-${inky.getCurrentDirection()}`,
-		);
 	}
 }

@@ -283,21 +283,4 @@ export default class PacManTest extends Test {
 	// 		pacman._EVENT_LISTENERS.find((listenerData) => listenerData.eventName === "keyup")
 	// 	);
 	// }
-
-	/**
-	 * Test that pacman instances can get their current animation images correctly.
-	 */
-	public getCurrentAnimationImageNameTest(): void {
-		const pacman = new PacMan();
-		let animationImage = pacman._getCurrentAnimationImageName();
-
-		this.assertStrictlyEqual(1, pacman._animationFrame);
-		this.assertStrictlyEqual(pacman.defaultAnimationImageName(), animationImage);
-
-		pacman._animationFrame++;
-
-		animationImage = pacman._getCurrentAnimationImageName();
-
-		this.assertStrictlyEqual(`${pacman.defaultAnimationImageName()}-${pacman["currentDirection"]}`, animationImage);
-	}
 }

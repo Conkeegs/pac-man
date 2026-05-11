@@ -52,6 +52,7 @@ export type ASSET_LIST = {
 		"clyde-2-1": HTMLImageElement;
 		"clyde-2-2": HTMLImageElement;
 		"clyde-2-3": HTMLImageElement;
+		pacman: HTMLImageElement;
 	};
 
 	json: {
@@ -117,6 +118,7 @@ export default class AssetRegistry {
 			"clyde-2-1": AssetRegistry.createImage("clyde-2-1"),
 			"clyde-2-2": AssetRegistry.createImage("clyde-2-2"),
 			"clyde-2-3": AssetRegistry.createImage("clyde-2-3"),
+			pacman: AssetRegistry.createImage("pacman"),
 		},
 		json: {
 			paths: getJsonSrc("paths"),

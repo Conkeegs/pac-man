@@ -42,7 +42,7 @@ export default class InputHandler {
 	}
 
 	/**
-	 * Gets the current key code entered by the player.
+	 * Whether or not input handler is currently listeneing for `keydown` events.
 	 *
 	 * @returns current key code entered by the player
 	 */

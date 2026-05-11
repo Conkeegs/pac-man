@@ -74,7 +74,7 @@ export default class TurnTest extends Test {
 
 		turnCenterPosition = testTurn.getCenterPosition();
 
-		this.assertStrictlyEqual(2, collidableMoveable._animationFrame);
+		this.assertStrictlyEqual(2, collidableMoveable._animationState);
 		this.assertFalse(collidableMoveable.isMoving());
 		this.assertTrue(
 			GameElement.positionsEqual(collidableMoveable.getPosition(), {

@@ -1,8 +1,8 @@
 import { App } from "../../app/App.js";
-import AssetRegistry, { type ASSET_LIST } from "../../assets/AssetRegistry.js";
+import AssetRegistry from "../../assets/AssetRegistry.js";
 import type { GameElement } from "../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../types.js";
-import { defined } from "../../utils/Utils.js";
+import { defined, px } from "../../utils/Utils.js";
 
 /**
  * Gives `GameElement` instances functionality that allows them to be animated.
@@ -40,6 +40,47 @@ export enum ANIMATION_TYPE {
 }
 
 /**
+ * An animation state that a game element can be in at any given time.
+ * The information it provides gives the sprite sheet handler the data it
+ * needs to find the offset and dimensions of a sprite.
+ */
+export type AnimationState = {
+	/**
+	 * The x offset of this animation state in the sprite sheet.
+	 */
+	x: number;
+	/**
+	 * The y offset of this animation state in the sprite sheet.
+	 */
+	y: number;
+	/**
+	 * The width of this animation state in the sprite sheet.
+	 */
+	width: number;
+	/**
+	 * The height of this animation state in the sprite sheet.
+	 */
+	height: number;
+};
+/**
+ * Map of keyed animation states for a game element. Used to define
+ * animation states for different context. For example, moveables
+ * define them based on the direction they're traveling in.
+ */
+export type AnimationStateMap = {
+	/**
+	 * Default key that must be defined for all animation sets.
+	 */
+	default: ReadonlyArray<AnimationState>;
+	[stateType: string | number]: ReadonlyArray<AnimationState>;
+};
+
+/**
+ * Default key name for an animation set.
+ */
+export const ANIMATION_DEFAULT_SET_NAME: "default" = "default";
+
+/**
  * Gives `GameElement` instances functionality that allows them to be animated.
  *
  * @param Base a `GameElement` instance
@@ -52,21 +93,23 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 ) {
 	abstract class AnimateableClass extends Base {
 		/**
-		 * The id of the `setInterval()` call made for animating this game element.
+		 * The current animation set currently being rendered for this game element.
 		 */
-		_animationIntervalId: number | undefined;
+		_currentAnimationSet: string | number = ANIMATION_DEFAULT_SET_NAME;
 		/**
-		 * The maximum number of different animation states this game element can be in.
+		 * All animation states for this game element, keyed by type of animation.
+		 * Must be defined in the implementation of the class.
 		 */
-		abstract readonly _NUM_ANIMATION_STATES: number;
+		abstract readonly _ANIMATION_STATE_SETS: AnimationStateMap;
 		/**
 		 * How long each animation state for this game element lasts.
+		 * Must be defined in the implementation of the class.
 		 */
 		_ANIMATION_STATE_MILLIS: number = 100;
 		/**
-		 * The current animation frame this game element is on.
+		 * The current animation state this game element is in.
 		 */
-		_animationFrame: number = 1;
+		_animationState: number = 1;
 		/**
 		 * The direction (forwards or backwards) that this game element's animation is currently playing in.
 		 */
@@ -75,6 +118,20 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 		 * Style in which this game element will animate.
 		 */
 		_animationType: ANIMATION_TYPE = animationType;
+		/**
+		 * Accumulates milliseconds passed each frame of the game in order to
+		 * keep track of when to animate/change sprites.
+		 */
+		_deltaTimeAccumulator: number = 0;
+		/**
+		 * Sprite sheet handler instance for this game element.
+		 */
+		_spriteSheetHandler: SpriteSheetHandler;
+		/**
+		 * Whether or not this game element should have its sprite updated for
+		 * animation.
+		 */
+		_needsSpriteUpdate: boolean = false;
 		/**
 		 * Functions that will handle changing this game element's animation state, based
 		 * on the animation type that is uses.
@@ -85,30 +142,33 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 				const backwards = ANIMATION_DIRECTION.BACKWARDS;
 				const animationDirection = this._animationDirection;
 
-				this._animationDirection === forwards ? this._animationFrame++ : this._animationFrame--;
+				this._animationDirection === forwards ? this._animationState++ : this._animationState--;
 
 				// if we've reached our max animation frames and the animation is playing forwards, we need to play it backwards
 				// now
-				if (this._animationFrame === this._NUM_ANIMATION_STATES + 1 && animationDirection === forwards) {
+				if (
+					this._animationState === this._ANIMATION_STATE_SETS[this._currentAnimationSet]!.length + 1 &&
+					animationDirection === forwards
+				) {
 					this._animationDirection = backwards;
-					this._animationFrame -= 2;
+					this._animationState -= 2;
 				}
 
 				// if we've reached our lowest animation frames and the animation is playing backwards, we need to play it forwards
 				// now
-				if (this._animationFrame === 0 && animationDirection === backwards) {
+				if (this._animationState === 0 && animationDirection === backwards) {
 					this._animationDirection = forwards;
-					this._animationFrame += 1;
+					this._animationState += 1;
 				}
 			},
 			[ANIMATION_TYPE.REPEAT]: () => {
-				if (this._animationFrame === this._NUM_ANIMATION_STATES) {
-					this._animationFrame = 1;
+				if (this._animationState === this._ANIMATION_STATE_SETS[this._currentAnimationSet]!.length) {
+					this._animationState = 1;
 
 					return;
 				}
 
-				this._animationFrame++;
+				this._animationState++;
 			},
 		};
 
@@ -120,31 +180,44 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 		constructor(...args: any[]) {
 			super(...args);
 
-			App.getInstance().getAnimateableGameElementIds().add(this.getUniqueId());
+			this._spriteSheetHandler = new SpriteSheetHandler(this);
+			this._currentAnimationSet = ANIMATION_DEFAULT_SET_NAME;
+
+			this.getElement().classList.add("animateable");
 		}
 
 		/**
-		 * Sets an interval that starts playing this game element's animations by referencing its different
-		 * animation images.
+		 * Get current animation state this game element is in.
+		 *
+		 * @returns number indicating current animation state this game element is in
+		 */
+		public getAnimationState(): number {
+			return this._animationState;
+		}
+
+		/**
+		 * Get current animation set this game element is animating in.
+		 *
+		 * @returns string or number indicating current animation set this game element is animating in
+		 */
+		public getCurrentAnimationSet(): string | number {
+			return this._currentAnimationSet;
+		}
+
+		/**
+		 * Mark this animateable for animation and add it to current-animating list.
 		 */
 		public playAnimation(): void {
-			if (this._animationIntervalId) {
-				this.stopAnimation();
-			}
-
-			this._animationIntervalId = window.setInterval(
-				this._updateAnimationState.bind(this),
-				this._ANIMATION_STATE_MILLIS,
-			);
+			App.getInstance().getAnimatingGameElementIds().add(this.getUniqueId());
 		}
 
 		/**
-		 * Cancels the interval that changes this game element 's animation images.
+		 * Stop animating this animatable and remove it from current-animating list.
 		 */
 		public stopAnimation(): void {
-			clearInterval(this._animationIntervalId);
+			this._deltaTimeAccumulator = 0;
 
-			this._animationIntervalId = undefined;
+			App.getInstance().getAnimatingGameElementIds().delete(this.getUniqueId());
 		}
 
 		/**
@@ -154,53 +227,67 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 			this.stopAnimation();
 
 			super.delete();
-			App.getInstance().getAnimateableGameElementIds().delete(this.getUniqueId());
+			App.getInstance().getAnimatingGameElementIds().delete(this.getUniqueId());
 		}
 
 		/**
-		 * Returns a string that combines this game element's name and current animation frame so
-		 * we can properly access this animateable's image in the image registry.
+		 * Reset this animateable's state to its default state.
+		 */
+		public resetAnimationState(): void {
+			this._currentAnimationSet = ANIMATION_DEFAULT_SET_NAME;
+			this._animationState = 1;
+			this._needsSpriteUpdate = true;
+
+			this.queueRenderUpdate();
+		}
+
+		/**
+		 * Render this animateable's css changes.
+		 */
+		public override render(): void {
+			super.render();
+
+			// very important to check the sprite update flag here because it's
+			// possible that this animateable could be an instance that renders
+			// very often, like a moveable, so calling "setSpriteImage()" every
+			// frame would be costly and causes some jitter in movements
+			if (this._needsSpriteUpdate) {
+				this._spriteSheetHandler.setSpriteImage(this._animationState - 1);
+
+				this._needsSpriteUpdate = false;
+			}
+		}
+
+		/**
+		 * Advance this animateable's animation.
 		 *
-		 * @returns string that combines this game element's name and current animation frame
+		 * @param gameLoopTimestamp current millisecond timestamp in main gameloop
+		 * @param lastGameLoopTimestamp last millisecond timestamp from gameloop's previous frame
 		 */
-		public defaultAnimationImageName(): keyof ASSET_LIST["image"] {
-			return `${this.getName()}-${this._animationFrame}` as keyof ASSET_LIST["image"];
-		}
-
-		/**
-		 * Sets this animateable's CSS `background-image`.
-		 *
-		 * @param imageName the image to set this animateable's CSS `background-image` to. defaults
-		 * to value returned from `defaultAnimationImageName()`
-		 */
-		public updateAnimationImage(imageName?: keyof ASSET_LIST["image"]): void {
-			this.getElement().css({
-				backgroundImage: `url(${AssetRegistry.getImageSrc(imageName ?? this._getCurrentAnimationImageName())})`,
-			});
-		}
-
-		/**
-		 * Returns this game element's image source-name, based on its current animation frame, and
-		 * other factors in its implementation.
-		 */
-		_getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
-			return this.defaultAnimationImageName();
-		}
-
-		/**
-		 * Updates this game element's animation state, based on its current animation image name.
-		 */
-		_updateAnimationState(): void {
-			this._animationTypeHandlers[this._animationType].bind(this)();
-
-			let imageName = this._getCurrentAnimationImageName();
-
-			// default to "not found" image if the image doesn't exist
-			if (!defined(AssetRegistry.ASSET_LIST["image"][imageName])) {
-				imageName = "not-found";
+		public advanceAnimation(gameLoopTimestamp: number, lastGameLoopTimestamp: number): void {
+			if (!lastGameLoopTimestamp) {
+				return;
 			}
 
-			this.updateAnimationImage(imageName);
+			this._deltaTimeAccumulator += gameLoopTimestamp - lastGameLoopTimestamp;
+
+			// if we've reached the threshold of this animateable's millis-per-state
+			if (this._deltaTimeAccumulator >= this._ANIMATION_STATE_MILLIS) {
+				this.updateAnimationState();
+
+				this._deltaTimeAccumulator = 0;
+			}
+		}
+
+		/**
+		 * Updates this game element's animation state, based on its current animation frame number.
+		 */
+		public updateAnimationState(): void {
+			this._animationTypeHandlers[this._animationType].bind(this)();
+
+			this._needsSpriteUpdate = true;
+
+			this.queueRenderUpdate();
 		}
 
 		/**
@@ -214,4 +301,67 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 	}
 
 	return AnimateableClass;
+}
+
+/**
+ * Dimensions of every sprite on the sprite sheet.
+ */
+export const SPRITE_SHEET_TILE_DIMENSIONS: 16 = 16;
+
+/**
+ * Handles the logic behind loading/finding sprites for game elements by
+ * taking into account an x and y offset and its width and height.
+ */
+class SpriteSheetHandler {
+	/**
+	 * The `Animateable` instance that this `SpriteSheetHandler` is handling the sprite sheet for.
+	 */
+	private animateable: Animateable;
+
+	/**
+	 * Width of game's sprite sheet.
+	 */
+	private readonly SPRITE_SHEET_WIDTH: 680 = 680;
+	/**
+	 * Height of game's sprite sheet.
+	 */
+	private readonly SPRITE_SHEET_HEIGHT: 248 = 248;
+
+	constructor(animateable: Animateable) {
+		this.animateable = animateable;
+	}
+
+	/**
+	 * Sets the CSS `background-image` of this `SpriteSheetHandler`'s `Animateable` to the correct sprite, based on the
+	 * given animation state index and the offsets and dimensions of the corresponding animation frame. If the given animation
+	 * state index doesn't exist, it will set the CSS `background-image` to the "not-found" image.
+	 *
+	 * @param stateIndex the index of the animation state that we want to set the CSS `background-image` to
+	 */
+	public setSpriteImage(stateIndex: number): void {
+		const animateable = this.animateable;
+		const animationState = animateable._ANIMATION_STATE_SETS[animateable._currentAnimationSet]![stateIndex];
+		const element = animateable.getElement();
+
+		if (!defined(animationState)) {
+			element.css({
+				backgroundImage: `url(${AssetRegistry.getImageSrc("not-found")})`,
+			});
+
+			return;
+		}
+
+		const width = animationState.width;
+		const height = animationState.height;
+		// calculate scale factor based on varying dimensions of
+		// game elements
+		const scaleX = animateable.getWidth() / width;
+		const scaleY = animateable.getHeight() / height;
+
+		element.css({
+			backgroundImage: `url(${AssetRegistry.getImageSrc("pacman")})`,
+			backgroundPosition: `-${px(scaleX * animationState.x)} -${px(scaleY * animationState.y)}`,
+			backgroundSize: `${px(this.SPRITE_SHEET_WIDTH * scaleX)} ${px(this.SPRITE_SHEET_HEIGHT * scaleY)}`,
+		});
+	}
 }

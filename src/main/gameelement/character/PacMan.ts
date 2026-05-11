@@ -1,8 +1,8 @@
 "use strict";
 
-import AssetRegistry, { type ASSET_LIST } from "../../assets/AssetRegistry.js";
+import AssetRegistry from "../../assets/AssetRegistry.js";
 import { defined, originalPacManSpeedToNewSpeed } from "../../utils/Utils.js";
-import { ANIMATION_TYPE } from "../mixins/Animateable.js";
+import { ANIMATION_TYPE, SPRITE_SHEET_TILE_DIMENSIONS, type AnimationState } from "../mixins/Animateable.js";
 import type { Collidable } from "../mixins/Collidable.js";
 import MakeControllable from "../moveable/mixins/Controllable.js";
 import Moveable from "../moveable/Moveable.js";
@@ -29,11 +29,7 @@ export default class PacMan extends MakeControllable(Character) {
 	/**
 	 * @inheritdoc
 	 */
-	override readonly _NUM_ANIMATION_STATES: 3 = 3;
-	/**
-	 * @inheritdoc
-	 */
-	override readonly _ANIMATION_STATE_MILLIS: 30 = 30;
+	override readonly _ANIMATION_STATE_MILLIS: 20 = 20;
 	/**
 	 * The directions that PacMan can move in upon first spawning.
 	 */
@@ -42,10 +38,6 @@ export default class PacMan extends MakeControllable(Character) {
 	 * Default speed of Pacman.
 	 */
 	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
-	/**
-	 * @inheritdoc
-	 */
-	override _animationFrame: 1 | 2 | 3 = 1;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];
 
@@ -58,6 +50,113 @@ export default class PacMan extends MakeControllable(Character) {
 		super(name, PacMan.PACMAN_SPEED * 0.8, AssetRegistry.getImageSrc("pacman-1"));
 
 		this._setAnimationType(ANIMATION_TYPE.LOOP);
+	}
+
+	/**
+	 * Animation state for when pacman has his mouth closed.
+	 */
+	private get PACMAN_MOUTH_CLOSED_ANIMATION_STATE(): AnimationState {
+		return {
+			x:
+				Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
+				2 * SPRITE_SHEET_TILE_DIMENSIONS +
+				Character.CHARACTER_SPRITE_OFFSET,
+			y: Character.CHARACTER_SPRITE_OFFSET,
+			width: Character.CHARACTER_SPRITE_DIMENSIONS,
+			height: Character.CHARACTER_SPRITE_DIMENSIONS,
+		};
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	override get _ANIMATION_STATE_SETS() {
+		return {
+			default: [
+				// mouth closed
+				this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE,
+			],
+			[MovementDirection.RIGHT]: [
+				this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE,
+				// moving right and mouth half open
+				{
+					x:
+						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
+						SPRITE_SHEET_TILE_DIMENSIONS +
+						Character.CHARACTER_SPRITE_OFFSET,
+					y: Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+				// moving right and mouth all the way open
+				{
+					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
+					y: Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+			],
+			[MovementDirection.LEFT]: [
+				this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE,
+				// moving left and mouth half open
+				{
+					x:
+						SPRITE_SHEET_TILE_DIMENSIONS +
+						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
+						Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+				// moving left and mouth all the way open
+				{
+					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+			],
+			[MovementDirection.UP]: [
+				this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE,
+				// moving up and mouth half open
+				{
+					x:
+						SPRITE_SHEET_TILE_DIMENSIONS +
+						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
+						Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS * 2 + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+				// moving up and mouth all the way open
+				{
+					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS * 2 + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+			],
+			[MovementDirection.DOWN]: [
+				this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE,
+				// moving down and mouth half open
+				{
+					x:
+						SPRITE_SHEET_TILE_DIMENSIONS +
+						Character.CHARACTER_SPRITE_SHEET_OFFSET_X +
+						Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS * 3 + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+				// moving down and mouth all the way open
+				{
+					x: Character.CHARACTER_SPRITE_SHEET_OFFSET_X + Character.CHARACTER_SPRITE_OFFSET,
+					y: SPRITE_SHEET_TILE_DIMENSIONS * 3 + Character.CHARACTER_SPRITE_OFFSET,
+					width: Character.CHARACTER_SPRITE_DIMENSIONS,
+					height: Character.CHARACTER_SPRITE_DIMENSIONS,
+				},
+			],
+		};
 	}
 
 	/**
@@ -122,19 +221,6 @@ export default class PacMan extends MakeControllable(Character) {
 
 			return;
 		}
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	override _getCurrentAnimationImageName(): keyof ASSET_LIST["image"] {
-		let imageName = this.defaultAnimationImageName();
-
-		if (this._animationFrame !== 1) {
-			imageName += `-${this.currentDirection}`;
-		}
-
-		return imageName as keyof ASSET_LIST["image"];
 	}
 
 	override onCollision(withCollidable: Collidable): void {

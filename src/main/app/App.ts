@@ -127,9 +127,9 @@ export class App {
 	 */
 	private movingMoveableIds: Set<string> = new Set();
 	/**
-	 * Ids of game elements that are animateable.
+	 * Ids of game elements that are currently animating.
 	 */
-	private animateableGameElementIds: Set<string> = new Set();
+	private animatingGameElementIds: Set<string> = new Set();
 	/**
 	 * Ids of game elements that have event listeners.
 	 */
@@ -221,12 +221,12 @@ export class App {
 	}
 
 	/**
-	 * Get the set of ids of game elements that are animateable.
+	 * Get the set of ids of game elements that are currently animating.
 	 *
 	 * @returns set of ids of game elements that are animateable
 	 */
-	public getAnimateableGameElementIds(): Set<string> {
-		return this.animateableGameElementIds;
+	public getAnimatingGameElementIds(): Set<string> {
+		return this.animatingGameElementIds;
 	}
 
 	/**
@@ -336,7 +336,7 @@ export class App {
 		this.deletedGameElementIds.clear();
 		this.toRenderGameElementIds.clear();
 		this.movingMoveableIds.clear();
-		this.animateableGameElementIds.clear();
+		this.animatingGameElementIds.clear();
 
 		for (let i = 0; i < this.eventListeners.length; i++) {
 			const eventListenerInfo = this.eventListeners[i]!;
@@ -359,29 +359,7 @@ export class App {
 	 * Starts the main gameloop.
 	 */
 	private startGame(): number {
-		if (this.gamePaused) {
-			this.gamePaused = false;
-
-			const animateableGameElementIdValues = this.animateableGameElementIds.values();
-			let animateableGameElementId = animateableGameElementIdValues.next();
-
-			// play every animateable's animations again upon starting the game from a paused state
-			while (!animateableGameElementId.done) {
-				const animateable = this.gameElementsMap.get(animateableGameElementId.value)! as Animateable;
-
-				// moveables base their animation states on their current direction, so errors
-				// will happen if we try and play their animations while they are "stopped"
-				if (animateable instanceof Moveable && !animateable.isMoving()) {
-					animateableGameElementId = animateableGameElementIdValues.next();
-
-					continue;
-				}
-
-				animateable.playAnimation();
-
-				animateableGameElementId = animateableGameElementIdValues.next();
-			}
-		}
+		this.gamePaused = false;
 
 		return requestAnimationFrame((timeStamp) => this.gameLoop(0, timeStamp, 0, 0));
 	}
@@ -402,15 +380,6 @@ export class App {
 			this.deltaTimeAccumulator = 0;
 		} else {
 			this.gamePaused = true;
-		}
-
-		const animateableGameElementIdValues = this.animateableGameElementIds.values();
-		let animateableGameElementId = animateableGameElementIdValues.next();
-
-		while (!animateableGameElementId.done) {
-			(this.gameElementsMap.get(animateableGameElementId.value)! as Animateable).stopAnimation();
-
-			animateableGameElementId = animateableGameElementIdValues.next();
 		}
 	}
 
@@ -475,13 +444,6 @@ export class App {
 			deltaTime = 250;
 		}
 
-		// prevents "deltaTime" from being very large at the start and causing position calculations to move
-		// game elements very large distances
-		if (!lastTimestamp) {
-			deltaTime = 0;
-			lastTimestamp = currentTimestamp;
-		}
-
 		const gameElementsMap = this.gameElementsMap;
 		const controllableGameElementIdValues = this.controllableGameElementIds.values();
 		let controllableGameElementId = controllableGameElementIdValues.next();
@@ -497,6 +459,33 @@ export class App {
 			}
 
 			controllableGameElementId = controllableGameElementIdValues.next();
+		}
+
+		const animateableGameElementIdValues = this.animatingGameElementIds.values();
+		let animateableGameElementId = animateableGameElementIdValues.next();
+
+		// advance animating game elements' state in their animations
+		while (!animateableGameElementId.done) {
+			const animateable = this.gameElementsMap.get(animateableGameElementId.value)! as Animateable;
+
+			// moveables base their animation states on their current direction, so errors
+			// will happen if we try and play their animations while they are "stopped"
+			if (animateable instanceof Moveable && !animateable.isMoving()) {
+				animateableGameElementId = animateableGameElementIdValues.next();
+
+				continue;
+			}
+
+			animateable.advanceAnimation(currentTimestamp, lastTimestamp);
+
+			animateableGameElementId = animateableGameElementIdValues.next();
+		}
+
+		// prevents "deltaTime" from being very large at the start and causing position calculations to move
+		// game elements very large distances
+		if (!lastTimestamp) {
+			deltaTime = 0;
+			lastTimestamp = currentTimestamp;
 		}
 
 		this.deltaTimeAccumulator += deltaTime;

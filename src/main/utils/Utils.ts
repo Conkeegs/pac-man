@@ -458,6 +458,10 @@ export function pluralize(word: string, count: number): string {
  * @returns boolean if `value` is empty or not
  */
 export function empty(value: object | unknown[] | string): boolean {
+	if (value instanceof Map || value instanceof Set) {
+		return value.size === 0;
+	}
+
 	if (isObject(value)) {
 		return Object.keys(value as Object).length === 0;
 	}

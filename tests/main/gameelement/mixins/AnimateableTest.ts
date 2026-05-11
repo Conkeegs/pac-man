@@ -1,7 +1,9 @@
+import { App } from "../../../../src/main/app/App.js";
+import AssetRegistry from "../../../../src/main/assets/AssetRegistry.js";
 import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
-import { ANIMATION_TYPE } from "../../../../src/main/gameelement/mixins/Animateable.js";
+import { ANIMATION_DEFAULT_SET_NAME, ANIMATION_TYPE } from "../../../../src/main/gameelement/mixins/Animateable.js";
 import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
-import { getImageSrc } from "../../../../src/main/utils/Utils.js";
+import { px } from "../../../../src/main/utils/Utils.js";
 import Test from "../../../base/Base.js";
 
 /**
@@ -14,16 +16,45 @@ export default class AnimateableTest extends Test {
 	public createAnimateableTest(): void {}
 
 	/**
+	 * Test getter for current animation state is correct.
+	 */
+	public getAnimationStateTest(): void {
+		const animateable = new PacMan();
+
+		this.assertStrictlyEqual(1, animateable.getAnimationState());
+
+		animateable["_animationTypeHandlers"][1]();
+
+		this.assertStrictlyEqual(2, animateable.getAnimationState());
+	}
+
+	/**
+	 * Test getter for current animation state set is correct.
+	 */
+	public getCurrentAnimationSetTest(): void {
+		const animateable = new PacMan();
+
+		this.assertStrictlyEqual("default", animateable.getCurrentAnimationSet());
+
+		const direction = MovementDirection.RIGHT;
+
+		animateable.setCurrentDirection(direction);
+
+		this.assertStrictlyEqual(direction, animateable.getCurrentAnimationSet());
+	}
+
+	/**
 	 * Test that animateables can play their animations correctly.
 	 */
 	public playAnimationTest(): void {
 		const animateable = new PacMan();
+		const app = App.getInstance();
 
-		this.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertEmpty(app["animatingGameElementIds"]);
 
 		animateable.playAnimation();
 
-		this.assertOfType("number", animateable["_animationIntervalId"]);
+		this.assertNotEmpty(app["animatingGameElementIds"]);
 
 		animateable.stopAnimation();
 	}
@@ -34,15 +65,13 @@ export default class AnimateableTest extends Test {
 	public stopAnimationTest(): void {
 		const animateable = new PacMan();
 
-		this.assertOfType("undefined", animateable["_animationIntervalId"]);
+		animateable["_deltaTimeAccumulator"] = 100;
 
 		animateable.playAnimation();
-
-		this.assertOfType("number", animateable["_animationIntervalId"]);
-
 		animateable.stopAnimation();
 
-		this.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertStrictlyEqual(0, animateable["_deltaTimeAccumulator"]);
+		this.assertEmpty(App.getInstance()["animatingGameElementIds"]);
 	}
 
 	/**
@@ -51,65 +80,108 @@ export default class AnimateableTest extends Test {
 	public deleteTest(): void {
 		const animateable = new PacMan();
 
-		this.assertOfType("undefined", animateable["_animationIntervalId"]);
-
 		animateable.playAnimation();
 
-		this.assertOfType("number", animateable["_animationIntervalId"]);
+		this.assertNotEmpty(App.getInstance()["animatingGameElementIds"]);
 
 		animateable.delete();
 
-		this.assertOfType("undefined", animateable["_animationIntervalId"]);
+		this.assertEmpty(App.getInstance()["animatingGameElementIds"]);
 	}
 
 	/**
-	 * Test that animateables form their default animation image names correctly.
+	 * Test animateables can reset their animation state.
 	 */
-	public defaultAnimationImageNameTest(): void {
+	public resetAnimationStateTest(): void {
 		const animateable = new PacMan();
 
-		this.assertStrictlyEqual(
-			`${animateable.getName()}-${animateable._animationFrame}`,
-			animateable.defaultAnimationImageName(),
-		);
+		animateable["_currentAnimationSet"] = "test";
+
+		animateable.updateAnimationState();
+		animateable.resetAnimationState();
+
+		this.assertStrictlyEqual(ANIMATION_DEFAULT_SET_NAME, animateable["_currentAnimationSet"]);
+		this.assertStrictlyEqual(1, animateable["_animationState"]);
+		this.assertTrue(animateable["_needsSpriteUpdate"]);
 	}
 
 	/**
-	 * Test that animateables form their current animation image names correctly.
+	 * Test that animateables render their animation css changes.
 	 */
-	public getCurrentAnimationImageNameTest(): void {
+	public renderTest(): void {
 		const animateable = new PacMan();
-		const direction = MovementDirection.LEFT;
 
-		animateable._animationFrame++;
-		animateable["currentDirection"] = direction;
+		animateable.render();
 
+		const element = animateable.getElement();
+
+		// if sprite does not need to be updated, no render change should happen
+		this.assertTrue(animateable["_needsSpriteUpdate"]);
+		this.assertNull(element.css("backgroundImage"));
+
+		animateable["_needsSpriteUpdate"] = true;
+		// set invalid animation state so background animationState not found
+		animateable["_animationState"] = 0;
+
+		animateable.render();
+
+		this.assertFalse(animateable["_needsSpriteUpdate"]);
+		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("not-found")})`, element.css("backgroundImage"));
+
+		animateable["_needsSpriteUpdate"] = true;
+		animateable["_animationState"] = 1;
+
+		// valid animation state should correctly scale/set* background image
+		const animationState =
+			animateable._ANIMATION_STATE_SETS[
+				animateable["_currentAnimationSet"] as keyof typeof animateable._ANIMATION_STATE_SETS
+			]![0]!;
+		const width = animationState.width;
+		const height = animationState.height;
+		// calculate scale factor based on varying dimensions of
+		// game elements
+		const scaleX = animateable.getWidth() / width;
+		const scaleY = animateable.getHeight() / height;
+
+		this.assertFalse(animateable["_needsSpriteUpdate"]);
+		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
 		this.assertStrictlyEqual(
-			`${animateable.getName()}-${animateable._animationFrame}-${direction}`,
-			animateable._getCurrentAnimationImageName(),
+			`-${px(scaleX * animationState.x)} -${px(scaleY * animationState.y)}`,
+			element.css("backgroundPosition"),
 		);
 	}
 
-	/**
-	 * Test that animateables can update their current animation image correctly.
-	 */
-	public updateAnimationImageTest(): void {
+	public advanceAnimationTest(): void {
 		const animateable = new PacMan();
-		const pacmanElement = animateable.getElement();
-		const originalBackgroundImage = pacmanElement.css("backgroundImage");
-		const right = MovementDirection.RIGHT;
 
-		animateable["currentDirection"] = right;
-		animateable._updateAnimationState();
+		// if current timestamp is falsy, it should nota advance
+		animateable.advanceAnimation(0, 50);
 
-		const newBackgroundImage = pacmanElement.css("backgroundImage");
-		const imageName = `${animateable.getName()}-${animateable._animationFrame}-${right}`;
+		this.assertStrictlyEqual(0, animateable["_deltaTimeAccumulator"]);
+		this.assertFalse(animateable["_needsSpriteUpdate"]);
 
-		this.assertNotStrictlyEqual(newBackgroundImage, originalBackgroundImage);
-		this.assertStrictlyEqual(
-			`url("https://localhost/projects/pac-man/${getImageSrc(imageName)}")`,
-			newBackgroundImage,
-		);
+		// accumulator value will not be greater than millis of animation here
+		// so should not update animation state
+		animateable.advanceAnimation(100, 80);
+
+		this.assertStrictlyEqual(20, animateable["_deltaTimeAccumulator"]);
+		this.assertFalse(animateable["_needsSpriteUpdate"]);
+
+		// should update animation since accumulator now over threshold
+		animateable.advanceAnimation(100, 20);
+
+		this.assertStrictlyEqual(0, animateable["_deltaTimeAccumulator"]);
+		this.assertTrue(animateable["_needsSpriteUpdate"]);
+	}
+
+	public updateAnimationStateTest(): void {
+		const animateable = new PacMan();
+
+		animateable.updateAnimationState();
+
+		this.assertStrictlyEqual(2, animateable["_animationState"]);
+		this.assertTrue(animateable["_needsSpriteUpdate"]);
+		this.assertTrue(animateable["shouldRender"]);
 	}
 
 	/**

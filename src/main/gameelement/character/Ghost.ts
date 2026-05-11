@@ -9,10 +9,6 @@ export default abstract class Ghost extends Character {
 	/**
 	 * @inheritdoc
 	 */
-	override readonly _NUM_ANIMATION_STATES: 2 = 2;
-	/**
-	 * @inheritdoc
-	 */
 	override readonly _ANIMATION_STATE_MILLIS: 100 = 100;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name];
