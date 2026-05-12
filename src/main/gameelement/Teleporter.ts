@@ -1,6 +1,10 @@
 import { GameElement } from "../gameelement/GameElement.js";
 import { TILESIZE } from "../utils/Globals.js";
+import Blinky from "./character/Blinky.js";
+import Clyde from "./character/Clyde.js";
+import Inky from "./character/Inky.js";
 import PacMan from "./character/PacMan.js";
+import Pinky from "./character/Pinky.js";
 import MakeCollidable, { type Collidable } from "./mixins/Collidable.js";
 import type Moveable from "./moveable/Moveable.js";
 import MovementDirection from "./moveable/MovementDirection.js";
@@ -27,7 +31,7 @@ export default class Teleporter extends MakeCollidable(GameElement) {
 	/**
 	 * @inheritdoc
 	 */
-	public override canBeCollidedByTypes: string[] = [PacMan.name];
+	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Pinky.name, Inky.name, Clyde.name];
 
 	/**
 	 * The directions that a moveable must be moving in order to teleport from this teleporter.
