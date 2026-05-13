@@ -1,7 +1,9 @@
 import { App } from "../../app/App.js";
-import SpriteSheetHandler from "../../assets/SpriteSheetHandler.js";
+import AssetRegistry from "../../assets/AssetRegistry.js";
+import SpriteSheetHandler, { type SpriteSheetData } from "../../assets/SpriteSheetHandler.js";
 import type { GameElement } from "../../gameelement/GameElement.js";
 import type { AbstractConstructor } from "../../types.js";
+import { defined } from "../../utils/Utils.js";
 
 /**
  * Gives `GameElement` instances functionality that allows them to be animated.
@@ -39,29 +41,6 @@ export enum ANIMATION_TYPE {
 }
 
 /**
- * An animation state that a game element can be in at any given time.
- * The information it provides gives the sprite sheet handler the data it
- * needs to find the offset and dimensions of a sprite.
- */
-export type AnimationState = {
-	/**
-	 * The x offset of this animation state in the sprite sheet.
-	 */
-	x: number;
-	/**
-	 * The y offset of this animation state in the sprite sheet.
-	 */
-	y: number;
-	/**
-	 * The width of this animation state in the sprite sheet.
-	 */
-	width: number;
-	/**
-	 * The height of this animation state in the sprite sheet.
-	 */
-	height: number;
-};
-/**
  * Map of keyed animation states for a game element. Used to define
  * animation states for different context. For example, moveables
  * define them based on the direction they're traveling in.
@@ -70,8 +49,8 @@ export type AnimationStateMap = {
 	/**
 	 * Default key that must be defined for all animation sets.
 	 */
-	default: ReadonlyArray<AnimationState>;
-	[stateType: string | number]: ReadonlyArray<AnimationState>;
+	default: ReadonlyArray<SpriteSheetData>;
+	[stateType: string | number]: ReadonlyArray<SpriteSheetData>;
 };
 
 /**
@@ -250,11 +229,27 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 			// possible that this animateable could be an instance that renders
 			// very often, like a moveable, so calling "setSpriteImage()" every
 			// frame would be costly and causes some jitter in movements
-			if (this._needsSpriteUpdate) {
-				this._spriteSheetHandler.setSpriteImage(this._animationState - 1);
-
-				this._needsSpriteUpdate = false;
+			if (!this._needsSpriteUpdate) {
+				return;
 			}
+
+			// bases sprite background-image on the given animation state index and the offsets and dimensions
+			// of the corresponding animation frame. If the given animation state index doesn't exist, it will
+			// set the CSS `background-image` to the "not-found" image.
+			const stateSpriteSheetData =
+				this._ANIMATION_STATE_SETS[this._currentAnimationSet]![this._animationState - 1];
+
+			if (!defined(stateSpriteSheetData)) {
+				this.getElement().css({
+					backgroundImage: `url(${AssetRegistry.getImageSrc("not-found")})`,
+				});
+
+				return;
+			}
+
+			this._spriteSheetHandler.setSpriteImage(stateSpriteSheetData);
+
+			this._needsSpriteUpdate = false;
 		}
 
 		/**

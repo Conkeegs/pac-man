@@ -1,8 +1,8 @@
 "use strict";
 
-import { SPRITE_SHEET_TILE_DIMENSIONS } from "../../assets/SpriteSheetHandler.js";
+import { SPRITE_SHEET_TILE_DIMENSIONS, type SpriteSheetData } from "../../assets/SpriteSheetHandler.js";
 import { defined, originalPacManSpeedToNewSpeed } from "../../utils/Utils.js";
-import { ANIMATION_TYPE, type AnimationState } from "../mixins/Animateable.js";
+import { ANIMATION_TYPE } from "../mixins/Animateable.js";
 import type { Collidable } from "../mixins/Collidable.js";
 import MakeControllable from "../moveable/mixins/Controllable.js";
 import Moveable from "../moveable/Moveable.js";
@@ -56,7 +56,7 @@ export default class PacMan extends MakeControllable(Character) {
 	/**
 	 * Animation state for when pacman has his mouth closed.
 	 */
-	private get PACMAN_MOUTH_CLOSED_ANIMATION_STATE(): AnimationState {
+	private get PACMAN_MOUTH_CLOSED_ANIMATION_STATE(): SpriteSheetData {
 		return {
 			x:
 				Character.CHARACTER_SPRITE_SHEET_OFFSET_X +

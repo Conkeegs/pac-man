@@ -1,6 +1,29 @@
-import type { Animateable } from "../gameelement/mixins/Animateable.ts";
-import { defined, px } from "../utils/Utils.ts";
+import type { GameElement } from "../gameelement/GameElement.ts";
+import { px } from "../utils/Utils.ts";
 import AssetRegistry from "./AssetRegistry.ts";
+
+/**
+ * Information provided to the sprite sheet handler so that it
+ * can properly size/set the background image/sprite of a game element.
+ */
+export type SpriteSheetData = {
+	/**
+	 * The x offset of the sprite.
+	 */
+	x: number;
+	/**
+	 * The y offset of the sprite.
+	 */
+	y: number;
+	/**
+	 * The width of the sprite.
+	 */
+	width: number;
+	/**
+	 * The height of the sprite.
+	 */
+	height: number;
+};
 
 /**
  * Dimensions of every sprite on the sprite sheet.
@@ -13,54 +36,39 @@ export const SPRITE_SHEET_TILE_DIMENSIONS: 16 = 16;
  */
 export default class SpriteSheetHandler {
 	/**
-	 * The `Animateable` instance that this `SpriteSheetHandler` is handling the sprite sheet for.
+	 * The `GameElement` instance that this `SpriteSheetHandler` is handling the sprite sheet for.
 	 */
-	private animateable: Animateable;
+	private gameElement: GameElement;
 
 	/**
 	 * Width of game's sprite sheet.
 	 */
-	private readonly SPRITE_SHEET_WIDTH: 680 = 680;
+	private static readonly SPRITE_SHEET_WIDTH: 680 = 680;
 	/**
 	 * Height of game's sprite sheet.
 	 */
-	private readonly SPRITE_SHEET_HEIGHT: 248 = 248;
+	private static readonly SPRITE_SHEET_HEIGHT: 248 = 248;
 
-	constructor(animateable: Animateable) {
-		this.animateable = animateable;
+	constructor(gameElement: GameElement) {
+		this.gameElement = gameElement;
 	}
 
 	/**
-	 * Sets the CSS `background-image` of this `SpriteSheetHandler`'s `Animateable` to the correct sprite, based on the
-	 * given animation state index and the offsets and dimensions of the corresponding animation frame. If the given animation
-	 * state index doesn't exist, it will set the CSS `background-image` to the "not-found" image.
+	 * Sets the CSS `background-image` of this `SpriteSheetHandler`'s `GameElement` to the correct sprite.
 	 *
-	 * @param stateIndex the index of the animation state that we want to set the CSS `background-image` to
+	 * @param spriteSheetData data that determines location and dimensions of sprite
 	 */
-	public setSpriteImage(stateIndex: number): void {
-		const animateable = this.animateable;
-		const animationState = animateable._ANIMATION_STATE_SETS[animateable._currentAnimationSet]![stateIndex];
-		const element = animateable.getElement();
-
-		if (!defined(animationState)) {
-			element.css({
-				backgroundImage: `url(${AssetRegistry.getImageSrc("not-found")})`,
-			});
-
-			return;
-		}
-
-		const width = animationState.width;
-		const height = animationState.height;
+	public setSpriteImage(spriteSheetData: SpriteSheetData): void {
+		const gameElement = this.gameElement;
 		// calculate scale factor based on varying dimensions of
 		// game elements
-		const scaleX = animateable.getWidth() / width;
-		const scaleY = animateable.getHeight() / height;
+		const scaleX = gameElement.getWidth() / spriteSheetData.width;
+		const scaleY = gameElement.getHeight() / spriteSheetData.width;
 
-		element.css({
+		gameElement.getElement().css({
 			backgroundImage: `url(${AssetRegistry.getImageSrc("pacman")})`,
-			backgroundPosition: `-${px(scaleX * animationState.x)} -${px(scaleY * animationState.y)}`,
-			backgroundSize: `${px(this.SPRITE_SHEET_WIDTH * scaleX)} ${px(this.SPRITE_SHEET_HEIGHT * scaleY)}`,
+			backgroundPosition: `-${px(scaleX * spriteSheetData.x)} -${px(scaleY * spriteSheetData.y)}`,
+			backgroundSize: `${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaleX)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaleY)}`,
 		});
 	}
 }

@@ -1,8 +1,9 @@
 "use strict";
 
+import type { SpriteSheetData } from "../../assets/SpriteSheetHandler.js";
 import Board from "../../Board.js";
 import { TILESIZE } from "../../utils/Globals.js";
-import MakeAnimateable, { type AnimationState, type AnimationStateMap } from "../mixins/Animateable.js";
+import MakeAnimateable, { type AnimationStateMap } from "../mixins/Animateable.js";
 import MakeCollidable from "../mixins/Collidable.js";
 import Moveable from "../moveable/Moveable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
@@ -19,7 +20,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		Partial<
 			Record<
 				MovementDirection.LEFT | MovementDirection.RIGHT | MovementDirection.UP | MovementDirection.DOWN,
-				ReadonlyArray<AnimationState>
+				ReadonlyArray<SpriteSheetData>
 			>
 		>;
 	abstract override _ANIMATION_STATE_MILLIS: number;

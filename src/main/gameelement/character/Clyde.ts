@@ -1,5 +1,4 @@
-import { SPRITE_SHEET_TILE_DIMENSIONS } from "../../assets/SpriteSheetHandler.js";
-import { type AnimationState } from "../mixins/Animateable.js";
+import { SPRITE_SHEET_TILE_DIMENSIONS, type SpriteSheetData } from "../../assets/SpriteSheetHandler.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 import Character from "./Character.js";
 import Ghost from "./Ghost.js";
@@ -24,7 +23,7 @@ export default class Clyde extends Ghost {
 	/**
 	 * Animation states for blinky is facing left.
 	 */
-	private get PINKY_LEFT_ANIMATION_STATES(): AnimationState[] {
+	private get PINKY_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
 		return [
 			// looking left, first state
 			{

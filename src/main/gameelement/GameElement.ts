@@ -1,4 +1,5 @@
 import { App } from "../app/App.js";
+import SpriteSheetHandler from "../assets/SpriteSheetHandler.js";
 import Debugging from "../Debugging.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { create, px, uniqueId } from "../utils/Utils.js";
@@ -75,6 +76,10 @@ export abstract class GameElement {
 	 * Array of child-`GameElement` instances this `GameElement` holds.
 	 */
 	protected children: Child[] = [];
+	/**
+	 * Handles setting sprite background-image on this game element.
+	 */
+	protected spriteSheetHandler: SpriteSheetHandler = new SpriteSheetHandler(this);
 
 	/**
 	 * The game element's width in pixels.
