@@ -1,4 +1,5 @@
-import { SPRITE_SHEET_TILE_DIMENSIONS, type AnimationState } from "../mixins/Animateable.js";
+import { SPRITE_SHEET_TILE_DIMENSIONS } from "../../assets/SpriteSheetHandler.js";
+import { type AnimationState } from "../mixins/Animateable.js";
 import MovementDirection from "../moveable/MovementDirection.js";
 import Character from "./Character.js";
 import Ghost from "./Ghost.js";
