@@ -62,6 +62,9 @@ body {
 }
 
 .game-element {
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+
     &.button {
         /* border: 1px solid white; */
         transition: color var(--defaultTransitionTime);
@@ -78,11 +81,6 @@ body {
         .button-inner {
             clip-path: var(--defaultClipPathPolygon);
         }
-    }
-
-    &.animateable {
-        background-repeat: no-repeat;
-        image-rendering: pixelated;
     }
 }
 

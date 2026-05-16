@@ -2,19 +2,17 @@
 
 import Debugging from "./Debugging.js";
 import AssetRegistry from "./assets/AssetRegistry.js";
+import SpriteSheetHandler from "./assets/SpriteSheetHandler.js";
 import DebugWindow from "./debugwindow/DebugWindow.js";
 import Food from "./gameelement/Food.js";
 import { GameElement, type Position } from "./gameelement/GameElement.js";
 import Teleporter from "./gameelement/Teleporter.js";
 import Turn from "./gameelement/Turn.js";
 import Blinky from "./gameelement/character/Blinky.js";
-import Clyde from "./gameelement/character/Clyde.js";
-import Inky from "./gameelement/character/Inky.js";
 import PacMan from "./gameelement/character/PacMan.js";
-import Pinky from "./gameelement/character/Pinky.js";
 import MovementDirection from "./gameelement/moveable/MovementDirection.js";
 import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "./utils/Globals.js";
-import { create, exists, fetchJSON, get, maybe, px, uniqueId } from "./utils/Utils.js";
+import { exists, fetchJSON, get, uniqueId } from "./utils/Utils.js";
 
 /**
  * Represents the white lines between each "turn" node when in debug mode.
@@ -123,6 +121,8 @@ export default class Board extends GameElement {
 	private static readonly PINKY_SPAWN_Y: 18.25 = 18.25;
 	private static readonly CLYDE_SPAWN_X: 16.25 = 16.25;
 	private static readonly CLYDE_SPAWN_Y: 18.25 = 18.25;
+	private static readonly BOARD_IMAGE_OFFSET: 228 = 228;
+	private static readonly BOARD_IMAGE_WIDTH: 228 = 228;
 	/**
 	 * The turns on the board.
 	 */
@@ -200,46 +200,22 @@ export default class Board extends GameElement {
 		});
 		(game.css({ backgroundColor: DEFAULT_COLOR }) as HTMLElement).appendChild(element);
 
-		const wallDataElements = await this.loadWallElements();
-
-		for (const wallDataElement of wallDataElements) {
-			const wall = create({ name: "div", id: wallDataElement.id, classes: wallDataElement.classes }).css({
-				width: px(Board.calcTileOffset(wallDataElement.styles.width)),
-				height: px(Board.calcTileOffset(wallDataElement.styles.height)),
-				top: px(Board.calcTileOffset(wallDataElement.styles.top)),
-				left: px(Board.calcTileOffset(wallDataElement.styles.left || 0)),
-				borderTopLeftRadius: px(
-					maybe(wallDataElement.styles.borderTopLeftRadius, Board.calcTileOffset(0.5)) as number,
-				),
-				borderTopRightRadius: px(
-					maybe(wallDataElement.styles.borderTopRightRadius, Board.calcTileOffset(0.5)) as number,
-				),
-				borderBottomRightRadius: px(
-					maybe(wallDataElement.styles.borderBottomRightRadius, Board.calcTileOffset(0.5)) as number,
-				),
-				borderBottomLeftRadius: px(
-					maybe(wallDataElement.styles.borderBottomLeftRadius, Board.calcTileOffset(0.5)) as number,
-				),
-			}) as HTMLElement;
-
-			// make sure invisible walls that are outside of teleports display over characters so that it looks
-			// like the character's "disappear" through them
-			if (wall.classList.contains("teleport-cover")) {
-				wall.css({
-					zIndex: GameElement.GAME_ELEMENT_Z_INDEX + 1,
-				});
-			}
-
-			// display the walls of the game
-			element.appendChild(wall);
-		}
-
 		// place game element instances on board
 		await this.createMainGameElements();
 
-		get("middle-cover")!.css({
-			backgroundColor: Board.BACKGROUND_COLOR,
-		});
+		this.spriteSheetHandler.setSpriteImage(
+			{
+				x: Board.BOARD_IMAGE_OFFSET,
+				y: 0,
+				width: Board.BOARD_IMAGE_WIDTH,
+				height: SpriteSheetHandler.SPRITE_SHEET_HEIGHT,
+			},
+			{
+				scaleByHeight: TILESIZE * 28.5,
+				scaleByWidth: TILESIZE * COLUMNS + TILESIZE * 0.5,
+				offsetY: TILESIZE * 3,
+			},
+		);
 	}
 
 	/**

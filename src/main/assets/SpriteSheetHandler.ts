@@ -1,6 +1,6 @@
-import type { GameElement } from "../gameelement/GameElement.ts";
-import { px } from "../utils/Utils.ts";
-import AssetRegistry from "./AssetRegistry.ts";
+import type { GameElement } from "../gameelement/GameElement.js";
+import { px } from "../utils/Utils.js";
+import AssetRegistry from "./AssetRegistry.js";
 
 /**
  * Information provided to the sprite sheet handler so that it
@@ -43,11 +43,11 @@ export default class SpriteSheetHandler {
 	/**
 	 * Width of game's sprite sheet.
 	 */
-	private static readonly SPRITE_SHEET_WIDTH: 680 = 680;
+	public static readonly SPRITE_SHEET_WIDTH: 680 = 680;
 	/**
 	 * Height of game's sprite sheet.
 	 */
-	private static readonly SPRITE_SHEET_HEIGHT: 248 = 248;
+	public static readonly SPRITE_SHEET_HEIGHT: 248 = 248;
 
 	constructor(gameElement: GameElement) {
 		this.gameElement = gameElement;
@@ -57,17 +57,38 @@ export default class SpriteSheetHandler {
 	 * Sets the CSS `background-image` of this `SpriteSheetHandler`'s `GameElement` to the correct sprite.
 	 *
 	 * @param spriteSheetData data that determines location and dimensions of sprite
+	 * @param options extra settings for how sprite image is rendered
 	 */
-	public setSpriteImage(spriteSheetData: SpriteSheetData): void {
+	public setSpriteImage(
+		spriteSheetData: SpriteSheetData,
+		options?: {
+			/**
+			 * Pixel number to scale sprite's width by.
+			 */
+			scaleByWidth?: number;
+			/**
+			 * Pixel number to scale sprite's height by.
+			 */
+			scaleByHeight?: number;
+			/**
+			 * Pixels (from left) sprite's image should be offset.
+			 */
+			offsetX?: number;
+			/**
+			 * Pixels (from top) sprite's image should be offset.
+			 */
+			offsetY?: number;
+		},
+	): void {
 		const gameElement = this.gameElement;
 		// calculate scale factor based on varying dimensions of
 		// game elements
-		const scaleX = gameElement.getWidth() / spriteSheetData.width;
-		const scaleY = gameElement.getHeight() / spriteSheetData.width;
+		const scaleX = (options?.scaleByWidth ?? gameElement.getWidth()) / spriteSheetData.width;
+		const scaleY = (options?.scaleByHeight ?? gameElement.getHeight()) / spriteSheetData.width;
 
 		gameElement.getElement().css({
 			backgroundImage: `url(${AssetRegistry.getImageSrc("pacman")})`,
-			backgroundPosition: `-${px(scaleX * spriteSheetData.x)} -${px(scaleY * spriteSheetData.y)}`,
+			backgroundPosition: `${px((options?.offsetX ?? 0) - scaleX * spriteSheetData.x)} ${px((options?.offsetY ?? 0) - scaleY * spriteSheetData.y)}`,
 			backgroundSize: `${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaleX)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaleY)}`,
 		});
 	}
