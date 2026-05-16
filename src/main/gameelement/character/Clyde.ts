@@ -21,9 +21,9 @@ export default class Clyde extends Ghost {
 	}
 
 	/**
-	 * Animation states for blinky is facing left.
+	 * Animation states for clyde is facing left.
 	 */
-	private get PINKY_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
+	private get CLYDE_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
 		return [
 			// looking left, first state
 			{
@@ -53,8 +53,8 @@ export default class Clyde extends Ghost {
 	 */
 	override get _ANIMATION_STATE_SETS() {
 		return {
-			default: this.PINKY_LEFT_ANIMATION_STATES,
-			[MovementDirection.LEFT]: this.PINKY_LEFT_ANIMATION_STATES,
+			default: this.CLYDE_LEFT_ANIMATION_STATES,
+			[MovementDirection.LEFT]: this.CLYDE_LEFT_ANIMATION_STATES,
 			[MovementDirection.RIGHT]: [
 				// looking right, first state
 				{

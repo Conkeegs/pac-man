@@ -21,9 +21,9 @@ export default class Inky extends Ghost {
 	}
 
 	/**
-	 * Animation states for blinky is facing left.
+	 * Animation states for inky is facing left.
 	 */
-	private get PINKY_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
+	private get INKY_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
 		return [
 			// looking left, first state
 			{
@@ -53,8 +53,8 @@ export default class Inky extends Ghost {
 	 */
 	override get _ANIMATION_STATE_SETS() {
 		return {
-			default: this.PINKY_LEFT_ANIMATION_STATES,
-			[MovementDirection.LEFT]: this.PINKY_LEFT_ANIMATION_STATES,
+			default: this.INKY_LEFT_ANIMATION_STATES,
+			[MovementDirection.LEFT]: this.INKY_LEFT_ANIMATION_STATES,
 			[MovementDirection.RIGHT]: [
 				// looking right, first state
 				{

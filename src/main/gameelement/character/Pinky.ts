@@ -21,7 +21,7 @@ export default class Pinky extends Ghost {
 	}
 
 	/**
-	 * Animation states for blinky is facing left.
+	 * Animation states for pinky is facing left.
 	 */
 	private get PINKY_LEFT_ANIMATION_STATES(): SpriteSheetData[] {
 		return [
