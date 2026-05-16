@@ -51,6 +51,7 @@ export default class PacMan extends MakeControllable(Character) {
 		super(name, PacMan.PACMAN_SPEED * 0.8);
 
 		this._setAnimationType(ANIMATION_TYPE.LOOP);
+		this.spriteSheetHandler.setSpriteImage(this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE);
 	}
 
 	/**
