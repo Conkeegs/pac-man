@@ -41,6 +41,26 @@ export default class TurnTest extends Test {
 		const collidableMoveable = new PacMan();
 		const movementDirection = MovementDirection.RIGHT;
 
+		// set movement direction same as queued direction so no turn processing is needed
+		// (heading straight)
+		collidableMoveable.setCurrentDirection(movementDirection);
+		collidableMoveable["queueTurn"](movementDirection, testTurn);
+		testTurn.onCollision(collidableMoveable);
+
+		this.assertStrictlyEqual(movementDirection, collidableMoveable.getCurrentDirection());
+		this.assertFalse(collidableMoveable["shouldRender"]);
+		this.assertFalse(
+			GameElement.positionsEqual(
+				{
+					x: turnCenterPosition.x - collidableMoveable.getWidth() / 2,
+					y: turnCenterPosition.y - collidableMoveable.getHeight() / 2,
+				},
+				collidableMoveable.getPosition(),
+			),
+		);
+
+		collidableMoveable.setCurrentDirection(MovementDirection.LEFT);
+
 		collidableMoveable["queueTurn"](movementDirection, testTurn);
 		testTurn.onCollision(collidableMoveable);
 
