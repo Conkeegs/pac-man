@@ -529,10 +529,8 @@ export class App {
 
 				moveable.tick();
 
-				const oldCollisionBoxUniqueId = oldCollisionBox.getUniqueId();
-
 				if (typeof moveable["onCollision" as keyof typeof moveable] !== "function") {
-					gameElementsMap.delete(oldCollisionBoxUniqueId);
+					oldCollisionBox.delete();
 
 					continue;
 				}
