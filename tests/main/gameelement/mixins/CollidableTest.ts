@@ -1,4 +1,5 @@
 import { App } from "../../../../src/main/app/App.js";
+import Food from "../../../../src/main/gameelement/Food.js";
 import Turn from "../../../../src/main/gameelement/Turn.js";
 import Inky from "../../../../src/main/gameelement/character/Inky.js";
 import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
@@ -259,5 +260,11 @@ export default class CollidableTest extends Test {
 		for (const name of collidable.canBeCollidedByTypes) {
 			this.assertTrue(collidable.canBeCollidedBy(name));
 		}
+
+		this.assertFalse(collidable.canBeCollidedBy(Food.name));
+
+		collidable.canBeCollidedByTypes = [];
+
+		this.assertTrue(collidable.canBeCollidedBy(Food.name));
 	}
 }

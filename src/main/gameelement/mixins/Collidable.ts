@@ -57,7 +57,7 @@ export default function MakeCollidable<TBase extends AbstractConstructor<GameEle
 
 		/**
 		 * The types of `GameElement` sub-classes that this collidable can
-		 * be "collided by".
+		 * be "collided by". Leave empty to allow collision with everything.
 		 */
 		public abstract canBeCollidedByTypes: string[];
 
@@ -187,7 +187,9 @@ export default function MakeCollidable<TBase extends AbstractConstructor<GameEle
 		 * @returns boolean indicating if this collidable can collide with `collidableName`
 		 */
 		public canBeCollidedBy(collidableName: string): boolean {
-			return this.canBeCollidedByTypes.includes(collidableName);
+			const canBeCollidedByTypes = this.canBeCollidedByTypes;
+
+			return canBeCollidedByTypes.length === 0 || this.canBeCollidedByTypes.includes(collidableName);
 		}
 
 		/**
