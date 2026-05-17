@@ -231,7 +231,6 @@ export default abstract class Debugging {
 					transform: { ...pacman.getTransform() },
 					direction: (pacman as unknown as { currentDirection: unknown }).currentDirection,
 					isMoving: pacman.isMoving(),
-					distancePerTick: pacman.getDistancePerTick(),
 					deltaTimeAccumulator: app["deltaTimeAccumulator"],
 				});
 
