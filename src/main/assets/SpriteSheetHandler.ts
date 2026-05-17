@@ -83,13 +83,13 @@ export default class SpriteSheetHandler {
 		const gameElement = this.gameElement;
 		// calculate scale factor based on varying dimensions of
 		// game elements
-		const scaleX = (options?.scaleByWidth ?? gameElement.getWidth()) / spriteSheetData.width;
-		const scaleY = (options?.scaleByHeight ?? gameElement.getHeight()) / spriteSheetData.width;
+		const scaledX = (options?.scaleByWidth ?? gameElement.getWidth()) / spriteSheetData.width;
+		const scaledY = (options?.scaleByHeight ?? gameElement.getHeight()) / spriteSheetData.height;
 
 		gameElement.getElement().css({
 			backgroundImage: `url(${AssetRegistry.getImageSrc("pacman")})`,
-			backgroundPosition: `${px((options?.offsetX ?? 0) - scaleX * spriteSheetData.x)} ${px((options?.offsetY ?? 0) - scaleY * spriteSheetData.y)}`,
-			backgroundSize: `${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaleX)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaleY)}`,
+			backgroundPosition: `${px((options?.offsetX ?? 0) - scaledX * spriteSheetData.x)} ${px((options?.offsetY ?? 0) - scaledY * spriteSheetData.y)}`,
+			backgroundSize: `${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaledX)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaledY)}`,
 		});
 	}
 }
