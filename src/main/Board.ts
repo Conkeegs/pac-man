@@ -211,7 +211,7 @@ export default class Board extends GameElement {
 				height: SpriteSheetHandler.SPRITE_SHEET_HEIGHT,
 			},
 			{
-				scaleByHeight: TILESIZE * 28.5,
+				scaleByHeight: TILESIZE * 31,
 				scaleByWidth: TILESIZE * COLUMNS + TILESIZE * 0.5,
 				offsetY: TILESIZE * 3,
 			},
