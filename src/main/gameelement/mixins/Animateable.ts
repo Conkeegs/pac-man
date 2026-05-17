@@ -244,6 +244,8 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 					backgroundImage: `url(${AssetRegistry.getImageSrc("not-found")})`,
 				});
 
+				this._needsSpriteUpdate = false;
+
 				return;
 			}
 

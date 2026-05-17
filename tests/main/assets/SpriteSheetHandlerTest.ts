@@ -43,7 +43,10 @@ export default class PacManTest extends Test {
 		);
 
 		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
-		this.assertStrictlyEqual(`${px(scaledWidth * x)} ${px(scaledHeight * y)}`, element.css("backgroundImage"));
+		this.assertStrictlyEqual(
+			`${px(0 - scaledWidth * x)} ${px(0 - scaledHeight * y)}`,
+			element.css("backgroundImage"),
+		);
 		this.assertStrictlyEqual(
 			`${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaledWidth)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaledHeight)}`,
 			element.css("backgroundSize"),
@@ -76,7 +79,10 @@ export default class PacManTest extends Test {
 		scaledHeight = scaleByHeight / height;
 
 		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
-		this.assertStrictlyEqual(`${px(scaledWidth * x)} ${px(scaledHeight * y)}`, element.css("backgroundImage"));
+		this.assertStrictlyEqual(
+			`${px(0 - scaledWidth * x)} ${px(0 - scaledHeight * y)}`,
+			element.css("backgroundImage"),
+		);
 		this.assertStrictlyEqual(
 			`${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaledWidth)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaledHeight)}`,
 			element.css("backgroundSize"),
@@ -107,7 +113,7 @@ export default class PacManTest extends Test {
 
 		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
 		this.assertStrictlyEqual(
-			`${px(offsetX - scaledWidth * x)} ${px(scaledHeight * y)}`,
+			`${px(offsetX - scaledWidth * x)} ${px(0 - scaledHeight * y)}`,
 			element.css("backgroundImage"),
 		);
 		this.assertStrictlyEqual(
@@ -123,6 +129,8 @@ export default class PacManTest extends Test {
 		let offsetY = getRandomInt(300) + 1;
 		scaleByWidth = getRandomInt(300) + 1;
 		scaleByHeight = getRandomInt(300) + 1;
+		scaledWidth = gameElementWidth / width;
+		scaledHeight = gameElementHeight / height;
 
 		// test with offsetY option
 		spriteSheetHandler.setSpriteImage(
@@ -139,7 +147,7 @@ export default class PacManTest extends Test {
 
 		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
 		this.assertStrictlyEqual(
-			`${px(scaledWidth * x)} ${px(offsetY - scaledHeight * y)}`,
+			`${px(0 - scaledWidth * x)} ${px(offsetY - scaledHeight * y)}`,
 			element.css("backgroundImage"),
 		);
 		this.assertStrictlyEqual(
@@ -155,6 +163,8 @@ export default class PacManTest extends Test {
 		offsetY = getRandomInt(300) + 1;
 		scaleByWidth = getRandomInt(300) + 1;
 		scaleByHeight = getRandomInt(300) + 1;
+		scaledWidth = gameElementWidth / width;
+		scaledHeight = gameElementHeight / height;
 
 		// test with no options
 		spriteSheetHandler.setSpriteImage({
@@ -165,7 +175,10 @@ export default class PacManTest extends Test {
 		});
 
 		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
-		this.assertStrictlyEqual(`${px(scaledWidth * x)} ${px(scaledHeight * y)}`, element.css("backgroundImage"));
+		this.assertStrictlyEqual(
+			`${px(0 - scaledWidth * x)} ${px(0 - scaledHeight * y)}`,
+			element.css("backgroundImage"),
+		);
 		this.assertStrictlyEqual(
 			`${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaledWidth)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * scaledHeight)}`,
 			element.css("backgroundSize"),

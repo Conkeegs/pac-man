@@ -57,7 +57,7 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 	public override setCurrentDirection(direction: MovementDirection): void {
 		super.setCurrentDirection(direction);
 
-		this._currentAnimationSet = direction;
+		this.setCurrentAnimationSet(direction);
 	}
 
 	/**

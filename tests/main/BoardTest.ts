@@ -1,9 +1,10 @@
 import { App } from "../../src/main/app/App.js";
+import SpriteSheetHandler from "../../src/main/assets/SpriteSheetHandler.js";
 import Board from "../../src/main/Board.js";
 import PacMan from "../../src/main/gameelement/character/PacMan.js";
 import Food from "../../src/main/gameelement/Food.js";
 import type { Position } from "../../src/main/gameelement/GameElement.js";
-import { HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
+import { COLUMNS, HEIGHT, ROWS, TILESIZE, WIDTH } from "../../src/main/utils/Globals.js";
 import { get, hexToRgb, px } from "../../src/main/utils/Utils.js";
 import Test from "../base/Base.js";
 import { tests } from "../base/Decorators.js";
@@ -32,7 +33,17 @@ export default class BoardTest extends Test {
 		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), boardDiv.css("backgroundColor"));
 		this.assertTrue(App.getInstance().getCollidablesMap().size > 0);
 		this.assertTrue(boardDiv.childElementCount > 0);
-		this.assertStrictlyEqual(hexToRgb(Board.BACKGROUND_COLOR), get("middle-cover")!.css("backgroundColor"));
+
+		const scaledSpriteX = (TILESIZE * COLUMNS + TILESIZE * 0.5) / Board["BOARD_IMAGE_WIDTH"];
+
+		this.assertStrictlyEqual(
+			`${px(0 - scaledSpriteX * Board["BOARD_IMAGE_OFFSET"])} ${px(TILESIZE * 3)}`,
+			boardDiv.css("backgroundPosition"),
+		);
+		this.assertStrictlyEqual(
+			`${px(SpriteSheetHandler.SPRITE_SHEET_WIDTH * scaledSpriteX)} ${px(SpriteSheetHandler.SPRITE_SHEET_HEIGHT * ((TILESIZE * 31) / SpriteSheetHandler.SPRITE_SHEET_HEIGHT))}`,
+			boardDiv.css("backgroundSize"),
+		);
 	}
 
 	/**

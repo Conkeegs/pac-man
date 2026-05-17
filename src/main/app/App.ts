@@ -461,24 +461,24 @@ export class App {
 			controllableGameElementId = controllableGameElementIdValues.next();
 		}
 
-		const animateableGameElementIdValues = this.animatingGameElementIds.values();
-		let animateableGameElementId = animateableGameElementIdValues.next();
+		const animatingGameElementIdValues = this.animatingGameElementIds.values();
+		let animatingGameElementId = animatingGameElementIdValues.next();
 
 		// advance animating game elements' state in their animations
-		while (!animateableGameElementId.done) {
-			const animateable = this.gameElementsMap.get(animateableGameElementId.value)! as Animateable;
+		while (!animatingGameElementId.done) {
+			const animateable = this.gameElementsMap.get(animatingGameElementId.value)! as Animateable;
 
 			// moveables base their animation states on their current direction, so errors
 			// will happen if we try and play their animations while they are "stopped"
 			if (animateable instanceof Moveable && !animateable.isMoving()) {
-				animateableGameElementId = animateableGameElementIdValues.next();
+				animatingGameElementId = animatingGameElementIdValues.next();
 
 				continue;
 			}
 
 			animateable.advanceAnimation(currentTimestamp, lastTimestamp);
 
-			animateableGameElementId = animateableGameElementIdValues.next();
+			animatingGameElementId = animatingGameElementIdValues.next();
 		}
 
 		// prevents "deltaTime" from being very large at the start and causing position calculations to move

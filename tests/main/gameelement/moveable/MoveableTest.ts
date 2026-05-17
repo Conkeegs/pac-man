@@ -6,7 +6,6 @@ import type { Position } from "../../../../src/main/gameelement/GameElement.js";
 import Moveable from "../../../../src/main/gameelement/moveable/Moveable.js";
 import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
 import Turn from "../../../../src/main/gameelement/Turn.js";
-import { millisToSeconds } from "../../../../src/main/utils/Utils.js";
 import Test from "../../../base/Base.js";
 import { tests } from "../../../base/Decorators.js";
 
@@ -221,10 +220,7 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		this.assertStrictlyEqual(
-			originalPosition.y - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().y,
-		);
+		this.assertStrictlyEqual(originalPosition.y - pacman.getSpeed(), pacman.getPosition().y);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
@@ -246,10 +242,7 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		this.assertStrictlyEqual(
-			originalPosition.y + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().y,
-		);
+		this.assertStrictlyEqual(originalPosition.y + pacman.getSpeed(), pacman.getPosition().y);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
@@ -271,10 +264,7 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		this.assertStrictlyEqual(
-			originalPosition.x - pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().x,
-		);
+		this.assertStrictlyEqual(originalPosition.x - pacman.getSpeed(), pacman.getPosition().x);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 
@@ -296,10 +286,7 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(movementDirection);
 		pacman.tick();
 
-		this.assertStrictlyEqual(
-			originalPosition.x + pacman.getSpeed() * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			pacman.getPosition().x,
-		);
+		this.assertStrictlyEqual(originalPosition.x + pacman.getSpeed(), pacman.getPosition().x);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
 	}

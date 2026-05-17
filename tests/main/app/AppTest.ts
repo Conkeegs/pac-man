@@ -159,6 +159,8 @@ export default class AppTest extends Test {
 		})("test-moveable", 0, 0);
 		const animatingGameElementIds = App.getInstance().getAnimatingGameElementIds();
 
+		gameElement.playAnimation();
+
 		this.assertStrictlyEqual(1, animatingGameElementIds.size);
 		this.assertTrue(animatingGameElementIds.has(gameElement.getUniqueId()));
 	}
@@ -228,7 +230,7 @@ export default class AppTest extends Test {
 		let animateableGameElementIdValues = app.getAnimatingGameElementIds().values();
 
 		// queue render update for a single game element
-		(gameElementsMap.get(animateableGameElementIdValues.next().value!) as GameElement)["queueRenderUpdate"]();
+		gameElementsMap.values().next().value!["queueRenderUpdate"]();
 
 		this.assertTrue(app.getCollidablesMap().size > 0);
 		this.assertNotEmpty(app["eventListeners"]);
@@ -242,8 +244,11 @@ export default class AppTest extends Test {
 		this.assertEmpty(Object.keys(app["gameElementsMap"]));
 		this.assertEmpty(Object.keys(app["collidablesMap"]));
 		this.assertEmpty(Object.keys(app["deletedGameElementIds"]));
+		this.assertEmpty(Object.keys(app["toRenderGameElementIds"]));
 		this.assertEmpty(Object.keys(app["movingMoveableIds"]));
 		this.assertEmpty(Object.keys(app["animatingGameElementIds"]));
+		this.assertEmpty(Object.keys(app["listenableGameElementIds"]));
+		this.assertEmpty(Object.keys(app["controllableGameElementIds"]));
 		this.assertEmpty(app["eventListeners"]);
 		this.assertFalse(app["running"]);
 		this.assertFalse(app["board"] instanceof Board);
@@ -361,9 +366,9 @@ export default class AppTest extends Test {
 					default: [],
 				};
 
-				public override advance(): void {
+				public override advanceAnimation(): void {
 					Object.defineProperty(this, "advancedAnimation", {
-						value: false,
+						value: true,
 						writable: true,
 					});
 				}
@@ -373,13 +378,15 @@ export default class AppTest extends Test {
 
 			if (i < 5) {
 				moveableAnimateable["moving"] = true;
+
+				app.getAnimatingGameElementIds().add(moveableAnimateable.getUniqueId());
 			}
 		}
 
 		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
 		app["updateGame"](0, 0, 0, 0);
 
-		// only half should have their "advance()" method called since only half are moving,
+		// only half should have their "advanceAnimation()" method called since only half are moving,
 		// and advance should not be called on animateables if they aren't moving since
 		// moveable animations are direction-based
 		for (let i = 0; i < moveableAnimateablesCount; i++) {
@@ -389,7 +396,7 @@ export default class AppTest extends Test {
 				continue;
 			}
 
-			this.assertStrictlyEqual(false, moveableAnimateables[i]!["advancedAnimation" as keyof Moveable]);
+			this.assertOfType("undefined", moveableAnimateables[i]!["advancedAnimation" as keyof Moveable]);
 		}
 
 		let movingMoveables: (Moveable & Collidable)[] = [];
@@ -415,7 +422,7 @@ export default class AppTest extends Test {
 		app["updateGame"](0, 0, 0, 0);
 
 		for (const moveable of movingMoveables) {
-			const distance3Times = moveable.getDistancePerTick() * 3;
+			const distance3Times = moveable.getSpeed() * 3;
 			const positionX = moveable.getPosition().x;
 
 			// make sure updates to movable happen 3 times
@@ -536,8 +543,8 @@ export default class AppTest extends Test {
 		// they don't interpolate
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			// distancePerTick of zero means no movement/position changes
-			Object.defineProperty(moveable, "distancePerTick", { value: 0, writable: true });
+			// speed of zero means no movement/position changes
+			Object.defineProperty(moveable, "speed", { value: 0, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 
 			moveable["_shouldInterpolate"] = true;
@@ -554,8 +561,8 @@ export default class AppTest extends Test {
 		// test that both collision and interpolation work at the same time
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			// distancePerTick of zero means no movement/position changes
-			Object.defineProperty(moveable, "distancePerTick", { value: 0.2, writable: true });
+			// speed of zero means no movement/position changes
+			Object.defineProperty(moveable, "speed", { value: 0.2, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
@@ -678,9 +685,9 @@ export default class AppTest extends Test {
 			x: referenceCollidablePosition.x + 100,
 			y: referenceCollidablePosition.y + 100,
 		});
-		// make distance per tick larger than dimensions of collidable, so we use CCD to look for
+		// make speed larger than dimensions of collidable, so we use CCD to look for
 		// collidables it may have "tunneled" through
-		Object.defineProperty(referenceCollidable, "distancePerTick", { value: referenceCollidable.getWidth() + 1 });
+		Object.defineProperty(referenceCollidable, "speed", { value: referenceCollidable.getWidth() + 1 });
 		// mark deleted so collision detection does not happen
 		referenceCollidable["deleted"] = true;
 

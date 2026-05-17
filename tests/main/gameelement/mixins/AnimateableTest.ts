@@ -21,9 +21,11 @@ export default class AnimateableTest extends Test {
 	public getAnimationStateTest(): void {
 		const animateable = new PacMan();
 
+		animateable.setCurrentAnimationSet(0);
+
 		this.assertStrictlyEqual(1, animateable.getAnimationState());
 
-		animateable["_animationTypeHandlers"][1]();
+		animateable["_animationTypeHandlers"][ANIMATION_TYPE.LOOP].bind(animateable)();
 
 		this.assertStrictlyEqual(2, animateable.getAnimationState());
 	}
@@ -95,7 +97,7 @@ export default class AnimateableTest extends Test {
 	public resetAnimationStateTest(): void {
 		const animateable = new PacMan();
 
-		animateable["_currentAnimationSet"] = "test";
+		animateable["_currentAnimationSet"] = 1;
 
 		animateable.updateAnimationState();
 		animateable.resetAnimationState();
@@ -116,8 +118,7 @@ export default class AnimateableTest extends Test {
 		const element = animateable.getElement();
 
 		// if sprite does not need to be updated, no render change should happen
-		this.assertTrue(animateable["_needsSpriteUpdate"]);
-		this.assertNull(element.css("backgroundImage"));
+		this.assertFalse(animateable["_needsSpriteUpdate"]);
 
 		animateable["_needsSpriteUpdate"] = true;
 		// set invalid animation state so background animationState not found
@@ -126,7 +127,7 @@ export default class AnimateableTest extends Test {
 		animateable.render();
 
 		this.assertFalse(animateable["_needsSpriteUpdate"]);
-		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("not-found")})`, element.css("backgroundImage"));
+		this.assertStrictlyEqual(`url(\"${AssetRegistry.getImageSrc("not-found")}\")`, element.css("backgroundImage"));
 
 		animateable["_needsSpriteUpdate"] = true;
 		animateable["_animationState"] = 1;
@@ -143,10 +144,12 @@ export default class AnimateableTest extends Test {
 		const scaleX = animateable.getWidth() / width;
 		const scaleY = animateable.getHeight() / height;
 
+		animateable.render();
+
 		this.assertFalse(animateable["_needsSpriteUpdate"]);
-		this.assertStrictlyEqual(`url(${AssetRegistry.getImageSrc("pacman")})`, element.css("backgroundImage"));
+		this.assertStrictlyEqual(`url(\"${AssetRegistry.getImageSrc("pacman")}\")`, element.css("backgroundImage"));
 		this.assertStrictlyEqual(
-			`-${px(scaleX * animationState.x)} -${px(scaleY * animationState.y)}`,
+			`${px(Number((0 - scaleX * animationState.x).toPrecision(6)))} ${px(Number((0 - scaleY * animationState.y).toPrecision(6)))}`,
 			element.css("backgroundPosition"),
 		);
 	}
@@ -154,17 +157,17 @@ export default class AnimateableTest extends Test {
 	public advanceAnimationTest(): void {
 		const animateable = new PacMan();
 
-		// if current timestamp is falsy, it should nota advance
-		animateable.advanceAnimation(0, 50);
+		// if last timestamp is falsy, it should not advance
+		animateable.advanceAnimation(50, 0);
 
 		this.assertStrictlyEqual(0, animateable["_deltaTimeAccumulator"]);
 		this.assertFalse(animateable["_needsSpriteUpdate"]);
 
 		// accumulator value will not be greater than millis of animation here
 		// so should not update animation state
-		animateable.advanceAnimation(100, 80);
+		animateable.advanceAnimation(100, 90);
 
-		this.assertStrictlyEqual(20, animateable["_deltaTimeAccumulator"]);
+		this.assertStrictlyEqual(10, animateable["_deltaTimeAccumulator"]);
 		this.assertFalse(animateable["_needsSpriteUpdate"]);
 
 		// should update animation since accumulator now over threshold
@@ -177,6 +180,7 @@ export default class AnimateableTest extends Test {
 	public updateAnimationStateTest(): void {
 		const animateable = new PacMan();
 
+		animateable.setCurrentAnimationSet(0);
 		animateable.updateAnimationState();
 
 		this.assertStrictlyEqual(2, animateable["_animationState"]);

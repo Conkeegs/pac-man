@@ -24,7 +24,7 @@ export default class CharacterTest extends Test {
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("width"));
 		this.assertStrictlyEqual(px(TILESIZE + Board.calcTileOffset(0.5)), pacmanElement.css("height"));
 		this.assertStrictlyEqual(
-			`url(\"${AssetRegistry.getImageSrc("pacman-1")}\")`,
+			`url(\"${AssetRegistry.getImageSrc("pacman")}\")`,
 			pacmanElement.css("backgroundImage"),
 		);
 	}
