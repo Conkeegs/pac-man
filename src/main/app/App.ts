@@ -538,7 +538,7 @@ export class App {
 				}
 
 				this.lookForCollidables(moveable as unknown as Moveable & Collidable, oldCollisionBox);
-				gameElementsMap.delete(oldCollisionBoxUniqueId);
+				oldCollisionBox.delete();
 			}
 
 			fixedFrameCount++;
@@ -712,6 +712,7 @@ export class App {
 			oldCollisionBox,
 			sweptCollisionBox,
 		});
+		sweptCollisionBox.delete();
 	}
 
 	/**
