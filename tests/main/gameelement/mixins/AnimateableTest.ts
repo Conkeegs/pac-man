@@ -46,6 +46,21 @@ export default class AnimateableTest extends Test {
 	}
 
 	/**
+	 * Test animateables can change their current animation context/set.
+	 */
+	public setCurrentAnimationSetTest(): void {
+		const animateable = new PacMan();
+
+		this.assertStrictlyEqual(ANIMATION_DEFAULT_SET_NAME, animateable.getCurrentAnimationSet());
+
+		const animationSet = 1;
+
+		animateable.setCurrentAnimationSet(animationSet);
+
+		this.assertStrictlyEqual(animationSet, animateable.getCurrentAnimationSet());
+	}
+
+	/**
 	 * Test that animateables can play their animations correctly.
 	 */
 	public playAnimationTest(): void {

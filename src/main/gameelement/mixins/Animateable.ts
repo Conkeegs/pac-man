@@ -183,6 +183,16 @@ export default function MakeAnimateable<TBase extends AbstractConstructor<GameEl
 		}
 
 		/**
+		 * Set current animation set this game element is animating in.
+		 *
+		 * @returns string or number indicating current animation set this game element should
+		 * be set in
+		 */
+		public setCurrentAnimationSet(animationSet: keyof typeof this._ANIMATION_STATE_SETS): void {
+			this._currentAnimationSet = animationSet;
+		}
+
+		/**
 		 * Mark this animateable for animation and add it to current-animating list.
 		 */
 		public playAnimation(): void {
