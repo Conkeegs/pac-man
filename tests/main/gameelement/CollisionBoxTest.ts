@@ -1,6 +1,7 @@
 import Board from "../../../src/main/Board.js";
 import CollisionBox from "../../../src/main/gameelement/CollisionBox.js";
 import type { Position } from "../../../src/main/gameelement/GameElement.js";
+import { getRandomInt } from "../../../src/main/utils/Utils.js";
 import Test from "../../base/Base.js";
 import { tests } from "../../base/Decorators.js";
 
@@ -269,6 +270,21 @@ export default class CollisionBoxTest extends Test {
 		);
 
 		this.assertStrictlyEqual(offsetY, collisionBox.findDistanceToPosition(position));
+	}
+
+	/**
+	 * Test collision boxes can be cloned properly.
+	 */
+	public cloneTest(): void {
+		const left = getRandomInt(100);
+		const top = getRandomInt(100);
+		const collisionBox = new CollisionBox("test-collision-box", left, left + 1, top, top + 1);
+		const collisionBoxClone = collisionBox.clone();
+
+		this.assertStrictlyEqual(collisionBox.getLeft(), collisionBoxClone.getLeft());
+		this.assertStrictlyEqual(collisionBox.getRight(), collisionBoxClone.getRight());
+		this.assertStrictlyEqual(collisionBox.getTop(), collisionBoxClone.getTop());
+		this.assertStrictlyEqual(collisionBox.getBottom(), collisionBoxClone.getBottom());
 	}
 
 	/**
