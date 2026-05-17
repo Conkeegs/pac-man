@@ -6,7 +6,6 @@ import {
 	MIN_PLAYABLE_TILE_X,
 	MIN_PLAYABLE_TILE_Y,
 } from "../../utils/Globals.js";
-import { millisToSeconds } from "../../utils/Utils.js";
 import { GameElement } from "../GameElement.js";
 import MakeTickable from "../mixins/Tickable.js";
 import type Turn from "../Turn.js";
@@ -39,10 +38,6 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 	 * The speed of the game element (in pixels-per-second).
 	 */
 	private readonly speed: number;
-	/**
-	 * The number of pixels this game element moves per tick.
-	 */
-	private readonly distancePerTick: number;
 	/**
 	 * Determines if the game element is currently moving.
 	 */
@@ -177,14 +172,12 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 	 * @param name
 	 * @param width the width of this moveable
 	 * @param height the height of this moveable
-	 * @param speed the speed of the game element (in pixels-per-second)
+	 * @param speed the speed of the game element (in pixels-per-tick)
 	 */
 	constructor(name: string, width: number, height: number, speed: number) {
 		super(name, width, height);
 
 		this.speed = speed;
-		// faster game elements have larger distances per-frame
-		this.distancePerTick = speed * millisToSeconds(App.DESIRED_MS_PER_FRAME);
 	}
 
 	/**
@@ -213,15 +206,6 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 	 */
 	public getLastMovementDirection(): MovementDirection | undefined {
 		return this.lastMovementDirection;
-	}
-
-	/**
-	 * Get the number of pixels this moveable moves per-tick.
-	 *
-	 * @returns number of pixels moved per-tick
-	 */
-	public getDistancePerTick(): number {
-		return this.distancePerTick;
 	}
 
 	/**
@@ -296,7 +280,7 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 			return;
 		}
 
-		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.distancePerTick);
+		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.speed);
 		this.queueRenderUpdate();
 		super.tick();
 	}
@@ -404,18 +388,6 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 			direction,
 			turn,
 		});
-	}
-
-	/**
-	 * Determines whether two positions on the board (`x` or `y`) are within distance of
-	 * the amount of pixels this game element moved per-frame.
-	 *
-	 * @param offset1 the first `x` or `y` position
-	 * @param offset2 the second `x` or `y` position
-	 * @returns boolean indicating if they're within the collision threshold
-	 */
-	private distanceWithinDistancePerFrame(offset1: number, offset2: number): boolean {
-		return Math.abs(offset1 - offset2) <= this.distancePerTick;
 	}
 
 	/**

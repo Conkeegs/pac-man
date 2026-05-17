@@ -37,7 +37,7 @@ export default class PacMan extends MakeControllable(Character) {
 	/**
 	 * Default speed of Pacman.
 	 */
-	private static readonly PACMAN_SPEED: number = originalPacManSpeedToNewSpeed(55);
+	private static readonly PACMAN_SPEED: number = 0.15625 * TILESIZE;
 	private static readonly PACMAN_SPRITE_DIMENSIONS: 13 = 13;
 
 	public override canBeCollidedByTypes: string[] = [PacMan.name, Blinky.name, Clyde.name, Inky.name, Pinky.name];

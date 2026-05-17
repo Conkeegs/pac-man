@@ -22,10 +22,7 @@ export default class MoveableTest extends Test {
 		const moveable = new PacMan();
 
 		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
-		this.assertStrictlyEqual(
-			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable["distancePerTick"],
-		);
+		this.assertStrictlyEqual(PacMan["PACMAN_SPEED"] * 0.8, moveable["speed"]);
 	}
 
 	/**
@@ -65,18 +62,6 @@ export default class MoveableTest extends Test {
 		pacman["lastMovementDirection"] = movementDirection;
 
 		this.assertStrictlyEqual(movementDirection, pacman["lastMovementDirection"]);
-	}
-
-	/**
-	 * Test that moveables can get their last movement code correctly.
-	 */
-	public getDistancePerTickTest(): void {
-		const moveable = new PacMan();
-
-		this.assertStrictlyEqual(
-			PacMan["PACMAN_SPEED"] * 0.8 * millisToSeconds(App.DESIRED_MS_PER_FRAME),
-			moveable.getDistancePerTick(),
-		);
 	}
 
 	/**
@@ -142,7 +127,6 @@ export default class MoveableTest extends Test {
 		this.assertDoesntExist(pacman["lastMovementDirection"]);
 		this.assertStrictlyEqual(0, pacman["_tickCount"]);
 		this.assertFalse(movingMoveableIdsSet.has(pacman.getUniqueId()));
-		this.assertDoesntExist(pacman["_animationIntervalId"]);
 	}
 
 	/**
@@ -172,7 +156,6 @@ export default class MoveableTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
-		this.assertOfType("number", pacman["_animationIntervalId"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMovementDirection());
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
@@ -182,7 +165,6 @@ export default class MoveableTest extends Test {
 		this.assertTrue(pacman.isMoving());
 		this.assertArrayLength(0, pacman["turnQueue"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getCurrentDirection());
-		this.assertOfType("number", pacman["_animationIntervalId"]);
 		this.assertStrictlyEqual(movementDirection, pacman.getLastMovementDirection());
 		this.assertTrue(movingMoveableIdsSet.has(pacman.getUniqueId()));
 
@@ -498,18 +480,6 @@ export default class MoveableTest extends Test {
 		// nearest turn should be one that is least pixels away vertically and fits filter
 		this.assertStrictlyEqual(nearestTurnPosition.x, actualNearestTurnPosition.x);
 		this.assertStrictlyEqual(nearestTurnPosition.y, actualNearestTurnPosition.y);
-	}
-
-	/**
-	 * Test that moveables can check if distances are within their frame-distance correctly.
-	 */
-	public distanceWithinDistancePerFrameTest(): void {
-		const moveable = new PacMan();
-		const distancePerTick = moveable.getDistancePerTick();
-
-		this.assertFalse(moveable["distanceWithinDistancePerFrame"](0, distancePerTick + 1));
-		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerTick - 1));
-		this.assertTrue(moveable["distanceWithinDistancePerFrame"](0, distancePerTick));
 	}
 
 	/**
