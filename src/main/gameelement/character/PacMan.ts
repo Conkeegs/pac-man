@@ -1,7 +1,8 @@
 "use strict";
 
 import { SPRITE_SHEET_TILE_DIMENSIONS, type SpriteSheetData } from "../../assets/SpriteSheetHandler.js";
-import { defined, originalPacManSpeedToNewSpeed } from "../../utils/Utils.js";
+import { TILESIZE } from "../../utils/Globals.js";
+import { defined } from "../../utils/Utils.js";
 import { ANIMATION_TYPE } from "../mixins/Animateable.js";
 import type { Collidable } from "../mixins/Collidable.js";
 import MakeControllable from "../moveable/mixins/Controllable.js";
