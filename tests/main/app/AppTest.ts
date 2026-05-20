@@ -25,11 +25,6 @@ class CollidableMoveableTester extends MakeCollidable(Moveable) {
 	public override canBeCollidedByTypes: string[] = [];
 
 	override onCollision(): void {}
-	override interpolate(): number {
-		Object.defineProperty(this, "wasInterpolated", { value: true, writable: true });
-
-		return 0;
-	}
 }
 /**
  * Mock `Collidable` class for testing.
@@ -497,24 +492,17 @@ export default class AppTest extends Test {
 
 			// make sure updates to movable happen 3 times
 			this.assertStrictlyEqual(distance3Times, positionX);
-			// render() calls should have happened too, so transform is updated
-			this.assertStrictlyEqual(
-				moveable.interpolate(app["deltaTimeAccumulator"] / DESIRED_MS_PER_FRAME, distance3Times, positionX),
-				moveable.getTransform().x,
-			);
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertTrue(moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		this.assertStrictlyEqual(0, app.getToRenderGameElementIds().size);
 		this.assertStrictlyEqual(0, app.getDeletedGameElementIds().size);
 
-		// test that moveables that aren't moving don't collide or interpolate
+		// test that moveables that aren't moving don't collide
 		for (const moveable of movingMoveables) {
 			moveable["deleted"] = false;
 			moveable.stopMoving();
 
-			Object.defineProperty(moveable, "wasInterpolated", { value: false, writable: true });
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
@@ -523,11 +511,9 @@ export default class AppTest extends Test {
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertFalse(moveable["wasInterpolated" as keyof Moveable]);
 		}
 
-		// moveables that are moving should interpolate, but if they aren't collidable, they shouldn't
-		// collide with anything
+		// moveables that aren't collidable shouldn't collide with anything
 		for (const moveable of movingMoveables) {
 			moveable.startMoving(MovementDirection.RIGHT);
 
@@ -540,7 +526,6 @@ export default class AppTest extends Test {
 
 		for (const moveable of movingMoveables) {
 			this.assertOfType("undefined", moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(true, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		for (const moveable of movingMoveables) {
@@ -549,7 +534,6 @@ export default class AppTest extends Test {
 			moveable["onCollision"] = () => {};
 
 			moveable.setPosition({ x: 0, y: 0 });
-			Object.defineProperty(moveable, "wasInterpolated", { value: false });
 		}
 
 		// test that collidables that are deleted after they tick are not involved in collisions
@@ -571,64 +555,7 @@ export default class AppTest extends Test {
 			moveable.setPosition({ x: 0, y: 0 });
 		}
 
-		// test that collidables collide properly but if they are deleted after collision, they still
-		// interpolate
-		collidedWithTester["onCollision"] = (withCollidable) => {
-			Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
-
-			withCollidable["deleted"] = true;
-		};
-
-		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0, 0);
-
-		for (const moveable of movingMoveables) {
-			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
-		}
-
-		// test that moveables collide, but if they are marked as "shouldn't interpolate", they don't interpolate
-		for (const moveable of movingMoveables) {
-			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			Object.defineProperty(moveable, "wasInterpolated", { value: false, writable: true });
-			moveable.setPosition({ x: 0, y: 0 });
-
-			moveable["deleted"] = false;
-			moveable["_shouldInterpolate"] = false;
-		}
-
-		collidedWithTester["onCollision"] = (withCollidable) => {
-			Object.defineProperty(withCollidable, "wasCollidedWith", { value: true, writable: true });
-		};
-
-		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0, 0);
-
-		for (const moveable of movingMoveables) {
-			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
-		}
-
-		// test that moveables collide, but if their old position matches their new position after ticking,
-		// they don't interpolate
-		for (const moveable of movingMoveables) {
-			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
-			// speed of zero means no movement/position changes
-			Object.defineProperty(moveable, "speed", { value: 0, writable: true });
-			moveable.setPosition({ x: 0, y: 0 });
-
-			moveable["_shouldInterpolate"] = true;
-		}
-
-		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
-		app["updateGame"](0, 0, 0, 0);
-
-		for (const moveable of movingMoveables) {
-			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(false, moveable["wasInterpolated" as keyof Moveable]);
-		}
-
-		// test that both collision and interpolation work at the same time
+		// test collision works properly
 		for (const moveable of movingMoveables) {
 			Object.defineProperty(moveable, "wasCollidedWith", { value: false, writable: true });
 			// speed of zero means no movement/position changes
@@ -641,7 +568,6 @@ export default class AppTest extends Test {
 
 		for (const moveable of movingMoveables) {
 			this.assertStrictlyEqual(true, moveable["wasCollidedWith" as keyof Moveable]);
-			this.assertStrictlyEqual(true, moveable["wasInterpolated" as keyof Moveable]);
 		}
 
 		// App.MOVEABLES = [];
