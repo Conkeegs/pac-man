@@ -305,12 +305,56 @@ export default class MoveableTest extends Test {
 		})("test-moveable", 0, 0, 0);
 		const direction = MovementDirection.RIGHT;
 		const oldPosition = { ...moveable.getPosition() };
+		const newPosition = {
+			x: 300,
+			y: 400,
+		};
 		const app = App.getInstance();
 
 		app["currentAlpha"] = 30 / App.DESIRED_MS_PER_FRAME;
 
 		moveable.setCurrentDirection(direction);
+		moveable.setPosition(newPosition);
+
+		// test that moveable that is marked as "shouldn't interpolate" doesn't interpolate
+		// and renders transform normally
+		moveable["_shouldInterpolate"] = false;
+
 		moveable.render();
+
+		this.assertLooselyEqual(newPosition, moveable.getTransform());
+		this.assertStrictlyEqual(true, moveable.getShouldInterpolate());
+
+		// reset position
+		moveable.setPosition({
+			x: 0,
+			y: 0,
+		});
+		// test that if "oldPosition" is undefined on the class (it is at this point),
+		// it renders transform normally
+		moveable.render();
+
+		this.assertLooselyEqual(newPosition, moveable.getTransform());
+
+		// reset position
+		moveable.setPosition({
+			x: 0,
+			y: 0,
+		});
+		// test that if both oldPosition and current positions are equal, nothing
+		// happens
+		moveable["oldPosition"] = {
+			x: 0,
+			y: 0,
+		};
+
+		moveable.render();
+
+		this.assertLooselyEqual({ x: 0, y: 0 }, moveable.getTransform());
+
+		// now interpolation should happen since oldPosition is set and it's not equal
+		//  to "newPosition", and "shouldInterpolate" is true
+		moveable.setPosition(newPosition);
 
 		const currentDirectionKey =
 			Moveable.directionalPositionKeys[direction as keyof typeof Moveable.directionalPositionKeys];

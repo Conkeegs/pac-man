@@ -6,6 +6,7 @@ import {
 	MIN_PLAYABLE_TILE_X,
 	MIN_PLAYABLE_TILE_Y,
 } from "../../utils/Globals.js";
+import { defined } from "../../utils/Utils.js";
 import { GameElement, type Position } from "../GameElement.js";
 import MakeTickable from "../mixins/Tickable.js";
 import type Turn from "../Turn.js";
@@ -297,15 +298,37 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 	 * @param alpha fractional time between the last and current physics tick
 	 */
 	public override render(): void {
+		if (!this.getShouldInterpolate()) {
+			// just render transform normally
+			super.render();
+			this.setShouldInterpolate(true);
+
+			return;
+		}
+
+		const oldPosition = this.oldPosition;
+
+		if (!defined(oldPosition)) {
+			// just render transform normally
+			super.render();
+
+			return;
+		}
+
+		const position = this.position;
+
+		if (GameElement.positionsEqual(oldPosition, position)) {
+			return;
+		}
+
 		const currentDirectionKey =
 			Moveable.directionalPositionKeys[this.currentDirection as keyof typeof Moveable.directionalPositionKeys];
 		const oppositeDirectionKey = GameElement.positionKeyOpposites[currentDirectionKey];
-		const position = this.position;
 
 		this.setTransform({
 			[currentDirectionKey]: this.interpolate(
 				App.getInstance().getCurrentAlpha()!,
-				this.oldPosition![currentDirectionKey],
+				oldPosition[currentDirectionKey],
 				position[currentDirectionKey],
 			),
 			[oppositeDirectionKey]: position[oppositeDirectionKey],

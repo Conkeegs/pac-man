@@ -9,7 +9,7 @@ import type { Animateable } from "../gameelement/mixins/Animateable.js";
 import type { Collidable } from "../gameelement/mixins/Collidable.js";
 import type { Controllable } from "../gameelement/moveable/mixins/Controllable.js";
 import Moveable from "../gameelement/moveable/Moveable.js";
-import { create, defined, get, uniqueId } from "../utils/Utils.js";
+import { create, get, uniqueId } from "../utils/Utils.js";
 import InputHandler from "./InputHandler.js";
 
 /**
@@ -586,46 +586,20 @@ export class App {
 		this.currentAlpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
 
 		const toRenderGameElementIds = this.toRenderGameElementIds;
-
-		// check for needed interpolations of game elements
-		if (movingMoveablesLength) {
-			for (let i = 0; i < movingMoveablesLength; i++) {
-				const moveable = movingMoveables[i]!;
-
-				if (moveable.getDeleted()) {
-					continue;
-				}
-
-				if (!moveable.getShouldInterpolate()) {
-					moveable.setShouldInterpolate(true);
-
-					continue;
-				}
-
-				const currentMoveableData = oldMoveableData.get(moveable.getUniqueId());
-
-				if (!defined(currentMoveableData)) {
-					continue;
-				}
-
-				const oldMoveablePosition = currentMoveableData.position;
-				const currentMoveablePosition = moveable.getPosition();
-
-				if (
-					// !defined(oldMoveablePosition) ||
-					GameElement.positionsEqual(oldMoveablePosition, currentMoveablePosition)
-				) {
-					continue;
-				}
-			}
-		}
-
 		const toRenderGameElementIdValues = toRenderGameElementIds.values();
 		let toRenderGameElementId = toRenderGameElementIdValues.next();
 
 		// find all game elements that are currently marked as "to-render" and render them
 		while (!toRenderGameElementId.done) {
-			(gameElementsMap.get(toRenderGameElementId.value)! as GameElement).render();
+			const gameElement = gameElementsMap.get(toRenderGameElementId.value)! as GameElement;
+
+			if (gameElement.getDeleted()) {
+				toRenderGameElementId = toRenderGameElementIdValues.next();
+
+				continue;
+			}
+
+			gameElement.render();
 
 			toRenderGameElementId = toRenderGameElementIdValues.next();
 		}
