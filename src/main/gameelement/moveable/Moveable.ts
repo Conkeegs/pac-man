@@ -6,7 +6,7 @@ import {
 	MIN_PLAYABLE_TILE_X,
 	MIN_PLAYABLE_TILE_Y,
 } from "../../utils/Globals.js";
-import { GameElement } from "../GameElement.js";
+import { GameElement, type Position } from "../GameElement.js";
 import MakeTickable from "../mixins/Tickable.js";
 import type Turn from "../Turn.js";
 import MovementDirection from "./MovementDirection.js";
@@ -95,6 +95,11 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 		[MovementDirection.DOWN]: (tileY: number) =>
 			Board.createTileKey(Board.calcTileNumX(this.getCenterPosition().x), tileY),
 	};
+
+	/**
+	 * The position of this moveable just before its last tick.
+	 */
+	private oldPosition: Position | undefined;
 
 	/**
 	 * The current direction this game element is moving in.
@@ -280,9 +285,31 @@ export default abstract class Moveable extends MakeTickable(GameElement) {
 			return;
 		}
 
+		this.oldPosition = { ...this.getPosition() };
 		this.movementMethods[this.currentDirection as keyof MovementMethods].bind(this)(this.speed);
 		this.queueRenderUpdate();
 		super.tick();
+	}
+
+	/**
+	 * Renders this moveable with linear interpolation between its last and current position.
+	 *
+	 * @param alpha fractional time between the last and current physics tick
+	 */
+	public override render(): void {
+		const currentDirectionKey =
+			Moveable.directionalPositionKeys[this.currentDirection as keyof typeof Moveable.directionalPositionKeys];
+		const oppositeDirectionKey = GameElement.positionKeyOpposites[currentDirectionKey];
+		const position = this.position;
+
+		this.setTransform({
+			[currentDirectionKey]: this.interpolate(
+				App.getInstance().getCurrentAlpha()!,
+				this.oldPosition![currentDirectionKey],
+				position[currentDirectionKey],
+			),
+			[oppositeDirectionKey]: position[oppositeDirectionKey],
+		} as Position);
 	}
 
 	/**

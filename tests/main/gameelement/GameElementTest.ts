@@ -1,4 +1,5 @@
 import { App } from "../../../src/main/app/App.js";
+import type { SpriteSheetData } from "../../../src/main/assets/SpriteSheetHandler.js";
 import Board from "../../../src/main/Board.js";
 import Clyde from "../../../src/main/gameelement/character/Clyde.js";
 import Inky from "../../../src/main/gameelement/character/Inky.js";
@@ -21,7 +22,8 @@ export default class GameElementTest extends Test {
 	public createGameElementTest(): void {
 		const pacmanName = "pacman1";
 		const pacman1 = new PacMan(pacmanName);
-		const gameElementsMap = App.getInstance().getGameElementsMap();
+		const app = App.getInstance();
+		const gameElementsMap = app.getGameElementsMap();
 		let gameElements = gameElementsMap.values();
 		let matchingGameElement: GameElement | undefined = undefined;
 
@@ -36,6 +38,7 @@ export default class GameElementTest extends Test {
 		this.assertTrue(pacman1.getElement().classList.contains("game-element"));
 		this.assertTrue(gameElementsMap.has(pacman1.getUniqueId()));
 		this.assertStrictlyEqual(GameElement.GAME_ELEMENT_Z_INDEX, Number(pacman1.getElement().css("zIndex")));
+		this.assertTrue(app.getNewGameElementIds().has(pacman1.getUniqueId()));
 	}
 
 	/**
@@ -107,7 +110,9 @@ export default class GameElementTest extends Test {
 	 * Test that a game element's unique id can be returned.
 	 */
 	public getUniqueIdTest(): void {
-		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-game-element", 0, 0);
 		const uniqueId = gameElement.getUniqueId();
 
 		this.assertExists(uniqueId);
@@ -163,14 +168,18 @@ export default class GameElementTest extends Test {
 	 * Test that game elements can get their child-game elements.
 	 */
 	public getChildrenTest(): void {
-		const gameElement = new (class extends GameElement {})("parent-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("parent-game-element", 0, 0);
 
 		this.assertEmpty(gameElement.getChildren());
 
 		gameElement["addChild"]({
 			offsetX: 0,
 			offsetY: 0,
-			gameElement: new (class extends GameElement {})("child-game-element", 0, 0),
+			gameElement: new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
+			})("child-game-element", 0, 0),
 		});
 
 		this.assertArrayLength(1, gameElement.getChildren());
@@ -180,7 +189,9 @@ export default class GameElementTest extends Test {
 	 * Test that game elements can get whether or not they are deleted.
 	 */
 	public getDeletedTest(): void {
-		const gameElement = new (class extends GameElement {})("parent-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("parent-game-element", 0, 0);
 
 		this.assertFalse(gameElement.getDeleted());
 
@@ -194,11 +205,11 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
 		})();
-		const htmlElement = gameElement.getElement();
 		let offset = 500;
 
 		gameElement.setPosition({
@@ -257,7 +268,9 @@ export default class GameElementTest extends Test {
 		gameElement["addChild"]({
 			offsetX: childOffsetX,
 			offsetY: childOffsetY,
-			gameElement: new (class extends GameElement {})("child-game-element", 0, 0),
+			gameElement: new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
+			})("child-game-element", 0, 0),
 		});
 		gameElement.setPosition({
 			x: offset,
@@ -283,6 +296,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionXTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -333,7 +347,9 @@ export default class GameElementTest extends Test {
 		gameElement["addChild"]({
 			offsetX: childOffsetX,
 			offsetY: 0,
-			gameElement: new (class extends GameElement {})("child-game-element", 0, 0),
+			gameElement: new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
+			})("child-game-element", 0, 0),
 		});
 		gameElement.setPositionX(offset);
 
@@ -356,6 +372,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setPositionYTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -406,7 +423,9 @@ export default class GameElementTest extends Test {
 		gameElement["addChild"]({
 			offsetX: 0,
 			offsetY: childOffsetY,
-			gameElement: new (class extends GameElement {})("child-game-element", 0, 0),
+			gameElement: new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
+			})("child-game-element", 0, 0),
 		});
 		gameElement.setPositionY(offset);
 
@@ -422,6 +441,24 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(offset + childOffsetY, childPosition.y);
 		this.assertStrictlyEqual(0, childTransform.x);
 		this.assertStrictlyEqual(childOffsetY, childTransform.y);
+	}
+
+	/**
+	 * Test creation logic of game elements executes properly.
+	 */
+	public onCreateTest(): void {
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+			public override onCreate(): void {
+				Object.defineProperty(this, "onCreateCalled", { value: true, writable: true });
+			}
+		})("test-game-element", 0, 0);
+
+		this.assertOfType("undefined", gameElement["onCreateCalled" as keyof GameElement]);
+
+		gameElement.onCreate();
+
+		this.assertStrictlyEqual(true, gameElement["onCreateCalled" as keyof GameElement]);
 	}
 
 	/**
@@ -472,6 +509,7 @@ export default class GameElementTest extends Test {
 	public deleteTest(): void {
 		const name = "test game element";
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super(name, 0, 0);
 			}
@@ -479,6 +517,7 @@ export default class GameElementTest extends Test {
 
 		gameElement["addChild"]({
 			gameElement: new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
 				constructor() {
 					super("test-child", 0, 0);
 				}
@@ -490,6 +529,7 @@ export default class GameElementTest extends Test {
 
 		this.assertNotNull(get(name));
 		this.assertExists(app.getGameElementsMap().get(gameElement.getUniqueId()));
+		this.assertTrue(app.getNewGameElementIds().has(gameElement.getUniqueId()));
 
 		gameElement.delete();
 
@@ -497,6 +537,8 @@ export default class GameElementTest extends Test {
 
 		this.assertTrue(deletedGameElementIds.has(gameElement.getUniqueId()));
 		this.assertTrue(deletedGameElementIds.has(gameElement.getChildren()[0]!.gameElement.getUniqueId()));
+		this.assertDoesntExist(app.getGameElementsMap().get(gameElement.getUniqueId()));
+		this.assertFalse(app.getNewGameElementIds().has(gameElement.getUniqueId()));
 	}
 
 	/**
@@ -504,6 +546,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -534,6 +577,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformXTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -565,6 +609,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setTransformYTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -623,6 +668,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setWidthTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -639,6 +685,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setHeightTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -655,6 +702,7 @@ export default class GameElementTest extends Test {
 	 */
 	public setDimensionsTest(): void {
 		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			constructor() {
 				super("test game element", 0, 0);
 			}
@@ -672,8 +720,12 @@ export default class GameElementTest extends Test {
 	 * Test that game element can add child-game elements.
 	 */
 	public addChildTest(): void {
-		const gameElement = new (class extends GameElement {})("parent-game-element", 0, 0);
-		const childGameElement = new (class extends GameElement {})("child-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("parent-game-element", 0, 0);
+		const childGameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("child-game-element", 0, 0);
 		const offsetX = 9;
 		const offsetY = 11;
 
@@ -692,7 +744,9 @@ export default class GameElementTest extends Test {
 		this.assertStrictlyEqual(childGameElement, firstChild.gameElement);
 		this.assertTrue(GameElement.positionsEqual({ x: offsetX, y: offsetY }, firstChild.gameElement.getTransform()));
 
-		const secondChildGameElement = new (class extends GameElement {})("child-game-element-2", 0, 0);
+		const secondChildGameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("child-game-element-2", 0, 0);
 
 		// test that offsets default to 0 when not provided
 		gameElement["addChild"]({

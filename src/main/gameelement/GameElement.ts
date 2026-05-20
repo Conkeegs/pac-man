@@ -1,5 +1,5 @@
 import { App } from "../app/App.js";
-import SpriteSheetHandler from "../assets/SpriteSheetHandler.js";
+import SpriteSheetHandler, { type SpriteSheetData } from "../assets/SpriteSheetHandler.js";
 import Debugging from "../Debugging.js";
 import DebugWindow from "../debugwindow/DebugWindow.js";
 import { create, px, uniqueId } from "../utils/Utils.js";
@@ -80,6 +80,10 @@ export abstract class GameElement {
 	 * Handles setting sprite background-image on this game element.
 	 */
 	protected spriteSheetHandler: SpriteSheetHandler = new SpriteSheetHandler(this);
+	/**
+	 * Default sprite offset and dimensions for this game element.
+	 */
+	protected abstract readonly defaultSprite: SpriteSheetData | undefined;
 
 	/**
 	 * The game element's width in pixels.
@@ -148,15 +152,15 @@ export abstract class GameElement {
 		// #!END_DEBUG
 
 		this.name = name;
-
-		const gameElementsMap = App.getInstance().getGameElementsMap();
-
 		this.uniqueId = uniqueId();
 		this._width = width;
 		this._height = height;
 
+		const app = App.getInstance();
+
 		// keep track of this game element so we can clean it up later, if needed
-		gameElementsMap.set(this.uniqueId, this);
+		app.getGameElementsMap().set(this.uniqueId, this);
+		app.getNewGameElementIds().add(this.uniqueId);
 
 		this.element = create({ name: "div", id: name, classes: ["game-element"] }).css({
 			zIndex: GameElement.GAME_ELEMENT_Z_INDEX,
@@ -326,10 +330,15 @@ export abstract class GameElement {
 	}
 
 	/**
+	 * Logic to execute when this game element is first created.
+	 */
+	public onCreate(): void {}
+
+	/**
 	 * Renders CSS changes of this game element to the screen.
 	 */
-	public render(position?: Position): void {
-		this.setTransform(position ?? this.position);
+	public render(): void {
+		this.setTransform(this.position);
 
 		this.shouldRender = false;
 	}
@@ -359,6 +368,8 @@ export abstract class GameElement {
 		}
 
 		App.getInstance().getDeletedGameElementIds().add(this.getUniqueId());
+		// remove from new game element id set to prevent "onCreate" call
+		App.getInstance().getNewGameElementIds().delete(this.getUniqueId());
 	}
 
 	/**

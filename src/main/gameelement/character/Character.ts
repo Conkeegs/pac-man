@@ -12,6 +12,8 @@ import MovementDirection from "../moveable/MovementDirection.js";
  * A character is any of the AI or user-controlled objects on the board.
  */
 export default abstract class Character extends MakeAnimateable(MakeCollidable(Moveable, 50)) {
+	protected abstract override defaultSprite: SpriteSheetData;
+
 	/**
 	 * `Character`s' width and height in pixels.
 	 */
@@ -76,5 +78,12 @@ export default abstract class Character extends MakeAnimateable(MakeCollidable(M
 		super.startMoving(direction);
 		// start playing this character's animations as they move.
 		this.playAnimation();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public override onCreate(): void {
+		this.spriteSheetHandler.setSpriteImage(this.defaultSprite);
 	}
 }

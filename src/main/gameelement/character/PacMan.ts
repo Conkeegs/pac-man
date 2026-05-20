@@ -19,6 +19,8 @@ import Pinky from "./Pinky.js";
  * Represents the PacMan character on the board.
  */
 export default class PacMan extends MakeControllable(Character) {
+	protected override defaultSprite: SpriteSheetData = this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE;
+
 	/**
 	 * Whether or not pacman is spawning.
 	 */
@@ -52,7 +54,6 @@ export default class PacMan extends MakeControllable(Character) {
 		super(name, PacMan.PACMAN_SPEED * 0.8);
 
 		this._setAnimationType(ANIMATION_TYPE.LOOP);
-		this.spriteSheetHandler.setSpriteImage(this.PACMAN_MOUTH_CLOSED_ANIMATION_STATE);
 	}
 
 	/**

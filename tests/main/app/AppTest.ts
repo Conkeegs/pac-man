@@ -1,5 +1,6 @@
 import { App } from "../../../src/main/app/App.js";
 import InputHandler from "../../../src/main/app/InputHandler.js";
+import type { SpriteSheetData } from "../../../src/main/assets/SpriteSheetHandler.js";
 import Board from "../../../src/main/Board.js";
 import CollisionBox from "../../../src/main/gameelement/CollisionBox.js";
 import { GameElement } from "../../../src/main/gameelement/GameElement.js";
@@ -20,6 +21,7 @@ import Test from "../../base/Base.js";
  * Mock `Moveable` and `Collidable` class for testing.
  */
 class CollidableMoveableTester extends MakeCollidable(Moveable) {
+	protected override defaultSprite: SpriteSheetData | undefined;
 	public override canBeCollidedByTypes: string[] = [];
 
 	override onCollision(): void {}
@@ -33,6 +35,7 @@ class CollidableMoveableTester extends MakeCollidable(Moveable) {
  * Mock `Collidable` class for testing.
  */
 class CollidedWithTester extends MakeCollidable(GameElement) {
+	protected override defaultSprite: SpriteSheetData | undefined;
 	public override canBeCollidedByTypes: string[] = [CollidableMoveableTester.name];
 
 	override onCollision(withCollidable: Collidable): void {
@@ -46,6 +49,7 @@ class CollidedWithTester extends MakeCollidable(GameElement) {
  * as deleted.
  */
 class CollidedWithTesterDeletes extends MakeCollidable(GameElement) {
+	protected override defaultSprite: SpriteSheetData | undefined;
 	public override canBeCollidedByTypes: string[] = [CollidableMoveableTester.name];
 
 	override onCollision(withCollidable: Collidable): void {
@@ -99,7 +103,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its map of game elements.
 	 */
 	public getGameElementsMapTest(): void {
-		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-game-element", 0, 0);
 		const gameElementsMap = App.getInstance().getGameElementsMap();
 
 		this.assertStrictlyEqual(1, gameElementsMap.size);
@@ -110,7 +116,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of game deleted game element ids.
 	 */
 	public getDeletedGameElementIdsTest(): void {
-		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-game-element", 0, 0);
 
 		gameElement.delete();
 
@@ -124,7 +132,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of to-be-rendered game element ids.
 	 */
 	public getToRenderGameElementIdsTest(): void {
-		const gameElement = new (class extends GameElement {})("test-game-element", 0, 0);
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-game-element", 0, 0);
 
 		gameElement["queueRenderUpdate"]();
 
@@ -138,7 +148,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of moving game element ids.
 	 */
 	public getMovingMoveableIdsTest(): void {
-		const gameElement = new (class extends Moveable {})("test-moveable", 0, 0, 0);
+		const gameElement = new (class extends Moveable {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-moveable", 0, 0, 0);
 
 		gameElement.startMoving(MovementDirection.RIGHT);
 
@@ -153,6 +165,7 @@ export default class AppTest extends Test {
 	 */
 	public getAnimatingGameElementIdsTest(): void {
 		const gameElement = new (class extends MakeAnimateable(GameElement) {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			override _ANIMATION_STATE_SETS: AnimationStateMap = {
 				default: [],
 			};
@@ -169,7 +182,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of listenable game element ids.
 	 */
 	public getListenableGameElementIdsTest(): void {
-		const gameElement = new (class extends MakeListenable(GameElement) {})("test-listenable", 0, 0);
+		const gameElement = new (class extends MakeListenable(GameElement) {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-listenable", 0, 0);
 		const listenableGameElementIds = App.getInstance().getListenableGameElementIds();
 
 		this.assertStrictlyEqual(1, listenableGameElementIds.size);
@@ -180,7 +195,9 @@ export default class AppTest extends Test {
 	 * Test that the app can gets its set of controllable game element ids.
 	 */
 	public getControllableGameElementIdsTest(): void {
-		const gameElement = new (class extends MakeControllable(Moveable) {})("test-listenable", 0, 0, 0);
+		const gameElement = new (class extends MakeControllable(Moveable) {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-listenable", 0, 0, 0);
 		const controllableGameElementIds = App.getInstance().getControllableGameElementIds();
 
 		this.assertStrictlyEqual(1, controllableGameElementIds.size);
@@ -192,6 +209,7 @@ export default class AppTest extends Test {
 	 */
 	public getCollidablesMapTest(): void {
 		const gameElement = new (class extends MakeCollidable(GameElement) {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			public override canBeCollidedByTypes: string[] = [];
 			override onCollision(): void {}
 		})("test-moveable", 0, 0);
@@ -203,6 +221,19 @@ export default class AppTest extends Test {
 
 		this.assertTrue(collidablesMap.has(tileKey));
 		this.assertStrictlyEqual(gameElement, collidablesMap.get(tileKey)!.values().next().value);
+	}
+
+	/**
+	 * Test that the app can gets its set of new game element ids.
+	 */
+	public getNewGameElementIdsTest(): void {
+		const gameElement = new (class extends GameElement {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-listenable", 0, 0);
+		const newGameElementIds = App.getInstance().getNewGameElementIds();
+
+		this.assertStrictlyEqual(1, newGameElementIds.size);
+		this.assertTrue(newGameElementIds.has(gameElement.getUniqueId()));
 	}
 
 	/**
@@ -219,6 +250,23 @@ export default class AppTest extends Test {
 	}
 
 	/**
+	 * Test getting current frame's alpha works correctly.
+	 */
+	public getCurrentAlphaTest(): void {
+		const app = App.getInstance();
+
+		this.assertOfType("undefined", app.getCurrentAlpha());
+
+		const lastTimestamp = 0;
+		const currentTimestamp = 30;
+		const deltaTime = currentTimestamp - lastTimestamp;
+
+		app["updateGame"](lastTimestamp, currentTimestamp, 0, 0);
+
+		this.assertStrictlyEqual(deltaTime, app.getCurrentAlpha());
+	}
+
+	/**
 	 * Test that app can destroy itself correctly.
 	 */
 	public async destroyTest(): Promise<void> {
@@ -227,7 +275,6 @@ export default class AppTest extends Test {
 		await app.run();
 
 		const gameElementsMap = app.getGameElementsMap();
-		let animateableGameElementIdValues = app.getAnimatingGameElementIds().values();
 
 		// queue render update for a single game element
 		gameElementsMap.values().next().value!["queueRenderUpdate"]();
@@ -238,6 +285,8 @@ export default class AppTest extends Test {
 		this.assertTrue(app["board"] instanceof Board);
 		this.assertNotEmpty(get("game")!.innerHTML);
 		this.assertOfType("number", app["animationFrameId"]);
+		this.assertTrue(gameElementsMap.size > 0);
+		this.assertStrictlyEqual(gameElementsMap.size, app.getNewGameElementIds().size);
 
 		app.destroy();
 
@@ -249,6 +298,7 @@ export default class AppTest extends Test {
 		this.assertEmpty(Object.keys(app["animatingGameElementIds"]));
 		this.assertEmpty(Object.keys(app["listenableGameElementIds"]));
 		this.assertEmpty(Object.keys(app["controllableGameElementIds"]));
+		this.assertEmpty(Object.keys(app["newGameElementIds"]));
 		this.assertEmpty(app["eventListeners"]);
 		this.assertFalse(app["running"]);
 		this.assertFalse(app["board"] instanceof Board);
@@ -328,8 +378,27 @@ export default class AppTest extends Test {
 		// accumulator should be 0 since falsy "lastTimestamp"
 		this.assertStrictlyEqual(0, app["deltaTimeAccumulator"]);
 
+		const newGameElementCount = 10;
+		const newGameElements = Array.from({ length: newGameElementCount }, (_, index) => {
+			return new (class extends GameElement {
+				protected override defaultSprite: SpriteSheetData | undefined;
+
+				public override onCreate(): void {
+					Object.defineProperty(this, "onCreateCalled", { value: true, writable: true });
+				}
+			})(`new-game-element-${index}`, 0, 0);
+		});
+
+		app["deltaTimeAccumulator"] = DESIRED_MS_PER_FRAME;
+		app["updateGame"](0, 0, 0, 0);
+
+		for (const newGameElement of newGameElements) {
+			this.assertStrictlyEqual(true, newGameElement["onCreateCalled" as keyof GameElement]);
+		}
+
 		const currentInputCode = "KeyD";
 		const controllable = new (class extends MakeControllable(Moveable) {
+			protected override defaultSprite: SpriteSheetData | undefined;
 			public override handleInput(currentInputCode: string): void {
 				Object.defineProperty(this, "currentInputCode", { value: currentInputCode, writable: true });
 				Object.defineProperty(this, "inputWasHandled", { value: true, writable: true });
@@ -362,6 +431,7 @@ export default class AppTest extends Test {
 		// make half moving, half not
 		for (let i = 0; i < moveableAnimateablesCount; i++) {
 			const moveableAnimateable = new (class extends MakeAnimateable(Moveable) {
+				protected override defaultSprite: SpriteSheetData | undefined;
 				override _ANIMATION_STATE_SETS: AnimationStateMap = {
 					default: [],
 				};

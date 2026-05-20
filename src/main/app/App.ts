@@ -139,6 +139,10 @@ export class App {
 	 */
 	private controllableGameElementIds: Set<string> = new Set();
 	/**
+	 * Ids of game elements that are newly-created.
+	 */
+	private newGameElementIds: Set<string> = new Set();
+	/**
 	 * Event listeners registered in the app.
 	 */
 	private eventListeners: EventListenerData[] = [];
@@ -151,6 +155,10 @@ export class App {
 	 * Input handler for the game.
 	 */
 	private inputHandler: InputHandler;
+	/**
+	 * The current alpha blend value of the current frame.
+	 */
+	private currentAlpha: number | undefined;
 
 	/**
 	 * The desired frames-per-second that the game should update at.
@@ -248,6 +256,15 @@ export class App {
 	}
 
 	/**
+	 * Get ids of game elements that are newly-created.
+	 *
+	 * @returns game element ids that are newly-created
+	 */
+	public getNewGameElementIds(): Set<string> {
+		return this.newGameElementIds;
+	}
+
+	/**
 	 * Get the map of tilekeys to collidables to better-optimize collision
 	 * detection.
 	 *
@@ -273,6 +290,15 @@ export class App {
 	 */
 	public getPaused(): boolean {
 		return this.gamePaused;
+	}
+
+	/**
+	 * Get current alpha blend value of current frame.
+	 *
+	 * @returns current alpha blend value of current frame
+	 */
+	public getCurrentAlpha(): number | undefined {
+		return this.currentAlpha;
 	}
 
 	/**
@@ -337,6 +363,7 @@ export class App {
 		this.toRenderGameElementIds.clear();
 		this.movingMoveableIds.clear();
 		this.animatingGameElementIds.clear();
+		this.newGameElementIds.clear();
 
 		for (let i = 0; i < this.eventListeners.length; i++) {
 			const eventListenerInfo = this.eventListeners[i]!;
@@ -444,6 +471,19 @@ export class App {
 			deltaTime = 250;
 		}
 
+		const newGameElementIds = this.newGameElementIds;
+		const newGameElementIdValues = newGameElementIds.values();
+		let newGameElementId = newGameElementIdValues.next();
+
+		// call any existing "onCreate" logic for game elements
+		while (!newGameElementId.done) {
+			this.gameElementsMap.get(newGameElementId.value)!.onCreate();
+
+			newGameElementId = newGameElementIdValues.next();
+		}
+
+		newGameElementIds.clear();
+
 		const gameElementsMap = this.gameElementsMap;
 		const controllableGameElementIdValues = this.controllableGameElementIds.values();
 		let controllableGameElementId = controllableGameElementIdValues.next();
@@ -543,12 +583,12 @@ export class App {
 			this.deltaTimeAccumulator -= DESIRED_MS_PER_FRAME;
 		}
 
+		this.currentAlpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
+
 		const toRenderGameElementIds = this.toRenderGameElementIds;
 
 		// check for needed interpolations of game elements
 		if (movingMoveablesLength) {
-			const alpha = this.deltaTimeAccumulator / DESIRED_MS_PER_FRAME;
-
 			for (let i = 0; i < movingMoveablesLength; i++) {
 				const moveable = movingMoveables[i]!;
 
@@ -577,22 +617,6 @@ export class App {
 				) {
 					continue;
 				}
-
-				const currentDirectionKey =
-					Moveable.directionalPositionKeys[
-						moveable.getCurrentDirection() as keyof typeof Moveable.directionalPositionKeys
-					];
-				const oppositeDirectionKey = GameElement.positionKeyOpposites[currentDirectionKey];
-
-				moveable.render({
-					[currentDirectionKey]: moveable.interpolate(
-						alpha,
-						oldMoveablePosition[currentDirectionKey],
-						currentMoveablePosition[currentDirectionKey],
-					),
-					[oppositeDirectionKey]: currentMoveablePosition[oppositeDirectionKey],
-				} as Position);
-				toRenderGameElementIds.delete(moveable.getUniqueId());
 			}
 		}
 

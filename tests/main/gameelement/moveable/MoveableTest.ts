@@ -1,8 +1,9 @@
 import { App } from "../../../../src/main/app/App.js";
+import type { SpriteSheetData } from "../../../../src/main/assets/SpriteSheetHandler.js";
 import Board from "../../../../src/main/Board.js";
 import PacMan from "../../../../src/main/gameelement/character/PacMan.js";
 import Pinky from "../../../../src/main/gameelement/character/Pinky.js";
-import type { Position } from "../../../../src/main/gameelement/GameElement.js";
+import { GameElement, type Position } from "../../../../src/main/gameelement/GameElement.js";
 import Moveable from "../../../../src/main/gameelement/moveable/Moveable.js";
 import MovementDirection from "../../../../src/main/gameelement/moveable/MovementDirection.js";
 import Turn from "../../../../src/main/gameelement/Turn.js";
@@ -182,6 +183,9 @@ export default class MoveableTest extends Test {
 		const turn = board.getTurnMap().values().next().value!;
 		const turnCenterPosition = turn.getCenterPosition();
 		const turnFirstDirection = turn.getDirections()[0]!;
+		const oldPosition = { ...pacman.getPosition() };
+
+		this.assertOfType("undefined", pacman["oldPosition"]);
 
 		pacman.setPosition({
 			x: turnCenterPosition.x - pacman.getWidth() / 2,
@@ -190,6 +194,7 @@ export default class MoveableTest extends Test {
 		pacman.startMoving(turnFirstDirection);
 		pacman.tick();
 
+		this.assertLooselyEqual(oldPosition, pacman["oldPosition"]);
 		this.assertTrue(pacman.isMoving());
 		this.assertStrictlyEqual(turnFirstDirection, pacman.getCurrentDirection());
 		this.assertTrue(pacman["shouldRender"]);
@@ -289,6 +294,40 @@ export default class MoveableTest extends Test {
 		this.assertStrictlyEqual(originalPosition.x + pacman.getSpeed(), pacman.getPosition().x);
 		this.assertStrictlyEqual(1, pacman["_tickCount"]);
 		this.assertTrue(pacman["shouldRender"]);
+	}
+
+	/**
+	 * Test that moveables render interpolated transforms correctly.
+	 */
+	public renderTest(): void {
+		const moveable = new (class extends Moveable {
+			protected override defaultSprite: SpriteSheetData | undefined;
+		})("test-moveable", 0, 0, 0);
+		const direction = MovementDirection.RIGHT;
+		const oldPosition = { ...moveable.getPosition() };
+		const app = App.getInstance();
+
+		app["currentAlpha"] = 30 / App.DESIRED_MS_PER_FRAME;
+
+		moveable.setCurrentDirection(direction);
+		moveable.render();
+
+		const currentDirectionKey =
+			Moveable.directionalPositionKeys[direction as keyof typeof Moveable.directionalPositionKeys];
+		const oppositeDirectionKey = GameElement.positionKeyOpposites[currentDirectionKey];
+		const position = moveable.getPosition();
+
+		this.assertLooselyEqual(
+			{
+				[currentDirectionKey]: moveable.interpolate(
+					app.getCurrentAlpha()!,
+					oldPosition![currentDirectionKey],
+					position[currentDirectionKey],
+				),
+				[oppositeDirectionKey]: position[oppositeDirectionKey],
+			},
+			moveable.getTransform(),
+		);
 	}
 
 	/**

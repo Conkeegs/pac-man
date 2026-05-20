@@ -7,6 +7,8 @@ import Ghost from "./Ghost.js";
  * Represents the `Ghost` named Blinky.
  */
 export default class Blinky extends Ghost {
+	protected override defaultSprite: SpriteSheetData = this.BLINKY_LEFT_ANIMATION_STATES[0]!;
+
 	/**
 	 * Default speed of Blinky.
 	 */
